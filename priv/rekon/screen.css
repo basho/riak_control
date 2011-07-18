@@ -1,0 +1,268 @@
+/* YUI 2 Rest */
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td{margin:0;padding:0;}
+table{border-collapse:collapse;border-spacing:0;}
+fieldset,img{border:0;}
+address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}
+ol,ul{list-style:none;}
+caption,th{text-align:left;}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}
+q:before,q:after{content:'';}
+abbr,acronym{border:0;}
+
+/* Layout */
+#container {
+  -webkit-background-clip: padding-box;
+  -webkit-box-shadow: 1px 2px 5px #111;
+  border-radius:3px;
+  margin: 25px auto;
+  padding:10px;
+  position:relative;
+  width:940px;
+}
+
+#home {
+  position:absolute;
+    right:5px;
+    bottom:7px;
+}
+
+table {
+  font-size:1em;
+  margin-top:10px;
+}
+
+table.wide {
+  width:100%;
+}
+
+table th {
+  font-weight:bold;
+  padding:5px 10px;
+}
+table td {
+  padding: 2px 6px;
+}
+
+table th, table td {
+  border:1px solid #ccc;
+}
+
+#bucket tbody th {
+  min-width:500px;
+}
+
+#stats th {
+  min-width:250px;
+}
+
+/* Typography and Colors */
+body {
+  background:#333;
+}
+
+#container {
+  background:#efefef;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size:0.8em;
+}
+
+#key, #edit-key, #stats{
+  overflow-x:auto;
+}
+
+#key th, #edit-key th{
+  min-width:100px;
+}
+
+#value {
+  border: 1px solid #ccc;
+  margin:15px 0;
+  padding:10px;
+  overflow-x:auto;
+}
+
+h1 {
+  border-bottom: 1px dotted #999;
+  font-size: 1.6em;
+  margin-bottom:15px;
+  padding: 0 5px;
+}
+
+h1 em {
+  font-weight:bold;
+}
+
+table em {
+  color:#686868;
+}
+
+table thead th {
+  background:#dfdfdf;
+}
+
+table tbody th{
+  background:#eaeaea;
+}
+
+table tbody td.no-results {
+  background:#fff;
+  color:#777;
+  text-align:center;
+}
+
+table:not(.CodeRay) tbody tr:hover th, table:not(.CodeRay) tbody tr:hover td {
+  background:#ffd;
+}
+
+table tbody tr:hover td.no-highlight {
+  background:none;
+}  
+
+pre, code {
+  font-family: 'DejaVu Sans Mono', Monaco, 'Courier New';
+  line-height:1.6em;
+  font-size:12px;
+}
+
+p {
+  padding:4px 0;
+}
+
+a {
+  color:#286ab3;
+  text-decoration:none;
+}
+
+a:hover {
+  text-decoration:underline;
+}
+
+#home a {
+  background:#5fc26b;
+  border:1px solid #5fc26b;
+  border-radius:3px;
+  color:#efefef;
+  display:block;
+  padding:3px 7px;
+  margin:0 6px 0px 0px;
+}
+
+#home a:hover{
+  border:1px solid #2f9537;
+  text-decoration:none;
+}
+
+#home a code {
+  font-size:0.9em;
+}
+
+#footer-navi {
+  border-top: 1px dotted #999;
+  height:20px;
+  margin-top:15px;
+  padding-top:5px;
+}
+
+#footer-navi li {
+  float:left;
+}
+
+#footer-navi li a {
+  display:block;
+  background:#286ab3;
+  border:1px solid #286ab3;
+  border-radius:3px;
+  color:#efefef;
+  padding:3px 7px;
+  margin:0 6px 0px 0px;
+  -webkit-background-clip: padding-box;
+  /*-webkit-box-shadow: 1px 1px 2px #777;*/
+}
+
+#footer-navi a:hover {
+  border:1px solid #1d4a7c;
+  text-decoration:none;
+}
+
+#footer-navi a.action {
+  background:#c5172f;
+  border:1px solid #c5172f;
+}
+
+#footer-navi a.action:hover {
+  border:1px solid #8d1223;
+}
+
+.icon {
+  background:no-repeat center;
+  border:0 none;
+  display:block;
+  height:25px;
+  margin:0 auto;
+  text-indent:-9999px;
+  width:25px;
+}
+
+.riak    { background-image:url('riak.png'); }
+.view    { background-image:url('view.png'); }
+.edit    { background-image:url('edit.png'); }
+.delete  { background-image:url('delete.png'); }
+.buckets { background-image:url('buckets.png'); }
+.stats   { background-image:url('stats.png'); }
+
+
+button:not(.icon) {
+  background:#555;
+  border:1px solid #555;
+  border-radius:3px;
+  color:#efefef;
+  cursor:pointer;
+  padding:3px 7px;
+  margin:0 6px 0px 0px;
+  -webkit-background-clip: padding-box;
+}
+
+button:not(.icon):hover {
+  border:1px solid #222;
+}
+
+button.delete {cursor:pointer;}
+
+.warning {
+  color:#c00;
+  margin:3px 0;
+}
+
+/* forms */
+label[for=edit_key] {
+  display:block;
+  font-weight:bold;
+  font-size:1.4em;
+  padding:4px;
+}
+
+label[for=row_search] {
+  color:#686868;
+  font-weight:normal;
+}
+
+#edit_key {
+  border:1px solid #ccc;
+  font-family: 'DejaVu Sans Mono', Monaco, 'Courier New';
+  line-height:1.6em;
+  font-size:0.9em;
+  margin-top:15px;
+  height:400px;
+  width:940px;
+}
+
+em.hint {
+  color:#999;
+  font-style:italic;
+}
+
+/* clearfix */
+.clearfix:after{content:".";display:block;clear:both;visibility:hidden;line-height:0;height:0;}
+.clearfix{display:inline-block;}
+html[xmlns] .clearfix{display:block;}
+* html .clearfix{height:1%;}

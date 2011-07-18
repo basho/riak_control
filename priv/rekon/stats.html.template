@@ -1,0 +1,23 @@
+<div id="stats">
+  <table> 
+    <thead> 
+      <tr> 
+        <th>
+          <input id="row_search" type="text" />
+          <em class="hint">filter results</em>
+        </th> 
+        <th>Value</th> 
+      </tr> 
+    </thead> 
+    <tbody> 
+      <% for (var key in stats) { %>
+      <tr> 
+        <th><%= key %></th> 
+        <td> 
+          <code><%= typeof stats[key] == 'string' ? stats[key] : JSON.stringify(stats[key]) %></code> 
+        </td> 
+      </tr> 
+      <% } %>
+    </tbody>
+  </table>
+</div>

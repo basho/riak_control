@@ -1,0 +1,28 @@
+<tr> 
+  <th>Content Type</th> 
+  <td> 
+    <select name="content-type">
+      <option value='application/json'> 
+        application/json
+      </option> 
+      <option value='application/octet-stream'>
+        application/octet-stream
+      </option>
+      <option value='application/xml'> 
+        application/xml
+      </option> 
+      <option value='application/javascript'> 
+        application/javascript
+      </option> 
+      <option value='text/plain'> 
+        text/plain
+      </option> 
+      <option value='text/html'> 
+        text/html
+      </option> 
+      <option value='text/css'> 
+        text/css
+      </option> 
+    </select>
+  </td> 
+</tr> 

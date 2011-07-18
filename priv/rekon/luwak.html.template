@@ -1,0 +1,27 @@
+<div id="luwak" class="screen">
+  <table id="files"> 
+    <thead> 
+      <tr> 
+        <th>
+          <input id="row_search" type="text" />
+          <em class="hint">Type to filter rows</em>
+        </th> 
+        <th>Riak</th> 
+        <!--<th>View</th> 
+        <th>Edit</th> 
+        <th>Delete</th>-->
+      </tr> 
+    </thead> 
+    <tbody>
+      <tr class="pending">
+        <td colspan='2'>
+          <p class="spinner">
+            <img src="spinner.gif" alt="Loading..." />
+            Loading Files... <em class="hint">(This may take a minute if you have a lot)</em>
+          </p>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+

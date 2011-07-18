@@ -1,0 +1,11 @@
+<form action="#/buckets/<%= bucket %>/<%= key %>" method="post">
+<div id="edit-key" class="screen">
+  <table class='wide'> 
+    <tbody> 
+    </tbody> 
+  </table> 
+</div>
+<div id="edit-value"> 
+</div> 
+<button type="submit">Update</button>
+</form>

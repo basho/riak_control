@@ -1,0 +1,14 @@
+<td class='no-results' colspan='5'> 
+  <p> 
+    <p> 
+      This bucket doesn't technically exist.
+      <br /> 
+      Buckets come into existence only once they have had a key stored
+      <br />
+      "inside" them or you set a bucket's properties explicitly.
+    </p> 
+    <p> 
+      Add a key to persist this bucket.
+    </p> 
+  </p> 
+</td> 

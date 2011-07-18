@@ -1,0 +1,18 @@
+<tr> 
+  <th> 
+    <em><%= Rekon.luwakUrl() %>/</em><%= file %>
+  </th> 
+  <td> 
+    <a href="<%= Rekon.luwakUrl() %>/<%= file %>" class="riak icon" target="_blank">Riak</a>
+  </td> 
+  <!--<td> 
+    <a href="#/luwak/<%= file %>" class="view icon" onclick="alert('This feature is pending');return false;">View</a> 
+  </td> 
+  <td> 
+    <a href="#" class="edit icon" onclick="alert('This feature is pending');return false;">Edit</a> 
+  </td> 
+  <td> 
+    <a href="#" class="delete icon" onclick="alert('This feature is pending');return false;">Delete</a>
+  </td>-->
+</tr> 
+

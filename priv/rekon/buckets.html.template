@@ -1,0 +1,35 @@
+<div id="buckets" class="screen">
+  <table> 
+    <thead> 
+      <tr> 
+        <th>
+          <input id="row_search" type="text" />
+          <em class="hint">filter results</em>
+        </th> 
+        <th>Keys</th> 
+        <th>Props</th>
+        <th>Riak</th> 
+      </tr> 
+    </thead> 
+    <tbody> 
+      <tr class="pending">
+        <td colspan='5'>
+          <p class="spinner">
+            <img src="spinner.gif" alt="Loading..." />
+            Loading Buckets... <em class="hint">(This may take a minute)</em>
+          </p>
+      </tr>
+    </tbody> 
+    <tfoot> 
+      <tr> 
+        <td colspan='4'> 
+          <form action='#/buckets' id="new_bucket" method='post'> 
+            <label for='new_bucket'>New Bucket</label> 
+            <input id='new_bucket' name='bucket' type='text' /> 
+            <button type='submit'>Add</button> 
+          </form> 
+        </td> 
+      </tr> 
+    </tfoot> 
+  </table> 
+</div>

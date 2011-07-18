@@ -1,0 +1,24 @@
+<tr> 
+  <th>VClock</th> 
+  <td> 
+    <pre><%= object.vclock %></pre> 
+  </td> 
+</tr> 
+<tr> 
+  <th>ETag</th> 
+  <td> 
+    <pre><%= object.etag %></pre> 
+  </td> 
+</tr> 
+<tr> 
+  <th>Last Modified</th> 
+  <td> 
+    <pre><%= object.lastModified %></pre> 
+  </td> 
+</tr> 
+<tr> 
+  <th>Links</th> 
+  <td> 
+    <pre><%= JSON.stringify(object.links) %></pre> 
+  </td> 
+</tr> 

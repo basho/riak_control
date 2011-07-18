@@ -1,0 +1,7 @@
+*~
+ebin/*
+.eunit/*
+doc/*
+deps/*
+erl_crash.dump
+EUnit-SASL.log

@@ -1,0 +1,1 @@
+<img src="<%= Rekon.riakUrl(bucket + '/' + key) %>" />

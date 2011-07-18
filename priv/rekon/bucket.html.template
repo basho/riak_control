@@ -1,0 +1,38 @@
+<div id="bucket" class="screen">
+  <table id="keys"> 
+    <thead> 
+      <tr> 
+        <th>
+          <input id="row_search" type="text" />
+          <em class="hint">Type to filter rows</em>
+        </th> 
+        <th>View</th> 
+        <th>Riak</th> 
+        <th>Edit</th> 
+        <th>Delete</th> 
+      </tr> 
+    </thead> 
+    <tbody>
+      <tr class="pending">
+        <td colspan='5'>
+          <p class="spinner">
+            <img src="spinner.gif" alt="Loading..." />
+            Loading Keys... <em class="hint">(This may take a minute if you have a lot)</em>
+          </p>
+      </tr>
+    </tbody>
+    <tfoot> 
+      <tr> 
+        <td colspan='5'> 
+          <form action='#/buckets/<%= bucket %>' method='post'> 
+            <label for='new_key'>New Key</label> 
+            <input id='new_key' name='key' type='text' /> 
+            <button type='submit'>Add</button> 
+            <em class='hint'>Leave it blank to let riak choose the key</em> 
+          </form> 
+        </td> 
+      </tr> 
+    </tfoot> 
+  </table>
+</div>
+

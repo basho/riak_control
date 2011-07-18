@@ -1,0 +1,17 @@
+<tr> 
+  <th> 
+    <em><%= Rekon.riakUrl(bucket) %>/</em><%= key %>
+  </th> 
+  <td> 
+    <a href="#/buckets/<%= bucket %>/<%= key %>" class="view icon">View</a> 
+  </td> 
+  <td> 
+    <a href="<%= Rekon.riakUrl(bucket + '/' + key) %>" class="riak icon" target="_blank">Riak</a> 
+  </td> 
+  <td> 
+    <a href="#/buckets/<%= bucket %>/<%= key %>/edit" class="edit icon">Edit</a> 
+  </td> 
+  <td> 
+    <a href="<%= Rekon.riakUrl(bucket + '/' + key) %>" class="delete icon">Delete</a>
+  </td> 
+</tr> 
