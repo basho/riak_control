@@ -43,7 +43,8 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Resources = [{rekon, rekon_resource}],
+    Resources = [{rekon, rekon_resource},
+                 {admin, admin_nodes_resource}],
     Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
     [ webmachine_router:add_route(R) || R <- Routes ],
 
