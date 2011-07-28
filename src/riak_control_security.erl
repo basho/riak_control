@@ -51,9 +51,14 @@ scheme_is_available(RD, Ctx) ->
                 https ->
                     {true, RD, Ctx};
                 _ ->
-                    Host = string:join(wrq:host_tokens(RD), "."),
                     Path = wrq:raw_path(RD),
-                    Loc = ["https://", Host, Path],
+                    Loc = case app_helper:get_env(riak_core, https) of
+                               undefined ->
+                                   Host = string:join(lists:reverse(wrq:host_tokens(RD)), "."),
+                                   ["https://", Host, Path];
+                               [{Host, Port}|_] ->
+                                   ["https://", Host, ":", integer_to_list(Port), Path = wrq:raw_path(RD)]
+                           end,
                     {{halt, 301},
                      wrq:set_resp_header("Location", Loc, RD),
                      Ctx}
