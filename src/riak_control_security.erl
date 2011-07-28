@@ -57,7 +57,7 @@ scheme_is_available(RD, Ctx) ->
                                    Host = string:join(lists:reverse(wrq:host_tokens(RD)), "."),
                                    ["https://", Host, Path];
                                [{Host, Port}|_] ->
-                                   ["https://", Host, ":", integer_to_list(Port), Path = wrq:raw_path(RD)]
+                                   ["https://", Host, ":", integer_to_list(Port), wrq:raw_path(RD)]
                            end,
                     {{halt, 301},
                      wrq:set_resp_header("Location", Loc, RD),
