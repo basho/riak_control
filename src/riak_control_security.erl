@@ -35,11 +35,11 @@
 %% If the appenv `riak_control:admin_https_only' is `true', this
 %% function checks whether the request came in via HTTPS.  If it did
 %% not, it generates a response to redirect to the same path via HTTPS
-%% (via Location header and code 301).  If the request came in via
+%% (via Location header and code 303).  If the request came in via
 %% HTTPS, or the appenv is set to `false', the request is allowed to
 %% proceed.
 -spec scheme_is_available(wrq:reqdata(), term()) ->
-         {true | {halt, 301}, wrq:reqdata(), Ctx::term()}.
+         {true | {halt, 303}, wrq:reqdata(), Ctx::term()}.
 scheme_is_available(RD, Ctx) ->
     case app_helper:get_env(riak_control, admin_https_only, true) of
         false ->
@@ -59,7 +59,7 @@ scheme_is_available(RD, Ctx) ->
                                [{Host, Port}|_] ->
                                    ["https://", Host, ":", integer_to_list(Port), wrq:raw_path(RD)]
                            end,
-                    {{halt, 301},
+                    {{halt, 303},
                      wrq:set_resp_header("Location", Loc, RD),
                      Ctx}
             end
