@@ -1,0 +1,10 @@
+<div class="node-form">
+        <form action="#/addNode" method="post">
+         <p>
+            <label>Node to add:</label>
+            <input type="text" size="25" name="newNode" value="" />
+          </p>
+          <p><input type="submit" value="Add node" /></p>
+        </form>
+ </div>
+ <div id="nodes">
