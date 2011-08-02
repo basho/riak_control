@@ -104,12 +104,12 @@ accept_content(RD, #ctx{nodename=NewNode}=Ctx) ->
         pong ->
             case rpc:call(NewNode,
                           application,
-                          get_env, 
+                          get_env,
                           [riak_core, ring_creation_size]) of
                 {ok, OurRingSize} ->
                     riak_core_gossip:send_ring(node(), NewNode),
                     {true, RD, Ctx};
-                _ -> 
+                _ ->
                     {{error, <<"different ring sizes">>}, wrq:set_resp_body(<<"different ring sizes">>, RD), Ctx}
             end;
         pang ->
