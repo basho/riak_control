@@ -27,11 +27,9 @@ function cluster() {
         $.ajax({url: '/admin/nodes/' + node,
                 type: 'DELETE',
                 success: function() {
-                    // show some kind of success flash
                     self.message("Sent remove request for " + node);
                 },
                 error: function(x, s, e) {
-                    // show some kind of error flash
                     self.message(s + ". " + e + ". " + x.responseText);
                 }
         });
@@ -44,13 +42,11 @@ function cluster() {
                 type: 'PUT',
                 contentType: 'application/json',
                 success: function() {
-                    // show some kind of success flash
                     self.newNodeName("");
                     self.message("Sent add request for " + newNode );
                     $("#newNode").blur();
                 },
                 error: function(x, s, e) {
-                    //show some kind of error flash
                     self.message(s + ". " + e + ". " + x.responseText);
                 }});
     }
@@ -72,7 +68,7 @@ function cluster() {
     // fully rebuilt per get (less flicker)
     // pretty ineffecient, but I doubt we are dealing with 10,000 node clusters
     this.mergeNodes = function(nodeList) {
-        // remove and node in the model that is not in the latest get result
+        // remove any node in the model that is not in the latest get result
         _.each(self.nodes(), function(inModel) {
             if(!_.detect(nodeList, function(inNodeList) {
                 return inNodeList.name == inModel.name;
@@ -81,7 +77,7 @@ function cluster() {
             }
         });
 
-        // add any node not in the model that is the latest get result
+        // add any node not in the model that is in the latest get result
         _.each(nodeList, function(inNodeList) {
             if(!_.detect(self.nodes(), function(inModel) { return inModel.name == inNodeList.name;})) {
                 self.nodes.push(inNodeList);
