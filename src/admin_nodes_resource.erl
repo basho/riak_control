@@ -94,7 +94,9 @@ produce_json(RD, #ctx{ring=Ring}=Ctx) ->
     %% interesting to the UI as well), but it's a good example of
     %% serving data over this interface
     Members = riak_core_ring:all_members(Ring),
-    JSON = mochijson2:encode([{nodes, Members}]),
+    Partitions = riak_core_ring:all_owners(Ring),
+    VNodes = all_vnodes(Members, []),
+    JSON = mochijson2:encode([{nodes, Members}, {partitions, Partitions}, {vnodes, VNodes}]),
     {JSON, RD, Ctx}.
 
 %%% Internal
@@ -107,3 +109,29 @@ add_node_links(RD, #ctx{base_url=BaseUrl, ring=Ring}) ->
 node_link_header(BaseUrl, Node) ->
     io_lib:format("<~s~s>; rel=\"node\"",
                   [BaseUrl, mochiweb_util:quote_plus(Node)]).
+
+all_vnodes([], VNodes) ->
+    VNodes;
+all_vnodes([Node|Rest], VNodes) ->
+    NodesVNodes = vnodes_for_node(Node),
+    all_vnodes(Rest, [{struct, [{node, Node}, {services, NodesVNodes}]} | VNodes]).
+
+vnodes_for_node(Node) when is_atom(Node) ->
+    Services = riak_core_node_watcher:services(Node),
+    vnodes_for_service(Services, Node, []).
+
+vnodes_for_service([], _Node, VNodes) ->
+    VNodes;
+vnodes_for_service([Service | Rest ], Node, VNodes) ->
+    Idxs = [riak_core_vnode:get_mod_index(Pid) || Pid <- service_pids(Service, Node)],
+    VNodesForService = [Idx || {_, Idx} <- Idxs],
+    vnodes_for_service(Rest, Node, [{struct, [{service, Service}, {vnodes, VNodesForService}]} | VNodes]).
+
+service_pids(Service, Node) when Node =:= node() ->
+    riak_core_vnode_master:all_nodes(service_vnode_mod(Service));
+service_pids(Service, Node) ->
+    rpc:call(Node, riak_core_vnode_master, all_nodes, [service_vnode_mod(Service)], infinity).
+
+%% Guess the name of the vnode from the service
+service_vnode_mod(Service) when is_atom(Service) ->
+    list_to_atom(atom_to_list(Service) ++ "_vnode").

@@ -46,7 +46,8 @@ init([]) ->
     Resources = [{rekon, rekon_resource},
                  {admin, admin_nodes_resource},
                  {admin, admin_node_resource},
-                 {admin, admin_ui_resource}],
+                 {admin, admin_ui_resource},
+                 {admin, admin_services_resource}],
     Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
     [ webmachine_router:add_route(R) || R <- Routes ],
 
