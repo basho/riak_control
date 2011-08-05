@@ -11,6 +11,14 @@
     background: url(green-circle-filled-16.png) no-repeat bottom left;
 }
 
+.vnodes li.handingoff {
+    background: url(orange-arrow-right-16.png) no-repeat bottome left;
+}
+
+.vnodes li.recievehandoff {
+    background: url(orange-arrow-left-16.png) no-repeat bottome left;
+}
+
 .vnodes li {
     display: inline-block;
     padding: 0 0 1.2em 1em;

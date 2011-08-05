@@ -124,7 +124,7 @@ vnodes_for_node(Node, VNodes) when is_atom(Node) ->
 vnodes_for_service([], _Node, VNodes) ->
     VNodes;
 vnodes_for_service([Service | Rest ], Node, VNodes) ->
-    Idxs = [riak_core_vnode:get_mod_index(Pid) || Pid <- service_pids(Service, Node)],
+    Idxs = [{Pid, riak_core_vnode:get_mod_index(Pid)} || Pid <- service_pids(Service, Node)],
     NewDict = insert_into_dict(Idxs, Node, Service, VNodes),
     vnodes_for_service(Rest, Node, NewDict).
 
@@ -139,15 +139,12 @@ service_vnode_mod(Service) when is_atom(Service) ->
 
 insert_into_dict([], _, _, Dict) ->
     Dict;
-insert_into_dict([{_, Idx} | Rest], Node, Service, Dict) ->
+insert_into_dict([{Pid, {_, Idx}} | Rest], Node, Service, Dict) ->
     Entry = dict:fetch(Idx, Dict),
     Owner = proplists:get_value(owner, Entry),
     VNodes = proplists:get_value(vnodes, Entry, []),
-    NewVNodes = [ {Service, [{service, Service}, {location, Node}, {status, vnode_status(Owner, Node)}]} | VNodes],
+    AtHome = Node =:= Owner,
+    HandingOff = riak_core_vnode:is_handing_off(Pid),
+    NewVNodes = [ {Service, [{service, Service}, {location, Node}, {home, AtHome}]} | VNodes],
     insert_into_dict(Rest, Node, Service, dict:store(Idx, [{owner, Owner}, {vnodes, NewVNodes}], Dict)).
 
-%% TODO handing off (this just checks if the vnode is at home)
-vnode_status(Node, Node) ->
-    home;
-vnode_status(_Owner, _Node) ->
-    away.
