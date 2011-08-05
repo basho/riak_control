@@ -1,18 +1,50 @@
-.nodes {
-    list-style-type: none;  border-radius: 0.5em;
-    padding: 0;
+.vnodes {
+    list-style-type: none;
+     padding: 0;
     margin: 0;
 }
-.nodes li:hover {
-    background-color: #6F0;
+.vnodes li.away {
+    background: url(blue-rectangle-16.png) no-repeat bottom left;
 }
 
-.nodes li {
+.vnodes li.home {
+    background: url(green-circle-filled-16.png) no-repeat bottom left;
+}
+
+.vnodes li {
     display: inline-block;
-    padding: 0.5em 1.5em;
+    padding: 0 0 1.2em 1em;
     cursor: pointer;
 }
 
 .message {
     cursor: pointer;
+}
+
+.services {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.services li {
+    display: inline-block;
+    padding: 0 0 0 0.5em;
+    margin: 0;
+}
+
+table thead tr th {
+    padding: 0.5em 1.5em;
+}
+
+table thead tr th.node {
+    cursor: pointer;
+}
+
+table thead tr th.node:hover {
+    background-color: #6F0;
+}
+
+table tbody tr td.owner {
+    background-color: #ddd;
 }

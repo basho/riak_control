@@ -94,9 +94,9 @@ produce_json(RD, #ctx{ring=Ring}=Ctx) ->
     %% interesting to the UI as well), but it's a good example of
     %% serving data over this interface
     Members = riak_core_ring:all_members(Ring),
-    Partitions = riak_core_ring:all_owners(Ring),
-    VNodes = all_vnodes(Members, []),
-    JSON = mochijson2:encode([{nodes, Members}, {partitions, Partitions}, {vnodes, VNodes}]),
+    Partitions = [{Idx, [{owner, Owner}]} || {Idx, Owner} <- riak_core_ring:all_owners(Ring)],
+    VNodes = all_vnodes(Members, dict:from_list(Partitions)),
+    JSON = mochijson2:encode([{nodes, Members}, {partitions, lists:sort(dict:to_list(VNodes))}]),
     {JSON, RD, Ctx}.
 
 %%% Internal
@@ -113,19 +113,20 @@ node_link_header(BaseUrl, Node) ->
 all_vnodes([], VNodes) ->
     VNodes;
 all_vnodes([Node|Rest], VNodes) ->
-    NodesVNodes = vnodes_for_node(Node),
-    all_vnodes(Rest, [{struct, [{node, Node}, {services, NodesVNodes}]} | VNodes]).
+    VNodes2 = vnodes_for_node(Node, VNodes),
+    all_vnodes(Rest, VNodes2).
 
-vnodes_for_node(Node) when is_atom(Node) ->
+%% gets the vnodes that are *actually* running on Node
+vnodes_for_node(Node, VNodes) when is_atom(Node) ->
     Services = riak_core_node_watcher:services(Node),
-    vnodes_for_service(Services, Node, []).
+    vnodes_for_service(Services, Node, VNodes).
 
 vnodes_for_service([], _Node, VNodes) ->
     VNodes;
 vnodes_for_service([Service | Rest ], Node, VNodes) ->
     Idxs = [riak_core_vnode:get_mod_index(Pid) || Pid <- service_pids(Service, Node)],
-    VNodesForService = [Idx || {_, Idx} <- Idxs],
-    vnodes_for_service(Rest, Node, [{struct, [{service, Service}, {vnodes, VNodesForService}]} | VNodes]).
+    NewDict = insert_into_dict(Idxs, Node, Service, VNodes),
+    vnodes_for_service(Rest, Node, NewDict).
 
 service_pids(Service, Node) when Node =:= node() ->
     riak_core_vnode_master:all_nodes(service_vnode_mod(Service));
@@ -135,3 +136,18 @@ service_pids(Service, Node) ->
 %% Guess the name of the vnode from the service
 service_vnode_mod(Service) when is_atom(Service) ->
     list_to_atom(atom_to_list(Service) ++ "_vnode").
+
+insert_into_dict([], _, _, Dict) ->
+    Dict;
+insert_into_dict([{_, Idx} | Rest], Node, Service, Dict) ->
+    Entry = dict:fetch(Idx, Dict),
+    Owner = proplists:get_value(owner, Entry),
+    VNodes = proplists:get_value(vnodes, Entry, []),
+    NewVNodes = [ {Service, [{service, Service}, {location, Node}, {status, vnode_status(Owner, Node)}]} | VNodes],
+    insert_into_dict(Rest, Node, Service, dict:store(Idx, [{owner, Owner}, {vnodes, NewVNodes}], Dict)).
+
+%% TODO handing off (this just checks if the vnode is at home)
+vnode_status(Node, Node) ->
+    home;
+vnode_status(_Owner, _Node) ->
+    away.
