@@ -5,3 +5,6 @@
 
 %% Value for WWW-Authenticate header
 -define(ADMIN_AUTH_HEAD, "Basic realm=riak").
+
+%% Names of HTTP header fields
+-define(HEAD_CTYPE,           "Content-Type").
