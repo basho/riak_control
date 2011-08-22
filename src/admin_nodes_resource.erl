@@ -89,15 +89,86 @@ resource_exists(RD, Ctx) ->
 -spec produce_json(wrq:reqdata(), context()) ->
          {binary(), wrq:reqdata(), context()}.
 produce_json(RD, #ctx{ring=Ring}=Ctx) ->
-    %% TODO: this is not really the list of nodes we'll want (nodes
-    %% running, and connected, but not yet claiming partitions are
-    %% interesting to the UI as well), but it's a good example of
-    %% serving data over this interface
-    Members = riak_core_ring:all_members(Ring),
-    JSON = mochijson2:encode([{nodes, Members}]),
+    Nodes = lists:filter(fun(X) ->
+                                 case rpc:call(X, erlang, whereis, [riak_core_sup]) of
+                                     undefined ->
+                                         false;
+                                     _ ->
+                                         true
+                                 end
+                         end,
+                         [node() | nodes()]),
+    HandOffs = handoffs_by_partition(Nodes),
+    VNodeMods = lists:sort(riak_core:vnode_modules()),
+    VNodes = all_vnodes(riak_core_ring:all_owners(Ring), Nodes, VNodeMods, HandOffs, []),
+    JSON = mochijson2:encode([{nodes, Nodes}, {partitions, lists:sort(VNodes)}]),
     {JSON, RD, Ctx}.
 
 %%% Internal
+
+%%% HANDOFF
+handoffs_by_partition(Nodes) ->
+    HandOffs = get_all_handoffs(Nodes),
+    handoffs_by_partition(HandOffs, dict:new()).
+
+%% merge the handoffs from all nodes into a single dict
+%% of {Mod, Idx, Location} -> handingoff | receiving_handoff
+handoffs_by_partition([], HandOffs) ->
+    HandOffs;
+handoffs_by_partition([{Host, Hoffs} | Rest], HandOffs) ->
+    HandOffs2 = lists:foldl(fun({{VNodeMod, Idx}, Targets}, Dict) ->
+                                    append_handoff(Idx, VNodeMod, Host, Targets, Dict);
+                               ([], Dict) -> Dict end, HandOffs, Hoffs),
+    handoffs_by_partition(Rest, HandOffs2).
+
+%% Add the handoff data to the dict of handoffs
+append_handoff(Idx, VNodeMod, Host, [Target], HandOffs) ->
+    D1 = dict:append({Idx, VNodeMod, Host}, handingoff, HandOffs),
+    dict:append({Idx, VNodeMod, Target}, receiving_handoff, D1).
+
+%% interogate handoff manager on each Nodes
+get_all_handoffs(Nodes) ->
+    multicall(Nodes, riak_core_handoff_manager, all_handoffs, []).
+
+%%% VNODES
+%% Evil inefficient, find a better way
+all_vnodes([], _Nodes, _VnodeMods, _HandOffs,  Partitions) ->
+    lists:reverse(Partitions);
+all_vnodes([{Idx, Owner}|Rest], Nodes, VNodeMods, HandOffs, Partitions) ->
+    VNodes = vnode_data(Idx, Owner, Nodes, VNodeMods, HandOffs, []),
+    all_vnodes(Rest, Nodes, VNodeMods, HandOffs, [{Idx, [{owner, Owner}, {vnodes, VNodes}]} | Partitions]).
+
+vnode_data(_Idx, _Owner, _Nodes, [], _HandOffs, Acc) ->
+    lists:flatten(lists:reverse(Acc));
+vnode_data(Idx, Owner, Nodes, [{_Service, VNodeMod}|Rest], HandOffs, Acc) ->
+    Res = multicall(Nodes, riak_core_vnode_master, is_vnode_pid, [Idx, VNodeMod]),
+    ServiceData = lists:foldl(fun(Elem, L) ->
+                                      is_home_active(Idx, Owner, Elem, VNodeMod, HandOffs, L) end, [], Res),
+    vnode_data(Idx, Owner, Nodes, Rest, HandOffs, [ServiceData | Acc]).
+
+%% Given the index, owner, location, vnodemod and dict of active handoffs
+%% is the vnode running at home or away? is it giving or receiving handoff?
+is_home_active(Idx, Owner, {Node, {true, _Pid}}, VNodeMod, HandOffs, Acc) ->
+    case dict:find({Idx, VNodeMod, Node}, HandOffs) of
+        error ->
+            [{struct, [{mod, VNodeMod}, {location, Node}, {status, home_or_away(Node, Owner)}]} | Acc];
+        {ok, Status} ->
+            [{struct, [{mod, VNodeMod}, {location, Node}, {status, Status}]} | Acc]
+    end;
+is_home_active(_, _, _, _, _, Acc) ->
+    Acc.
+
+%% Partition owned by 1, running on 2, is it home or away?
+home_or_away(_Node, _Node) ->
+    home;
+home_or_away(_, _) ->
+    away.
+
+%% call MFA on Nodes, only return up responses annotated with responding node
+multicall(Nodes, Mod, Fun, Args) ->
+    {Results, Down} = rpc:multicall(Nodes, Mod, Fun, Args, infinity),
+    Up = Nodes -- Down,
+    lists:zip(Up, Results).
 
 add_node_links(RD, #ctx{base_url=BaseUrl, ring=Ring}) ->
     Headers = [{"Link", node_link_header(BaseUrl, Node)}
@@ -107,3 +178,4 @@ add_node_links(RD, #ctx{base_url=BaseUrl, ring=Ring}) ->
 node_link_header(BaseUrl, Node) ->
     io_lib:format("<~s~s>; rel=\"node\"",
                   [BaseUrl, mochiweb_util:quote_plus(Node)]).
+

@@ -18,10 +18,10 @@
 %%
 %% -------------------------------------------------------------------
 
-%% @doc Add/remove/examine node
+%% @doc Exposes services information for a node
 %%
 %%      The resource exposes itself at `/admin/nodes/nodename'.
--module(admin_node_resource).
+-module(admin_services_resource).
 
 -export([
          routes/0,
@@ -30,12 +30,8 @@
          is_authorized/2,
          allowed_methods/2,
          content_types_provided/2,
-         content_types_accepted/2,
          resource_exists/2,
-         produce_json/2,
-         accept_content/2,
-         delete_resource/2,
-         delete_completed/2
+         produce_json/2
         ]).
 
 -include_lib("webmachine/include/webmachine.hrl").
@@ -53,7 +49,7 @@
 %% @doc Get the webmachine dispatcher config for this resource.
 -spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
-    [{?ADMIN_BASE_ROUTE++["nodes", 'nodename'],
+    [{?ADMIN_BASE_ROUTE++["nodes", 'nodename', "services"],
       ?MODULE,
       []}].
 
@@ -66,7 +62,7 @@ init(_Props) ->
 -spec allowed_methods(wrq:reqdata(), context()) ->
                              {[method()], wrq:request(), context()}.
 allowed_methods(RD, Ctx) ->
-    {['PUT', 'DELETE', 'GET'], RD, Ctx}.
+    {['GET'], RD, Ctx}.
 
 -spec service_available(wrq:reqdata(), context()) ->
                                {boolean() | {halt, non_neg_integer()}, wrq:reqdata(), context()}.
@@ -84,16 +80,6 @@ is_authorized(RD, Ctx) ->
 content_types_provided(RD, Ctx) ->
     {[{"application/json", produce_json}], RD, Ctx}.
 
--spec content_types_accepted(wrq:reqdata(), context()) ->
-                                    {[{ContentType::string(), HandlerFunction::atom()}],
-                                     wrq:reqdata(), context()}.
-content_types_accepted(RD, Ctx) ->
-    CT = case wrq:get_req_header(?HEAD_CTYPE, RD) of
-             undefined -> "application/octet-stream";
-             X -> X
-         end,
-    {[{CT, accept_content}], RD, Ctx}.
-
 -spec resource_exists(wrq:reqdata(), context()) ->
                              {boolean(), wrq:reqdata(), context()}.
 resource_exists(RD, Ctx) ->
@@ -104,53 +90,9 @@ resource_exists(RD, Ctx) ->
 -spec produce_json(wrq:reqdata(), context()) ->
          {binary(), wrq:reqdata(), context()}.
 produce_json(RD, #ctx{nodename=Node}=Ctx) ->
-    {ok, Ring} = riak_core_ring_manager:get_my_ring(),
-    Partitions = [I || {I,Owner} <- riak_core_ring:all_owners(Ring), Owner =:= Node],
-    JSON = mochijson2:encode([{partitions, Partitions}]),
+    Services = service_initials(riak_core_node_watcher:services(Node), []),
+    JSON = mochijson2:encode([{services, Services}]),
     {JSON, RD, Ctx}.
-
--spec accept_content(wrq:reqdata(), context()) ->
-                            {boolean(), wrq:reqdata(), context()}.
-accept_content(RD, #ctx{nodename=NewNode}=Ctx) ->
-    {ok, Ring} = riak_core_ring_manager:get_my_ring(),
-    OurRingSize = riak_core_ring:num_partitions(Ring),
-    case net_adm:ping(NewNode) of
-        pong ->
-            case rpc:call(NewNode,
-                          application,
-                          get_env,
-                          [riak_core, ring_creation_size]) of
-                {ok, OurRingSize} ->
-                    Ring2 = riak_core_ring:add_member(NewNode, Ring,
-                                                      NewNode),
-                    Ring3 = riak_core_ring:set_owner(Ring2, NewNode),
-                    ok = rpc:call(NewNode, riak_core_ring_manager, set_my_ring, [Ring3]),
-                    riak_core_gossip:send_ring(node(), NewNode),
-                    {true, RD, Ctx};
-                _ ->
-                    {{error, <<"different ring sizes">>}, wrq:set_resp_body(<<"different ring sizes">>, RD), Ctx}
-            end;
-        pang ->
-            {{error, <<"node unreachable">>}, wrq:set_resp_body(<<"node unreachable">>, RD), Ctx}
-    end.
-
-
--spec delete_resource(wrq:reqdata(), context()) ->
-                             {boolean(), wrq:reqdata(), context()}.
-delete_resource(RD, #ctx{nodename=Node}=Ctx) ->
-    case riak_core:remove_from_cluster(Node) of
-            {error, Reason} ->
-                {{error, list_to_binary(atom_to_list(Reason))}, wrq:set_resp_body(list_to_binary(atom_to_list(Reason)), RD), Ctx};
-            ok ->
-                {true, RD, Ctx}
-        end.
-
-
--spec delete_completed(wrq:reqdata(), context()) ->
-                              {boolean(), wrq:reqdata(), context()}.
-delete_completed(RD, #ctx{nodename=Node}=Ctx) ->
-    DelComplete =  not is_node_in_cluster(Node),
-    {DelComplete, RD, Ctx}.
 
 %% ===================================================================
 %% Internal functions
@@ -159,3 +101,20 @@ is_node_in_cluster(Node) when is_atom(Node) ->
     {ok, Ring} = riak_core_ring_manager:get_my_ring(),
     Members = riak_core_ring:all_members(Ring),
     lists:member(Node, Members).
+
+service_initials([], Acc) ->
+    lists:reverse(Acc);
+service_initials([H|T], Acc) ->
+    service_initials(T, [{struct,[{name, H}, {initial, service_initial(H)}]}|Acc]).
+
+%% Get the display initial for the service
+%% TODO maybe something more sophisticated
+%% Like capitalise first letter after riak_
+service_initial(riak_kv) ->
+    'K';
+service_initial(riak_pipe) ->
+    'P';
+service_initial(riak_search) ->
+    'S';
+service_initial(Service) ->
+    Service.

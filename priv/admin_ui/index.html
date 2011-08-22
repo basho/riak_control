@@ -31,13 +31,54 @@
               <button type="submit">Add</button>
           </form>
         </div>
-       <ul class="nodes" data-bind="template: { name: 'nodesTemplate', foreach: nodes }, visible: nodes().length > 0"></ul>
-        <script type="text/html" id="nodesTemplate">
-            <li data-bind="click: select">
-                ${name}
-            </li>
-        </script>
-    </div>
+        <table id="cluster">
+          <thead>
+            <tr data-bind="template: {name: 'nodeHeaderTemplate'}">
+           <script type="text/html" id="nodeHeaderTemplate">
+            <th class="header">Partition</th>
+            {{each(i, node) nodes()}}
+                <th class="node header" data-bind="click: select">
+                  ${name}
+               </th>
+                {{/each}}
+           </script>
+                </tr>
+                <tr data-bind="template: {name: 'serviceHeaderTemplate'}">
+                   <script type="text/html" id="serviceHeaderTemplate">
+                     <th>&nbsp;</th>
+                      {{each(i, node) nodes()}}
+                      <th class="services">
+                         <ul class="services">
+                           {{each(k, service) node.services()}}
+                             <li>${service.initial}</li>
+                           {{/each}}
+                         </ul>
+                       </th>
+                   {{/each}}
+                  </script>
+                </tr>
+             </thead>
+            <tbody data-bind="template: {name: 'partitionsTemplate'}">
+              <script type="text/html" id="partitionsTemplate">
+                  {{each(i, p) partitions()}}
+                    <tr>
+                      <td>${i}</td>
+                       {{each(k, node) nodes()}}
+                          <td class="{{if node.name == p.node}}owner{{/if}}">
+                            <ul class="vnodes">
+                            {{each(l, vnode) p.vnodes}}
+                               <li data-bind="visible: vnode.location == node.name" class="${vnode.status}"></li>
+                             {{/each}}
+                              </ul>
+                          </td>
+                       {{/each}}
+                    </tr>
+                 {{/each}}
+              </script>
+            </tbody>
+         </table>
+      </div>
+     
     <!-- node page -->
     <div class="viewNode" data-bind="template: { name: 'nodeTemplate', data: selectedNode }"></div>
         <script type="text/html" id="nodeTemplate">
@@ -45,7 +86,7 @@
               <a href="#" data-bind="click: deselect">back</a>
               <h1>${name}</h1>
               <a href="#" data-bind="click: remove">remove</a>
-            </div>
+           </div>
         </script>
     </div>
 </div>
