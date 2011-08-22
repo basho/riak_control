@@ -12,11 +12,11 @@
 }
 
 .vnodes li.handingoff {
-    background: url(orange-arrow-right-16.png) no-repeat bottome left;
+    background: url(orange-arrow-right-16.png) no-repeat bottom left;
 }
 
-.vnodes li.recievehandoff {
-    background: url(orange-arrow-left-16.png) no-repeat bottome left;
+.vnodes li.receiving_handoff {
+    background: url(orange-arrow-left-16.png) no-repeat bottom left;
 }
 
 .vnodes li {

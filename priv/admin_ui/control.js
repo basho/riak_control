@@ -60,6 +60,8 @@ function cluster() {
         $.ajax({url: '/admin/nodes/' + node,
                 type: 'DELETE',
                 success: function() {
+                    self.selectNode("");
+                    self.getNodes();
                     self.message("Sent remove request for " + node);
                 },
                 error: function(x, s, e) {
@@ -100,13 +102,13 @@ function cluster() {
 
             self.mergeNodes(currentNodes);
         });
-        // setTimeout(self.getNodes, 10000); take this out until I find a better way than mergeNodes below
+         //setTimeout(self.getNodes, 5000); //take this out until I find a better way than mergeNodes below
     }
 
     // sync the model view with the last gotten view
     // gives a smoother updating display since the model isn't
     // fully rebuilt per get (less flicker)
-    // pretty ineffecient, but I doubt we are dealing with 10,000 node clusters
+    // pretty ineffecient, but I doubt we are dealing with 10,000 node clusters (yet) TODO look at knockout's auto model
     this.mergeNodes = function(nodeList) {
         // remove any node in the model that is not in the latest get result
         _.each(self.nodes(), function(inModel) {

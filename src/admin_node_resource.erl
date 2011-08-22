@@ -112,7 +112,8 @@ produce_json(RD, #ctx{nodename=Node}=Ctx) ->
 -spec accept_content(wrq:reqdata(), context()) ->
                             {boolean(), wrq:reqdata(), context()}.
 accept_content(RD, #ctx{nodename=NewNode}=Ctx) ->
-    {ok, OurRingSize} = application:get_env(riak_core, ring_creation_size),
+    {ok, Ring} = riak_core_ring_manager:get_my_ring(),
+    OurRingSize = riak_core_ring:num_partitions(Ring),
     case net_adm:ping(NewNode) of
         pong ->
             case rpc:call(NewNode,
@@ -120,6 +121,10 @@ accept_content(RD, #ctx{nodename=NewNode}=Ctx) ->
                           get_env,
                           [riak_core, ring_creation_size]) of
                 {ok, OurRingSize} ->
+                    Ring2 = riak_core_ring:add_member(NewNode, Ring,
+                                                      NewNode),
+                    Ring3 = riak_core_ring:set_owner(Ring2, NewNode),
+                    ok = rpc:call(NewNode, riak_core_ring_manager, set_my_ring, [Ring3]),
                     riak_core_gossip:send_ring(node(), NewNode),
                     {true, RD, Ctx};
                 _ ->
@@ -133,17 +138,12 @@ accept_content(RD, #ctx{nodename=NewNode}=Ctx) ->
 -spec delete_resource(wrq:reqdata(), context()) ->
                              {boolean(), wrq:reqdata(), context()}.
 delete_resource(RD, #ctx{nodename=Node}=Ctx) ->
-    try
-        case catch(riak_core:remove_from_cluster(Node)) of
-            {'EXIT', {badarg, [{erlang, hd, [[]]}|_]}} ->
-                {{error, <<"single node">>}, wrq:set_resp_body(<<"Can't remove a single node from 'cluster'">>, RD), Ctx};
+    case riak_core:remove_from_cluster(Node) of
+            {error, Reason} ->
+                {{error, list_to_binary(atom_to_list(Reason))}, wrq:set_resp_body(list_to_binary(atom_to_list(Reason)), RD), Ctx};
             ok ->
                 {true, RD, Ctx}
-        end
-    catch
-        Exception:Reason ->
-            {{error, Exception}, wrq:set_resp_body(Reason, RD), Ctx}
-    end.
+        end.
 
 
 -spec delete_completed(wrq:reqdata(), context()) ->
