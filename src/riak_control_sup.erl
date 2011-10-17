@@ -47,7 +47,8 @@ init([]) ->
         true ->
             Resources = [{admin, admin_gui},
                          {admin, admin_ring},
-                         {admin, admin_cluster}
+                         {admin, admin_cluster},
+                         {admin, admin_partitions}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
             [webmachine_router:add_route(R) || R <- Routes];
