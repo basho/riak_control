@@ -49,7 +49,7 @@ init([]) ->
                          {admin, admin_ring},
                          {admin, admin_cluster}
                         ],
-    Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
+            Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
             [webmachine_router:add_route(R) || R <- Routes];
         _ ->
             ok
