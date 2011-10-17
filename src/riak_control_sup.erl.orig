@@ -43,17 +43,28 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
+<<<<<<< .merge_file_FqzMGU
     case app_helper:get_env(riak_control,enabled,false) of
         true ->
             Resources = [{admin, admin_gui},
                          {admin, admin_ring},
                          {admin, admin_cluster}
                         ],
-    Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
+            Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
             [webmachine_router:add_route(R) || R <- Routes];
         _ ->
             ok
     end,
+=======
+    Resources = [{rekon, rekon_resource},
+                 {admin, admin_nodes_resource},
+                 {admin, admin_node_resource},
+                 {admin, admin_ui_resource},
+                 {admin, admin_services_resource}],
+    Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
+    [ webmachine_router:add_route(R) || R <- Routes ],
+
+>>>>>>> .merge_file_n5AqRp
     {ok, { {one_for_one, 5, 10}, []} }.
 
 routes(Env, Module) ->
