@@ -42,15 +42,26 @@ content_types_provided (Req,C) ->
 
 %% valid | invalid | joining | leaving | exiting
 to_json (Req,C=#ring_context{ring=Ring}) ->
-    Vnodes=riak_core_ring:all_owners(Ring),
-    XS=[{struct,[{index,list_to_binary(integer_to_list(Index))},
+    Indexes=riak_core_ring:all_owners(Ring),
+    XS=[{struct,[{i,list_to_binary(integer_to_list(Index))},
+                 {vnodes,get_vnodes(Ring,Index)},
                  {node,Node},
-                 {handoffs,get_handoffs(Index)},
+                 {handoffs,get_handoffs(Ring,Index)},
                  {home,net_adm:ping(Node) == pong}
                 ]} || 
-           {Index,Node} <- Vnodes],
+           {Index,Node} <- Indexes],
     {mochijson2:encode(XS),Req,C}.
 
-get_handoffs (Idx) ->
-    {ok,Hoffs}=riak_core_handoff_manager:get_handoffs(Idx),
+%% queries all the nodes in the cluster about their handoffs (SLOW!!)
+get_handoffs (Ring,Idx) ->
+    Nodes=riak_core_ring:all_members(Ring),
+    {Res,_}=rpc:multicall(Nodes,riak_core_handoff_manager,get_handoffs,[Idx]),
+    Hoffs=lists:append([Hoffs || {ok,Hoffs} <- Res]),
     {struct,Hoffs}.
+
+%% gets a list of vnodes for a given index
+get_vnodes (Ring,Idx) ->
+    Nodes=riak_core_ring:all_members(Ring),
+    {Vnodes,_}=rpc:multicall(Nodes,riak_core_vnode_manager,all_vnodes,[]),
+    [Type || {Type,I,_} <- lists:append(Vnodes), I == Idx].
+     
