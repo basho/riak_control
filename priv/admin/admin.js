@@ -30,12 +30,11 @@ function ping_stats ()
 function update_stats (stats)
 {
     var html='<table>';
+    var actions='';
+    var node=stats['nodename'];
 
     // capture the name of the node and update the title
-    $('#name').html('<h3>' + stats['nodename'] + '</h3>');
-
-    // set the nodename for this page
-    node = stats['nodename'];
+    $('#name').html('<h3>' + node + '</h3><ul>' + actions + '</ul>');
 
     // capture each stat in the table
     for(var stat in stats) {
@@ -64,9 +63,36 @@ function get_cluster_status ()
     });
 }
 
+function node_action (action)
+{
+    function success (data) {
+        if (data.result == 'ok') {
+            alert("ok");
+
+            // update the cluster status now
+            get_cluster_status();
+        } else {
+            alert("error: " + data.error);
+        }
+    }
+
+    $.ajax({
+        method:'GET',
+        url:action,
+        dataType:'json',
+        success:success,
+        failure:alert
+    });
+}
+
+function join_node ()
+{
+    node_action('/admin/node/' + $('#node').val() + '/join');
+}
+
 function update_cluster_status (nodes)
 {
-    var html = '<table>';
+    var html = '<h3>Cluster Status</h3><table>';
 
     for(var i = 0;i < nodes.length;i++) {
         var stat = nodes[i].status;
@@ -89,7 +115,34 @@ function update_cluster_status (nodes)
 
         // add a link to that node in the cluster's admin page
         html += '<tr><td align="left" nowrap>' + node + '</td>';
-        html += '<td align="left" nowrap>' + stat + '</td></tr>';
+        html += '<td align="left" nowrap>' + stat + '</td>';
+
+        function button (value,action) {
+            return '<input type="button"' + 
+                ' onclick="node_action(\'' + action + '\')"' + 
+                ' value="' + value + 
+                '">';
+        }
+
+        // if it's valid, then it can leave, too
+        if (ping && stat == 'valid') {
+            var leave='/admin/node/' + name + '/leave';
+            var kill='/admin/node/' + name + '/kill';
+
+            // create buttons
+            html += '<td>' + button('Leave',leave) + '</td>';
+            html += '<td>' + button('Kill',kill) + '</td>';
+        } else if (ping == false) {
+            var down='/admin/node/' + name + '/down';
+
+            // create node-unreachable buttons
+            if (stat != 'down') {
+                html += '<td>' + button('Down',down) + '</td>';
+            }
+        }
+
+        // done
+        html += '</tr>';
     }
     
     // update the page
@@ -101,7 +154,7 @@ function update_cluster_status (nodes)
 
 function ping_cluster_status ()
 {
-    setTimeout(get_cluster_status, 100);
+    setTimeout(get_cluster_status, 2000);
 }
 
 function get_partitions ()
@@ -117,7 +170,7 @@ function get_partitions ()
 
 function update_partitions (partitions)
 {
-    var html = "";
+    var html = "<h3>Ring Status</h3><table>";
 
     // header for table
     html += '<tr>';
@@ -129,31 +182,32 @@ function update_partitions (partitions)
     html += '</tr>';
 
     for(var i = 0;i < partitions.length;i++) {
-        var vnode = partitions[i];
-        var bgcolor = '#ffffff';
-
-        // highlight partitions managed by this node
-        if (vnode.node == node) {
-            bgcolor = '#e0e0e0';
-        }
-        
-        // see if another node is handling the requests
-        if (vnode.home == false) {
-            bgcolor = '#ffe0e0';
-        }
+        var index = partitions[i];
+        var bgcolor = (i % 2) == 0 ? '#e0e0e0' : '#ffffff';
 
         // create row
         html += '<tr bgcolor="' + bgcolor + '">';
-        html += '<td>' + vnode.index + '</td>';
-        html += '<td>' + vnode.node + '</td>';
-        html += '<td>' + vnode.handoffs.riak_kv_vnode + '</td>';
-        html += '<td>' + vnode.handoffs.riak_pipe_vnode + '</td>';
-        html += '<td>' + vnode.handoffs.riak_search_vnode + '</td>';
+        html += '<td>' + index.i + '</td>';
+        html += '<td>' + index.node + '</td>';
+
+        function vnode_icon (type) {
+            if (index.handoffs[type]) {
+                return '<img src="/admin/ui/orange-arrow-right-16.png">';
+            } else if (index.vnodes.indexOf(type) >= 0) {
+                return '<img src="/admin/ui/green-circle-filled-16.png">';
+            } else {
+                return '';//<img src="/admin/ui/red-circle-filled-16.png">';
+            }
+        }
+
+        html += '<td>' + vnode_icon('riak_kv_vnode') + '</td>';
+        html += '<td>' + vnode_icon('riak_pipe_vnode') + '</td>';
+        html += '<td>' + vnode_icon('riak_search_vnode') + '</td>';
         html += '</tr>';
     }
 
     // update partition status
-    $('#partitions').html('<table>' + html + '</table>');
+    $('#partitions').html(html + '</table>');
 
     // reping in a little bit
     ping_partitions();
@@ -161,5 +215,5 @@ function update_partitions (partitions)
 
 function ping_partitions ()
 {
-    setTimeout(get_partitions, 100);
+    setTimeout(get_partitions, 1000);
 }
