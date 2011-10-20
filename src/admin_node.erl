@@ -40,11 +40,9 @@ perform_node_action (Req,C={Node,down}) ->
     node_action_result(Result,Req,C);
 
 %% abruptly take a node offline -- THIS IS NOT GRACEFUL! USE LEAVE!
-perform_node_action (Req,C={Node,kill}) ->
-    case rpc:call(Node,erlang,halt,[]) of
-        {badrpc,Reason} -> node_action_result({error,Reason},Req,C);
-        _ -> node_action_result(ok,Req,C)
-    end;
+perform_node_action (Req,C={Node,stop}) ->
+    Result=rpc:call(Node,riak_core,stop,[]),
+    node_action_result(Result,Req,C);
 
 %% attempt to join another node
 perform_node_action (Req,C={Node,join}) ->

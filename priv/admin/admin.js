@@ -1,6 +1,6 @@
 // polls the ring status every so often
 
-var node = undefined;
+var this_node = undefined;
 
 $(document).ready(function () { initialize(); });
 
@@ -32,6 +32,8 @@ function update_stats (stats)
     var html='<table>';
     var actions='';
     var node=stats['nodename'];
+
+    this_node = node;
 
     // capture the name of the node and update the title
     $('#name').html('<h3>' + node + '</h3><ul>' + actions + '</ul>');
@@ -127,11 +129,15 @@ function update_cluster_status (nodes)
         // if it's valid, then it can leave, too
         if (ping && stat == 'valid') {
             var leave='/admin/node/' + name + '/leave';
-            var kill='/admin/node/' + name + '/kill';
+            var stop='/admin/node/' + name + '/stop';
 
-            // create buttons
-            html += '<td>' + button('Leave',leave) + '</td>';
-            html += '<td>' + button('Kill',kill) + '</td>';
+            // create buttons for nodes other than this node
+            if (name == this_node) {
+                html += '<td>*</td>';
+            } else {
+                html += '<td>' + button('Leave',leave) + '</td>';
+                html += '<td>' + button('Stop',stop) + '</td>';
+            }
         } else if (ping == false) {
             var down='/admin/node/' + name + '/down';
 

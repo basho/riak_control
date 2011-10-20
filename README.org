@@ -1,0 +1,70 @@
+* What is Riak Control?
+Riak Control is a set of webmachine resources, all accessible via 
+the /admin/* paths, allow you to inspect your running cluster,
+and manipulate it in various ways.
+
+* How Do I Start Riak Control?
+By default, Riak Control should automatically be running. In your
+app.config file there should be a section called riak_control. To
+disable this.
+
+: {enabled,false}
+
+Once you have started your node, you should be able to successfully 
+browse to the admin page for that node. Note: replace the port #
+with the correct port.
+
+: http://localhost:8098/admin
+
+* What Information Does Riak Control Provide?
+Riak Control is broken up into two primary components: cluster and
+node.
+
+** Cluster
+Cluster data is a high-level view of all the nodes in the ring. 
+
+*** Nodes
+The highest-level view of the cluster is via /admin/cluster. This
+will provide a list of all the nodes (and links to them), tell you
+their current status (valid, leaving, down, etc). The UI will also
+provide a way for you to perform actions on the nodes, allowing
+you to stop it, leave the ring, and mark a node as down if it is
+offline.
+
+*** Ring/Partitions
+Drilling down - via /admin/ring/partitions - it's possible to get an
+up-close look at what the ring is actually doing. It will give you
+a list of all the partition indices in the ring, what node owns each
+partition, and which vnode worker processes are running on it.
+
+In addition, if any of the vnode worker processes are actively handing
+off data to another node, that information will also be present. Note:
+handoffs can happen very quickly, and the UI is only updated every
+so often, so it's possible to get a handoff and miss it in the UI.
+
+TODO: allow ownership transferring of partitions to other nodes.
+
+*** Objects, Map/Reduce, and Search
+TODO: PUT, GET, DELETE objects. Build M/R queries, test, save, load,
+and run them. SOLR search queries. 2i.
+
+*** Graphs
+TODO: cluster-specific data
+
+*** Support
+If something bad is happening with your cluster, this section will
+nicely package up information about it and send it along with a
+bug report to Basho Technologies.
+
+** Node
+Node data is specific to the node you are connected to.
+
+*** Stats
+This is the same information attainable via `riak-admin status`.
+
+*** Graphs
+TODO: node-specific data
+
+*** Logs
+The three common logs: console, error, crash, are updated here (live)
+to be viewed. 
