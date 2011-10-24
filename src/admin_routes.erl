@@ -5,8 +5,8 @@
 admin_route (Rest) -> ["admin"|Rest].
 
 %% routes that query/act on a single node in the cluster
-node_route (Route) -> admin_route(["node"|Route]).
-node_route () -> admin_route(["node"]).
+node_route (Route) -> admin_route(["node",node|Route]).
+node_route () -> admin_route(["node",node]).
 
 %% routes that query/act on the cluster
 cluster_route (Route) -> admin_route(["cluster"|Route]).

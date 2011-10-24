@@ -58,7 +58,7 @@ function get_cluster_status ()
 {
     $.ajax({
         method:'GET',
-        url:'/admin/cluster',
+        url:'/admin/cluster/list',
         dataType:'json',
         success:update_cluster_status,
         failure:ping_cluster_status
@@ -87,9 +87,14 @@ function node_action (action)
     });
 }
 
+function add_node ()
+{
+    node_action('/admin/node/' + $('#node').val() + '/add')
+}
+
 function join_node ()
 {
-    node_action('/admin/node/' + $('#node').val() + '/join');
+    node_action('/admin/cluster/join/' + $('#node').val())
 }
 
 function update_cluster_status (nodes)
@@ -139,7 +144,7 @@ function update_cluster_status (nodes)
                 html += '<td>' + button('Stop',stop) + '</td>';
             }
         } else if (ping == false) {
-            var down='/admin/node/' + name + '/down';
+            var down='/admin/cluster/down/' + name;
 
             // create node-unreachable buttons
             if (stat != 'down') {

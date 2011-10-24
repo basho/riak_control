@@ -14,10 +14,12 @@
 
 %% defines the webmachine routes this module handles
 routes () ->
-    [{admin_routes:node_route([name,action]),?MODULE,[]}].
+    [{admin_routes:node_route(["stop"]),?MODULE,stop},
+     {admin_routes:node_route(["leave"]),?MODULE,leave},
+     {admin_routes:node_route(["add"]),?MODULE,add}].
 
 %% entry-point for the resource from webmachine
-init ([]) -> {ok,undefined}.
+init (Action) -> {ok,Action}.
 
 %% redirect to SSL port and authenticate
 is_authorized (Req,C) ->
@@ -27,40 +29,31 @@ is_authorized (Req,C) ->
 content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
-%% perform the action requested
-to_json (Req,_Context) ->
-    NodeStr=dict:fetch(name,wrq:path_info(Req)),
-    ActionStr=dict:fetch(action,wrq:path_info(Req)),
-    NodeAction={list_to_atom(NodeStr),list_to_atom(ActionStr)},
-    perform_node_action(Req,NodeAction).
+%% get the target node for the action
+target_node (Req) ->
+    list_to_atom(dict:fetch(node,wrq:path_info(Req))).
 
-%% take a node down in the ring if it's offline
-perform_node_action (Req,C={Node,down}) ->
-    Result=riak_core:down(Node),
-    node_action_result(Result,Req,C);
+%% most node actions are simple rpc calls
+to_json (Req,C=stop) ->
+    perform_node_action(Req,C,riak_core,stop,[]);
+to_json (Req,C=leave) ->
+    perform_node_action(Req,C,riak_core,leave,[]);
+to_json (Req,C=add) ->
+    perform_node_action(Req,C,riak_core,join,[node()]);
+to_json (Req,C) ->
+    node_action_result({error,{struct,[{unknown_action,C}]}},Req,C).
 
-%% abruptly take a node offline -- THIS IS NOT GRACEFUL! USE LEAVE!
-perform_node_action (Req,C={Node,stop}) ->
-    Result=rpc:call(Node,riak_core,stop,[]),
-    node_action_result(Result,Req,C);
-
-%% attempt to join another node
-perform_node_action (Req,C={Node,join}) ->
-    Result=riak_core:join(Node),
-    node_action_result(Result,Req,C);
-
-%% attempt to make a node in the cluster leave
-perform_node_action (Req,C={Node,leave}) ->
-    Result=rpc:call(Node,riak_core,leave,[]),
-    node_action_result(Result,Req,C);
-
-%% unknown action
-perform_node_action (Req,C={_Node,_Action}) ->
-    node_action_result({error,unknown_action},Req,C).
+%% remote to the target node, perform the action, and return
+perform_node_action (Req,C,Module,Fun,Args) ->
+    Node=target_node(Req),
+    Result=case rpc:call(Node,Module,Fun,Args) of
+               {badrpc,Error} -> {error,Error};
+               Ok -> Ok
+           end,
+    node_action_result(Result,Req,C).
 
 %% all actions return the same format
 node_action_result (Error={error,_Reason},Req,C) ->
     {mochijson2:encode({struct,[{result,error},Error]}),Req,C};
 node_action_result (_,Req,C) ->
     {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
-

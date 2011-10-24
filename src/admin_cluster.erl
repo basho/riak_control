@@ -14,20 +14,27 @@
 
 %% defines the webmachine routes this module handles
 routes () ->
-    [{admin_routes:cluster_route(),?MODULE,[]}].
+    [{admin_routes:cluster_route(["list"]),?MODULE,list},
+     {admin_routes:cluster_route(["join",node]),?MODULE,join},
+     {admin_routes:cluster_route(["down",node]),?MODULE,down}].
 
 %% entry-point for the resource from webmachine
-init ([]) ->
-    {ok,Ring}=riak_core_ring_manager:get_my_ring(),
-    {ok,riak_core_ring:all_member_status(Ring)}.
+init (Action) -> 
+    {ok,Action}.
 
 %% redirect to SSL port and authenticate
 is_authorized (RD,C) ->
     {true,RD,C}.
 
 %% return the list of available content types for webmachine
-content_types_provided (Req,Ring) ->
-    {?CONTENT_TYPES,Req,Ring}.
+content_types_provided (Req,C) ->
+    {?CONTENT_TYPES,Req,C}.
+
+%% all actions return the same format
+cluster_action_result (Error={error,_Reason},Req,C) ->
+    {mochijson2:encode({struct,[{result,error},Error]}),Req,C};
+cluster_action_result (_,Req,C) ->
+    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
 
 %% check to see if the node is reachable (down, partitioned, etc)
 get_port (Node) ->
@@ -38,11 +45,26 @@ get_port (Node) ->
             [{"reachable",false}]
     end.
 
-%% valid | invalid | joining | leaving | exiting
-to_json (Req,Ring) ->
+%% get a list of all the nodes in the ring and their status
+to_json (Req,C=list) ->
+    {ok,Ring}=riak_core_ring_manager:get_my_ring(),
+    Status=riak_core_ring:all_member_status(Ring),
     NodeStatus=[{struct,get_port(N) ++ [{"name",N},
                                         {"status",S}
                                        ]} 
-                || {N,S} <- Ring],
-    {mochijson2:encode(NodeStatus),Req,Ring}.
+                || {N,S} <- Status],
+    {mochijson2:encode(NodeStatus),Req,C};
+
+%% join this node to the cluster of another ring
+to_json (Req,C=join) ->
+    NodeStr=dict:fetch(node,wrq:path_info(Req)),
+    Result=riak_core:join(NodeStr),
+    cluster_action_result(Result,Req,C);
+
+%% mark a node in the cluster as down
+to_json (Req,C=down) ->
+    NodeStr=dict:fetch(node,wrq:path_info(Req)),
+    Node=list_to_atom(NodeStr),
+    Result=riak_core:down(Node),
+    cluster_action_result(Result,Req,C).
 
