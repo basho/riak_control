@@ -43,6 +43,7 @@ function down_node ()
 function stop_node ()
 {
     perform_node_action('/admin/node/' + this_node + '/stop');
+    show_node_actions();
 }
 
 function leave_cluster ()

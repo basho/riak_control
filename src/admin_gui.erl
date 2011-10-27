@@ -30,7 +30,7 @@ init (Resource) ->
 
 %% redirect to the index page if no file given
 moved_permanently (Req,index) ->
-    {{true,"/admin/ui/index.html"},Req,undefined};
+    {{true,"/admin/ui/cluster.html"},Req,undefined};
 moved_permanently (Req,Ctx) ->
     {false,Req,Ctx}.
 
