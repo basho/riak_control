@@ -1,0 +1,175 @@
+* { 
+    padding:0;
+    margin:0;
+}
+
+body {
+    margin-top:20px;
+    background-color:white;
+}
+
+#container {
+    margin:0 auto;
+    width:900px;
+    background:#fff;
+}
+
+td.header {
+    font-weight:bold;
+    font-size:normal;
+}
+
+input.field {
+    border:1px solid lightgray;
+    outline:none;
+    padding:4px;
+}
+
+/*
+ * HEADER STYLE
+ */
+
+#header {
+    background:#ccc;
+    padding:8px;
+}
+
+#header h1 { 
+    margin:0; 
+}
+
+/*
+ * NAVIGATION STLYE
+ */
+
+#navigation {
+    float:left;
+    width:900px;
+    background:#333;
+}
+
+#navigation ul {
+    margin:0;
+    padding:0;
+}
+
+#navigation ul li {
+    list-style-type:none;
+    display:inline;
+}
+
+#navigation li a {
+    display:block;
+    float:left;
+    padding:5px 10px;
+    color:#fff;
+    text-decoration:none;
+    border-right:1px solid #fff;
+}
+
+#navigation li a:hover {
+    background:#fe9925;
+}
+
+#navigation li a.active {
+    background:#ed7d04;
+}
+
+/*
+ * CONTENT STYLE
+ */
+
+#content-container {
+    float:left;
+    width:900px;
+    background:#fff;
+}
+
+#content {
+    clear:left;
+    float:left;
+    width:560px;
+    padding:20px 0;
+    margin:0 0 0 30px;
+    display:inline;
+}
+
+#content h2 { 
+    margin:0; 
+}
+
+/*
+ * ASIDE PANEL STYLE
+ */
+
+#aside {
+    /*text-align:center;*/
+    float:right;
+    width:240px;
+    padding:20px 0;
+    margin:0 20px 0 0;
+    display:inline;
+    font-size:small;
+}
+
+#aside h3 { 
+    margin:0; 
+}
+
+/*
+ * FOOTER STYLE
+ */
+
+#footer {
+    clear:both;
+    background:#ccc;
+    text-align:right;
+    padding:8px;
+    height:32px;
+}
+
+/*
+ * CLUSTER STYLE
+ */
+
+#cluster-table div {
+    padding:2px 0 2px 0;
+    cursor:pointer;
+    cursor:hand;
+}
+
+#cluster-table div td {
+    font-size:small;
+}
+
+#cluster-table div .active {
+    background:#fe9925;
+    font-color:#000;
+}
+
+#cluster-table div:hover {
+    background:#fe9925;
+}
+
+/*
+ * RING STYLE
+ */
+
+#ring-table div {
+    padding:2px 0 2px 0;
+    cursor:pointer;
+    cursor:hand;
+}
+
+#ring-table div td {
+    font-size:small;
+}
+
+#ring-table div .active {
+    background:#fe9925;
+    font-color:#000;
+}
+
+#ring-table div:hover {
+    background:#fe9925;
+}

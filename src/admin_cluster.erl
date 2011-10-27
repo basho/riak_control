@@ -3,7 +3,8 @@
          init/1,
          content_types_provided/2,
          to_json/2,
-         is_authorized/2
+         is_authorized/2,
+         service_available/2
         ]).
 
 %% webmachine dependencies
@@ -22,9 +23,13 @@ routes () ->
 init (Action) -> 
     {ok,Action}.
 
-%% redirect to SSL port and authenticate
+%% redirect to SSL port if using HTTP
+service_available (RD,C) ->
+    riak_control_security:scheme_is_available(RD,C).
+
+%% validate username and password
 is_authorized (RD,C) ->
-    {true,RD,C}.
+    riak_control_security:enforce_auth(RD,C).
 
 %% return the list of available content types for webmachine
 content_types_provided (Req,C) ->

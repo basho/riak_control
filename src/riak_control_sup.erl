@@ -48,7 +48,6 @@ init([]) ->
             Resources = [{admin, admin_gui},
                          {admin, admin_ring},
                          {admin, admin_cluster},
-                         {admin, admin_partitions},
                          {admin, admin_node}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),

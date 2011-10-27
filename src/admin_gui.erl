@@ -6,7 +6,8 @@
          previously_existed/2,
          resource_exists/2,
          get_file/2,
-         is_authorized/2
+         is_authorized/2,
+         service_available/2
         ]).
 
 %% webmachine dependencies
@@ -41,9 +42,13 @@ previously_existed (Req,Ctx) -> {false,Req,Ctx}.
 resource_exists (Req,index) -> {false,Req,index};
 resource_exists (Req,Ctx) -> {true,Req,Ctx}.
 
-%% redirect to SSL port and authenticate
-is_authorized (Req,Ctx) ->
-    {true,Req,Ctx}.
+%% redirect to SSL port if using HTTP
+service_available (RD,C) ->
+    riak_control_security:scheme_is_available(RD,C).
+
+%% validate username and password
+is_authorized (RD,C) ->
+    riak_control_security:enforce_auth(RD,C).
 
 %% return the list of available content types for webmachine
 content_types_provided (Req,Ctx) ->

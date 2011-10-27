@@ -1,0 +1,138 @@
+<html>
+  <head>
+    <title>Cluster Overview</title>
+    
+    <!-- jquery -->
+    <script 
+       src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+       type="text/javascript"></script>
+
+    <!-- common admin panel functions -->
+    <script
+       src="/admin/ui/admin.js"
+       type="text/javascript"></script>
+
+    <!-- cluster functions -->
+    <script
+       src="/admin/ui/cluster.js"
+       type="text/javascript"></script>
+
+    <!-- css -->
+    <link type="text/css"
+          rel="stylesheet"
+          href="/admin/ui/style.css" />
+  </head>
+
+  <!-- when the page finishes loading, start filling in details -->
+  <body>
+    <!-- page container -->
+    <div id="container">
+      <div id="header">
+        <table width="100%">
+          <tr>
+            <td align="left"><h1>Riak Control - Admin Panel</h1></td>
+            <td align="right">
+              <img src="/admin/ui/riak-transparent-small.png">
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- content navigation menu -->
+      <div id="navigation">
+	<ul>
+	  <li><a href="#" class="active">Cluster</a></li>
+	  <li><a href="/admin/ui/ring.html">Ring</a></li>
+	  <li><a href="#">Objects</a></li>
+	  <li><a href="#">Map/Reduce</a></li>
+	  <li><a href="#">Graphs</a></li>
+	  <li><a href="#">Console</a></li>
+	  <li><a href="#">Support</a></li>
+	</ul>
+      </div>
+
+      <!-- primary content view -->
+      <div id="content-container">
+	<div id="content">
+	  <h2 id="section">Cluster Overview</h2><br/>
+          <table width="100%">
+            <tr>
+              <td align="left" class="header">Node</td>
+              <td align="right" class="header" width="80px">Status</td>
+            </tr>
+          </table>
+          <div id="cluster-table">
+            <img src="/admin/ui/spinner.gif">
+          </div>
+          <table width="100%" style="margin-top:20px;">
+            <tr>
+              <td align="left">
+                <input class="field" 
+                       type="text"
+                       id="node-to-add" 
+                       style="width:100%;">
+              </td>
+              <td align="right" width="80px">
+                <input type="button" onclick="add_node()" value="Add">
+              </td>
+            </tr>
+          </table>
+	</div>
+
+        <!-- side panel for node details -->
+	<div id="aside">
+	  <h2 id="node-name">Node Details</h2><br/>
+          <div id="node-actions">
+            Select a node to interact with it.
+          </div>
+          <div id="node-pang-actions" style="display:none">
+            <input type="button"
+                   onclick="down_node()"
+                   value="Mark Down">
+            <p style="margin:10px;">
+              This node is currently offline. It must be restarted manually
+              to rejoin the cluster. If some nodes are currently stuck
+              trying to leave the cluster or handoff data, then marking
+              this node as 'down' should take care of the problem.
+            </p>
+          </div>
+          <div id="node-pong-actions" style="display:none">
+            <input type="button"
+                   onclick="stop_node()" 
+                   value="Shutdown">
+            <p style="margin:10px;">
+              This will take the node offline and stop the Riak process
+              on it. This will <b>not</b> mark the node as 'down'. You
+              will need to manually restart the node.
+            </p>
+            <input type="button" 
+                   onclick="leave_cluster()" 
+                   value="Leave Cluster">
+            <p style="margin:10px;">
+              This will cause the node to begin the process of leaving the
+              cluster. It will handoff its partition data to other partitions
+              in the ring and then take itself offline.
+            </p>
+          </div>
+        </div>
+
+        <!-- footer, basho copyright -->
+	<div id="footer">
+          <table width="100%">
+            <tr>
+              <td align="left">
+                <img src="/admin/ui/basho-logo.png">
+              </td>
+              <td align="right">
+                <span style="font-size:small">
+                  Copyright © 2011 <b>Basho Technologies, Inc.</b>
+                  All rights reserved.
+                </span>
+              </td>
+            </tr>
+          </table>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
