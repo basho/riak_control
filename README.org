@@ -4,67 +4,125 @@ the /admin/* paths, allow you to inspect your running cluster,
 and manipulate it in various ways.
 
 * How Do I Start Riak Control?
-By default, Riak Control should automatically be running. In your
-app.config file there should be a section called riak_control. To
-disable this.
+By default, Riak Control is disabled. There are a few, simple steps
+to get it up and running.
 
-: {enabled,false}
+** Modify the Node's app.config File.
+Riak Control is completely managed through the app.config file for
+Riak. Riak Control requires SSL for authentication purposes and
+therefore you will need to enable HTTPS, SSL, and riak_control.
 
-Once you have started your node, you should be able to successfully 
-browse to the admin page for that node. Note: replace the port #
-with the correct port.
+*** Enable HTTPS and SSL in riak_core:
+In the riak_core section of app.config, there should sections
+for HTTPS and SSL commented out. You will need to uncomment them
+back in.
 
-: http://localhost:8098/admin
+WARNING: In order for your node to be accessible via HTTP and the
+riak_control admin panel to be available via HTTPS, you will need
+to change the HTTPS port to something else:
+
+: {https, [ {"127.0.0.1", 8069} ]}
+
+If you 1.0.2 of Riak or later, then when you installed Riak a
+default, self-signed SSL certificate was created for you and put
+into the etc/ configuration folder for Riak. If these files are
+not there, you will need to either generate your own self-signed
+certificate (http://www.akadia.com/services/ssh_test_certificate.html)
+or modify the app.config to point to your own:
+
+: {ssl, [ {certfile, "./etc/cert.pem"},
+:         {keyfile, "./etc/key.pem"}
+:       ]}
+
+*** Enable riak_control and setup basic authentication
+In the riak_control section of app.config, first you'll need to
+make sure that it is enabled:
+
+: {enabled, true}
+
+Next, you'll need to specify the style of authentication you would
+like performed when accessing the admin panel. Currently the only
+valid authentication style is 'userlist'.
+
+Optionally, in the userlist section of riak_control, you can
+specify a list of usernames and passwords (as plaintext) that your
+administrators will use to connect to the admin panel.
+
+: {userlist, [{"username", "password"}, ...]}
+
+** Start or Restart Riak
+Once the above changes have been made, you can now start or restart
+your Riak node. You will then be able to access the admin panel by
+pointing your browser to it:
+
+: https://127.0.0.1:8069/admin
+
+In the above URL, it was assumed that 8069 was used as the SSL port
+in your app.config file.
 
 * What Information Does Riak Control Provide?
-Riak Control is broken up into two primary components: cluster and
-node.
+The Riak Control admin panel is broken up into several sections.
 
 ** Cluster
-Cluster data is a high-level view of all the nodes in the ring. 
+This is a high-level overview of your cluster. It lists each of the
+nodes in the cluster and their current status. If a node is currently
+offline it will be red.
 
-*** Nodes
-The highest-level view of the cluster is via /admin/cluster. This
-will provide a list of all the nodes (and links to them), tell you
-their current status (valid, leaving, down, etc). The UI will also
-provide a way for you to perform actions on the nodes, allowing
-you to stop it, leave the ring, and mark a node as down if it is
-offline.
+If you click on a node, the details to the right should provide you
+with some additional actions you can perform on the node (e.g. shutdown,
+leave the cluster, mark as 'down' if offline).
 
-*** Ring/Partitions
-Drilling down - via /admin/ring/partitions - it's possible to get an
-up-close look at what the ring is actually doing. It will give you
-a list of all the partition indices in the ring, what node owns each
-partition, and which vnode worker processes are running on it.
+Additionally, at the bottom of the list of nodes is a field that you
+can use to either add another, single node to this node's cluster or to
+join this node to an existing cluster. Just type in the name of the 
+node you wish to add/join and click "Add".
 
-In addition, if any of the vnode worker processes are actively handing
-off data to another node, that information will also be present. Note:
-handoffs can happen very quickly, and the UI is only updated every
-so often, so it's possible to get a handoff and miss it in the UI.
+** Ring
+This Ring Overview gives you a quick glimpse into all the partitions
+in your ring, what nodes own them, whether they are offline, handing
+off data, and what services are currently running on them (e.g. kv,
+pipe, search).
 
-TODO: allow ownership transferring of partitions to other nodes.
+You can quickly filter the partitions and see only those you are
+interested in.
 
-*** Objects, Map/Reduce, and Search
-TODO: PUT, GET, DELETE objects. Build M/R queries, test, save, load,
-and run them. SOLR search queries. 2i.
+There will be many more features and enhancements to this section
+in the immediate future...
 
-*** Graphs
-TODO: cluster-specific data
+** Stats
+Coming soon...
 
-*** Support
-If something bad is happening with your cluster, this section will
-nicely package up information about it and send it along with a
-bug report to Basho Technologies.
+This section will allow you to inspect the riak-admin status attributes
+for any node in your cluster.
 
-** Node
-Node data is specific to the node you are connected to.
+** Objects
+Coming soon... 
 
-*** Stats
-This is the same information attainable via `riak-admin status`.
+This section will allow you to add simple objects to your cluster and
+fetch/update existing nodes.
 
-*** Graphs
-TODO: node-specific data
+** Map/Reduce
+Coming soon...
 
-*** Logs
-The three common logs: console, error, crash, are updated here (live)
-to be viewed. 
+This section will allow you to build and execute custom map/reduce
+queries as well as save them for use later.
+
+** Graphs
+Coming soon...
+
+This section will display live graphs that will help you to diagnose
+problems you may be having with your node(s) and/or cluster. It will
+also be pretty to just sit back and watch. ;-)
+
+** Console
+Coming soon...
+
+This section will allow you to see live updates of any of your
+nodes' log files.
+
+** Support
+Coming soon...
+
+This section will easily let you file a bug/ticket with Basho. It
+will also bundle up any graphs, stats, and other data that will 
+assist Basho in diagnosing and fixing the problem.
