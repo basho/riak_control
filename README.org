@@ -23,7 +23,7 @@ to change the HTTPS port to something else:
 
 : {https, [ {"127.0.0.1", 8069} ]}
 
-If you 1.0.2 of Riak or later, then when you installed Riak a
+If you have Riak 1.0.2 or later, then when you installed Riak a
 default, self-signed SSL certificate was created for you and put
 into the etc/ configuration folder for Riak. If these files are
 not there, you will need to either generate your own self-signed

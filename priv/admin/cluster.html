@@ -38,6 +38,16 @@
         </table>
       </div>
 
+      <!-- node template -->
+      <div class="node row-template" style="display:none;">
+        <table width="100%">
+          <tr>
+            <td class="name" align="left">node</td>
+            <td class="status" align="right" width="80px">status</td>
+          </tr>
+        </table>
+      </div>
+
       <!-- content navigation menu -->
       <div id="navigation">
 	<ul>
@@ -51,6 +61,17 @@
 	</ul>
       </div>
 
+      <!-- node contexxt menu -->
+      <div id="cmenu" style="display:none; position:absolute;">
+        <ul>
+          <li><a href="#">Status</a></li>
+          <hr/>
+          <li><a href="#">Shutdown</a></li>
+          <li><a href="#">Leave Cluster</a></li>
+          <li><a href="#">Mark Down</a></li>
+        </ul>
+      </div>
+
       <!-- primary content view -->
       <div id="content-container">
 	<div id="content">
@@ -61,9 +82,9 @@
               <td align="right" class="header" width="80px">Status</td>
             </tr>
           </table>
-          <div id="cluster-table">
-            <img src="/admin/ui/spinner.gif">
-          </div>
+
+          <div id="cluster-table"></div> 
+          <img id="spinner" src="/admin/ui/spinner.gif">
           <table width="100%" style="margin-top:20px;">
             <tr>
               <td align="left">

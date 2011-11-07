@@ -55,7 +55,16 @@ init([]) ->
         _ ->
             ok
     end,
-    {ok, { {one_for_one, 5, 10}, []} }.
+
+    %% modules to be started up
+    Riak_control_session={riak_control_session,
+                          {riak_control_session, start_link, []},
+                          permanent, 
+                          5000, 
+                          worker, 
+                          [riak_control_session]},
+
+    {ok, { {one_for_one, 5, 10}, [Riak_control_session] } }.
 
 routes(Env, Module) ->
     case app_helper:get_env(riak_control, Env, false) of

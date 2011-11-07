@@ -68,7 +68,7 @@ function partition_row (index)
     html += '<td>' + i + '</td>';
     
     function vnode_icon (type) {
-        if (index.handoffs[type]) {
+        if (false) { //index.handoffs[type]) {
             return '<img src="/admin/ui/orange-arrow.png">';
         } else if (index.vnodes[type] == "primary") {
             return '<img src="/admin/ui/green-circle.png">';

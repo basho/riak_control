@@ -39,7 +39,7 @@ input.field {
 }
 
 /*
- * NAVIGATION STLYE
+ * NAVIGATION STYLE
  */
 
 #navigation {
@@ -76,6 +76,47 @@ input.field {
 }
 
 /*
+ * CONTEXT MENU STYLE
+ */
+
+#cmenu {
+    border:1px solid blue;
+}
+
+#cmenu ul {
+    margin:0; 
+    padding:0.3em;
+    list-style-type:none;
+    background-color:#fff;
+}
+
+#cmenu ul li:hover {
+    background-color:#ddd;
+}
+
+#cmenu ul hr {
+    border:0;
+    border-bottom:1px solid grey;
+    margin:3px 0px 3px 0px; 
+    width:10em;
+}
+
+#cmenu ul a {
+    border:0 !important;
+}
+
+#cmenu ul a:hover {
+    text-decoration:underline !important;
+}
+
+#cmenu ul .topSep {
+    font-size:90%;
+    border-top:1px solid gray;
+    margin-top:0.3em; 
+    padding-top:0.3em;
+}
+
+/*
  * CONTENT STYLE
  */
 
@@ -103,7 +144,6 @@ input.field {
  */
 
 #aside {
-    /*text-align:center;*/
     float:right;
     width:240px;
     padding:20px 0;
@@ -132,23 +172,28 @@ input.field {
  * CLUSTER STYLE
  */
 
-#cluster-table div {
+#cluster-table .node {
     padding:2px 0 2px 0;
     cursor:pointer;
     cursor:hand;
 }
 
-#cluster-table div td {
+#cluster-table .node td {
     font-size:small;
 }
 
-#cluster-table div .active {
+#cluster-table .node .active {
     background:#fe9925;
     font-color:#000;
 }
 
-#cluster-table div:hover {
+#cluster-table .node:hover {
     background:#fe9925;
+}
+
+#cluster-table .node .offline {
+    font-weight:bold;
+    color:#f00;
 }
 
 /*

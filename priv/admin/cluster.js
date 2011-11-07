@@ -7,6 +7,11 @@ $(document).ready(function () { initialize(); });
 function initialize ()
 {
     get_cluster_status();
+
+    // hide the menu when we leave it
+    $('#cmenu').mouseleave(function () {
+        $('#cmenu').hide();
+    });
 }
 
 function get_cluster_status ()
@@ -25,8 +30,7 @@ function perform_node_action (action)
     $.ajax({
         url:action,
         dataType:'json',
-        success:alert,
-        failure:alert
+        failure:function (err) { alert(err); }
     });
 }
 
@@ -84,48 +88,87 @@ function show_node_actions (node)
     });
 }
 
+function update_node_row (node, row)
+{
+    $('.name', row).text(node.name);
+    $('.status', row).text(node.status);
+        
+    // highlight offline nodes
+    if (node.reachable == false) {
+        $('.name', row).addClass('offline');
+    } else {
+        $('.name', row).removeClass('offline');
+    }
+}
+
 function cluster_node_row (node)
 {
-    var stat = node.status;
-    var ping = node.reachable;
-    var name = node.name;
-    var addr = name.split('@')[1];
-    var port = node.port;
-    var node;
+    var id = node.name.split('@')[0];
+    var rows = $('#cluster-table #' + id);
 
-    // create a div we can click
-    var onclick = "show_node_actions('" + name + "')";
-    var html = '<div id="' + name + '" onclick="' + onclick + '")">'
-        
-    // create the single table row
-    html += '<table width="100%"><tr>';
+    // create a new row
+    if (rows.length == 0) {
+        row = $('.row-template').clone();
 
-    // make the node red if it isn't reachable
-    if (ping == false) {
-        node = '<font color="#f00"><b>' + name + '</b></font>';
+        // initialize the row
+        update_node_row(node, row);
+
+        // set the id for this row and display it
+        $(row).attr('id', id);
+        $(row).removeClass('row-template');
+        $(row).show();
+
+        // create a click handler for this row
+        $(row).click(function (e) {
+            $('#cmenu').show();
+            $('#cmenu').offset({ top:e.pageY - 10, 
+                                 left:e.pageX - 10
+                               });
+        });
+
+        // add it to the table
+        $('#cluster-table').append(row);
     } else {
-        node = name;
+        update_node_row(node, rows[0]);
     }
-    
-    // add a link to that node in the cluster's admin page
-    html += '<td align="left">' + node + '</td>';
-    html += '<td align="right" width="80px">' + stat + '</td>';
+}
 
-    // done, return the row
-    return html + '</tr></table></div>';
+function remove_node_rows (nodes)
+{
+    var rows = $('#cluster-table .node');
+
+    // check to see if a node is listed in the cluster
+    function node_in_cluster_p (node) {
+        for(var i = 0;i < nodes.length;i++) {
+            if (node == nodes[i].name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // remove any node rows no long in the cluster
+    for(var i = 0;i < rows.length;i++) {
+        var node = $('.name', rows[i]).text();
+
+        if (node_in_cluster_p(node) == false) {
+            $(rows[i]).remove();
+        }
+    }
 }
 
 function update_cluster_status (nodes)
 {
     var html = '';
 
-    for(var i = 0;i < nodes.length;i++) {
-        html += cluster_node_row(nodes[i]);
-    }
-    
-    // update the page
-    $('#cluster-table').html(html);
+    $('#spinner').hide();
 
+    for(var i = 0;i < nodes.length;i++) {
+        cluster_node_row(nodes[i]);
+    }
+
+    remove_node_rows(nodes);
+    
     // wait a little and update
     ping_cluster_status();
 }

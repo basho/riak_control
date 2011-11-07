@@ -36,29 +36,20 @@ content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
 %% all actions return the same format
-cluster_action_result (Error={error,_Reason},Req,C) ->
-    {mochijson2:encode({struct,[{result,error},Error]}),Req,C};
+cluster_action_result (Error={error,_},Req,C) ->
+    {{error,mochijson2:encode({struct,[Error]})},Req,C};
 cluster_action_result (_,Req,C) ->
     {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
 
-%% check to see if the node is reachable (down, partitioned, etc)
-get_port (Node) ->
-    case rpc:call(Node,application,get_env,[riak_core,http]) of
-        {ok,[{_,Port}|_]} ->
-            [{"reachable",true},{"port",Port}];
-        _ -> 
-            [{"reachable",false}]
-    end.
-
 %% get a list of all the nodes in the ring and their status
 to_json (Req,C=list) ->
-    {ok,Ring}=riak_core_ring_manager:get_my_ring(),
-    Status=riak_core_ring:all_member_status(Ring),
-    NodeStatus=[{struct,get_port(N) ++ [{"name",N},
-                                        {"status",S}
-                                       ]} 
-                || {N,S} <- Status],
-    {mochijson2:encode(NodeStatus),Req,C};
+    {ok,_V,Nodes}=riak_control_session:get_nodes(),
+    Status=[{struct,[{"name",N},
+                     {"status",S},
+                     {"reachable",Online}
+                    ]} 
+            || {N,S,Online,_} <- Nodes],
+    {mochijson2:encode(Status),Req,C};
 
 %% join this node to the cluster of another ring
 to_json (Req,C=join) ->
@@ -69,7 +60,7 @@ to_json (Req,C=join) ->
 %% mark a node in the cluster as down
 to_json (Req,C=down) ->
     NodeStr=dict:fetch(node,wrq:path_info(Req)),
-    Node=list_to_atom(NodeStr),
+    Node=list_to_existing_atom(NodeStr),
     Result=riak_core:down(Node),
     cluster_action_result(Result,Req,C).
 

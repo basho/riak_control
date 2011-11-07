@@ -82,7 +82,7 @@ perform_rpc_action (Req,C,Module,Fun,Args) ->
     node_action_result(Result,Req,C).
 
 %% all actions return the same format
-node_action_result (Error={error,_Reason},Req,C) ->
-    {mochijson2:encode({struct,[{result,error},Error]}),Req,C};
+node_action_result ({error,Reason},Req,C) ->
+    {{error,Reason},Req,C};
 node_action_result (_,Req,C) ->
     {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
