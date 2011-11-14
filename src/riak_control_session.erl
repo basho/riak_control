@@ -36,6 +36,9 @@
                  nodes      :: [{atom(),status(),online(),[vnode()]}]
                }).
 
+%% hack: periodically update the ring with itself
+-define(INTERVAL, 3000).
+
 %% ===================================================================
 %% Public API
 %% ===================================================================
@@ -74,6 +77,9 @@ init ([]) ->
 
     %% get the current ring so we have a baseline to work from
     {ok,Ring}=riak_core_ring_manager:get_my_ring(),
+
+    %% start a timer that will allow us to periodically ping cluster nodes
+    erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
     
     %% start the server
     {ok,update_ring(#state{vsn=0,partitions=[],nodes=[],services=[]},Ring)}.
@@ -102,6 +108,11 @@ handle_cast ({update_services,Services},State) ->
     {noreply,update_services(State,Services)}.
 
 %% misc. messages
+handle_info (ping_ring_nodes,State=#state{ring=Ring}) ->
+    gen_server:cast(self(),{update_ring,Ring}),
+    erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
+    {noreply,State};
+
 handle_info (_,State) ->
     {noreply,State}.
 
