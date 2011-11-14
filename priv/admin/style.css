@@ -44,8 +44,90 @@ html {
 }
 
 body {
+    padding: 8px 0 0 0;
+}
+
+/* CODE FOR PRETTY TEXT */
+.gui-text {
+    font-family: arial, helvetica, sans-serif;
+    font-size: 14px;
+    color: #efefef;
+    text-shadow: 0 2px 0 #000;
+}
+.gui-text.bold {
+    font-weight: bold;
+}
+/* END CODE FOR PRETTY TEXT */
+
+
+/* HEADER PORTION */
+#header {
+    background: url(/admin/ui/header-bg.png) left top repeat-x transparent;
+    height: 67px;
+    width: auto;
+    margin: 0 0 22px 0; 
+}
+#riak-control-logo {
+    display: block;
+    background: url(/admin/ui/riak-control-logo.gif) right bottom no-repeat transparent;
+    width: 201px;
+    height: 56px;
+    float: left;
+    padding: 5px 0 0 20px;
+}
+/* END HEADER PORTION */
+
+#wrapper {
+    background: transparent;
+    width: auto;
+    height: auto;
+
+    margin-bottom: 8px;
+}
+
+.vsplitbar {
+	width: 5px;
+	background: url(/admin/ui/resizer-bg.png) left top repeat transparent;
+	border: 1px solid #fff;
+	opacity: .2;
+	filter: alpha(opacity=20);
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+#navigation {
+    overflow: hidden;
+    background: transparent;
+}
+.nav-li {
 
 }
+.nav-item {
+    display: block;
+    font-size: 18px;
+    background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;
+    padding: 14px 0;
+}
+
+#content-well {
+    overflow: hidden;
+    background: transparent;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #container {
     margin:0 auto;
@@ -53,65 +135,10 @@ body {
     background:#fff;
 }
 
-td.header {
-    font-weight:bold;
-    font-size:normal;
-}
-
 input.field {
     border:1px solid lightgray;
     outline:none;
     padding:4px;
-}
-
-/*
- * HEADER STYLE
- */
-
-#header {
-    background:#ccc;
-    padding:8px;
-}
-
-#header h1 { 
-    margin:0; 
-}
-
-/*
- * NAVIGATION STYLE
- */
-
-#navigation {
-    float:left;
-    width:900px;
-    background:#333;
-}
-
-#navigation ul {
-    margin:0;
-    padding:0;
-}
-
-#navigation ul li {
-    list-style-type:none;
-    display:inline;
-}
-
-#navigation li a {
-    display:block;
-    float:left;
-    padding:5px 10px;
-    color:#fff;
-    text-decoration:none;
-    border-right:1px solid #fff;
-}
-
-#navigation li a:hover {
-    background:#fe9925;
-}
-
-#navigation li a.active {
-    background:#ed7d04;
 }
 
 /*
@@ -257,3 +284,12 @@ input.field {
 #ring-table div:hover {
     background:#fe9925;
 }
+
+/* CASCADING STYLES */
+.left   {float: left;}
+.right  {float: right;}
+.clear  {clear: both;}
+.clearl {clear: left;}
+.clearr {clear: right;}
+.block  {display: block;}
+.inline {display: inline;}

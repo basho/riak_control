@@ -7,20 +7,35 @@
 
 <!-- when the page finishes loading, start filling in details -->
 <body>
+    
+    <!-- header with logo -->
+    <div id="header">
+        <a id="riak-control-logo"></a>
+    </div><!-- header -->
+
+    <!-- wrap entire content -->
+    <div id="wrapper" class="split gui-text">
+        <div id="navigation">
+            <ul id="nav-ul">
+                <li id="nav-cluster" class="nav-li"><a class="gui-text bold nav-item">Cluster</a></li>
+                <li id="nav-ring" class="nav-li"><a class="gui-text bold nav-item">Ring</a></li>
+                <li id="nav-objects" class="nav-li"><a class="gui-text bold nav-item">Objects</a></li>
+                <li id="nav-mapreduce" class="nav-li"><a class="gui-text bold nav-item">Map/Reduce</a></li>
+                <li id="nav-graphs" class="nav-li"><a class="gui-text bold nav-item">Graphs</a></li>
+                <li id="nav-console" class="nav-li"><a class="gui-text bold nav-item">Console</a></li>
+                <li id="nav-support" class="nav-li"><a class="gui-text bold nav-item">Support</a></li>
+            </ul>
+        </div>
+        
+        <div id="content-well">
+            a;lskd<br/>dfj;l<br/>asdjf;l<br/>asjdf;l<br/>ajsd;flkjas;d<br/>lkfj;alksdjf;laksjdf<br/>;lakjsdf;lkajsd;lfj<br/>as;dlfkja;sldkfja;lsdkjf;aslkdjf
+        </div>
+        
+        <div class="clear"></div>
+    </div><!-- #wrapper -->
 
     <!-- page container -->
     <div id="container">
-        <!-- header -->
-        <div id="header">
-            <table width="100%">
-                <tr>
-                    <td align="left"><h1>Riak Control - Admin Panel</h1></td>
-                    <td align="right">
-                        <img src="/admin/ui/riak-transparent-small.png">
-                    </td>
-                </tr>
-            </table>
-        </div>
     
         <!-- node template -->
         <div class="node row-template" style="display:none;">
@@ -33,6 +48,7 @@
         </div>
     
         <!-- content navigation menu -->
+        <!--
         <div id="navigation">
             <ul>
                 <li><a href="#" class="active">Cluster</a></li>
@@ -44,6 +60,7 @@
                 <li><a href="/admin/ui/support.html">Support</a></li>
             </ul>
         </div>
+        -->
     
         <!-- node context menu -->
         <div id="cmenu" style="display:none; position:absolute;">
@@ -136,6 +153,7 @@
     </div><!-- #container -->
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script src="/admin/ui/splitter.js"></script>
     <script src="/admin/ui/admin.js"></script>
     <script src="/admin/ui/cluster.js"></script>
     <script src="/admin/ui/gui.js"></script>

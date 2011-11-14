@@ -1,6 +1,9 @@
 // Framework for the cool UI tricks
 
 $(function() {
+
+    /* ENABLE SPLITTERS */
+    $('.split').splitter();
     
     /*
     MAKE ON/OFF SWITCHES WORK
@@ -46,7 +49,7 @@ $(function() {
     $('.gui-field-input').wrap('<div class="gui-field-bg">');
     
     
-    
+
     /*
     MAKE SLIDING SWITCHES WORK
     To set up:  requires jQuery and jQuery UI.  HTML should contain at least one div
@@ -76,6 +79,7 @@ $(function() {
     // Contains some extra handling for when someone lets go of the slider
     // before it has moved all the way over and for handling the message
     // as well. 
+    /*
     $('.gui-slider-groove').slider({
         slide : function() {
             var me = $(this);
@@ -111,6 +115,7 @@ $(function() {
             }
         }
     });
+    */
     /*
     Enable this section if your slider message container does not extend to the edge
     of the slider.
