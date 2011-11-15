@@ -15,23 +15,45 @@
 
     <!-- wrap entire content -->
     <div id="wrapper" class="split gui-text">
-        <div id="navigation">
-            <ul id="nav-ul">
-                <li id="nav-cluster" class="nav-li"><a class="gui-text bold nav-item">Cluster</a></li>
-                <li id="nav-ring" class="nav-li"><a class="gui-text bold nav-item">Ring</a></li>
-                <li id="nav-objects" class="nav-li"><a class="gui-text bold nav-item">Objects</a></li>
-                <li id="nav-mapreduce" class="nav-li"><a class="gui-text bold nav-item">Map/Reduce</a></li>
-                <li id="nav-graphs" class="nav-li"><a class="gui-text bold nav-item">Graphs</a></li>
-                <li id="nav-console" class="nav-li"><a class="gui-text bold nav-item">Console</a></li>
-                <li id="nav-support" class="nav-li"><a class="gui-text bold nav-item">Support</a></li>
-            </ul>
-        </div>
-        
-        <div id="content-well">
-            a;lskd<br/>dfj;l<br/>asdjf;l<br/>asjdf;l<br/>ajsd;flkjas;d<br/>lkfj;alksdjf;laksjdf<br/>;lakjsdf;lkajsd;lfj<br/>as;dlfkja;sldkfja;lsdkjf;aslkdjf
-        </div>
-        
-        <div class="clear"></div>
+        <table>
+            <tr>
+                <td id="nav-box">
+                    <div id="navigation">
+                        <ul id="nav-ul">
+                            <li id="nav-cluster" class="nav-li"><a class="gui-text-bold nav-item">Cluster</a></li>
+                            <li id="nav-ring" class="nav-li"><a class="gui-text-bold nav-item">Ring</a></li>
+                            <li id="nav-objects" class="nav-li"><a class="gui-text-bold nav-item">Objects</a></li>
+                            <li id="nav-mapreduce" class="nav-li"><a class="gui-text-bold nav-item">Map/Reduce</a></li>
+                            <li id="nav-graphs" class="nav-li"><a class="gui-text-bold nav-item">Graphs</a></li>
+                            <li id="nav-console" class="nav-li"><a class="gui-text-bold nav-item">Console</a></li>
+                            <li id="nav-support" class="nav-li"><a class="gui-text-bold nav-item">Support</a></li>
+                        </ul>
+                        <div id="active-nav"></div>
+                    </div>
+                    <div id="split-bar"></div>
+                </td>
+                <td id="content-well">
+                    <h1 class="gui-headline-bold">Cluster Overview <span id="total-number"></span></h1>
+                    <div id="add-node">
+                        <h3 class="gui-headline">Add Nodes to the Cluster...</h3>
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="gui-field gui-text">
+                                        <input class="gui-field-input gui-text" type="text" name="nodeName" />
+                                    </div>
+                                </td>
+                                <td class="button-column">
+                                    <a id="add-node-button" class="gui-point-button gui-text-bold right">
+                                        <span class="gui-button-msg">ADD NODE</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div><!-- #wrapper -->
 
     <!-- page container -->
@@ -49,7 +71,7 @@
     
         <!-- content navigation menu -->
         <!--
-        <div id="navigation">
+        <div >
             <ul>
                 <li><a href="#" class="active">Cluster</a></li>
                 <li><a href="/admin/ui/ring.html">Ring</a></li>
@@ -88,6 +110,7 @@
                 <div id="cluster-table"></div> 
                 
                 <img id="spinner" src="/admin/ui/spinner.gif">
+                <!--
                 <table width="100%" style="margin-top:20px;">
                     <tr>
                         <td align="left">
@@ -98,6 +121,7 @@
                         </td>
                     </tr>
                 </table>
+                -->
             </div><!-- #content -->
     
             <!-- side panel for node details -->
@@ -152,8 +176,8 @@
         
     </div><!-- #container -->
     
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script src="/admin/ui/splitter.js"></script>
+    <script src="/admin/ui/jquery-1.7.min.js"></script>
+    <script src="/admin/ui/jquery-ui-1.8.16.custom.min.js"></script>
     <script src="/admin/ui/admin.js"></script>
     <script src="/admin/ui/cluster.js"></script>
     <script src="/admin/ui/gui.js"></script>

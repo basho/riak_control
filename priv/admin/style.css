@@ -1,3 +1,16 @@
+/* IMPORT FONTS */
+@font-face {
+    font-family: 'rokkitt';
+    src: url('/admin/ui/rokkitt.eot?') format('eot'), url('/admin/ui/rokkitt.woff') format('woff'), url('/admin/ui/rokkitt.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'rokkitt';
+    src: url('/admin/ui/rokkitt-bold.eot?') format('eot'), url('/admin/ui/rokkitt-bold.woff') format('woff'), url('/admin/ui/rokkitt-bold.ttf') format('truetype');
+    font-weight: bold;
+}
+
+
+
 /* RESET PORTION FOR COMPATIBILITY */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -18,6 +31,7 @@ time, mark, audio, video {
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
+	font-weight: normal;
 }
 body {
 	line-height: 1;
@@ -36,8 +50,14 @@ q:before, q:after {
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
+	width: 100%;
+}
+td {
+    vertical-align: top;
 }
 /* END RESET PORTION */
+
+
 
 html {
     background: url(/admin/ui/gui-bg.jpg) left top repeat #2d2d2d;
@@ -47,15 +67,45 @@ body {
     padding: 8px 0 0 0;
 }
 
+h1 {
+    font-size: 48px;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 25px;
+}
+
+h2 {
+
+}
+
+h3 {
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 12px;
+}
+
 /* CODE FOR PRETTY TEXT */
-.gui-text {
+.gui-text, .gui-text-bold {
     font-family: arial, helvetica, sans-serif;
     font-size: 14px;
-    color: #efefef;
+    color: #dfdfdf;
     text-shadow: 0 2px 0 #000;
 }
-.gui-text.bold {
+.gui-text-bold {
     font-weight: bold;
+}
+.gui-headline, .gui-headline-bold {
+    font-family: 'rokkitt', arial, helvetica, sans-serif;
+    color: #dfdfdf;
+    text-shadow: 0 2px 0 #000;
+}
+.gui-headline-bold {
+    font-family: 'rokkitt', arial, helvetica, sans-serif;
+    font-weight: bold;
+    -webkit-text-stroke: 1.1px #ffffff;
+    -moz-text-stroke: 1.1px #ffffff;
+    text-stroke: 1.1px #ffffff;
 }
 /* END CODE FOR PRETTY TEXT */
 
@@ -73,7 +123,7 @@ body {
     width: 201px;
     height: 56px;
     float: left;
-    padding: 5px 0 0 20px;
+    padding: 5px 0 0 12px;
 }
 /* END HEADER PORTION */
 
@@ -81,39 +131,157 @@ body {
     background: transparent;
     width: auto;
     height: auto;
-
     margin-bottom: 8px;
 }
 
-.vsplitbar {
-	width: 5px;
+#split-bar {
+	width: 6px;
 	background: url(/admin/ui/resizer-bg.png) left top repeat transparent;
 	border: 1px solid #fff;
+	float: left;
 	opacity: .2;
 	filter: alpha(opacity=20);
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 }
+#split-bar:hover {cursor:move;}
 
 #navigation {
     overflow: hidden;
     background: transparent;
+    float: left;
+    width: 218px; /* and 54 */
+    position: relative;
 }
-.nav-li {
+#nav-box {
+    width: 226px;
+}
+#active-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 48px;
+    background: url(/admin/ui/active-nav.png) left top no-repeat transparent;
+}
 
+.nav-li {
+    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    padding: 0 0 0 14px;
+    height: 48px;
 }
+#nav-cluster   {background-position:14px 10px;}
+#nav-ring      {background-position:14px -39px;}
+#nav-objects   {background-position:14px -90px;}
+#nav-mapreduce {background-position:14px -140px;}
+#nav-graphs    {background-position:14px -192px;}
+#nav-console   {background-position:14px -248px;}
+#nav-support   {background-position:14px -300px;}
+
 .nav-item {
     display: block;
     font-size: 18px;
+    height: 33px;
+    vertical-align: middle;
     background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;
-    padding: 14px 0;
+    padding: 15px 0 0 40px;
 }
+.nav-item:hover {
+    text-shadow: 0 0 3px #fff;
+    cursor: pointer;
+}
+
+
+
 
 #content-well {
     overflow: hidden;
     background: transparent;
+    padding: 5px 14px 0 25px;
 }
+
+#total-number {
+    font-size: 14px;
+    font-weight: normal;
+    font-family: arial, helvetica, sans-serif;
+    letter-spacing: normal;
+    -webkit-text-stroke: none;
+}
+
+#add-node {
+    width: auto;
+    height: 100px;
+}
+
+/* CODE FOR TEXT FIELDS */
+.gui-field {
+    width: auto;
+    height: 30px;
+    position: relative;
+}
+.gui-field-cap-left, .gui-field-cap-right {
+    width: 9px; 
+    height: 30px;
+    position: absolute;
+    top: 0;
+    background: left top no-repeat transparent;
+}
+.gui-field-cap-left  {
+    background-image: url(/admin/ui/fieldcap-left.png);
+    left: 0;
+}
+.gui-field-cap-right {
+    background-image: url(/admin/ui/fieldcap-right.png);
+    right: 0;
+}
+.gui-field-bg {
+    width: auto;
+    height: 30px;
+    background: url(/admin/ui/field-bg.png) left top repeat-x transparent;
+    margin: 0 9px;
+}
+.gui-field-input {
+    display: block;
+    width: 99%;
+    padding: 0 2px;
+    background: transparent;
+    border: 0;
+    height: 30px;
+    outline: none;
+}
+/* END CODE FOR TEXT FIELDS */
+
+/* CODE FOR POINT BUTTONS */
+.gui-point-button {
+    display: block;
+    width: 137px;
+    height: 40px;
+    background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;
+    cursor: pointer;
+}
+.gui-button-msg {
+    display: block;
+    width: auto;
+    height: auto;
+    padding-top: 6px;
+    text-align: center;
+    text-transform: uppercase;
+}
+.gui-point-button:hover {background-position: left -40px;}
+.gui-point-button:active, .gui-point-button.pressed {background-position: left -80px !important;}
+.gui-point-button:active .gui-button-msg, .gui-point-button.pressed .gui-button-msg {padding-top: 8px;}
+.button-column {width: 150px;}
+
+/* END CODE FOR POINT BUTTONS */
+
+
+
+
+
+
+
+
 
 
 
@@ -293,3 +461,4 @@ input.field {
 .clearr {clear: right;}
 .block  {display: block;}
 .inline {display: inline;}
+.inblock{display: inline-block;}

@@ -1,9 +1,44 @@
 // Framework for the cool UI tricks
 
 $(function() {
+    
 
-    /* ENABLE SPLITTERS */
-    $('.split').splitter();
+    /* ENABLE THE SPLIT BAR */
+    var splitBar = $('#split-bar'),
+        splitBarParent = splitBar.parent();
+    splitBar.css('height', splitBarParent.css('height'));
+    /* If you need to resize the split bar when the window resizes
+    var timer;
+    $(window).resize(function(){
+        clearTimeout(timer);
+        timer = setTimeout(function(){
+            var newHeight = splitBarParent.css('height');
+            console.log(newHeight);
+        }, 100);
+    });
+    */
+    /* TURN ON TOGGLING FOR THE SPLIT BAR */
+    splitBar.click(function () {
+        var nav = $('#navigation'), navwidth = nav.css('width');
+        var navbox = $('#nav-box'), boxwidth = navbox.css('width');
+        if (navwidth === '218px') {
+            nav.animate({"width":"54px"},{queue:false,duration:200});
+            navbox.animate({"width":"62px"},{queue:false,duration:200});
+        } else {
+            nav.animate({"width":"218px"},{queue:false,duration:200});
+            navbox.animate({"width":"226px"},{queue:false,duration:200});
+        } 
+    });
+    
+    
+    
+    /* HANDLE ACTIVE INDICATOR ANIMATION */
+    $('.nav-li').click(function () {
+        var me = $(this), indicator = $('#active-nav');
+        indicator.animate({"top":me.position().top},{queue:false,duration:200});   
+    });
+    
+    
     
     /*
     MAKE ON/OFF SWITCHES WORK
@@ -79,7 +114,6 @@ $(function() {
     // Contains some extra handling for when someone lets go of the slider
     // before it has moved all the way over and for handling the message
     // as well. 
-    /*
     $('.gui-slider-groove').slider({
         slide : function() {
             var me = $(this);
@@ -115,7 +149,6 @@ $(function() {
             }
         }
     });
-    */
     /*
     Enable this section if your slider message container does not extend to the edge
     of the slider.
