@@ -99,7 +99,7 @@ $(document).ready(function () {
     
         // create a new row
         if (rows.length === 0) {
-            row = $('.row-template').clone();
+            row = $('.row-template').clone().removeClass('hide');
     
             // initialize the row
             update_node_row(node, row);
@@ -151,8 +151,9 @@ $(document).ready(function () {
     
     function update_cluster_status (nodes) {
         var html = '', i, l = nodes.length;
-    
+        
         $('#spinner').hide();
+        $('#node-list').fadeIn(300);
         $('#total-number').html('(' + l + ' ' + ((l === 1)?'Node':'Nodes') + ' Total)');
     
         for(i = 0; i < l; i += 1) {

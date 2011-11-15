@@ -69,20 +69,22 @@ body {
 
 h1 {
     font-size: 48px;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     display: block;
-    margin-bottom: 25px;
+    padding-bottom: 25px;
 }
 
 h2 {
-
+    font-size: 38px;
+    letter-spacing: 2px;
+    display: block;
+    padding-bottom: 12px;
 }
 
 h3 {
     font-size: 22px;
-    letter-spacing: 1.5px;
     display: block;
-    margin-bottom: 12px;
+    padding-bottom: 8px;
 }
 
 /* CODE FOR PRETTY TEXT */
@@ -145,8 +147,13 @@ h3 {
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 }
-#split-bar:hover {cursor:move;}
+#split-bar:hover {
+    cursor:pointer;
+    opacity: .4;
+	filter: alpha(opacity=40);
+}
 
+/* CODE FOR NAVIGATION */
 #navigation {
     overflow: hidden;
     background: transparent;
@@ -178,7 +185,6 @@ h3 {
 #nav-graphs    {background-position:14px -192px;}
 #nav-console   {background-position:14px -248px;}
 #nav-support   {background-position:14px -300px;}
-
 .nav-item {
     display: block;
     font-size: 18px;
@@ -191,10 +197,11 @@ h3 {
     text-shadow: 0 0 3px #fff;
     cursor: pointer;
 }
+/* END CODE FOR NAVIGATION */
 
 
 
-
+/* CODE FOR GENERAL CONTENT WELL */
 #content-well {
     overflow: hidden;
     background: transparent;
@@ -209,10 +216,6 @@ h3 {
     -webkit-text-stroke: none;
 }
 
-#add-node {
-    width: auto;
-    height: 100px;
-}
 
 /* CODE FOR TEXT FIELDS */
 .gui-field {
@@ -264,21 +267,36 @@ h3 {
     display: block;
     width: auto;
     height: auto;
-    padding-top: 6px;
+    padding-top: 7px;
     text-align: center;
     text-transform: uppercase;
 }
 .gui-point-button:hover {background-position: left -40px;}
 .gui-point-button:active, .gui-point-button.pressed {background-position: left -80px !important;}
-.gui-point-button:active .gui-button-msg, .gui-point-button.pressed .gui-button-msg {padding-top: 8px;}
+.gui-point-button:active .gui-button-msg, .gui-point-button.pressed .gui-button-msg {padding-top: 9px;}
 .button-column {width: 150px;}
-
 /* END CODE FOR POINT BUTTONS */
 
+.table-head td {
+    padding-top: 8px;
+}
+.list-table {
+    margin-bottom: 8px;
+}
+.list-table td {
+    vertical-align: middle;
+}
+
+/* END CODE FOR GENERAL CONTENT WELL */
 
 
+/* CODE FOR CLUSTER CONTENT */
+#add-node {
+    width: auto;
+    height: 100px;
+}
 
-
+/* END CODE FOR CLUSTER CONTENT */
 
 
 
@@ -358,6 +376,7 @@ input.field {
     float:left;
     width:900px;
     background:#fff;
+    margin-top: 80px;
 }
 
 #content {
@@ -462,3 +481,5 @@ input.field {
 .block  {display: block;}
 .inline {display: inline;}
 .inblock{display: inline-block;}
+.has-cut{background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
+.hide   {display: none;}

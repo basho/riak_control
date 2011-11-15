@@ -40,7 +40,7 @@
                             <tr>
                                 <td>
                                     <div class="gui-field gui-text">
-                                        <input class="gui-field-input gui-text" type="text" name="nodeName" />
+                                        <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
                                     </div>
                                 </td>
                                 <td class="button-column">
@@ -50,86 +50,64 @@
                                 </td>
                             </tr>
                         </table>
+                    </div><!-- #add-node -->
+                    
+                    <h2 class="gui-headline-bold has-cut">Node List <img id="spinner" src="/admin/ui/spinner.gif"></h2>
+                    <div id="node-list" class="hide">
+                        <table class="list-table">
+                            <tr class="table-head has-cut">
+                                <td><h3 class="gui-headline">Name</h3></td>
+                                <td><h3 class="gui-headline">Status</h3></td>
+                            </tr>
+                        </table>
+                        <div id="cluster-table"></div>
                     </div>
                 </td>
             </tr>
         </table>
     </div><!-- #wrapper -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     <!-- page container -->
     <div id="container">
     
         <!-- node template -->
-        <div class="node row-template" style="display:none;">
-            <table width="100%">
+        <div class="node row-template hide">
+            <table class="list-table">
                 <tr>
-                    <td class="name" align="left">node</td>
-                    <td class="status" align="right" width="80px">status</td>
+                    <td class="name gui-text">node</td>
+                    <td class="status gui-text">status</td>
                 </tr>
             </table>
         </div>
-    
-        <!-- content navigation menu -->
-        <!--
-        <div >
-            <ul>
-                <li><a href="#" class="active">Cluster</a></li>
-                <li><a href="/admin/ui/ring.html">Ring</a></li>
-                <li><a href="/admin/ui/objects.html">Objects</a></li>
-                <li><a href="/admin/ui/mr.html">Map/Reduce</a></li>
-                <li><a href="/admin/ui/graphs.html">Graphs</a></li>
-                <li><a href="/admin/ui/console.html">Console</a></li>
-                <li><a href="/admin/ui/support.html">Support</a></li>
-            </ul>
-        </div>
-        -->
-    
+        
         <!-- node context menu -->
+        <!--
         <div id="cmenu" style="display:none; position:absolute;">
             <ul>
                 <li><a href="#">Status</a></li>
-                <hr/>
                 <li><a href="#">Shutdown</a></li>
                 <li><a href="#">Leave Cluster</a></li>
                 <li><a href="#">Mark Down</a></li>
             </ul>
         </div>
-    
+        -->
         <!-- primary content view -->
         <div id="content-container">
         
-            <div id="content">
-                <h2 id="section">Cluster Overview</h2><br/>
-                <table width="100%">
-                    <tr>
-                        <td align="left" class="header">Node</td>
-                        <td align="right" class="header" width="80px">Status</td>
-                    </tr>
-                </table>
-    
-                <div id="cluster-table"></div> 
-                
-                <img id="spinner" src="/admin/ui/spinner.gif">
-                <!--
-                <table width="100%" style="margin-top:20px;">
-                    <tr>
-                        <td align="left">
-                            <input class="field" type="text" id="node-to-add" style="width:100%;">
-                        </td>
-                        <td align="right" width="80px">
-                            <input type="button" onclick="add_node()" value="Add">
-                        </td>
-                    </tr>
-                </table>
-                -->
-            </div><!-- #content -->
     
             <!-- side panel for node details -->
+            <!--
             <div id="aside">
-                <h2 id="node-name">Node Details</h2><br/>
-                <div id="node-actions">
-                    Select a node to interact with it.
-                </div>
+
                 <div id="node-pang-actions" style="display:none">
                     <input type="button" onclick="down_node()" value="Mark Down">
                     <p style="margin:10px;">
@@ -153,9 +131,10 @@
                         in the ring and then take itself offline.
                     </p>
                 </div>
-            </div><!-- #aside -->
+            </div>--><!-- #aside -->
     
             <!-- footer, basho copyright -->
+            <!--
             <div id="footer">
                 <table width="100%">
                     <tr>
@@ -170,7 +149,7 @@
                         </td>
                     </tr>
                 </table>
-            </div><!-- #footer -->
+            </div>--><!-- #footer -->
 
         </div><!-- #content-container -->
         
