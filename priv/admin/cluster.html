@@ -38,45 +38,73 @@
                         <h3 class="gui-headline">Add Nodes to the Cluster...</h3>
                         <table>
                             <tr>
-                                <td>
+                                <td id="add-node-box">
                                     <div class="gui-field gui-text">
                                         <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
                                     </div>
                                 </td>
                                 <td class="button-column">
                                     <a id="add-node-button" class="gui-point-button gui-text-bold right">
-                                        <span class="gui-button-msg">ADD NODE</span>
+                                        <span class="gui-button-msg">Add Node</span>
                                     </a>
                                 </td>
                             </tr>
                         </table>
                     </div><!-- #add-node -->
+
+                    <h2 class="gui-headline-bold has-cut">Node List <img id="spinner" src="/admin/ui/spinner.gif"></h2>
+                    <div id="node-list" class="hide">
+                        <table class="list-table" id="cluster-table">
+                            <tr class="table-head has-cut">
+                                <td><h3 class="gui-headline">Status</h3></td>
+                                <!--<td class="light-box">&nbsp;</td>-->
+                                <td><h3 class="gui-headline">Name</h3></td>
+                                <td><h3 class="gui-headline">Controls</h3></td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        </table>
+                    </div>
                     
                     <!-- node template -->
                     <table class="hide">
                         <tr class="node row-template">
-                            <td class="light-reachable light-box"><a class="gui-light"></a></td>
+                            <td class="status-box gui-text">
+                                <a class="gui-light"><span class="status"></span></a>
+                            </td>
+                            <!--<td class="light-reachable light-box"><a class="gui-light"></a></td>-->
                             <td class="name-box gui-text">
                                 <div class="gui-field gui-text">
                                     <div class="name gui-field-input"></div>
                                 </div>
                             </td>
-                            <td class="status gui-text">&nbsp;</td>
+                            <td class="statistics">
+                                <a class="stats-button gui-rect-button gui-text-bold hide">
+                                    <span class="gui-button-msg">View Stats</span>
+                                </a>
+                                <a class="gui-rect-button-leaving gui-text-bold disabled hide">
+                                    <span class="gui-button-msg">View Stats</span>
+                                </a>
+                            </td>
+                            <td class="leave-box gui-text">
+                                <div class="gui-slider gui-text hide">
+                                    <div class="gui-slider-activate"></div>
+                                    <div class="gui-slider-groove">
+                                        <div class="gui-slider-msg isLeft">Leave Cluster</div>
+                                        <div class="gui-slider-msg isRight">Leaving</div>
+                                    </div>
+                                </div>
+                                <div class="gui-slider-leaving hide"></div>
+                            </td>
+                            <td class="markdown">
+                                <a class="markdown-button gui-point-button gui-text-bold hide">
+                                    <span class="gui-button-msg">Mark Down</span>
+                                </a>
+                            </td>
                         </tr>
                     </table>
                     <!-- end node template -->
-
                     
-                    <h2 class="gui-headline-bold has-cut">Node List <img id="spinner" src="/admin/ui/spinner.gif"></h2>
-                    <div id="node-list" class="hide">
-                        <table class="list-table" id="cluster-table">
-                            <tr class="table-head has-cut">
-                                <td class="light-box">&nbsp;</td>
-                                <td><h3 class="gui-headline">Name</h3></td>
-                                <td><h3 class="gui-headline">Status</h3></td>
-                            </tr>
-                        </table>
-                    </div>
                 </td> <!-- #content-well -->
                 
             </tr>

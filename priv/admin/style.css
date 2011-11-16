@@ -252,32 +252,41 @@ h3 {
     border: 0;
     height: 30px;
     outline: none;
+    font-family: menlo, monospace;
 }
 /* END CODE FOR TEXT FIELDS */
 
 /* CODE FOR POINT BUTTONS */
-.gui-point-button {
+.gui-point-button, .gui-rect-button, .gui-rect-button-leaving {
     display: block;
     width: 137px;
     height: 40px;
-    background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;
     cursor: pointer;
     border: 0;
+    margin-top: 3px;
 }
+.gui-point-button {background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;}
+.gui-rect-button, .gui-rect-button-leaving {background: url(/admin/ui/rectbutton-sprite.png) left top no-repeat transparent;}
+
 .gui-button-msg {
     display: block;
     width: auto;
     height: auto;
     padding-top: 7px;
     text-align: center;
-    text-transform: uppercase;
 }
-.gui-point-button:hover {background-position: left -40px;}
-.gui-point-button:active, .gui-point-button.pressed {background-position: left -80px !important;}
-.gui-point-button:active .gui-button-msg, .gui-point-button.pressed .gui-button-msg {padding-top: 9px;}
+.gui-point-button:hover,  .gui-rect-button:hover {background-position: left -40px;}
 
-input.gui-point-button {padding-bottom: 12px;}
-input.gui-point-button:active {padding-bottom: 9px;}
+.gui-point-button:active, .gui-point-button.pressed,
+.gui-rect-button:active,  .gui-rect-button.pressed {background-position: left -80px !important;}
+
+.gui-point-button:active  .gui-button-msg, 
+.gui-point-button.pressed .gui-button-msg,
+.gui-rect-button:active   .gui-button-msg, 
+.gui-rect-button.pressed  .gui-button-msg {padding-top: 9px;}
+
+input.gui-point-button, input.gui-rect-button {padding-bottom: 12px;}
+input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px;}
 
 .button-column {width: 150px;}
 /* END CODE FOR POINT BUTTONS */
@@ -285,15 +294,65 @@ input.gui-point-button:active {padding-bottom: 9px;}
 /* CODE FOR LIGHTS */
 .gui-light {
     display: block;
-    width: 36px;
-    height: 36px;
-    background: url(/admin/ui/light-sprite.png) left bottom no-repeat transparent;
+    width: auto;
+    height: 27px;
+    padding: 9px 0 0 32px;
+    background: url(/admin/ui/light-sprite.png) -5px bottom no-repeat transparent;
 }
-.gui-light.green  {background-position: left top;}
-.gui-light.red    {background-position: left -36px;}
-.gui-light.orange {background-position: left -72px;}
-.light-box {width: 36px;}
+.gui-light.green  {background-position: -5px top;}
+.gui-light.red    {background-position: -5px -36px;}
+.gui-light.orange {background-position: -5px -72px;}
 /* END CODE FOR LIGHTS */
+
+/* CODE FOR SLIDING SWITCHES */
+.gui-slider, .gui-slider-leaving {
+    background: url(/admin/ui/slider-groove.png) 4px 2px no-repeat transparent;
+    height: 36px;
+    width: 150px;
+    position: relative;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-top: 3px;
+}
+.gui-slider-leaving {
+    background: url(/admin/ui/leaving-slider.png) 4px 2px no-repeat transparent;
+}
+.gui-slider-groove.ui-slider {
+    background: transparent;
+    width: 117px;
+    height: 36px;
+    position: relative;
+}
+.gui-slider-msg {
+    height: auto;
+    width: 104px;;
+    position: absolute;
+    top: 2px;
+    left: 36px;
+    padding-top: 6px;
+}
+.gui-slider-msg.isLeft {display: block; left: 43px;}
+.gui-slider-msg.isRight {display: none; left: 18px;}
+.gui-slider .ui-slider-handle {
+    background: url(/admin/ui/slider-handle.png) left top no-repeat transparent;
+    height: 36px;
+    width: 36px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    outline: none;
+}
+.gui-slider-activate {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background:transparentansparent;
+    width: 34px;
+    height: 32px;
+}
+/* END CODE FOR SLIDING SWITCHES */
+
 
 .table-head td {
     padding-top: 8px;
@@ -310,6 +369,7 @@ input.gui-point-button:active {padding-bottom: 9px;}
 
 
 /* CODE FOR CLUSTER CONTENT */
+#add-node-box {padding-top: 3px;}
 #add-node {
     width: auto;
     height: 100px;
@@ -321,8 +381,8 @@ input.gui-point-button:active {padding-bottom: 9px;}
 }
 
 #cluster-table .node td {
-    font-size:small;
     padding: 5px 2px 4px;
+    height: 49px;
 }
 
 #cluster-table .node td.name-box {
@@ -331,6 +391,19 @@ input.gui-point-button:active {padding-bottom: 9px;}
 
 .name {
     padding: 8px 2px;
+    height: 22px;
+}
+
+.status-box {
+    width: 90px;
+}
+
+.status {
+    font-size: 16px;
+}
+
+.statistics, .markdown, .leave-box {
+    width: 137px;
 }
 
 #cluster-table .node .active {
@@ -457,7 +530,6 @@ input.field {
     padding:20px 0;
     margin:0 20px 0 0;
     display:inline;
-    font-size:small;
 }
 
 #aside h3 { 
@@ -488,7 +560,7 @@ input.field {
 }
 
 #ring-table div td {
-    font-size:small;
+
 }
 
 #ring-table div .active {
@@ -512,4 +584,5 @@ input.field {
 .has-cut  {background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
 .hide     {display: none;}
 
-.disabled, .offline {opacity: .5; filter: alpha(opacity=50);}
+.disabled, .down {opacity: .5; filter: alpha(opacity=50);}
+.offline  {color: #e85252;}
