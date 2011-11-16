@@ -12,10 +12,8 @@ $(function() {
 
     /* ENABLE THE SPLIT BAR */
     var splitBar = $('#split-bar');
-    /* doing this in cluster.js now
     var splitBarParent = splitBar.parent();
     splitBar.css('height', splitBarParent.css('height'));
-    */
     
     /* If you need to resize the split bar when the window resizes
     var timer;
