@@ -100,18 +100,37 @@ $(document).ready(function () {
         });
     }
     
+    function set_light_color (jqObj, newColor) {
+        var colors = ['green', 'gray', 'orange', 'red'], i, l = colors.length;
+        newColor = newColor.toLowerCase();
+        for (i = 0; i < l; i += 1) {
+            if (colors[i] === newColor) {
+                jqObj.addClass(newColor);
+            } else {
+                jqObj.removeClass(colors[i]);
+            }
+        }
+    }
+    
     function update_node_row (node, row) {
+        var status = node.status.toLowerCase();
         $('.name', row).text(node.name);
         $('.status', row).text(node.status);
             
-        // highlight offline nodes
-        if (node.reachable === true) {
-            $('.name', row).removeClass('offline');
-            $('.light-reachable .gui-light', row).addClass('green');
-        } else {
+        // handle lights
+        if (status === 'valid') {
+            if (node.reachable === true) {
+                $('.name', row).removeClass('offline');
+                set_light_color($('.light-reachable .gui-light', row), 'green');
+            } else if (node.reachable === false) {
+                $('.name', row).addClass('offline');
+                set_light_color($('.light-reachable .gui-light', row), 'gray');
+            }
+        } else if (status === 'leaving') {
             $('.name', row).addClass('offline');
-            $('.light-reachable .gui-light', row).removeClass('green');
+            set_light_color($('.light-reachable .gui-light', row), 'orange');
         }
+        
     }
     
     function cluster_node_row (node) {

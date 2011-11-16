@@ -36,32 +36,31 @@
                     <h1 class="gui-headline-bold">Cluster Overview <span id="total-number"></span></h1>
                     <div id="add-node">
                         <h3 class="gui-headline">Add Nodes to the Cluster...</h3>
-                        
-                            <table>
-                                <tr>
-                                    <td>
-                                        <div class="gui-field gui-text">
-                                            <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
-                                        </div>
-                                    </td>
-                                    <td class="button-column">
-                                        
-                                        <a id="add-node-button" class="gui-point-button gui-text-bold right">
-                                            <span class="gui-button-msg">ADD NODE</span>
-                                        </a>
-                                        
-                                        <!--<input id="add-node-button" class="gui-point-button gui-text right" type="submit" value="ADD NODE" />-->
-                                    </td>
-                                </tr>
-                            </table>
-                        
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="gui-field gui-text">
+                                        <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
+                                    </div>
+                                </td>
+                                <td class="button-column">
+                                    <a id="add-node-button" class="gui-point-button gui-text-bold right">
+                                        <span class="gui-button-msg">ADD NODE</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
                     </div><!-- #add-node -->
                     
                     <!-- node template -->
                     <table class="hide">
                         <tr class="node row-template">
                             <td class="light-reachable light-box"><a class="gui-light"></a></td>
-                            <td class="name gui-text">&nbsp;</td>
+                            <td class="name gui-text">
+                                <div class="gui-field gui-text">
+                                    <div class="gui-field-input"></div>
+                                </div>
+                            </td>
                             <td class="status gui-text">&nbsp;</td>
                         </tr>
                     </table>

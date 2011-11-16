@@ -1,6 +1,13 @@
 // Framework for the cool UI tricks
 
 $(function() {
+
+
+    $("#node-to-add").keyup(function(event){
+        if(event.keyCode === 13){
+            $('#add-node-button').trigger('click');
+        }
+    });
     
 
     /* ENABLE THE SPLIT BAR */
