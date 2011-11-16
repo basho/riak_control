@@ -124,11 +124,14 @@ $(document).ready(function () {
                 set_light_color($('.light-reachable .gui-light', row), 'green');
             } else if (node.reachable === false) {
                 $('.name', row).addClass('offline');
-                set_light_color($('.light-reachable .gui-light', row), 'gray');
+                set_light_color($('.light-reachable .gui-light', row), 'red');
             }
         } else if (status === 'leaving') {
-            $('.name', row).addClass('offline');
+            //$('.name', row).addClass('offline');
             set_light_color($('.light-reachable .gui-light', row), 'orange');
+        } else if (status === 'down') {
+            //$('.name', row).addClass('offline')
+            set_light_color($('.light-reachable .gui-light', row), 'gray');
         }
         
     }
@@ -202,6 +205,8 @@ $(document).ready(function () {
     
         remove_node_rows(nodes);
         
+        resize_split_bar();
+        
         // wait a little and update
         ping_cluster_status();
     }
@@ -210,6 +215,13 @@ $(document).ready(function () {
         setTimeout(get_cluster_status, 2000);
     }
     
+    function resize_split_bar () {
+        var splitbar = $('#split-bar');
+        var parentheight = splitbar.parent().css('height');
+        splitbar.css('height', parentheight);
+    }
+    
+    resize_split_bar();
     initialize();
     enable_adding();
     

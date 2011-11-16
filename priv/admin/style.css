@@ -297,6 +297,7 @@ input.gui-point-button:active {padding-bottom: 9px;}
 
 .table-head td {
     padding-top: 8px;
+    border-bottom: 8px solid transparent;
 }
 .list-table {
     margin-bottom: 8px;
@@ -315,13 +316,21 @@ input.gui-point-button:active {padding-bottom: 9px;}
 }
 
 #cluster-table .node {
-    padding:2px 0 2px 0;
     cursor:pointer;
     cursor:hand;
 }
 
 #cluster-table .node td {
     font-size:small;
+    padding: 5px 2px 4px;
+}
+
+#cluster-table .node td.name-box {
+    padding-right: 15px;
+}
+
+.name {
+    padding: 8px 2px;
 }
 
 #cluster-table .node .active {
