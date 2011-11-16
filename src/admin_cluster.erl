@@ -20,7 +20,7 @@ routes () ->
      {admin_routes:cluster_route(["down",node]),?MODULE,down}].
 
 %% entry-point for the resource from webmachine
-init (Action) -> 
+init (Action) ->
     {ok,Action}.
 
 %% redirect to SSL port if using HTTP
@@ -38,6 +38,8 @@ content_types_provided (Req,C) ->
 %% all actions return the same format
 cluster_action_result (Error={error,_},Req,C) ->
     {{error,mochijson2:encode({struct,[Error]})},Req,C};
+cluster_action_result (Error={badrpc,_},Req,C) ->
+    {{error,mochijson2:encode({struct,[Error]})},Req,C};
 cluster_action_result (_,Req,C) ->
     {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
 
@@ -47,15 +49,29 @@ to_json (Req,C=list) ->
     Status=[{struct,[{"name",N},
                      {"status",S},
                      {"reachable",Online}
-                    ]} 
+                    ]}
             || {N,S,Online,_} <- Nodes],
     {mochijson2:encode(Status),Req,C};
 
 %% join this node to the cluster of another ring
 to_json (Req,C=join) ->
+    {ok,Ring}=riak_core_ring_manager:get_my_ring(),
     NodeStr=dict:fetch(node,wrq:path_info(Req)),
-    Result=riak_core:join(NodeStr),
-    cluster_action_result(Result,Req,C);
+    Node=list_to_atom(NodeStr),
+
+    %% if we're a member of a single-node cluster (us) then we're
+    %% going to join the other node's ring, otherwise we'll make
+    %% the target node join our ring.
+    case riak_core_ring:all_members(Ring) of
+        [_Me] ->
+            %% we're a single-node cluster, join the other guy...
+            Result=riak_core:join(Node),
+            cluster_action_result(Result,Req,C);
+        _ ->
+            %% we have a cluster, make them join us
+            Result=rpc:call(Node,riak_core,join,[node()]),
+            cluster_action_result(Result,Req,C)
+    end;
 
 %% mark a node in the cluster as down
 to_json (Req,C=down) ->

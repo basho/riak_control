@@ -19,8 +19,7 @@ routes () ->
      {admin_routes:node_route(["stats"]),?MODULE,stats},
      {admin_routes:node_route(["details"]),?MODULE,details},
      {admin_routes:node_route(["stop"]),?MODULE,stop},
-     {admin_routes:node_route(["leave"]),?MODULE,leave},
-     {admin_routes:node_route(["add"]),?MODULE,add}].
+     {admin_routes:node_route(["leave"]),?MODULE,leave}].
 
 %% entry-point for the resource from webmachine
 init (Action) -> {ok,Action}.
@@ -52,30 +51,8 @@ to_json (Req,C=stop) ->
     perform_rpc_action(Req,C,riak_core,stop,[]);
 to_json (Req,C=leave) ->
     perform_rpc_action(Req,C,riak_core,leave,[]);
-to_json (Req,C=add) ->
-    join_node(Req,C);
 to_json (Req,C) ->
     node_action_result({error,{struct,[{unknown_action,C}]}},Req,C).
-
-%% check to see if we should join another node or it should join us
-join_node (Req,C) ->
-    {ok,Ring}=riak_core_ring_manager:get_my_ring(),
-
-    %% if we're a member of a single-node cluster (us) then we're
-    %% going to join the other node's ring, otherwise we'll make
-    %% the target node join our ring.
-    case riak_core_ring:all_members(Ring) of
-        [_Me] ->
-            %% don't use target_node as the node atom won't exist yet
-            NodeStr=dict:fetch(node,wrq:path_info(Req)),
-            Result=case riak_core:join(NodeStr) of
-                       Error={error,_Reason} -> Error;
-                       Ok -> Ok
-                   end,
-            node_action_result(Result,Req,C);
-        _ ->
-            perform_rpc_action(Req,C,riak_core,join,[node()])
-    end.
 
 %% stats aren't perfectly formatted json (TODO: fix that!)
 get_node_stats (Req,C) ->

@@ -4,10 +4,10 @@
 $(document).ready(function () {
 
     var this_node = undefined;
-    
-    
-    
-    
+
+
+
+
     /* MAKE SLIDING SWITCHES WORK */
     // Define a function that will show the proper message when the slider moves
     function showMsg (elem) {
@@ -24,7 +24,7 @@ $(document).ready(function () {
     // Enable jQuery UI slider method on divs classed 'gui-slider-groove'.
     // Contains some extra handling for when someone lets go of the slider
     // before it has moved all the way over and for handling the message
-    // as well. 
+    // as well.
     $('.gui-slider-groove').live('initSlider', function () {
         $(this).slider({
             slide : function() {
@@ -44,7 +44,7 @@ $(document).ready(function () {
                     leave_cluster(node);
                 } else if (parseInt(handlePos) < (me.width() * .66)) {
                     myHandle.animate({left:'0px'},{
-                        queue:false, 
+                        queue:false,
                         duration:200,
                         complete:function() {
                             showMsg($(this).parent());
@@ -52,11 +52,11 @@ $(document).ready(function () {
                     });
                 } else {
                     myHandle.animate({left:'100%'},{
-                        queue:false, 
-                        duration:200, 
+                        queue:false,
+                        duration:200,
                         complete:function () {
                             var node = $(this).closest('tr').find('.name').text();
-    	                    showMsg($(this).parent()); 
+                            showMsg($(this).parent());
                             leave_cluster(node);
                         }
                     });
@@ -75,31 +75,31 @@ $(document).ready(function () {
         me.next('.gui-slider-groove').find('.gui-slider-msg').fadeOut(200);
         if (handlePos < 100) {
             myHandle.animate({left:'100%'},{
-                queue:false, 
-                duration:1000, 
+                queue:false,
+                duration:1000,
                 complete:function () {
                     var node = $(this).closest('tr').find('.name').text();
-                    showMsg($(this).parent()); 
+                    showMsg($(this).parent());
                     leave_cluster(node);
                 }
             });
         }
     });
-    
+
     // END CODE FOR SLIDING SWITCHES
-    
-    
-    
+
+
+
 
     function initialize () {
         get_cluster_status();
-    
+
         // hide the menu when we leave it
         $('#cmenu').mouseleave(function () {
             $('#cmenu').hide();
         });
     }
-    
+
     function get_cluster_status () {
         $.ajax({
             method:'GET',
@@ -109,7 +109,7 @@ $(document).ready(function () {
             failure:ping_cluster_status
         });
     }
-    
+
     function perform_node_action (action) {
         $.ajax({
             url: action,
@@ -123,54 +123,54 @@ $(document).ready(function () {
             failure: function (err) { alert(err); }
         });
     }
-    
+
     function disable_adding() {
         $('#add-node').addClass('disabled');
         $('#node-to-add').attr('disabled', 'disabled');
         $('#add-node-button').unbind('click');
     }
-    
+
     function enable_adding () {
         $('#add-node').removeClass('disabled');
         $('#node-to-add').removeAttr('disabled', 'disabled');
         $('#add-node-button').bind('click', add_node);
     }
-    
+
     function add_node () {
         disable_adding();
-        perform_node_action('/admin/node/' + $('#node-to-add').val() + '/add');
+        perform_node_action('/admin/cluster/join/' + $('#node-to-add').val());
     }
-    
+
     function down_node (node) {
         perform_node_action('/admin/cluster/down/' + (node || this_node))
     }
-    
+
     function stop_node () {
         perform_node_action('/admin/node/' + this_node + '/stop');
         show_node_actions();
     }
-    
+
     function leave_cluster (node) {
         perform_node_action('/admin/node/' + (node || this_node) + '/leave');
     }
-    
+
     function show_node_actions (node) {
         $('#node-name').html(node);
         $('#node-pong-actions').hide();
         $('#node-pang-actions').hide();
         $('#node-actions').html('<img src="/admin/ui/spinner.gif">');
         $('#node-actions').show();
-    
+
         function action (url, label) {
             return '<input type="button" value="' + label + '" onclick="perform_node_action(\'' + url + '\')">';
         }
-    
+
         function show_actions (data) {
             this_node = node;
-    
+
             // get rid of the spinner
             $('#node-actions').hide();
-    
+
             // show either pong or pang actions
             if (data.result != "ok") {
                 $('#node-pang-actions').show();
@@ -178,14 +178,14 @@ $(document).ready(function () {
                 $('#node-pong-actions').show();
             }
         }
-    
+
         $.ajax({
             url:'/admin/node/' + node + '/ping',
             dataType:'json',
             success:show_actions
         });
     }
-    
+
     function set_light_color (jqObj, newColor) {
         var colors = ['green', 'gray', 'orange', 'red'], i, l = colors.length;
         newColor = newColor.toLowerCase();
@@ -197,7 +197,7 @@ $(document).ready(function () {
             }
         }
     }
-    
+
     function set_operability_class (jqObj, newClass) {
         var classes = ['offline', 'disabled', 'down', 'normal'], i, l = classes.length;
         newClass = newClass.toLowerCase();
@@ -209,13 +209,13 @@ $(document).ready(function () {
             }
         }
     }
-    
+
     function update_node_row (node, row) {
         var status = node.status.toLowerCase();
         $('.name', row).text(node.name);
         $('.status', row).text(node.status);
         $('.gui-slider-groove').trigger('initSlider');
-        
+
         // handle colors and operability
         if (status === 'valid') {
             if (node.reachable === true) {
@@ -242,45 +242,45 @@ $(document).ready(function () {
             set_operability_class($('.name', row), 'down');
             set_light_color($('.gui-light', row), 'gray');
         }
-        
+
     }
-    
+
     function cluster_node_row (node) {
         var id = node.name.split('@')[0];
         var rows = $('#cluster-table #' + id);
-    
+
         // create a new row
         if (rows.length === 0) {
             row = $('.row-template').clone();
-    
+
             // initialize the row
             update_node_row(node, row);
-    
+
             // set the id for this row and display it
             $(row).attr('id', id);
             $(row).removeClass('row-template');
             $(row).show();
-    
+
             // create a click handler for this row
             /*
             $(row).click(function (e) {
                 $('#cmenu').show();
-                $('#cmenu').offset({ top:e.pageY - 10, 
+                $('#cmenu').offset({ top:e.pageY - 10,
                                      left:e.pageX - 10
                                    });
             });
             */
-    
+
             // add it to the table
             $('#cluster-table').append(row);
         } else {
             update_node_row(node, rows[0]);
         }
     }
-    
+
     function remove_node_rows (nodes) {
         var rows = $('#cluster-table .node'), i, r;
-    
+
         // check to see if a node is listed in the cluster
         function node_in_cluster_p (node) {
             var j, l = nodes.length;
@@ -291,47 +291,47 @@ $(document).ready(function () {
             }
             return false;
         }
-    
+
         // remove any node rows no long in the cluster
         r = rows.length;
         for(i = 0; i < 4; i += 1) {
             var node = $('.name', rows[i]).text();
-    
+
             if (node_in_cluster_p(node) === false) {
                 $(rows[i]).remove();
             }
         }
     }
-    
+
     function update_cluster_status (nodes) {
         var html = '', i, l = nodes.length;
-        
+
         $('#spinner').hide();
         $('#node-list').fadeIn(300);
         $('#total-number').html('(' + l + ' ' + ((l === 1)?'Node':'Nodes') + ' Total)');
-    
+
         for(i = 0; i < l; i += 1) {
             cluster_node_row(nodes[i]);
         }
-    
+
         remove_node_rows(nodes);
-        
+
         // wait a little and update
         ping_cluster_status();
     }
-    
+
     function ping_cluster_status () {
         setTimeout(get_cluster_status, 2000);
     }
-    
+
     /* MAKE THE MARKDOWN BUTTON STAY DOWN ONCE CLICED */
     $('.markdown-button').live('click', function () {
         var node = $(this).closest('tr').find('.name').text();
         down_node(node);
         $(this).addClass('pressed');
     });
-    
+
     initialize();
     enable_adding();
-    
+
 });
