@@ -47,7 +47,6 @@ $(document).ready(function () {
                         queue:false, 
                         duration:200,
                         complete:function() {
-                            $(this).parent().parent().addClass('hide');
                             showMsg($(this).parent());
                         }
                     });
@@ -221,12 +220,11 @@ $(document).ready(function () {
         if (status === 'valid') {
             if (node.reachable === true) {
                 $('.markdown-button', row).addClass('hide');
-                $('.gui-slider, .stats-button', row).removeClass('hide');
+                $('.gui-slider', row).removeClass('hide');
                 set_operability_class($('.name', row), 'normal');
                 set_light_color($('.gui-light', row), 'green');
             } else {
                 $('.markdown-button', row).removeClass('hide').removeClass('pressed');
-                $('.stats-button', row).addClass('hide');
                 $('.gui-slider', row).addClass('hide');
                 set_light_color($('.gui-light', row), 'red');
                 set_operability_class($('.name', row), 'offline');
@@ -236,11 +234,9 @@ $(document).ready(function () {
             set_light_color($('.gui-light', row), 'orange');
             $('.gui-slider', row).addClass('hide');
             $('.gui-slider-leaving', row).removeClass('hide');
-            $('.stats-button', row).addClass('hide');
             $('.gui-rect-button-leaving', row).removeClass('hide');
             set_operability_class($('.status', row), 'disabled');
             set_operability_class($('.name', row), 'disabled');
-            set_operability_class($('.stats-button', row), 'disabled');
         } else if (status === 'down') {
             $('.markdown-button', row).removeClass('hide').addClass('pressed');
             set_operability_class($('.name', row), 'down');

@@ -257,7 +257,7 @@ h3 {
 /* END CODE FOR TEXT FIELDS */
 
 /* CODE FOR POINT BUTTONS */
-.gui-point-button, .gui-rect-button, .gui-rect-button-leaving {
+.gui-point-button, .gui-rect-button {
     display: block;
     width: 137px;
     height: 40px;
@@ -266,7 +266,6 @@ h3 {
     margin-top: 3px;
 }
 .gui-point-button {background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;}
-.gui-rect-button, .gui-rect-button-leaving {background: url(/admin/ui/rectbutton-sprite.png) left top no-repeat transparent;}
 
 .gui-button-msg {
     display: block;
