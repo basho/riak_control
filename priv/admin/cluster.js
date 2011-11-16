@@ -26,13 +26,32 @@ $(document).ready(function () {
     
     function perform_node_action (action) {
         $.ajax({
-            url:action,
-            dataType:'json',
-            failure:function (err) { alert(err); }
+            url: action,
+            dataType: 'json',
+            complete: enable_adding,
+            success: function(x,y,z) {
+                if (x.result.toLowerCase() === 'ok') {
+                    $('#add-node').val('');
+                }
+            },
+            failure: function (err) { alert(err); }
         });
     }
     
+    function disable_adding() {
+        $('#add-node').addClass('disabled');
+        $('#node-to-add').attr('disabled', 'disabled');
+        $('#add-node-button').unbind('click');
+    }
+    
+    function enable_adding () {
+        $('#add-node').removeClass('disabled');
+        $('#node-to-add').removeAttr('disabled', 'disabled');
+        $('#add-node-button').bind('click', add_node);
+    }
+    
     function add_node () {
+        disable_adding();
         perform_node_action('/admin/node/' + $('#node-to-add').val() + '/add');
     }
     
@@ -86,10 +105,12 @@ $(document).ready(function () {
         $('.status', row).text(node.status);
             
         // highlight offline nodes
-        if (node.reachable === false) {
-            $('.name', row).addClass('offline');
-        } else {
+        if (node.reachable === true) {
             $('.name', row).removeClass('offline');
+            $('.light-reachable .gui-light', row).addClass('green');
+        } else {
+            $('.name', row).addClass('offline');
+            $('.light-reachable .gui-light', row).removeClass('green');
         }
     }
     
@@ -99,7 +120,7 @@ $(document).ready(function () {
     
         // create a new row
         if (rows.length === 0) {
-            row = $('.row-template').clone().removeClass('hide');
+            row = $('.row-template').clone();
     
             // initialize the row
             update_node_row(node, row);
@@ -171,7 +192,6 @@ $(document).ready(function () {
     }
     
     initialize();
-    
-    $('#add-node-button').click(add_node);
+    enable_adding();
     
 });

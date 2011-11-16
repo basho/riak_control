@@ -36,33 +36,50 @@
                     <h1 class="gui-headline-bold">Cluster Overview <span id="total-number"></span></h1>
                     <div id="add-node">
                         <h3 class="gui-headline">Add Nodes to the Cluster...</h3>
-                        <table>
-                            <tr>
-                                <td>
-                                    <div class="gui-field gui-text">
-                                        <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
-                                    </div>
-                                </td>
-                                <td class="button-column">
-                                    <a id="add-node-button" class="gui-point-button gui-text-bold right">
-                                        <span class="gui-button-msg">ADD NODE</span>
-                                    </a>
-                                </td>
-                            </tr>
-                        </table>
+                        
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div class="gui-field gui-text">
+                                            <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
+                                        </div>
+                                    </td>
+                                    <td class="button-column">
+                                        
+                                        <a id="add-node-button" class="gui-point-button gui-text-bold right">
+                                            <span class="gui-button-msg">ADD NODE</span>
+                                        </a>
+                                        
+                                        <!--<input id="add-node-button" class="gui-point-button gui-text right" type="submit" value="ADD NODE" />-->
+                                    </td>
+                                </tr>
+                            </table>
+                        
                     </div><!-- #add-node -->
+                    
+                    <!-- node template -->
+                    <table class="hide">
+                        <tr class="node row-template">
+                            <td class="light-reachable light-box"><a class="gui-light"></a></td>
+                            <td class="name gui-text">&nbsp;</td>
+                            <td class="status gui-text">&nbsp;</td>
+                        </tr>
+                    </table>
+                    <!-- end node template -->
+
                     
                     <h2 class="gui-headline-bold has-cut">Node List <img id="spinner" src="/admin/ui/spinner.gif"></h2>
                     <div id="node-list" class="hide">
-                        <table class="list-table">
+                        <table class="list-table" id="cluster-table">
                             <tr class="table-head has-cut">
+                                <td class="light-box">&nbsp;</td>
                                 <td><h3 class="gui-headline">Name</h3></td>
                                 <td><h3 class="gui-headline">Status</h3></td>
                             </tr>
                         </table>
-                        <div id="cluster-table"></div>
                     </div>
-                </td>
+                </td> <!-- #content-well -->
+                
             </tr>
         </table>
     </div><!-- #wrapper -->
@@ -78,16 +95,6 @@
 
     <!-- page container -->
     <div id="container">
-    
-        <!-- node template -->
-        <div class="node row-template hide">
-            <table class="list-table">
-                <tr>
-                    <td class="name gui-text">node</td>
-                    <td class="status gui-text">status</td>
-                </tr>
-            </table>
-        </div>
         
         <!-- node context menu -->
         <!--

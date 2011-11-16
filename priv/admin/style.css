@@ -262,6 +262,7 @@ h3 {
     height: 40px;
     background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;
     cursor: pointer;
+    border: 0;
 }
 .gui-button-msg {
     display: block;
@@ -274,8 +275,25 @@ h3 {
 .gui-point-button:hover {background-position: left -40px;}
 .gui-point-button:active, .gui-point-button.pressed {background-position: left -80px !important;}
 .gui-point-button:active .gui-button-msg, .gui-point-button.pressed .gui-button-msg {padding-top: 9px;}
+
+input.gui-point-button {padding-bottom: 12px;}
+input.gui-point-button:active {padding-bottom: 9px;}
+
 .button-column {width: 150px;}
 /* END CODE FOR POINT BUTTONS */
+
+/* CODE FOR LIGHTS */
+.gui-light {
+    display: block;
+    width: 36px;
+    height: 36px;
+    background: url(/admin/ui/light-sprite.png) left bottom no-repeat transparent;
+}
+.gui-light.green  {background-position: left top;}
+.gui-light.red    {background-position: left -36px;}
+.gui-light.orange {background-position: left -72px;}
+.light-box {width: 36px;}
+/* END CODE FOR LIGHTS */
 
 .table-head td {
     padding-top: 8px;
@@ -295,6 +313,34 @@ h3 {
     width: auto;
     height: 100px;
 }
+
+#cluster-table .node {
+    padding:2px 0 2px 0;
+    cursor:pointer;
+    cursor:hand;
+}
+
+#cluster-table .node td {
+    font-size:small;
+}
+
+#cluster-table .node .active {
+    background:#fe9925;
+    font-color:#000;
+}
+
+#cluster-table .node:hover {
+    background: url(/admin/ui/node-bg.png) left top repeat transparent;
+    background: rgba(255,255,255,.1);
+}
+
+/*
+#cluster-table .node .offline {
+    font-weight:bold;
+    color:#f00;
+}
+*/
+
 
 /* END CODE FOR CLUSTER CONTENT */
 
@@ -421,33 +467,6 @@ input.field {
     height:32px;
 }
 
-/*
- * CLUSTER STYLE
- */
-
-#cluster-table .node {
-    padding:2px 0 2px 0;
-    cursor:pointer;
-    cursor:hand;
-}
-
-#cluster-table .node td {
-    font-size:small;
-}
-
-#cluster-table .node .active {
-    background:#fe9925;
-    font-color:#000;
-}
-
-#cluster-table .node:hover {
-    background:#fe9925;
-}
-
-#cluster-table .node .offline {
-    font-weight:bold;
-    color:#f00;
-}
 
 /*
  * RING STYLE
@@ -473,13 +492,15 @@ input.field {
 }
 
 /* CASCADING STYLES */
-.left   {float: left;}
-.right  {float: right;}
-.clear  {clear: both;}
-.clearl {clear: left;}
-.clearr {clear: right;}
-.block  {display: block;}
-.inline {display: inline;}
-.inblock{display: inline-block;}
-.has-cut{background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
-.hide   {display: none;}
+.left     {float: left;}
+.right    {float: right;}
+.clear    {clear: both;}
+.clearl   {clear: left;}
+.clearr   {clear: right;}
+.block    {display: block;}
+.inline   {display: inline;}
+.inblock  {display: inline-block;}
+.has-cut  {background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
+.hide     {display: none;}
+
+.disabled, .offline {opacity: .5; filter: alpha(opacity=50);}
