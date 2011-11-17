@@ -89,22 +89,31 @@ h3 {
     padding-bottom: 8px;
 }
 
+
 #tooltips {
     position: fixed;
     bottom: 0;
     width: 100%;
-    background: red;
     height: 50px;
+    background: #1d1d1d;
+    background: rgba(0, 0, 0, .4);
+    border-top: 3px solid #444;
+    border-top: 3px solid rgba(255, 255, 255, .2);
+    -webkit-box-shadow: 0 0 15px #111; 
+    -moz-box-shadow: 0 0 15px #111;
+    box-shadow: 0 0 15px #111;
 }
 #display-tips {
     width: auto;
-    height: auto;
-    background: blue;
-    color: #fff;
+    height: 50px;
+    background: ;
     padding: 0 12px;
     line-height: 1.3;
     vertical-align: middle;
+    font-size: 13px;
+    color: #888;
 }
+
 
 /* CODE FOR PRETTY TEXT */
 .gui-text, .gui-text-bold {
@@ -362,6 +371,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     top: 0;
     left: 0;
     outline: none;
+    cursor: pointer;
 }
 .gui-slider-activate {
     position: absolute;
@@ -397,8 +407,8 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 
 #cluster-table .node td {
-    padding: 5px 2px 4px;
-    height: 49px;
+    padding: 2px;
+    height: 52px;
 }
 
 #cluster-table .node td.name-box {
@@ -415,7 +425,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 
 .status {
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .statistics, .markdown, .leave-box {

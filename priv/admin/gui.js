@@ -92,6 +92,7 @@ $(function() {
     $('.gui-field-input').wrap('<div class="gui-field-bg">');
     
     
+    
     /* CODE FOR ALL THE TOOLTIPS */
     function emptyTips () {
         $('#display-tips').empty();
@@ -99,12 +100,36 @@ $(function() {
     function displayTips (str) {
         $('#display-tips').html(str);
     }
+    
     $('#add-node table').hover(function () {
         displayTips('Type a node name (for example: dev2@127.0.0.1) and hit "Add Node" to add it to the cluster.');
     }, emptyTips);
+    
     $('.leave-box .gui-slider').live('mouseover', function () {
         displayTips('This will cause the node to begin the process of leaving the cluster. It will handoff its partition data to other partitions in the ring and then take itself offline.');
     }).live('mouseout', emptyTips);
+    
+    $('.current-host').live('mouseover', function () {
+        displayTips('This node cannot be shutdown or removed from Riak Control because it is currently hosting the app.');
+    }).live('mouseout', emptyTips);
+    
+    $('.markdown-button').live('mouseover', function () {
+        displayTips('This node is currently offline.  If some nodes are stuck trying to leave the cluster or handoff data, then marking this node as "down" should take care of the problem.');
+    }).live('mouseout', emptyTips);
+    
+    $('.status-box').live('mouseover', function () {
+        var mytext = $(this).find('.status').text();
+        if (mytext === 'valid') {
+            displayTips('This node is currently online and working.');
+        } else if (mytext === 'unreachable') {
+            displayTips('This node is offline and is not currently responding to requests.');
+        } else if (mytext === 'down') {
+            displayTips('You have marked this node as "down".  It is currently offline and must be restarted manually to rejoin the cluster.');
+        } else if (mytext === 'leaving') {
+            displayTips('This node is in process of leaving the cluster.  While it is handing off its partition data, you cannot interact with it.');
+        }
+    }).live('mouseout', emptyTips);
+    
     
         
     

@@ -63,6 +63,7 @@ $(document).ready(function () {
                 }
             }
         });
+        $(this).find('a').removeAttr('href');
     });
     /*
     Enable this section if your slider message container does not extend to the edge
@@ -134,14 +135,18 @@ $(document).ready(function () {
     }
 
     function enable_adding () {
+        var button = $('#add-node-button');
+        var boundevents = button.data('events');
         $('#add-node').removeClass('disabled');
         $('#node-to-add').removeAttr('disabled', 'disabled');
-        $('#add-node-button').bind('click', function () {
-            $('#node-error').hide();
-            if ($('#node-to-add').val().length) {
-                add_node();
-            }
-        });
+        if (!boundevents || !boundevents.click || boundevents.click.length < 1) {
+            button.bind('click', function () {
+                $('#node-error').hide();
+                if ($('#node-to-add').val().length) {
+                    add_node();
+                }
+            });
+        }
     }
 
     function add_node () {
@@ -226,12 +231,14 @@ $(document).ready(function () {
         
         // if the node is the one hosting the console you cannot eff with it
         if (node.me === true) {
+            //$(row).attr('name', 'host');
             $('.markdown-button', row).addClass('hide');
             $('.leave-box', row).html('<a class="current-host gui-text">Hosting Riak Control</a>');
             set_operability_class($('.name', row), 'normal');
             set_light_color($('.gui-light', row), 'green');
         } else {
-
+            //$(row).attr('name', '');
+            
             // handle colors and operability
             if (status === 'valid') {
                 if (node.reachable === true) {
