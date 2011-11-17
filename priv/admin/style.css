@@ -67,6 +67,8 @@ body {
     padding: 8px 0 0 0;
 }
 
+a {text-decoration: none;}
+
 h1 {
     font-size: 48px;
     letter-spacing: 2px;
@@ -183,7 +185,7 @@ h3 {
 #nav-objects   {background-position:14px -90px;}
 #nav-mapreduce {background-position:14px -140px;}
 #nav-graphs    {background-position:14px -192px;}
-#nav-console   {background-position:14px -248px;}
+#nav-logs      {background-position:14px -248px;}
 #nav-support   {background-position:14px -300px;}
 .nav-item {
     display: block;
@@ -346,7 +348,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     position: absolute;
     top: 0;
     right: 0;
-    background:transparentansparent;
+    background:transparent;
     width: 34px;
     height: 32px;
 }
@@ -373,10 +375,6 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     width: auto;
     height: 100px;
     position: relative;
-}
-
-#cluster-table .node {
-
 }
 
 #cluster-table .node td {
@@ -416,13 +414,15 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 
 #node-error {
-    height: 18px;
+    height: 16px;
     position: absolute;
     top: 68px;
     left: 0;
     font-size: 13px;
-    letter-spacing: 1px;
 }
+#node-error .error-text {letter-spacing: 1px;}
+#node-error .error-link {font-size: 13px;}
+
 
 /*
 #cluster-table .node .offline {
@@ -463,98 +463,6 @@ input.field {
     padding:4px;
 }
 
-/*
- * CONTEXT MENU STYLE
- */
-
-#cmenu {
-    border:1px solid blue;
-}
-
-#cmenu ul {
-    margin:0; 
-    padding:0.3em;
-    list-style-type:none;
-    background-color:#fff;
-}
-
-#cmenu ul li:hover {
-    background-color:#ddd;
-}
-
-#cmenu ul hr {
-    border:0;
-    border-bottom:1px solid grey;
-    margin:3px 0px 3px 0px; 
-    width:10em;
-}
-
-#cmenu ul a {
-    border:0 !important;
-}
-
-#cmenu ul a:hover {
-    text-decoration:underline !important;
-}
-
-#cmenu ul .topSep {
-    font-size:90%;
-    border-top:1px solid gray;
-    margin-top:0.3em; 
-    padding-top:0.3em;
-}
-
-/*
- * CONTENT STYLE
- */
-
-#content-container {
-    float:left;
-    width:900px;
-    background:#fff;
-    margin-top: 80px;
-}
-
-#content {
-    clear:left;
-    float:left;
-    width:560px;
-    padding:20px 0;
-    margin:0 0 0 30px;
-    display:inline;
-}
-
-#content h2 { 
-    margin:0; 
-}
-
-/*
- * ASIDE PANEL STYLE
- */
-
-#aside {
-    float:right;
-    width:240px;
-    padding:20px 0;
-    margin:0 20px 0 0;
-    display:inline;
-}
-
-#aside h3 { 
-    margin:0; 
-}
-
-/*
- * FOOTER STYLE
- */
-
-#footer {
-    clear:both;
-    background:#ccc;
-    text-align:right;
-    padding:8px;
-    height:32px;
-}
 
 
 /*
@@ -591,6 +499,10 @@ input.field {
 .inblock  {display: inline-block;}
 .has-cut  {background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
 .hide     {display: none;}
+.monospace{font-family: menlo, monospace;}
+
+.blue-link:hover {color: #9edad6;}
+.underline:hover {text-decoration: underline;}
 
 .disabled, .down {opacity: .5; filter: alpha(opacity=50);}
 .offline  {color: #e85252;}

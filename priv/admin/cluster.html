@@ -25,7 +25,7 @@
                             <li id="nav-objects" class="nav-li"><a class="gui-text-bold nav-item">Objects</a></li>
                             <li id="nav-mapreduce" class="nav-li"><a class="gui-text-bold nav-item">Map/Reduce</a></li>
                             <li id="nav-graphs" class="nav-li"><a class="gui-text-bold nav-item">Graphs</a></li>
-                            <li id="nav-console" class="nav-li"><a class="gui-text-bold nav-item">Console</a></li>
+                            <li id="nav-logs" class="nav-li"><a class="gui-text-bold nav-item">Logs</a></li>
                             <li id="nav-support" class="nav-li"><a class="gui-text-bold nav-item">Support</a></li>
                         </ul>
                         <div id="active-nav"></div>
@@ -50,7 +50,10 @@
                                 </td>
                             </tr>
                         </table>
-                        <div id="node-error" class="hide offline"></div>
+                        <div id="node-error" class="hide">
+                            <a class="error-text offline"></a>
+                            <a class="error-link gui-text underline" href="#"></a>
+                        </div>
                     </div><!-- #add-node -->
 
                     <h2 class="gui-headline-bold has-cut">Node List <img id="spinner" src="/admin/ui/spinner.gif"></h2>

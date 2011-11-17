@@ -85,19 +85,13 @@ $(document).ready(function () {
             });
         }
     });
-
     // END CODE FOR SLIDING SWITCHES
 
 
 
-
+    
     function initialize () {
         get_cluster_status();
-
-        // hide the menu when we leave it
-        $('#cmenu').mouseleave(function () {
-            $('#cmenu').hide();
-        });
     }
 
     function get_cluster_status () {
@@ -115,14 +109,13 @@ $(document).ready(function () {
             url: action,
             dataType: 'json',
             complete: function (x,y) {
-                var errortext, errorbox;
+                var err, errortextbox, errorlinkbox;
+                console.log(x);
                 if (y.toLowerCase() === 'error') {
-                    errortext = x.responseText.split('<title>')[1].split('</title>')[0] + ' -> ' + this.url;
-                    errorbox = $('#node-error');
-                    errorbox.text(errortext).show();
-                    setTimeout(function() {
-                        errorbox.fadeOut('slow');
-                    }, 5000);
+                    err = x.responseText.split('<title>')[1].split('</title>')[0] + ' <a class="monospace">-></a> ' + this.url + '.';
+                    $('#node-error .error-text').html(err);
+                    $('#node-error .error-link').html('View in Logs &raquo;')
+                    $('#node-error').show();
                 }
                 enable_adding();
             },
@@ -130,12 +123,7 @@ $(document).ready(function () {
                 if (res.result.toLowerCase() === 'ok') {
                     $('#node-to-add').val('');
                 }
-            }/*,
-            failure: function (err) { 
-                console.log(err);
-                console.log('hello');
-                alert(err); 
-            }*/
+            }
         });
     }
 
@@ -149,6 +137,7 @@ $(document).ready(function () {
         $('#add-node').removeClass('disabled');
         $('#node-to-add').removeAttr('disabled', 'disabled');
         $('#add-node-button').bind('click', function () {
+            $('#node-error').hide();
             if ($('#node-to-add').val().length) {
                 add_node();
             }
@@ -157,7 +146,6 @@ $(document).ready(function () {
 
     function add_node () {
         disable_adding();
-        $('#node-error').hide();
         perform_node_action('/admin/cluster/join/' + $('#node-to-add').val());
     }
 
@@ -250,7 +238,6 @@ $(document).ready(function () {
                 set_operability_class($('.name', row), 'offline');
             }
         } else if (status === 'leaving') {
-            //$('.name', row).addClass('offline');
             set_light_color($('.gui-light', row), 'orange');
             $('.gui-slider', row).addClass('hide');
             $('.gui-slider-leaving', row).removeClass('hide');
@@ -280,16 +267,6 @@ $(document).ready(function () {
             $(row).attr('id', id);
             $(row).removeClass('row-template');
             $(row).show();
-
-            // create a click handler for this row
-            /*
-            $(row).click(function (e) {
-                $('#cmenu').show();
-                $('#cmenu').offset({ top:e.pageY - 10,
-                                     left:e.pageX - 10
-                                   });
-            });
-            */
 
             // add it to the table
             $('#cluster-table').append(row);
