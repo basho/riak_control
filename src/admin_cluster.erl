@@ -48,7 +48,8 @@ to_json (Req,C=list) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     Status=[{struct,[{"name",N},
                      {"status",S},
-                     {"reachable",Online}
+                     {"reachable",Online},
+                     {"me",N == node()}
                     ]}
             || {N,S,Online,_} <- Nodes],
     {mochijson2:encode(Status),Req,C};
