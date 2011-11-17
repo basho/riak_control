@@ -58,7 +58,7 @@ td {
 /* END RESET PORTION */
 
 
-
+/* CODE FOR GLOBAL STYLES */ 
 html {
     background: url(/admin/ui/gui-bg.jpg) left top repeat #2d2d2d;
 }
@@ -87,6 +87,23 @@ h3 {
     font-size: 22px;
     display: block;
     padding-bottom: 8px;
+}
+
+#tooltips {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: red;
+    height: 50px;
+}
+#display-tips {
+    width: auto;
+    height: auto;
+    background: blue;
+    color: #fff;
+    padding: 0 12px;
+    line-height: 1.3;
+    vertical-align: middle;
 }
 
 /* CODE FOR PRETTY TEXT */
@@ -200,6 +217,8 @@ h3 {
     cursor: pointer;
 }
 /* END CODE FOR NAVIGATION */
+
+/* END CODE FOR GLOBAL STYLES */
 
 
 
@@ -423,6 +442,11 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 #node-error .error-text {letter-spacing: 1px;}
 #node-error .error-link {font-size: 13px;}
 
+.current-host {
+    padding: 7px 0 0 5px;
+    text-align: center;
+    font-size: 14px;
+}
 
 /*
 #cluster-table .node .offline {

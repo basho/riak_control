@@ -105,6 +105,11 @@
     </div><!-- #wrapper -->
     
     
+    <div id="tooltips">
+        <div id="display-tips" class="gui-text"></div>
+    </div>
+    
+    
     
     
     
@@ -150,12 +155,6 @@
                         This will take the node offline and stop the Riak process
                         on it. This will <b>not</b> mark the node as 'down'. You
                         will need to manually restart the node.
-                    </p>
-                    <input type="button" onclick="leave_cluster()" value="Leave Cluster">
-                    <p style="margin:10px;">
-                        This will cause the node to begin the process of leaving the
-                        cluster. It will handoff its partition data to other partitions
-                        in the ring and then take itself offline.
                     </p>
                 </div>
             </div>--><!-- #aside -->

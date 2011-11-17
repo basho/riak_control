@@ -91,6 +91,21 @@ $(function() {
     $('.gui-field').append('<div class="gui-field-cap-left"></div><div class="gui-field-cap-right"></div>');
     $('.gui-field-input').wrap('<div class="gui-field-bg">');
     
+    
+    /* CODE FOR ALL THE TOOLTIPS */
+    function emptyTips () {
+        $('#display-tips').empty();
+    }
+    function displayTips (str) {
+        $('#display-tips').html(str);
+    }
+    $('#add-node table').hover(function () {
+        displayTips('Type a node name (for example: dev2@127.0.0.1) and hit "Add Node" to add it to the cluster.');
+    }, emptyTips);
+    $('.leave-box .gui-slider').live('mouseover', function () {
+        displayTips('This will cause the node to begin the process of leaving the cluster. It will handoff its partition data to other partitions in the ring and then take itself offline.');
+    }).live('mouseout', emptyTips);
+    
         
     
 });

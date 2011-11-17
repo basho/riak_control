@@ -223,33 +223,42 @@ $(document).ready(function () {
         $('.name', row).text(node.name);
         $('.status', row).text(node.status);
         $('.gui-slider-groove').trigger('initSlider');
+        
+        // if the node is the one hosting the console you cannot eff with it
+        if (node.me === true) {
+            $('.markdown-button', row).addClass('hide');
+            $('.leave-box', row).html('<a class="current-host gui-text">Hosting Riak Control</a>');
+            set_operability_class($('.name', row), 'normal');
+            set_light_color($('.gui-light', row), 'green');
+        } else {
 
-        // handle colors and operability
-        if (status === 'valid') {
-            if (node.reachable === true) {
-                $('.markdown-button', row).addClass('hide');
-                $('.gui-slider', row).removeClass('hide');
-                set_operability_class($('.name', row), 'normal');
-                set_light_color($('.gui-light', row), 'green');
-            } else {
-                $('.markdown-button', row).removeClass('hide').removeClass('pressed');
+            // handle colors and operability
+            if (status === 'valid') {
+                if (node.reachable === true) {
+                    $('.markdown-button', row).addClass('hide');
+                    $('.gui-slider', row).removeClass('hide');
+                    set_operability_class($('.name', row), 'normal');
+                    set_light_color($('.gui-light', row), 'green');
+                } else {
+                    $('.markdown-button', row).removeClass('hide').removeClass('pressed');
+                    $('.gui-slider', row).addClass('hide');
+                    set_light_color($('.gui-light', row), 'red');
+                    set_operability_class($('.name', row), 'offline');
+                }
+            } else if (status === 'leaving') {
+                set_light_color($('.gui-light', row), 'orange');
                 $('.gui-slider', row).addClass('hide');
-                set_light_color($('.gui-light', row), 'red');
-                set_operability_class($('.name', row), 'offline');
+                $('.gui-slider-leaving', row).removeClass('hide');
+                $('.gui-rect-button-leaving', row).removeClass('hide');
+                set_operability_class($('.status', row), 'disabled');
+                set_operability_class($('.name', row), 'disabled');
+            } else if (status === 'down') {
+                $('.markdown-button', row).removeClass('hide').addClass('pressed');
+                set_operability_class($('.name', row), 'down');
+                set_light_color($('.gui-light', row), 'gray');
             }
-        } else if (status === 'leaving') {
-            set_light_color($('.gui-light', row), 'orange');
-            $('.gui-slider', row).addClass('hide');
-            $('.gui-slider-leaving', row).removeClass('hide');
-            $('.gui-rect-button-leaving', row).removeClass('hide');
-            set_operability_class($('.status', row), 'disabled');
-            set_operability_class($('.name', row), 'disabled');
-        } else if (status === 'down') {
-            $('.markdown-button', row).removeClass('hide').addClass('pressed');
-            set_operability_class($('.name', row), 'down');
-            set_light_color($('.gui-light', row), 'gray');
+            
         }
-
     }
 
     function cluster_node_row (node) {
