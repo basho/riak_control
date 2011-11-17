@@ -114,13 +114,28 @@ $(document).ready(function () {
         $.ajax({
             url: action,
             dataType: 'json',
-            complete: enable_adding,
-            success: function(x,y,z) {
-                if (x.result.toLowerCase() === 'ok') {
-                    $('#add-node').val('');
+            complete: function (x,y) {
+                var errortext, errorbox;
+                if (y.toLowerCase() === 'error') {
+                    errortext = x.responseText.split('<title>')[1].split('</title>')[0] + ' -> ' + this.url;
+                    errorbox = $('#node-error');
+                    errorbox.text(errortext).show();
+                    setTimeout(function() {
+                        errorbox.fadeOut('slow');
+                    }, 5000);
                 }
+                enable_adding();
             },
-            failure: function (err) { alert(err); }
+            success: function(res) {
+                if (res.result.toLowerCase() === 'ok') {
+                    $('#node-to-add').val('');
+                }
+            }/*,
+            failure: function (err) { 
+                console.log(err);
+                console.log('hello');
+                alert(err); 
+            }*/
         });
     }
 
@@ -133,11 +148,16 @@ $(document).ready(function () {
     function enable_adding () {
         $('#add-node').removeClass('disabled');
         $('#node-to-add').removeAttr('disabled', 'disabled');
-        $('#add-node-button').bind('click', add_node);
+        $('#add-node-button').bind('click', function () {
+            if ($('#node-to-add').val().length) {
+                add_node();
+            }
+        });
     }
 
     function add_node () {
         disable_adding();
+        $('#node-error').hide();
         perform_node_action('/admin/cluster/join/' + $('#node-to-add').val());
     }
 
