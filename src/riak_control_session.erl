@@ -141,9 +141,8 @@ handle_cast ({update_services,Services},State) ->
 
 %% misc. messages
 handle_info (ping_ring_nodes,State=#state{ring=Ring}) ->
-    gen_server:cast(self(),{update_ring,Ring}),
     erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
-    {noreply,State};
+    {noreply,update_ring(State,Ring)};
 
 handle_info (_,State) ->
     {noreply,State}.
