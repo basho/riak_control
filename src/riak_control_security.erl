@@ -21,8 +21,7 @@
 %% @doc SSL and Authorization enforcement for administration URLs.
 -module(riak_control_security).
 
--export([
-         scheme_is_available/2,
+-export([scheme_is_available/2,
          enforce_auth/2
         ]).
 
@@ -51,19 +50,21 @@ scheme_is_available(RD, Ctx) ->
                 https ->
                     {true, RD, Ctx};
                 _ ->
-                    Path = wrq:raw_path(RD),
-                    Loc = case app_helper:get_env(riak_core, https) of
-                               undefined ->
-                                   Host = string:join(lists:reverse(wrq:host_tokens(RD)), "."),
-                                   ["https://", Host, Path];
-                               [{Host, Port}|_] ->
-                                   ["https://", Host, ":", integer_to_list(Port), wrq:raw_path(RD)]
-                           end,
-                    {{halt, 303},
-                     wrq:set_resp_header("Location", Loc, RD),
-                     Ctx}
+                    https_redirect(RD,Ctx)
             end
     end.
+
+%% set the redirect header and where to go with it
+https_redirect (RD,Ctx) ->
+    Path=wrq:raw_path(RD),
+    Loc=case app_helper:get_env(riak_core, https) of
+            [{Host,Port}|_] ->
+                ["https://",Host,":",integer_to_list(Port),Path];
+            _ ->
+                Host=string:join(lists:reverse(wrq:host_tokens(RD)),"."),
+                ["https://",Host,Path]
+        end,
+    {{halt,303},wrq:set_resp_header("Locatiom",Loc,RD),Ctx}.
 
 %% @doc Intended to be called from a webmachine resource's
 %% is_authorized function.  The return value is a valid resource
@@ -74,11 +75,13 @@ scheme_is_available(RD, Ctx) ->
 %% the value for the response WWW-Authenticate header is returned.
 %%
 %% The correct credentials are controled by the appenv
-%% `riak_control:admin_auth'.  Valid values include:
+%% `riak_control:auth'.  Valid values include:
 %%
-%%    - `erlang' :: the username should be the same as the nodename
-%%                  (e.g. `riak@127.0.0.1'), and the password should
-%%                  be the same as the node's cookie (e.g. `riak')
+%%    - `userlist' :: `riak_control:userlist' will contain a list of
+%%                    {"user","pass"} pairs that are used.
+%%
+%%    - `none'     :: No authentication.
+%%
 enforce_auth(RD, Ctx) ->
     case wrq:get_req_header("authorization", RD) of
         "Basic "++Base64 ->
@@ -104,13 +107,18 @@ enforce_user_pass(RD, Ctx, User, Pass) ->
             {?ADMIN_AUTH_HEAD, RD, Ctx}
     end.
 
+%% validate the username and password
 valid_userpass(User, Pass) ->
-    case app_helper:get_env(riak_control, admin_auth) of
-        erlang ->
-            User == atom_to_list(node()) andalso
-                Pass == atom_to_list(erlang:get_cookie());
-        _Unknown ->
-            error_logger:warning_msg(
-              "Unknown admin_auth type \"~p\"", [_Unknown]),
-            false
-    end.
+    Auth=app_helper:get_env(riak_control, auth),
+    valid_userpass(User, Pass, Auth).
+
+%% validate the username and password with the given auth style
+valid_userpass(_User, _Pass, none) ->
+    true;
+valid_userpass(User, Pass, userlist) ->
+    Users=app_helper:get_env(riak_control, userlist, []),
+    proplists:get_value(User, Users) == Pass;
+valid_userpass(_User, _Pass, _Auth) ->
+    error_logger:warning_msg("Unknown auth type '~p'", [_Auth]),
+    false.
+

@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <title>Riak Control :: Admin Panel</title>
+    <!-- css -->
+    <link type="text/css" rel="stylesheet" href="/admin/ui/style.css" />
+  </head>
+
+  <!-- when the page finishes loading, start filling in details -->
+  <body>
+    <!-- page container -->
+    <a id="someelement" class="blue-link gui-text">First Template</a> <br/> 
+    <a id="someotherone" class="blue-link gui-text">Second Template</a>
+    <div id="template-box" style="border: 1px solid black; padding: 50px; margin-top: 100px;"></div>
+    
+    <script src="/admin/ui/jquery-1.7.min.js" type="text/javascript"></script>
+     <script src="/admin/ui/ferris.js" type="text/javascript"></script>
+    <script>
+        $(function() {
+        
+            $.ferris.setup('#template-box', {
+            
+                templateLocation : '/admin/ui/',
+                
+                swapin : {
+                 "first" : ['click', '#someelement'],
+                 "second" : ['click', '#someotherone']
+                }
+                
+            });
+            
+            
+        });
+        
+    </script>
+  </body>
+</html>

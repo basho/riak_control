@@ -43,14 +43,28 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Resources = [{rekon, rekon_resource},
-                 {admin, admin_nodes_resource},
-                 {admin, admin_node_resource},
-                 {admin, admin_ui_resource}],
-    Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
-    [ webmachine_router:add_route(R) || R <- Routes ],
+    case app_helper:get_env(riak_control,enabled,false) of
+        true ->
+            Resources = [{admin, admin_gui},
+                         {admin, admin_ring},
+                         {admin, admin_cluster},
+                         {admin, admin_node}
+                        ],
+            Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
+            [webmachine_router:add_route(R) || R <- Routes];
+        _ ->
+            ok
+    end,
 
-    {ok, { {one_for_one, 5, 10}, []} }.
+    %% modules to be started up
+    Riak_control_session={riak_control_session,
+                          {riak_control_session, start_link, []},
+                          permanent, 
+                          5000, 
+                          worker, 
+                          [riak_control_session]},
+
+    {ok, { {one_for_one, 5, 10}, [Riak_control_session] } }.
 
 routes(Env, Module) ->
     case app_helper:get_env(riak_control, Env, false) of
