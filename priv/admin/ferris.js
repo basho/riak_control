@@ -47,21 +47,21 @@
 
         // publish function.  CURRENTLY NOT USED BUT MIGHT BE IF THIS EXPANDS
         _pub = $.publish || function (eventname, args, context) {
-            var i, l = (this.events[eventname].length || 0);
+            var i, l = (_events[eventname].length || 0);
             for (i = 0; i < l; i += 1) {
-                this.events[eventname][i].apply((context || null), args);
+                _events[eventname][i].apply((context || null), args);
             }
-            return this.events[eventname];
+            return _events[eventname];
         },
 
         // subscribe function.  CURRENTLY NOT USED BUT MIGHT BE IF THIS EXPANDS
         _sub = $.subscribe || function (eventname, func) {
-            if (this.events[eventname]) {
-                this.events[eventname] = [func];
+            if (_events[eventname]) {
+                _events[eventname] = [func];
             } else {
-                this.events[eventname].push(func);
+                _events[eventname].push(func);
             }
-            return this.events[eventname];
+            return _events[eventname];
         };
 
     // turn it into a jQuery plugin
@@ -69,21 +69,21 @@
 
         // publish function.  CURRENTLY NOT USED BUT MIGHT BE IF THIS EXPANDS
         "_pub" : $.publish || function (eventname, args, context) {
-            var i, l = (this.events[eventname].length || 0);
+            var i, l = (_events[eventname].length || 0);
             for (i = 0; i < l; i += 1) {
-                this.events[eventname][i].apply((context || null), args);
+                _events[eventname][i].apply((context || null), args);
             }
-            return this.events[eventname];
+            return _events[eventname];
         },
 
         // subscribe function.  CURRENTLY NOT USED BUT MIGHT BE IF THIS EXPANDS
         "_sub" : $.subscribe || function (eventname, func) {
-            if (this.events[eventname]) {
-                this.events[eventname] = [func];
+            if (_events[eventname]) {
+                _events[eventname] = [func];
             } else {
-                this.events[eventname].push(func);
+                _events[eventname].push(func);
             }
-            return this.events[eventname];
+            return _events[eventname];
         },
 
         // function for clearing cache.  you can clear a single property or the whole object
