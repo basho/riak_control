@@ -206,6 +206,13 @@ h3 {
     padding: 0 0 0 14px;
     height: 48px;
 }
+.nav-li-disabled {
+    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    padding: 0 0 0 14px;
+    height: 48px;
+    opacity: .3;
+    filter: alpha(opacity=30);
+}
 #nav-cluster   {background-position:14px 10px;}
 #nav-ring      {background-position:14px -39px;}
 #nav-objects   {background-position:14px -90px;}
@@ -221,7 +228,7 @@ h3 {
     background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;
     padding: 15px 0 0 40px;
 }
-.nav-item:hover {
+.nav-li .nav-item:hover {
     text-shadow: 0 0 3px #fff;
     cursor: pointer;
 }
