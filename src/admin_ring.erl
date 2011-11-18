@@ -1,3 +1,23 @@
+%% -------------------------------------------------------------------
+%%
+%% Copyright (c) 2007-2010 Basho Technologies, Inc.  All Rights Reserved.
+%%
+%% This file is provided to you under the Apache License,
+%% Version 2.0 (the "License"); you may not use this file
+%% except in compliance with the License.  You may obtain
+%% a copy of the License at
+%%
+%%   http://www.apache.org/licenses/LICENSE-2.0
+%%
+%% Unless required by applicable law or agreed to in writing,
+%% software distributed under the License is distributed on an
+%% "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+%% KIND, either express or implied.  See the License for the
+%% specific language governing permissions and limitations
+%% under the License.
+%%
+%% -------------------------------------------------------------------
+
 -module(admin_ring).
 -export([routes/0,
          init/1,
@@ -56,15 +76,9 @@ filter_partitions (_Req,_PS,_) ->
     [].
 
 %% return a proplist of details for a given index
-node_ring_details (_P={I,OwnerNode,Vnodes}) ->
-    [{i,I},
+node_ring_details (_P={Index,I,OwnerNode,Vnodes}) ->
+    [{index,Index},
+     {i,I},
      {node,OwnerNode},
      {vnodes,Vnodes}
     ].
-
-%% %% queries all the nodes in the cluster about their handoffs (SLOW!!)
-%% get_handoffs (Ring,Idx) ->
-%%     Nodes=riak_core_ring:all_members(Ring),
-%%     {Res,_}=rpc:multicall(Nodes,riak_core_handoff_manager,get_handoffs,[Idx]),
-%%     Hoffs=lists:append([Hoffs || {ok,Hoffs} <- Res]),
-%%     {struct,Hoffs}.

@@ -1,3 +1,23 @@
+%% -------------------------------------------------------------------
+%%
+%% Copyright (c) 2007-2010 Basho Technologies, Inc.  All Rights Reserved.
+%%
+%% This file is provided to you under the Apache License,
+%% Version 2.0 (the "License"); you may not use this file
+%% except in compliance with the License.  You may obtain
+%% a copy of the License at
+%%
+%%   http://www.apache.org/licenses/LICENSE-2.0
+%%
+%% Unless required by applicable law or agreed to in writing,
+%% software distributed under the License is distributed on an
+%% "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+%% KIND, either express or implied.  See the License for the
+%% specific language governing permissions and limitations
+%% under the License.
+%%
+%% -------------------------------------------------------------------
+
 -module(riak_control_session).
 -behavior(gen_server).
 
@@ -19,21 +39,33 @@
          code_change/3
         ]).
 
--type version() :: integer().
--type index()   :: integer().
--type status()  :: valid | invalid | down | leaving.
--type home()    :: primary | fallback | undefined.
--type service() :: atom().
--type owner()   :: atom().
--type vnode()   :: {{atom(),atom()},atom()}.
--type online()  :: boolean().
+-type version()  :: integer().
+-type index()    :: binary().
+-type status()   :: valid | invalid | down | leaving.
+-type home()     :: primary | fallback | undefined.
+-type service()  :: atom().
+-type services() :: [{service(),home()}].
+-type owner()    :: atom().
+-type vnode()    :: {{atom(),atom()},atom()}.
+-type online()   :: boolean().
 
-%% the state tracked by this gen_server
+-type partition() :: { index(),    % 160-bit hash index
+                       integer(),   % [0,n) partition value
+                       owner(),     % owning node
+                       services()   % vnodes and their status
+                     }.
+
+-type node_status() :: { atom(),    % name of the node
+                         status(),  % current status of the node
+                         online(),  % true if the node is reachable
+                         [vnode()]  % list of vnode workers
+                       }.
+
 -record(state, { vsn        :: version(),
                  services   :: [service()],
                  ring       :: riak_core_ring:riak_core_ring(),
-                 partitions :: [{index(),owner(),[{service(),home()}]}],
-                 nodes      :: [{atom(),status(),online(),[vnode()]}]
+                 partitions :: [partition()],
+                 nodes      :: [node_status()]
                }).
 
 %% hack: periodically update the ring with itself
@@ -80,7 +112,7 @@ init ([]) ->
 
     %% start a timer that will allow us to periodically ping cluster nodes
     erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
-    
+
     %% start the server
     {ok,update_ring(#state{vsn=0,partitions=[],nodes=[],services=[]},Ring)}.
 
@@ -187,9 +219,9 @@ get_partition_details (#state{services=S,nodes=Nodes,ring=R},{Index,Node}) ->
     case lists:keysearch(Node,1,Nodes) of
         {value,{_Node,_Status,_Online,Vnodes}} ->
             Statuses=[get_vnode_status(Service,R,Index,Vnodes) || Service <- S],
-            {partition_index(R,Index),Node,Statuses};
+            {Index,partition_index(R,Index),Node,Statuses};
         false ->
-            {partition_index(R,Index),Node,[]}
+            {Index,partition_index(R,Index),Node,[]}
     end.
 
 %% get the partition number of a given index
@@ -202,7 +234,7 @@ partition_index (Ring,Index) ->
 get_vnode_status (Service,Ring,Index,Vnodes) ->
     UpNodes=riak_core_node_watcher:nodes(Service),
     case riak_core_apl:get_apl_ann(<<(Index-1):160>>,1,Ring,UpNodes) of
-        [{{_,_},Status}|_] -> 
+        [{{_,_},Status}|_] ->
             case is_vnode_running(Index,Service,Vnodes) of
                 true -> {Service,Status};
                 false -> {Service,undefined}
