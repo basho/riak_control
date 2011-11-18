@@ -535,7 +535,7 @@ input.field {
 .hide     {display: none;}
 .monospace{font-family: menlo, monospace;}
 
-.blue-link:hover {color: #9edad6;}
+.blue-link:hover {color: #9edad6; cursor: pointer;}
 .underline:hover {text-decoration: underline;}
 
 .disabled, .down {opacity: .5; filter: alpha(opacity=50);}
