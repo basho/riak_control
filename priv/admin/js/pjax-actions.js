@@ -28,21 +28,21 @@ $(function () {
     }
     
     // Call the cluster page by default on docready
-    grabPjax('cluster.pjax', function () {
-        appendScript('#cluster-script', '/admin/ui/cluster.js');
+    grabPjax('/admin/ui/templates/cluster.pjax', function () {
+        appendScript('#cluster-script', '/admin/ui/js/cluster.js');
     });
 
     // Calling the cluster page on nav click...
     $('#nav-cluster').on('click', function () {
-        return grabPjax('cluster.pjax', function () {
-            appendScript('#cluster-script', '/admin/ui/cluster.js');
+        return grabPjax('/admin/ui/templates/cluster.pjax', function () {
+            appendScript('#cluster-script', '/admin/ui/js/cluster.js');
         });
     });
 
     // Calling the ring page on nav click...
     $('#nav-ring').on('click', function () {
-        return grabPjax('ring.pjax', function () {
-            appendScript('#ring-script', '/admin/ui/ring.js');
+        return grabPjax('/admin/ui/templates/ring.pjax', function () {
+            appendScript('#ring-script', '/admin/ui/js/ring.js');
         });
     });
 

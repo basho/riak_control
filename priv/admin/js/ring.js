@@ -67,11 +67,11 @@ $(document).ready(function () {
         
         function vnode_icon (type) {
             if (false) { //index.handoffs[type]) {
-                return '<img src="/admin/ui/orange-arrow.png">';
+                return '<img src="/admin/ui/images/orange-arrow.png">';
             } else if (index.vnodes[type] === "primary") {
-                return '<img src="/admin/ui/green-circle.png">';
+                return '<img src="/admin/ui/images/green-circle.png">';
             } else if (index.vnodes[type] === "fallback") {
-                return '<img src="/admin/ui/blue-rect.png">';
+                return '<img src="/admin/ui/images/blue-rect.png">';
             } else {
                 return '';
             }
