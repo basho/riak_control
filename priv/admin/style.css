@@ -1,0 +1,549 @@
+/* IMPORT FONTS */
+@font-face {
+    font-family: 'rokkitt';
+    src: url('/admin/ui/rokkitt.eot?') format('eot'), url('/admin/ui/rokkitt.woff') format('woff'), url('/admin/ui/rokkitt.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'rokkitt';
+    src: url('/admin/ui/rokkitt-bold.eot?') format('eot'), url('/admin/ui/rokkitt-bold.woff') format('woff'), url('/admin/ui/rokkitt-bold.ttf') format('truetype');
+    font-weight: bold;
+}
+
+
+
+/* RESET PORTION FOR COMPATIBILITY */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+	font-weight: normal;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+td {
+    vertical-align: top;
+}
+/* END RESET PORTION */
+
+
+/* CODE FOR GLOBAL STYLES */ 
+html {
+    background: url(/admin/ui/gui-bg.jpg) left top repeat #2d2d2d;
+}
+
+body {
+    padding: 8px 0 0 0;
+}
+
+a {text-decoration: none;}
+
+h1 {
+    font-size: 48px;
+    letter-spacing: 2px;
+    display: block;
+    padding-bottom: 25px;
+}
+
+h2 {
+    font-size: 38px;
+    letter-spacing: 2px;
+    display: block;
+    padding-bottom: 12px;
+}
+
+h3 {
+    font-size: 22px;
+    display: block;
+    padding-bottom: 8px;
+}
+
+
+#tooltips {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    background: #1d1d1d;
+    background: rgba(15, 15, 15, .8);
+    border-top: 3px solid #444;
+    border-top: 3px solid rgba(255, 255, 255, .25);
+    -webkit-box-shadow: 0 0 15px #111; 
+    -moz-box-shadow: 0 0 15px #111;
+    box-shadow: 0 0 15px #111;
+}
+#display-tips {
+    width: auto;
+    height: 50px;
+    background: ;
+    padding: 0 12px;
+    line-height: 1.3;
+    vertical-align: middle;
+    font-size: 13px;
+    color: #888;
+}
+
+
+/* CODE FOR PRETTY TEXT */
+.gui-text, .gui-text-bold {
+    font-family: arial, helvetica, sans-serif;
+    font-size: 14px;
+    color: #dfdfdf;
+    text-shadow: 0 2px 0 #000;
+}
+.gui-text-bold {
+    font-weight: bold;
+}
+.gui-headline, .gui-headline-bold {
+    font-family: 'rokkitt', arial, helvetica, sans-serif;
+    color: #dfdfdf;
+    text-shadow: 0 2px 0 #000;
+}
+.gui-headline-bold {
+    font-family: 'rokkitt', arial, helvetica, sans-serif;
+    font-weight: bold;
+    -webkit-text-stroke: 1.1px #ffffff;
+    -moz-text-stroke: 1.1px #ffffff;
+    text-stroke: 1.1px #ffffff;
+}
+/* END CODE FOR PRETTY TEXT */
+
+
+/* HEADER PORTION */
+#header {
+    background: url(/admin/ui/header-bg.png) left top repeat-x transparent;
+    height: 67px;
+    width: auto;
+    margin: 0 0 22px 0; 
+}
+#riak-control-logo {
+    display: block;
+    background: url(/admin/ui/riak-control-logo.gif) right bottom no-repeat transparent;
+    width: 201px;
+    height: 56px;
+    float: left;
+    padding: 5px 0 0 12px;
+}
+/* END HEADER PORTION */
+
+#wrapper {
+    background: transparent;
+    width: auto;
+    height: auto;
+    margin-bottom: 8px;
+}
+
+#split-bar {
+	width: 6px;
+	background: url(/admin/ui/resizer-bg.png) left top repeat transparent;
+	border: 1px solid #fff;
+	float: left;
+	opacity: .2;
+	filter: alpha(opacity=20);
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+#split-bar:hover {
+    cursor:pointer;
+    opacity: .4;
+	filter: alpha(opacity=40);
+}
+
+/* CODE FOR NAVIGATION */
+#navigation {
+    overflow: hidden;
+    background: transparent;
+    float: left;
+    width: 218px; /* and 54 */
+    position: relative;
+}
+#nav-box {
+    width: 226px;
+}
+#active-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 48px;
+    background: url(/admin/ui/active-nav.png) left top no-repeat transparent;
+}
+
+.nav-li {
+    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    padding: 0 0 0 14px;
+    height: 48px;
+}
+.nav-li-disabled {
+    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    padding: 0 0 0 14px;
+    height: 48px;
+    opacity: .3;
+    filter: alpha(opacity=30);
+}
+#nav-cluster   {background-position:14px 10px;}
+#nav-ring      {background-position:14px -39px;}
+#nav-objects   {background-position:14px -90px;}
+#nav-mapreduce {background-position:14px -140px;}
+#nav-graphs    {background-position:14px -192px;}
+#nav-logs      {background-position:14px -248px;}
+#nav-support   {background-position:14px -300px;}
+.nav-item {
+    display: block;
+    font-size: 18px;
+    height: 33px;
+    vertical-align: middle;
+    background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;
+    padding: 15px 0 0 40px;
+}
+.nav-li .nav-item:hover {
+    text-shadow: 0 0 3px #fff;
+    cursor: pointer;
+}
+/* END CODE FOR NAVIGATION */
+
+/* END CODE FOR GLOBAL STYLES */
+
+
+
+/* CODE FOR GENERAL CONTENT WELL */
+#content-well {
+    overflow: hidden;
+    background: transparent;
+    padding: 5px 14px 0 25px;
+}
+
+#total-number {
+    font-size: 14px;
+    font-weight: normal;
+    font-family: arial, helvetica, sans-serif;
+    letter-spacing: normal;
+    -webkit-text-stroke: none;
+}
+
+
+/* CODE FOR TEXT FIELDS */
+.gui-field {
+    width: auto;
+    height: 30px;
+    position: relative;
+}
+.gui-field-cap-left, .gui-field-cap-right {
+    width: 9px; 
+    height: 30px;
+    position: absolute;
+    top: 0;
+    background: left top no-repeat transparent;
+}
+.gui-field-cap-left  {
+    background-image: url(/admin/ui/fieldcap-left.png);
+    left: 0;
+}
+.gui-field-cap-right {
+    background-image: url(/admin/ui/fieldcap-right.png);
+    right: 0;
+}
+.gui-field-bg {
+    width: auto;
+    height: 30px;
+    background: url(/admin/ui/field-bg.png) left top repeat-x transparent;
+    margin: 0 9px;
+}
+.gui-field-input {
+    display: block;
+    width: 99%;
+    padding: 0 2px;
+    background: transparent;
+    border: 0;
+    height: 30px;
+    outline: none;
+    font-family: menlo, monospace;
+}
+/* END CODE FOR TEXT FIELDS */
+
+/* CODE FOR POINT BUTTONS */
+.gui-point-button, .gui-rect-button {
+    display: block;
+    width: 137px;
+    height: 40px;
+    cursor: pointer;
+    border: 0;
+    margin-top: 3px;
+}
+.gui-point-button {background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;}
+
+.gui-button-msg {
+    display: block;
+    width: auto;
+    height: auto;
+    padding-top: 7px;
+    text-align: center;
+}
+.gui-point-button:hover,  .gui-rect-button:hover {background-position: left -40px;}
+
+.gui-point-button:active, .gui-point-button.pressed,
+.gui-rect-button:active,  .gui-rect-button.pressed {background-position: left -80px !important;}
+
+.gui-point-button:active  .gui-button-msg, 
+.gui-point-button.pressed .gui-button-msg,
+.gui-rect-button:active   .gui-button-msg, 
+.gui-rect-button.pressed  .gui-button-msg {padding-top: 9px;}
+
+input.gui-point-button, input.gui-rect-button {padding-bottom: 12px;}
+input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px;}
+
+.button-column {width: 150px;}
+/* END CODE FOR POINT BUTTONS */
+
+/* CODE FOR LIGHTS */
+.gui-light {
+    display: block;
+    width: auto;
+    height: 27px;
+    padding: 9px 0 0 32px;
+    background: url(/admin/ui/light-sprite.png) -5px bottom no-repeat transparent;
+}
+.gui-light.green  {background-position: -5px top;}
+.gui-light.red    {background-position: -5px -36px;}
+.gui-light.orange {background-position: -5px -72px;}
+/* END CODE FOR LIGHTS */
+
+/* CODE FOR SLIDING SWITCHES */
+.gui-slider, .gui-slider-leaving {
+    background: url(/admin/ui/slider-groove.png) 4px 2px no-repeat transparent;
+    height: 36px;
+    width: 150px;
+    position: relative;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-top: 3px;
+}
+.gui-slider-leaving {
+    background: url(/admin/ui/leaving-slider.png) 4px 2px no-repeat transparent;
+}
+.gui-slider-groove.ui-slider {
+    background: transparent;
+    width: 117px;
+    height: 36px;
+    position: relative;
+}
+.gui-slider-msg {
+    height: auto;
+    width: 104px;;
+    position: absolute;
+    top: 2px;
+    left: 36px;
+    padding-top: 6px;
+}
+.gui-slider-msg.isLeft {display: block; left: 43px;}
+.gui-slider-msg.isRight {display: none; left: 18px;}
+.gui-slider .ui-slider-handle {
+    background: url(/admin/ui/slider-handle.png) left top no-repeat transparent;
+    height: 36px;
+    width: 36px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    outline: none;
+    cursor: pointer;
+}
+.gui-slider-activate {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background:transparent;
+    width: 34px;
+    height: 32px;
+}
+/* END CODE FOR SLIDING SWITCHES */
+
+
+.table-head td {
+    padding-top: 8px;
+    border-bottom: 8px solid transparent;
+}
+.list-table {
+    margin-bottom: 8px;
+}
+.list-table td {
+    vertical-align: middle;
+}
+
+/* END CODE FOR GENERAL CONTENT WELL */
+
+
+/* CODE FOR CLUSTER CONTENT */
+#add-node-box {padding-top: 3px;}
+#add-node {
+    width: auto;
+    height: 100px;
+    position: relative;
+}
+
+#cluster-table .node td {
+    padding: 2px;
+    height: 52px;
+}
+
+#cluster-table .node td.name-box {
+    padding-right: 15px;
+}
+
+.name {
+    padding: 8px 2px;
+    height: 22px;
+}
+
+.status-box {
+    width: 90px;
+}
+
+.status {
+    font-size: 15px;
+}
+
+.statistics, .markdown, .leave-box {
+    width: 137px;
+}
+
+#cluster-table .node .active {
+    background:#fe9925;
+    font-color:#000;
+}
+
+#cluster-table .node:hover {
+    background: url(/admin/ui/node-bg.png) left top repeat transparent;
+    background: rgba(255,255,255,.1);
+}
+
+#node-error {
+    height: 16px;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    font-size: 13px;
+}
+#node-error .error-text {letter-spacing: 1px;}
+#node-error .error-link {font-size: 13px;}
+
+.current-host {
+    padding: 7px 0 0 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/*
+#cluster-table .node .offline {
+    font-weight:bold;
+    color:#f00;
+}
+*/
+
+
+/* END CODE FOR CLUSTER CONTENT */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#container {
+    margin:0 auto;
+    width:900px;
+    background:#fff;
+}
+
+input.field {
+    border:1px solid lightgray;
+    outline:none;
+    padding:4px;
+}
+
+
+
+/*
+ * RING STYLE
+ */
+
+#ring-table div {
+    padding:2px 0 2px 0;
+    cursor:pointer;
+    cursor:hand;
+}
+
+#ring-table div td {
+
+}
+
+#ring-table div .active {
+    background:#fe9925;
+    font-color:#000;
+}
+
+#ring-table div:hover {
+    background:#fe9925;
+}
+
+/* CASCADING STYLES */
+.left     {float: left;}
+.right    {float: right;}
+.clear    {clear: both;}
+.clearl   {clear: left;}
+.clearr   {clear: right;}
+.block    {display: block;}
+.inline   {display: inline;}
+.inblock  {display: inline-block;}
+.has-cut  {background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
+.hide     {display: none;}
+.monospace{font-family: menlo, monospace;}
+
+.blue-link:hover {color: #9edad6; cursor: pointer;}
+.underline:hover {text-decoration: underline;}
+
+.disabled, .down {opacity: .5; filter: alpha(opacity=50);}
+.offline  {color: #e85252;}

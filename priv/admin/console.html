@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <title>Console Logs</title>
+    
+    <!-- jquery -->
+    <script 
+       src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+       type="text/javascript"></script>
+
+    <!-- common admin panel functions -->
+    <script
+       src="/admin/ui/admin.js"
+       type="text/javascript"></script>
+
+    <!-- ring functions -->
+    <script
+       src="/admin/ui/ring.js"
+       type="text/javascript"></script>
+
+    <!-- css -->
+    <link type="text/css"
+          rel="stylesheet"
+          href="/admin/ui/style.css" />
+  </head>
+
+  <!-- when the page finishes loading, start filling in details -->
+  <body>
+    <!-- page container -->
+    <div id="container">
+      <div id="header">
+        <table width="100%">
+          <tr>
+            <td align="left"><h1>Riak Control - Admin Panel</h1></td>
+            <td align="right">
+              <img src="/admin/ui/riak-transparent-small.png">
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- content navigation menu -->
+      <div id="navigation">
+	<ul>
+	  <li><a href="/admin/ui/cluster.html">Cluster</a></li>
+	  <li><a href="/admin/ui/ring.html">Ring</a></li>
+	  <li><a href="/admin/ui/objects.html">Objects</a></li>
+	  <li><a href="/admin/ui/mr.html">Map/Reduce</a></li>
+	  <li><a href="/admin/ui/graphs.html">Graphs</a></li>
+	  <li><a href="#" class="active">Console</a></li>
+	  <li><a href="/admin/ui/support.html">Support</a></li>
+	</ul>
+      </div>
+
+      <!-- primary content view -->
+      <div id="content-container">
+	<div id="content">
+	  <h2 id="section">Console</h2><br/>
+          Coming soon...
+	</div>
+
+        <!-- side panel for node details -->
+	<div id="aside">
+	  <h2>Log Files...</h2><br/>
+          TODO: display log files available to view here
+        </div>
+
+        <!-- footer, basho copyright -->
+	<div id="footer">
+          <table width="100%">
+            <tr>
+              <td align="left">
+                <img src="/admin/ui/basho-logo.png">
+              </td>
+              <td align="right">
+                <span style="font-size:small">
+                  Copyright © 2011 <b>Basho Technologies, Inc.</b>
+                  All rights reserved.
+                </span>
+              </td>
+            </tr>
+          </table>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>

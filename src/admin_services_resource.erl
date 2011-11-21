@@ -18,16 +18,17 @@
 %%
 %% -------------------------------------------------------------------
 
-%% @doc Basic cluster membership inspection.
+%% @doc Exposes services information for a node
 %%
-%%      The resource exposes itself at `/admin/nodes'.
--module(admin_nodes_resource).
+%%      The resource exposes itself at `/admin/nodes/nodename'.
+-module(admin_services_resource).
 
 -export([
          routes/0,
          init/1,
          service_available/2,
          is_authorized/2,
+         allowed_methods/2,
          content_types_provided/2,
          resource_exists/2,
          produce_json/2
@@ -37,35 +38,39 @@
 -include("riak_control.hrl").
 
 -record(ctx, {
-          base_url,
-          ring
+          nodename
          }).
 
 -type context() :: #ctx{}.
+-type method()  :: 'PUT' | 'POST' | 'GET' | 'HEAD' | 'DELETE'.
 
 %%% riak_control_sup API
 
 %% @doc Get the webmachine dispatcher config for this resource.
 -spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
-    [{?ADMIN_BASE_ROUTE++["nodes"],
+    [{?ADMIN_BASE_ROUTE++["nodes", 'nodename', "services"],
       ?MODULE,
-      [{base_url, ?ADMIN_BASE_PATH++"nodes/"}]}].
+      []}].
 
 %%% Webmachine API
 
 -spec init(list()) -> {ok, context()}.
-init(Props) ->
-    {base_url, Url} = lists:keyfind(base_url, 1, Props),
-    {ok, #ctx{base_url=Url}}.
+init(_Props) ->
+    {ok, #ctx{}}.
+
+-spec allowed_methods(wrq:reqdata(), context()) ->
+                             {[method()], wrq:request(), context()}.
+allowed_methods(RD, Ctx) ->
+    {['GET'], RD, Ctx}.
 
 -spec service_available(wrq:reqdata(), context()) ->
-         {boolean() | {halt, non_neg_integer()}, wrq:reqdata(), context()}.
+                               {boolean() | {halt, non_neg_integer()}, wrq:reqdata(), context()}.
 service_available(RD, Ctx) ->
     riak_control_security:scheme_is_available(RD, Ctx).
 
 -spec is_authorized(wrq:reqdata(), context()) ->
-         {true | string(), wrq:reqdata(), context()}.
+                           {true | string(), wrq:reqdata(), context()}.
 is_authorized(RD, Ctx) ->
     riak_control_security:enforce_auth(RD, Ctx).
 
@@ -76,34 +81,40 @@ content_types_provided(RD, Ctx) ->
     {[{"application/json", produce_json}], RD, Ctx}.
 
 -spec resource_exists(wrq:reqdata(), context()) ->
-         {boolean(), wrq:reqdata(), context()}.
+                             {boolean(), wrq:reqdata(), context()}.
 resource_exists(RD, Ctx) ->
-    case riak_core_ring_manager:get_my_ring() of
-        {ok, Ring} ->
-            RingCtx = Ctx#ctx{ring=Ring},
-            {true, add_node_links(RD, RingCtx), RingCtx};
-        _Error ->
-            {false, RD, Ctx}
-    end.
+    Node = list_to_atom(wrq:path_info(nodename, RD)),
+    NodeCtx = Ctx#ctx{nodename=Node},
+    {is_node_in_cluster(Node), RD, NodeCtx}.
 
 -spec produce_json(wrq:reqdata(), context()) ->
          {binary(), wrq:reqdata(), context()}.
-produce_json(RD, #ctx{ring=Ring}=Ctx) ->
-    %% TODO: this is not really the list of nodes we'll want (nodes
-    %% running, and connected, but not yet claiming partitions are
-    %% interesting to the UI as well), but it's a good example of
-    %% serving data over this interface
-    Members = riak_core_ring:all_members(Ring),
-    JSON = mochijson2:encode([{nodes, Members}]),
+produce_json(RD, #ctx{nodename=Node}=Ctx) ->
+    Services = service_initials(riak_core_node_watcher:services(Node), []),
+    JSON = mochijson2:encode([{services, Services}]),
     {JSON, RD, Ctx}.
 
-%%% Internal
+%% ===================================================================
+%% Internal functions
+%% ===================================================================
+is_node_in_cluster(Node) when is_atom(Node) ->
+    {ok, Ring} = riak_core_ring_manager:get_my_ring(),
+    Members = riak_core_ring:all_members(Ring),
+    lists:member(Node, Members).
 
-add_node_links(RD, #ctx{base_url=BaseUrl, ring=Ring}) ->
-    Headers = [{"Link", node_link_header(BaseUrl, Node)}
-               || Node <- riak_core_ring:all_members(Ring)],
-    wrq:merge_resp_headers(Headers, RD).
+service_initials([], Acc) ->
+    lists:reverse(Acc);
+service_initials([H|T], Acc) ->
+    service_initials(T, [{struct,[{name, H}, {initial, service_initial(H)}]}|Acc]).
 
-node_link_header(BaseUrl, Node) ->
-    io_lib:format("<~s~s>; rel=\"node\"",
-                  [BaseUrl, mochiweb_util:quote_plus(Node)]).
+%% Get the display initial for the service
+%% TODO maybe something more sophisticated
+%% Like capitalise first letter after riak_
+service_initial(riak_kv) ->
+    'K';
+service_initial(riak_pipe) ->
+    'P';
+service_initial(riak_search) ->
+    'S';
+service_initial(Service) ->
+    Service.
