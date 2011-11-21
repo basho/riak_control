@@ -52,8 +52,20 @@ $(document).ready(function () {
         $('#ring-filter').html(html + '</select>');
     }
     
+    function set_light_color (jqObj, newColor) {
+        var colors = ['green', 'gray', 'orange', 'red'], i, l = colors.length;
+        newColor = newColor.toLowerCase();
+        for (i = 0; i < l; i += 1) {
+            if (colors[i] === newColor) {
+                jqObj.addClass(newColor);
+            } else {
+                jqObj.removeClass(colors[i]);
+            }
+        }
+    }
+    
     function partition_row (index) {
-        
+        /*
         var i = index.i;
         //var bgcolor = (i % 2) === 0 ? '#fff' : '#e0e0e0';
         //var bgcolor = (i % 2) === 0 ? 'transparent' : 'transparent';
@@ -95,10 +107,10 @@ $(document).ready(function () {
         // done, return the row
         //return html + '</tr></table></div>';
         return html + '</tr>';
+        */
         
-        /*
-        console.log(index);
-        var html = '';
+        //console.log(index);
+        //var html = '';
         var owner = index.node;
         
         var numID = index['i'];
@@ -109,28 +121,44 @@ $(document).ready(function () {
             row.removeClass('partition-template');
             row.show();
         }
+        $('.partition-number', row).text(numID);
+        $('.owner', row).text(owner);
         
-        return row;
-        */
+        if (index.vnodes.riak_kv === 'primary') {
+            set_light_color($('.kv-light', row), 'green');
+            $('.kv-status', row).html('active');
+        } else {
+            $('.kv-status', row).html('idle');
+        }
+        
+        if (index.vnodes.riak_pipe === 'primary') {
+            set_light_color($('.pipe-light', row), 'green');
+        }
+        
+        //console.log(index);
+        return row[0];
+        
     }
     
     function update_partitions (data) {
-        var html = '', i, l = data.length;
+        var html = $(), i, l = data.length;
     
         // loop over each index
         for(i = 0;i < l; i += 1) {
-            html = html + partition_row(data[i]);
+            html.push(partition_row(data[i]));
         }
-        
+        $('#spinner').hide();
+        $('#partition-list').fadeIn(300);
         if ($('#ring-headline').length) {
             $('#total-number').html('(' + l + ' ' + ((l === 1)?'Partition':'Partitions') + ' Total)');
         }
     
+        //console.log(html);
         // update the table
         $('#ring-table-body').html(html);
     
         // check again in a little bit
-        ping_partitions();
+        //ping_partitions();
     }
     
     function ping_partitions () {

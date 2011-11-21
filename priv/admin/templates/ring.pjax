@@ -12,11 +12,12 @@
     <img id="spinner" src="/admin/ui/images/spinner.gif">
 </h1>
 
-<div id="node-list" class="hide">
+<div id="partition-list" class="hide">
     <table class="list-table" id="ring-table">
         <thead>
         <tr class="table-head has-cut">
-            <td colspan="2"><h3 class="gui-headline">Owner Node</h3></td>
+            <td><h3 class="gui-headline">#</h3></td>
+            <td><h3 class="gui-headline">Owner Node</h3></td>
             <td><h3 class="gui-headline">KV</h3></td>
             <td><h3 class="gui-headline">Pipe</h3></td>
             <td><h3 class="gui-headline">Search</h3></td>
@@ -30,8 +31,8 @@
 
 <!-- partition template -->
 <table class="hide">
-    <tr class="node partition-template">
-        <td class="partition-number"></td>
+    <tr class="partition partition-template">
+        <td class="partition-number gui-text"></td>
         <td class="owner-box gui-text">
             <div class="gui-field gui-text">
                 <div class="gui-field-bg">
@@ -42,13 +43,13 @@
             </div>
         </td>
         <td class="kv-box gui-text">
-            <a class="gui-light"><span class="kv-light"></span></a>
+            <a class="gui-light kv-light"><span class="kv-status"></span></a>
         </td>
         <td class="pipe-box gui-text">
-            <a class="gui-light"><span class="pipe-light"></span></a>
+            <a class="gui-light pipe-light"><span class="pipe-status"></span></a>
         </td>
         <td class="search-box gui-text">
-            <a class="gui-light"><span class="search-light"></span></a>
+            <a class="gui-light search-light"><span class="search-status"></span></a>
         </td>
     </tr>
 </table>

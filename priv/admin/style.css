@@ -476,7 +476,51 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 /* END CODE FOR CLUSTER CONTENT */
 
 
+/* CODE FOR RING CONTENT */
+#ring-table .partition td {
+    padding: 2px;
+    height: 48px;
+}
 
+#ring-table .partition td.owner-box {
+    padding-right: 15px;
+}
+
+#ring-table .partition td.partition-number {
+    width: 20px;
+    padding: 2px 5px;
+}
+
+#ring-table .partition:hover {
+    background: url(/admin/ui/images/node-bg.png) left top repeat transparent;
+    background: rgba(255,255,255,.1);
+}
+
+.owner {
+    padding: 8px 2px;
+    height: 22px;
+}
+
+.kv-box, .pipe-box, .search-box {
+    width: 100px;
+}
+
+#ring-table div {
+    cursor:pointer;
+    cursor:hand;
+}
+
+#ring-table div td {
+
+}
+
+#ring-table div .active {
+    background:#fe9925;
+    font-color:#000;
+}
+
+
+/* END CODE FOR RING CONTENT*/
 
 
 
@@ -504,30 +548,6 @@ input.field {
     padding:4px;
 }
 
-
-
-/*
- * RING STYLE
- */
-
-#ring-table div {
-    padding:2px 0 2px 0;
-    cursor:pointer;
-    cursor:hand;
-}
-
-#ring-table div td {
-
-}
-
-#ring-table div .active {
-    background:#fe9925;
-    font-color:#000;
-}
-
-#ring-table div:hover {
-    background:#fe9925;
-}
 
 /* CASCADING STYLES */
 .left     {float: left;}
