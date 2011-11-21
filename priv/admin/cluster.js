@@ -25,7 +25,7 @@ $(document).ready(function () {
     // Contains some extra handling for when someone lets go of the slider
     // before it has moved all the way over and for handling the message
     // as well.
-    $('.gui-slider-groove').live('initSlider', function () {
+    $(document).on('initSlider', '.gui-slider-groove', function () {
         $(this).slider({
             slide : function() {
                 var me = $(this);
@@ -69,7 +69,7 @@ $(document).ready(function () {
     Enable this section if your slider message container does not extend to the edge
     of the slider.
     */
-    $('.gui-slider-activate').live('click', function() {
+    $(document).on('click', '.gui-slider-activate', function() {
         var me = $(this);
         var myHandle = me.next('.gui-slider-groove').find('.ui-slider-handle');
         var handlePos = parseInt(myHandle.css('left'));
@@ -111,14 +111,13 @@ $(document).ready(function () {
             dataType: 'json',
             complete: function (x,y) {
                 var err, errortextbox, errorlinkbox;
-                console.log(x);
                 if (y.toLowerCase() === 'error') {
                     err = x.responseText.split('<title>')[1].split('</title>')[0] + ' <a class="monospace">-></a> ' + this.url + '.';
                     $('#node-error .error-text').html(err);
                     $('#node-error .error-link').html('View in Logs &raquo;')
                     $('#node-error').show();
                 }
-                enable_adding();
+                enable_adding((y.toLowerCase() === 'success') ? true : false);
             },
             success: function(res) {
                 if (res.result.toLowerCase() === 'ok') {
@@ -128,29 +127,31 @@ $(document).ready(function () {
         });
     }
 
-    function disable_adding() {
-        $('#add-node').addClass('disabled');
-        $('#node-to-add').attr('disabled', 'disabled');
-        $('#add-node-button').unbind('click');
-    }
-
-    function enable_adding () {
-        var button = $('#add-node-button');
-        var boundevents = button.data('events');
-        $('#add-node').removeClass('disabled');
-        $('#node-to-add').removeAttr('disabled', 'disabled');
-        if (!boundevents || !boundevents.click || boundevents.click.length < 1) {
-            button.bind('click', function () {
-                $('#node-error').hide();
-                if ($('#node-to-add').val().length) {
-                    add_node();
-                }
-            });
+    function enable_adding (clear) {
+        var nodeToAdd = $('#node-to-add');
+        $('#add-node-button').removeClass('pressed').removeClass('disabled');
+        nodeToAdd.removeAttr('disabled').removeClass('disabled');
+        if (clear === true) {
+            nodeToAdd.val('');
         }
+        
+        // Make super sure that event handlers are not accumulating...
+        $(document).off('click', '#add-node-button');
+        
+        $(document).one('click', '#add-node-button', function () {
+            var nodeToAdd = (nodeToAdd && nodeToAdd.length) ? nodeToAdd : $('#node-to-add');
+            $('#node-error').hide();
+            if (nodeToAdd.val()) {
+                $(this).addClass('pressed').addClass('disabled');
+                nodeToAdd.attr('disabled', 'disabled').addClass('disabled');
+                add_node();
+            } else {
+                enable_adding();
+            }
+        });
     }
 
     function add_node () {
-        disable_adding();
         perform_node_action('/admin/cluster/join/' + $('#node-to-add').val());
     }
 
@@ -160,13 +161,14 @@ $(document).ready(function () {
 
     function stop_node () {
         perform_node_action('/admin/node/' + this_node + '/stop');
-        show_node_actions();
+        // show_node_actions();
     }
 
     function leave_cluster (node) {
         perform_node_action('/admin/node/' + (node || this_node) + '/leave');
     }
 
+    /*
     function show_node_actions (node) {
         $('#node-name').html(node);
         $('#node-pong-actions').hide();
@@ -198,6 +200,7 @@ $(document).ready(function () {
             success:show_actions
         });
     }
+    */
 
     function set_light_color (jqObj, newColor) {
         var colors = ['green', 'gray', 'orange', 'red'], i, l = colors.length;
@@ -271,6 +274,7 @@ $(document).ready(function () {
     function cluster_node_row (node) {
         var id = node.name.split('@')[0];
         var rows = $('#cluster-table #' + id);
+        var row;
 
         // create a new row
         if (rows.length === 0) {
@@ -321,7 +325,9 @@ $(document).ready(function () {
 
         $('#spinner').hide();
         $('#node-list').fadeIn(300);
-        $('#total-number').html('(' + l + ' ' + ((l === 1)?'Node':'Nodes') + ' Total)');
+        if ($('#cluster-headline').length) {
+            $('#total-number').html('(' + l + ' ' + ((l === 1)?'Node':'Nodes') + ' Total)');
+        }
 
         for(i = 0; i < l; i += 1) {
             cluster_node_row(nodes[i]);
@@ -338,7 +344,7 @@ $(document).ready(function () {
     }
 
     /* MAKE THE MARKDOWN BUTTON STAY DOWN ONCE CLICED */
-    $('.markdown-button').live('click', function () {
+    $(document).on('click', '.markdown-button', function () {
         var node = $(this).closest('tr').find('.name').text();
         down_node(node);
         $(this).addClass('pressed');

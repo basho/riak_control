@@ -3,7 +3,7 @@
 $(function() {
 
     /* ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM */
-    $('#node-to-add').keyup(function(event){
+    $(document).on('keyup', '#node-to-add', function (event) {
         if(event.keyCode === 13){
             $('#add-node-button').trigger('click');
         }
@@ -26,7 +26,7 @@ $(function() {
     });
     */
     /* TURN ON TOGGLING FOR THE SPLIT BAR */
-    splitBar.click(function () {
+    splitBar.on('click', function () {
         var nav = $('#navigation'), navwidth = nav.css('width');
         var navbox = $('#nav-box'), boxwidth = navbox.css('width');
         if (navwidth === '218px') {
@@ -41,7 +41,7 @@ $(function() {
     
     
     /* HANDLE ACTIVE INDICATOR ANIMATION */
-    $('.nav-li').click(function () {
+    $('.nav-li').on('click', function () {
         var me = $(this), indicator = $('#active-nav');
         indicator.animate({"top":me.position().top},{queue:false,duration:200});   
     });
@@ -68,7 +68,7 @@ $(function() {
     // When the document is ready, run setGuiSwitch on all on/off switches
     $('.gui-switch').each(setGuiSwitch);
     // When a switch changes, alter its class accordingly.
-    $('.gui-switch input').live('change', function(e) {
+    $('.gui-switch input').on('change', function(e) {
         var that = $(this),
             theValue = that.attr('value').toLowerCase(),
             isChecked = (that.attr('checked') === 'checked'),
@@ -82,16 +82,6 @@ $(function() {
     // END CODE FOR ON/OFF SWITCHES
     
     
-    /*
-    MAKE TEXT FIELDS WORK
-    To set up: wrap an input[type=text] classed 'gui-field-input' in a div with
-    the class 'gui-field'.
-    */
-    // Auto-surround the input field with background div and graphic caps.
-    $('.gui-field').append('<div class="gui-field-cap-left"></div><div class="gui-field-cap-right"></div>');
-    $('.gui-field-input').wrap('<div class="gui-field-bg">');
-    
-    
     
     /* CODE FOR ALL THE TOOLTIPS */
     function emptyTips () {
@@ -101,23 +91,28 @@ $(function() {
         $('#display-tips').html(str);
     }
     
-    $('#add-node table').hover(function () {
+    // Add new node area
+    $(document).on('mouseover', '#add-node table', function () {
         displayTips('Type a node name (for example: dev2@127.0.0.1) and hit "Add Node" to add it to the cluster.');
-    }, emptyTips);
+    }).on('mouseout', '#add-node table', emptyTips);
     
-    $('.leave-box .gui-slider').live('mouseover', function () {
+    // Leave cluster sliders
+    $(document).on('mouseover', '.leave-box .gui-slider', function () {
         displayTips('This will cause the node to begin the process of leaving the cluster. It will handoff its partition data to other partitions in the ring and then take itself offline.');
-    }).live('mouseout', emptyTips);
+    }).on('mouseout', '.leave-box .gui-slider', emptyTips);
     
-    $('.current-host').live('mouseover', function () {
+    // The 'Hosting Riak Control' message
+    $(document).on('mouseover', '.current-host', function () {
         displayTips('This node cannot be shutdown or removed from Riak Control because it is currently hosting the app.');
-    }).live('mouseout', emptyTips);
+    }).on('mouseout', '.current-host', emptyTips);
     
-    $('.markdown-button').live('mouseover', function () {
+    // Markdown button
+    $(document).on('mouseover', '.markdown-button', function () {
         displayTips('This node is currently offline.  If some nodes are stuck trying to leave the cluster or handoff data, then marking this node as "down" should take care of the problem.');
-    }).live('mouseout', emptyTips);
+    }).on('mouseout', '.markdown-button', emptyTips);
     
-    $('.status-box').live('mouseover', function () {
+    // Node status
+    $(document).on('mouseover', '.status-box', function () {
         var mytext = $(this).find('.status').text();
         if (mytext === 'valid') {
             displayTips('This node is currently online and working.');
@@ -128,7 +123,7 @@ $(function() {
         } else if (mytext === 'leaving') {
             displayTips('This node is in process of leaving the cluster.  While it is handing off its partition data, you cannot interact with it.');
         }
-    }).live('mouseout', emptyTips);
+    }).on('mouseout', '.status-box', emptyTips);
     
     
         
