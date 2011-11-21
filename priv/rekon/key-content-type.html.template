@@ -1,6 +1,0 @@
-<tr> 
-  <th>Content Type</th> 
-  <td> 
-    <pre><%= object.contentType %></pre> 
-  </td> 
-</tr> 
