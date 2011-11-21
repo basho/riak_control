@@ -60,7 +60,7 @@ td {
 
 /* CODE FOR GLOBAL STYLES */ 
 html {
-    background: url(/admin/ui/gui-bg.jpg) left top repeat #2d2d2d;
+    background: url(/admin/images/gui-bg.jpg) left top repeat #2d2d2d;
 }
 
 body {
@@ -142,14 +142,14 @@ h3 {
 
 /* HEADER PORTION */
 #header {
-    background: url(/admin/ui/header-bg.png) left top repeat-x transparent;
+    background: url(/admin/images/header-bg.png) left top repeat-x transparent;
     height: 67px;
     width: auto;
     margin: 0 0 22px 0; 
 }
 #riak-control-logo {
     display: block;
-    background: url(/admin/ui/riak-control-logo.gif) right bottom no-repeat transparent;
+    background: url(/admin/images/riak-control-logo.gif) right bottom no-repeat transparent;
     width: 201px;
     height: 56px;
     float: left;
@@ -166,7 +166,7 @@ h3 {
 
 #split-bar {
 	width: 6px;
-	background: url(/admin/ui/resizer-bg.png) left top repeat transparent;
+	background: url(/admin/images/resizer-bg.png) left top repeat transparent;
 	border: 1px solid #fff;
 	float: left;
 	opacity: .2;
@@ -198,16 +198,16 @@ h3 {
     left: 0;
     width: 14px;
     height: 48px;
-    background: url(/admin/ui/active-nav.png) left top no-repeat transparent;
+    background: url(/admin/images/active-nav.png) left top no-repeat transparent;
 }
 
 .nav-li {
-    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    background: url(/admin/images/nav-icons.png) 12px 10px no-repeat transparent;
     padding: 0 0 0 14px;
     height: 48px;
 }
 .nav-li-disabled {
-    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    background: url(/admin/images/nav-icons.png) 12px 10px no-repeat transparent;
     padding: 0 0 0 14px;
     height: 48px;
     opacity: .3;
@@ -225,7 +225,7 @@ h3 {
     font-size: 18px;
     height: 33px;
     vertical-align: middle;
-    background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;
+    background: url(/admin/images/cut-bg.png) left bottom repeat-x transparent;
     padding: 15px 0 0 40px;
 }
 .nav-li .nav-item:hover {
@@ -268,17 +268,17 @@ h3 {
     background: left top no-repeat transparent;
 }
 .gui-field-cap-left  {
-    background-image: url(/admin/ui/fieldcap-left.png);
+    background-image: url(/admin/images/fieldcap-left.png);
     left: 0;
 }
 .gui-field-cap-right {
-    background-image: url(/admin/ui/fieldcap-right.png);
+    background-image: url(/admin/images/fieldcap-right.png);
     right: 0;
 }
 .gui-field-bg {
     width: auto;
     height: 30px;
-    background: url(/admin/ui/field-bg.png) left top repeat-x transparent;
+    background: url(/admin/images/field-bg.png) left top repeat-x transparent;
     margin: 0 9px;
 }
 .gui-field-input {
@@ -302,7 +302,7 @@ h3 {
     border: 0;
     margin-top: 3px;
 }
-.gui-point-button {background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;}
+.gui-point-button {background: url(/admin/images/pointbutton-sprite.png) left top no-repeat transparent;}
 
 .gui-button-msg {
     display: block;
@@ -333,7 +333,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     width: auto;
     height: 27px;
     padding: 9px 0 0 32px;
-    background: url(/admin/ui/light-sprite.png) -5px bottom no-repeat transparent;
+    background: url(/admin/images/light-sprite.png) -5px bottom no-repeat transparent;
 }
 .gui-light.green  {background-position: -5px top;}
 .gui-light.red    {background-position: -5px -36px;}
@@ -342,7 +342,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 
 /* CODE FOR SLIDING SWITCHES */
 .gui-slider, .gui-slider-leaving {
-    background: url(/admin/ui/slider-groove.png) 4px 2px no-repeat transparent;
+    background: url(/admin/images/slider-groove.png) 4px 2px no-repeat transparent;
     height: 36px;
     width: 150px;
     position: relative;
@@ -351,7 +351,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     margin-top: 3px;
 }
 .gui-slider-leaving {
-    background: url(/admin/ui/leaving-slider.png) 4px 2px no-repeat transparent;
+    background: url(/admin/images/leaving-slider.png) 4px 2px no-repeat transparent;
 }
 .gui-slider-groove.ui-slider {
     background: transparent;
@@ -370,7 +370,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .gui-slider-msg.isLeft {display: block; left: 43px;}
 .gui-slider-msg.isRight {display: none; left: 18px;}
 .gui-slider .ui-slider-handle {
-    background: url(/admin/ui/slider-handle.png) left top no-repeat transparent;
+    background: url(/admin/images/slider-handle.png) left top no-repeat transparent;
     height: 36px;
     width: 36px;
     display: block;
@@ -445,7 +445,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 
 #cluster-table .node:hover {
-    background: url(/admin/ui/node-bg.png) left top repeat transparent;
+    background: url(/admin/images/node-bg.png) left top repeat transparent;
     background: rgba(255,255,255,.1);
 }
 
@@ -538,7 +538,7 @@ input.field {
 .block    {display: block;}
 .inline   {display: inline;}
 .inblock  {display: inline-block;}
-.has-cut  {background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
+.has-cut  {background: url(/admin/images/cut-bg.png) left bottom repeat-x transparent;}
 .hide     {display: none;}
 .monospace{font-family: menlo, monospace;}
 

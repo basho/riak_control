@@ -25,7 +25,7 @@
     </div>
 </div><!-- #add-node -->
 
-<h2 class="gui-headline-bold has-cut">Node List <img id="spinner" src="/admin/ui/spinner.gif">
+<h2 class="gui-headline-bold has-cut">Node List <img id="spinner" src="/admin/images/spinner.gif">
     <span id="total-number" class="gui-text"></span>
 </h2>
 <div id="node-list" class="hide">
