@@ -203,7 +203,7 @@ update_partitions (State=#state{ring=Ring}) ->
 get_member_info (_Member={Node,Status}) ->
     case rpc:call(Node,riak_core_vnode_manager,all_vnodes,[]) of
         {badrpc,_Reason} ->
-            {Node,Status,false,[]};
+            {Node,unreachable,false,[]};
         Vnodes ->
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
@@ -230,20 +230,16 @@ partition_index (Ring,Index) ->
     ((Index div Inc) + 1) rem NumPartitions.
 
 %% get the current status of a vnode for a given partition
-get_vnode_status (Service,Ring,Index,Vnodes) ->
+get_vnode_status (Service,Ring,Index,_Vnodes) ->
     UpNodes=riak_core_node_watcher:nodes(Service),
     case riak_core_apl:get_apl_ann(<<(Index-1):160>>,1,Ring,UpNodes) of
-        [{{_,_},Status}|_] ->
-            case is_vnode_running(Index,Service,Vnodes) of
-                true -> {Service,Status};
-                false -> {Service,undefined}
-            end;
+        [{{_,_Node},Status}|_] -> {Service,Status};
         [] -> {Service,undefined}
     end.
 
-%% check to see if a particular index vnode worker is running
-is_vnode_running (Index,Service,Vnodes) ->
-    Worker=proplists:get_value(Service,riak_core:vnode_modules()),
+%% %% check to see if a particular index vnode worker is running
+%% is_vnode_running (Index,Service,Vnodes) ->
+%%     Worker=proplists:get_value(Service,riak_core:vnode_modules()),
 
-    %% just check for any worker vnode that matches the type
-    [P || {T,I,P} <- Vnodes, (T==Worker) and (I==Index)] =/= [].
+%%     %% just check for any worker vnode that matches the type
+%%     [P || {T,I,P} <- Vnodes, (T==Worker) and (I==Index)] =/= [].
