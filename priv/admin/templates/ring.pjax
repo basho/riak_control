@@ -1,12 +1,12 @@
-<div id="aside" class="right">
-    <div>
-        <p id="ring-filter" style="margin-top:10px;">
-            <select id="filter">
-                <option value="/admin/ring/partitions">All</option>
-            </select>
-        </p>
-    </div>
+
+<div id="ring-filter" class="right">
+    <h3 class="gui-headline no-pad">Filter Partitions</h3>
+    <select id="filter">
+        <option value="/admin/ring/partitions">All</option>
+    </select>
 </div>
+
+
 
 <h1 id="ring-headline" class="gui-headline-bold has-cut">Ring <span id="total-number" class="gui-text"></span>
     <img id="spinner" src="/admin/ui/images/spinner.gif">
@@ -57,33 +57,3 @@
 
 
 
-
-
-
-
-
-<!-- original stuff... -->
-
-<div id="container" style="margin-bottom: 250px;">
-
-
-            <!--
-            <table width="100%">
-                <tr>
-                    <td align="left" class="header">Partition</td>
-                    <td align="right" class="header" width="300px">Owner</td>
-                    <td align="center" class="header" width="24px">K</td>
-                    <td align="center" class="header" width="24px">P</td>
-                    <td align="center" class="header" width="24px">S</td>
-                </tr>
-            </table>
-            -->
-            
-            <!--
-            <div id="ring-table">
-                <img src="/admin/ui/images/spinner.gif">
-            </div>
-            -->
-
-
-</div>

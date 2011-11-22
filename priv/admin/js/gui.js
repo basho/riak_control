@@ -93,22 +93,28 @@ $(function() {
     
     // Add new node area
     $(document).on('mouseover', '#add-node table', function () {
-        displayTips('Type a node name (for example: dev2@127.0.0.1) and hit "Add Node" to add it to the cluster.');
+        displayTips('Type a node name (for example: dev2@127.0.0.1) and hit "Add Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
     }).on('mouseout', '#add-node table', emptyTips);
+    
+    // Name of a node
+    $(document).on('mouseover', '.node .name', function () {
+        var name = $(this).text();
+        displayTips('This node is named ' + name + '.  It is a member of this cluster.');
+    }).on('mouseout', '.node .name', emptyTips);
     
     // Leave cluster sliders
     $(document).on('mouseover', '.leave-box .gui-slider', function () {
-        displayTips('This will cause the node to begin the process of leaving the cluster. It will handoff its partition data to other partitions in the ring and then take itself offline.');
+        displayTips('This will cause the node to begin relinquishing ownership of its data to other nodes in the cluster.  You will not be able to interact with the node via Riak Control during this process.  Once completed, Riak will shutdown on this node and it will leave the cluster.');
     }).on('mouseout', '.leave-box .gui-slider', emptyTips);
     
     // The 'Hosting Riak Control' message
     $(document).on('mouseover', '.current-host', function () {
-        displayTips('This node cannot be shutdown or removed from Riak Control because it is currently hosting the app.');
+        displayTips('This node cannot be shutdown or removed via Riak Control because it is currently hosting the app.');
     }).on('mouseout', '.current-host', emptyTips);
     
     // Markdown button
     $(document).on('mouseover', '.markdown-button', function () {
-        displayTips('This node is currently offline.  If some nodes are stuck trying to leave the cluster or handoff data, then marking this node as "down" should take care of the problem.');
+        displayTips('This node is currently unreachable.  While in this state, it may hinder cluster membership changes of other nodes.  Marking this node as "down" will allow other nodes to engage in membership changes unimpeded.');
     }).on('mouseout', '.markdown-button', emptyTips);
     
     // Node status
@@ -117,11 +123,11 @@ $(function() {
         if (mytext === 'valid') {
             displayTips('This node is currently online and working.');
         } else if (mytext === 'unreachable') {
-            displayTips('This node is offline and is not currently responding to requests.');
+            displayTips('This node is unreachable.  Riak may need to be restarted or there may be other connectivity issues.  Cluster membership changes like "join" and "leave" cannot complete until this node is reachable or marked as "down".');
         } else if (mytext === 'down') {
-            displayTips('You have marked this node as "down".  It is currently offline and must be restarted manually to rejoin the cluster.');
+            displayTips('This node has been marked as "down". While in this state it can not be interacted with but it will not impede cluster membership changes of other nodes.  To return to a "valid" state, simply restart Riak on this node.');
         } else if (mytext === 'leaving') {
-            displayTips('This node is in process of leaving the cluster.  While it is handing off its partition data, you cannot interact with it.');
+            displayTips('This node is in process of leaving the cluster.  When it has finished relinquishing ownership and transferring data to other nodes, Riak will stop on this node and it will cease to be a member of the cluster.  You can not interact with this node during this process.');
         }
     }).on('mouseout', '.status-box', emptyTips);
     

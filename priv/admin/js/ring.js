@@ -21,13 +21,15 @@ $(document).ready(function () {
             method:'GET',
             url:$('#filter').val(),
             dataType:'json',
-            success:update_partitions,
-            failure:ping_partitions
+            failure:ping_partitions,
+            success: function (d) {
+                update_partitions(d);
+            }
         });
     }
     
     function update_filters (data) {
-        var html = '<select id="filter">', i, l = data.length;
+        var html = '', i, l = data.length;
     
         // add the all options
         html += '<option value="/admin/ring/partitions">All</option>';
@@ -49,7 +51,7 @@ $(document).ready(function () {
         html += '<option value="/admin/ring/partitions/filter/away">Away</option>';
         
         // update the page
-        $('#ring-filter').html(html + '</select>');
+        $('#filter').html(html);
     }
     
     function set_light_color (jqObj, newColor) {
@@ -128,11 +130,27 @@ $(document).ready(function () {
             set_light_color($('.kv-light', row), 'green');
             $('.kv-status', row).html('active');
         } else {
+            set_light_color($('.kv-light', row), 'gray');
             $('.kv-status', row).html('idle');
         }
         
         if (index.vnodes.riak_pipe === 'primary') {
             set_light_color($('.pipe-light', row), 'green');
+            $('.pipe-status', row).html('active');
+        } /*else if (index.vnodes.riak_pipe === 'undefined') {
+            set_light_color($('.pipe-light', row), 'red');
+            $('.pipe-status', row).html('unreachable');
+        } */else {
+            set_light_color($('.pipe-light', row), 'gray');
+            $('.pipe-status', row).html('idle');
+        }
+        
+        if (index.vnodes.riak_search === 'primary') {
+            set_light_color($('.search-light', row), 'green');
+            $('.search-status', row).html('active');
+        } else {
+            set_light_color($('.search-light', row), 'gray');
+            $('.search-status', row).html('idle');
         }
         
         //console.log(index);
@@ -153,12 +171,11 @@ $(document).ready(function () {
             $('#total-number').html('(' + l + ' ' + ((l === 1)?'Partition':'Partitions') + ' Total)');
         }
     
-        //console.log(html);
         // update the table
         $('#ring-table-body').html(html);
     
         // check again in a little bit
-        //ping_partitions();
+        ping_partitions();
     }
     
     function ping_partitions () {
