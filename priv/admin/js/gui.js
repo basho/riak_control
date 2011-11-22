@@ -1,5 +1,8 @@
 // Framework for the cool UI tricks
 
+// Set up a safe, global namespace in the jQuery object.
+$.riakControl = $.riakControl || {};
+
 $(function() {
 
     /* ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM */

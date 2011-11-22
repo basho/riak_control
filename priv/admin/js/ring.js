@@ -19,7 +19,7 @@ $(document).ready(function () {
     function get_partitions () {
         $.ajax({
             method:'GET',
-            url:$('#filter').val(),
+            url:'/admin/ring/partitions', //$('#filter').val(),
             dataType:'json',
             failure:ping_partitions,
             success: function (d) {
@@ -32,26 +32,26 @@ $(document).ready(function () {
         var html = '', i, l = data.length;
     
         // add the all options
-        html += '<option value="/admin/ring/partitions">All</option>';
-        html += '<option value="/admin/ring/partitions/filter/none">';
-        html += '-------------------------</option>';
+        html += '<option value="__all_nodes__">All</option>';
+        html += '<option value="">-------------------------</option>';
     
         for(i = 0; i < l; i += 1) {
             var node = data[i].name;
     
             // add this node as an option
-            html += '<option value="/admin/ring/partitions/filter/node/' + node + '">';
+            html += '<option value="' + node + '">';
             html += 'Owner: ' + node + '</option>';
         }
     
         // add the other common options
-        html += '<option value="/admin/ring/partitions/filter/none">';
-        html += '-------------------------</option>';
-        html += '<option value="/admin/ring/partitions/filter/home">Home</option>';
-        html += '<option value="/admin/ring/partitions/filter/away">Away</option>';
+        html += '<option value="">-------------------------</option>';
+        //html += '<option value="__home_nodes__">Home</option>';
+        //html += '<option value="__away_nodes__">Away</option>';
         
         // update the page
         $('#filter').html(html);
+        
+        console.log($('#filter'));
     }
     
     function set_light_color (jqObj, newColor) {
@@ -159,12 +159,21 @@ $(document).ready(function () {
     }
     
     function update_partitions (data) {
-        var html = $(), i, l = data.length;
-    
+        var html = $(), i, l = data.length, filterVal = $.riakControl.filter.ring;
+
+        $.riakControl.filter.temp = [];
         // loop over each index
         for(i = 0;i < l; i += 1) {
-            html.push(partition_row(data[i]));
+            //html.push(partition_row(data[i]));
+            if (filterVal && filterVal === '__all_nodes__') {
+                html.push(partition_row(data[i]));
+            } else if (filterVal) {
+                if (data[i].node === filterVal) {
+                    html.push(partition_row(data[i]));
+                }
+            }
         }
+        
         $('#spinner').hide();
         $('#partition-list').fadeIn(300);
         if ($('#ring-headline').length) {
@@ -182,6 +191,15 @@ $(document).ready(function () {
         setTimeout(get_partitions, 1000);
     }
     
+    // Make sure our filter data holder exists
+    $.riakControl.filter = $.riakControl.filter || {"ring":"__all_nodes__"};
+    
+    // Define what to do when the filter value changes 
+    $(document).on('change', '#filter', function (e) {
+        $.riakControl.filter.ring = $(this).val();
+    });
+    
+    // Start everything on initial load
     initialize();
     
 });
