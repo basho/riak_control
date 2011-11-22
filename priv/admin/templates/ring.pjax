@@ -1,12 +1,17 @@
 
 <div id="ring-filter" class="right">
-    <h3 class="gui-headline no-pad">Filter Partitions</h3>
+    <div class="gui-checkbox-wrapper">
+        <input id="primary-nodes" class="gui-checkbox" type="checkbox" name="ringfilter" checked="checked" />
+        <span class="gui-text">Primary&nbsp;&nbsp;&nbsp;</span>
+    </div>
+    <div class="gui-checkbox-wrapper">
+        <input id="fallback-nodes" class="gui-checkbox" type="checkbox" name="ringfilter" checked="checked" />
+        <span class="gui-text">Fallback&nbsp;&nbsp;&nbsp;</span>
+    </div>
     <select id="filter">
         <option value="/admin/ring/partitions">All</option>
     </select>
 </div>
-
-
 
 <h1 id="ring-headline" class="gui-headline-bold has-cut">Ring <span id="total-number" class="gui-text"></span>
     <img id="spinner" src="/admin/ui/images/spinner.gif">

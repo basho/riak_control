@@ -85,6 +85,17 @@ $(function() {
     // END CODE FOR ON/OFF SWITCHES
     
     
+    /* MAKE CHECKBOXES WORK WHEN YOU CLICK THEM */
+    $(document).on('change', '.gui-checkbox', function(e) {
+        var me = $(this), parent = me.parent(); checked = me.attr('checked');
+        console.log(parent);
+        if (checked) {
+            parent.css('background-position', 'left top');
+        } else {
+            parent.css('background-position', 'left bottom');
+        }
+    });
+
     
     /* CODE FOR ALL THE TOOLTIPS */
     function emptyTips () {

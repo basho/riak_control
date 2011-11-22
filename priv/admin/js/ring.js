@@ -32,6 +32,7 @@ $(document).ready(function () {
         var html = '', i, l = data.length;
     
         // add the all options
+        html += '<option value="__all_nodes__">Filter partitions...</option>';
         html += '<option value="__all_nodes__">All</option>';
         html += '<option value="">-------------------------</option>';
     
@@ -45,13 +46,10 @@ $(document).ready(function () {
     
         // add the other common options
         html += '<option value="">-------------------------</option>';
-        //html += '<option value="__home_nodes__">Home</option>';
-        //html += '<option value="__away_nodes__">Away</option>';
         
         // update the page
         $('#filter').html(html);
         
-        console.log($('#filter'));
     }
     
     function set_light_color (jqObj, newColor) {
@@ -159,19 +157,34 @@ $(document).ready(function () {
     }
     
     function update_partitions (data) {
-        var html = $(), i, l = data.length, filterVal = $.riakControl.filter.ring;
+        var html = $(), i, l = data.length, 
+            dropVal = $.riakControl.filter.ring.dropdown,
+            showPrimary = $.riakControl.filter.ring.primary,
+            showFallback = $.riakControl.filter.ring.fallback;
 
-        $.riakControl.filter.temp = [];
+        function all_or_by_owner (obj) {
+            if (dropVal === '__all_nodes__') {
+                html.push(partition_row(data[obj]));
+            } else if (dropVal === data[obj].node) {
+                html.push(partition_row(data[obj]));
+            }
+        }
+
         // loop over each index
         for(i = 0;i < l; i += 1) {
-            //html.push(partition_row(data[i]));
-            if (filterVal && filterVal === '__all_nodes__') {
-                html.push(partition_row(data[i]));
-            } else if (filterVal) {
-                if (data[i].node === filterVal) {
-                    html.push(partition_row(data[i]));
+
+            if (showPrimary && showFallback) {
+                all_or_by_owner(i);
+            } else if (showPrimary && !showFallback) {
+                if (data[i].vnodes.riak_kv !== 'fallback') {
+                    all_or_by_owner(i);
+                }
+            } else if (!showPrimary && showFallback) {
+                if (data[i].vnodes.riak_kv === 'fallback') {
+                    all_or_by_owner(i);
                 }
             }
+
         }
         
         $('#spinner').hide();
@@ -179,7 +192,7 @@ $(document).ready(function () {
         if ($('#ring-headline').length) {
             $('#total-number').html('(' + l + ' ' + ((l === 1)?'Partition':'Partitions') + ' Total)');
         }
-    
+
         // update the table
         $('#ring-table-body').html(html);
     
@@ -192,11 +205,27 @@ $(document).ready(function () {
     }
     
     // Make sure our filter data holder exists
-    $.riakControl.filter = $.riakControl.filter || {"ring":"__all_nodes__"};
+    $.riakControl.filter = $.riakControl.filter || {
+        "ring" : {
+            "dropdown" : "__all_nodes__",
+            "primary"  : true,
+            "fallback" : true
+        }
+    };
     
-    // Define what to do when the filter value changes 
+    // Define what to do when the filter dropdown value changes 
     $(document).on('change', '#filter', function (e) {
-        $.riakControl.filter.ring = $(this).val();
+        $.riakControl.filter.ring.dropdown = $(this).val();
+    });
+
+    // Define what to do when the filter checkboxes change
+    $(document).on('change', '#ring-filter .gui-checkbox', function (e) {
+        var me = $(this), myID = me.attr('id');
+        if (myID === 'primary-nodes') {
+            (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.primary = true : $.riakControl.filter.ring.primary = false;
+        } else if (myID === 'fallback-nodes') {
+            (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.fallback = true : $.riakControl.filter.ring.fallback = false;
+        }
     });
     
     // Start everything on initial load
