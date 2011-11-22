@@ -89,20 +89,28 @@ node_ring_details (_P={Index,I,OwnerNode,Vnodes},Nodes) ->
              {status,Status},
              {reachable,Reachable},
              {vnodes,Vnodes},
-             {handoffs,lists:append([handoff_status(V,Hoffs) ||
-                                        {V,_} <- Vnodes])}
+             {handoffs,vnode_handoffs(Vnodes,Hoffs)}
             ];
         false -> []
     end.
 
 %% determine the status for each vnode worker and if there's a handoff
-handoff_status (Service,Hoffs) ->
-    case lists:keyfind(Service,1,riak_core:vnode_modules()) of
-        {_,Worker} ->
-            case lists:keyfind(Worker,1,Hoffs) of
-                Hoff={_Worker,_Target} -> [Hoff];
-                _ -> []
-            end;
-        _ ->
-            []
-    end.
+vnode_handoffs (Vnodes,Hoffs) ->
+    Mods=riak_core:vnode_modules(),
+
+    %% get a list of all handoff targets for each vnode type
+    lists:foldl(fun ({Vnode,_},Acc) ->
+                        case proplists:get_value(Vnode,Mods) of
+                            undefined ->
+                                Acc;
+                            Worker ->
+                                case proplists:get_value(Worker,Hoffs) of
+                                    undefined ->
+                                        Acc;
+                                    TargetNode ->
+                                        [{Vnode,TargetNode}|Acc]
+                                end
+                        end
+                end,
+                [],
+                Vnodes).
