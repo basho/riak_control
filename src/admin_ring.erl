@@ -63,7 +63,8 @@ content_types_provided (Req,C) ->
 %% valid | invalid | joining | leaving | exiting
 to_json (Req,C={Partitions,Filter}) ->
     PS=filter_partitions(Req,Partitions,Filter),
-    Details=[{struct,node_ring_details(P)} || P <- PS],
+    {ok,_V,Nodes}=riak_control_session:get_nodes(),
+    Details=[{struct,node_ring_details(P,Nodes)} || P <- PS],
     {mochijson2:encode(Details),Req,C}.
 
 %% filter a ring based on a given filter name
@@ -76,9 +77,15 @@ filter_partitions (_Req,_PS,_) ->
     [].
 
 %% return a proplist of details for a given index
-node_ring_details (_P={Index,I,OwnerNode,Vnodes}) ->
-    [{index,Index},
-     {i,I},
-     {node,OwnerNode},
-     {vnodes,Vnodes}
-    ].
+node_ring_details (_P={Index,I,OwnerNode,Vnodes},Nodes) ->
+    case lists:keyfind(OwnerNode,1,Nodes) of
+        {_Node,Status,Reachable,_} ->
+            [{index,Index},
+             {i,I},
+             {node,OwnerNode},
+             {status,Status},
+             {reachable,Reachable},
+             {vnodes,Vnodes}
+            ];
+        false -> []
+    end.
