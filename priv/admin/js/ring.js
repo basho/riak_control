@@ -92,7 +92,7 @@ $(document).ready(function () {
         $('.partition-number', row).text(numID);
         $('.owner', row).text(owner);
 
-
+        /*
         if (index.vnodes.riak_kv === 'primary') {
             set_light_color($('.kv-light', row), 'green');
             $('.kv-status', row).html('Active');
@@ -115,6 +115,20 @@ $(document).ready(function () {
         } else {
             set_light_color($('.search-light', row), 'gray');
             $('.search-status', row).html('Idle');
+        }
+        */
+
+        // Deal with all green lights 
+        if (index.reachable === true) {
+            set_operability_class($('.owner', row), 'normal');
+            if (index.vnodes.riak_kv === 'primary') {
+                set_light_color($('.kv-light', row),   'green');
+                $('.kv-status', row).html('Active');
+            }
+            if (index.vnodes.riak_pipe === 'primary') {
+                set_light_color($('.pipe-light', row), 'green');
+                $('.pipe-status', row).html('Active');
+            }
         }
 
         // Deal with all red lights
@@ -139,8 +153,17 @@ $(document).ready(function () {
             set_light_color($('.pipe-light', row), 'blue');
             $('.pipe-status', row).html('Fallback');
         }
+
+        // Deal with all orange lights
+        if (index.handoffs.riak_kv) {
+            set_light_color($('.kv-light', row), 'orange');
+            $('.kv-status', row).html('Handoff');
+        } 
+        if (index.handoffs.riak_pipe) {
+            set_light_color($('.pipe-light', row), 'orange');
+            $('.pipe-status', row).html('Handoff');
+        }
         
-        //console.log(index);
         return row[0];
         
     }
@@ -161,7 +184,7 @@ $(document).ready(function () {
 
         // loop over each index
         for(i = 0;i < l; i += 1) {
-            console.log(data[i]);
+            //console.log(data[i]);
             if (showPrimary && showFallback) {
                 all_or_by_owner(i);
             } else if (showPrimary && !showFallback) {
@@ -186,7 +209,7 @@ $(document).ready(function () {
         $('#ring-table-body').html(html);
     
         // check again in a little bit
-        //ping_partitions();
+        ping_partitions();
     }
     
     function ping_partitions () {
