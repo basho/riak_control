@@ -62,8 +62,8 @@ content_types_provided (Req,C) ->
 
 %% valid | invalid | joining | leaving | exiting
 to_json (Req,C={Partitions,Filter}) ->
-    PS=filter_partitions(Req,Partitions,Filter),
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
+    PS=filter_partitions(Req,Partitions,Filter),
     Details=[{struct,node_ring_details(P,Nodes)} || P <- PS],
     {mochijson2:encode(Details),Req,C}.
 
@@ -78,14 +78,31 @@ filter_partitions (_Req,_PS,_) ->
 
 %% return a proplist of details for a given index
 node_ring_details (_P={Index,I,OwnerNode,Vnodes},Nodes) ->
+    {ok,Hoffs}=riak_core_handoff_manager:get_handoffs(Index),
+
+    %% lookup the owner in the node list to get its status
     case lists:keyfind(OwnerNode,1,Nodes) of
         {_Node,Status,Reachable,_} ->
-            [{index,Index},
+            [{index,list_to_binary(integer_to_list(Index))},
              {i,I},
              {node,OwnerNode},
              {status,Status},
              {reachable,Reachable},
-             {vnodes,Vnodes}
+             {vnodes,Vnodes},
+             {handoffs,lists:append([handoff_status(V,Hoffs) ||
+                                        {V,_} <- Vnodes])}
             ];
         false -> []
+    end.
+
+%% determine the status for each vnode worker and if there's a handoff
+handoff_status (Service,Hoffs) ->
+    case lists:keyfind(Service,1,riak_core:vnode_modules()) of
+        {_,Worker} ->
+            case lists:keyfind(Worker,1,Hoffs) of
+                Hoff={_Worker,_Target} -> [Hoff];
+                _ -> []
+            end;
+        _ ->
+            []
     end.
