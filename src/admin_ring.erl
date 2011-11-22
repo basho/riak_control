@@ -89,7 +89,7 @@ node_ring_details (_P={Index,I,OwnerNode,Vnodes},Nodes) ->
              {status,Status},
              {reachable,Reachable},
              {vnodes,Vnodes},
-             {handoffs,{srtuct,vnode_handoffs(Vnodes,Hoffs)}}
+             {handoffs,{struct,vnode_handoffs(Vnodes,Hoffs)}}
             ];
         false -> []
     end.
