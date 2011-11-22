@@ -19,7 +19,7 @@ $(document).ready(function () {
     function get_partitions () {
         $.ajax({
             method:'GET',
-            url:'/admin/ring/partitions', //$('#filter').val(),
+            url:'/admin/ring/partitions',
             dataType:'json',
             failure:ping_partitions,
             success: function (d) {
@@ -53,7 +53,7 @@ $(document).ready(function () {
     }
     
     function set_light_color (jqObj, newColor) {
-        var colors = ['green', 'gray', 'orange', 'red'], i, l = colors.length;
+        var colors = ['green', 'gray', 'orange', 'red', 'blue'], i, l = colors.length;
         newColor = newColor.toLowerCase();
         for (i = 0; i < l; i += 1) {
             if (colors[i] === newColor) {
@@ -63,52 +63,20 @@ $(document).ready(function () {
             }
         }
     }
-    
-    function partition_row (index) {
-        /*
-        var i = index.i;
-        //var bgcolor = (i % 2) === 0 ? '#fff' : '#e0e0e0';
-        //var bgcolor = (i % 2) === 0 ? 'transparent' : 'transparent';
-        //var onclick = "show_partition_actions(" + i + ")";
-        //var html = '<div id="' + i + '" onclick="' + onclick + '")">';
-        var html = '<tr id="' + i + '" class="gui-text">'
-            
-        // create the single table row with the partition index
-        //html += '<table width="100%"><tr>';
-        html += '<td class="partition-number">' + i + '</td>';
-        
-        function vnode_icon (type) {
-            if (false) { //index.handoffs[type]) {
-                return '<img src="/admin/ui/images/orange-arrow.png">';
-            } else if (index.vnodes[type] === "primary") {
-                return '<img src="/admin/ui/images/green-circle.png">';
-            } else if (index.vnodes[type] === "fallback") {
-                return '<img src="/admin/ui/images/blue-rect.png">';
+
+    function set_operability_class (jqObj, newClass) {
+        var classes = ['unreachable', 'disabled', 'down', 'normal'], i, l = classes.length;
+        newClass = newClass.toLowerCase();
+        for (i = 0; i < l; i += 1) {
+            if (classes[i] === newClass) {
+                jqObj.addClass(newClass);
             } else {
-                return '';
+                jqObj.removeClass(classes[i]);
             }
         }
+    }
     
-        if (index.online === false) {
-            index.node = '<font color="#f00"><b>' + index.node + '</b></font>';
-        }
-        
-        // show whether or not the home node is down
-        html += '<td>' + index.node + '</td>';
-        
-        // show vnode worker processes
-        html += '<td>';
-        html += vnode_icon('riak_kv') + '</td>';
-        html += '<td>';
-        html += vnode_icon('riak_pipe') + '</td>';
-        html += '<td>';
-        html += vnode_icon('riak_search') + '</td>';
-    
-        // done, return the row
-        //return html + '</tr></table></div>';
-        return html + '</tr>';
-        */
-        
+    function partition_row (index) {
         //console.log(index);
         //var html = '';
         var owner = index.node;
@@ -123,32 +91,53 @@ $(document).ready(function () {
         }
         $('.partition-number', row).text(numID);
         $('.owner', row).text(owner);
-        
+
+
         if (index.vnodes.riak_kv === 'primary') {
             set_light_color($('.kv-light', row), 'green');
-            $('.kv-status', row).html('active');
+            $('.kv-status', row).html('Active');
         } else {
             set_light_color($('.kv-light', row), 'gray');
-            $('.kv-status', row).html('idle');
+            $('.kv-status', row).html('Idle');
         }
         
         if (index.vnodes.riak_pipe === 'primary') {
             set_light_color($('.pipe-light', row), 'green');
-            $('.pipe-status', row).html('active');
-        } /*else if (index.vnodes.riak_pipe === 'undefined') {
-            set_light_color($('.pipe-light', row), 'red');
-            $('.pipe-status', row).html('unreachable');
-        } */else {
+            $('.pipe-status', row).html('Active');
+        } else {
             set_light_color($('.pipe-light', row), 'gray');
-            $('.pipe-status', row).html('idle');
+            $('.pipe-status', row).html('Idle');
         }
         
         if (index.vnodes.riak_search === 'primary') {
             set_light_color($('.search-light', row), 'green');
-            $('.search-status', row).html('active');
+            $('.search-status', row).html('Active');
         } else {
             set_light_color($('.search-light', row), 'gray');
-            $('.search-status', row).html('idle');
+            $('.search-status', row).html('Idle');
+        }
+
+        // Deal with all red lights
+        if (index.reachable === false) {
+            set_operability_class($('.owner', row), 'unreachable');
+            if (index.vnodes.riak_kv === 'undefined') {
+                set_light_color($('.kv-light', row),   'red');
+                $('.kv-status', row).html('Unreachable');
+            }
+            if (index.vnodes.riak_pipe === 'undefined') {
+                set_light_color($('.pipe-light', row), 'red');
+                $('.pipe-status', row).html('Unreachable');
+            }
+        }
+
+        // Deal with all blue lights
+        if (index.vnodes.riak_kv === 'fallback') {
+            set_light_color($('.kv-light', row),   'blue');
+            $('.kv-status', row).html('Fallback');
+        } 
+        if (index.vnodes.riak_pipe === 'fallback') {
+            set_light_color($('.pipe-light', row), 'blue');
+            $('.pipe-status', row).html('Fallback');
         }
         
         //console.log(index);
@@ -172,7 +161,7 @@ $(document).ready(function () {
 
         // loop over each index
         for(i = 0;i < l; i += 1) {
-
+            console.log(data[i]);
             if (showPrimary && showFallback) {
                 all_or_by_owner(i);
             } else if (showPrimary && !showFallback) {
@@ -197,7 +186,7 @@ $(document).ready(function () {
         $('#ring-table-body').html(html);
     
         // check again in a little bit
-        ping_partitions();
+        //ping_partitions();
     }
     
     function ping_partitions () {

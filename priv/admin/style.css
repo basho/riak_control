@@ -368,13 +368,14 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .gui-light {
     display: block;
     width: auto;
-    height: 27px;
-    padding: 9px 0 0 32px;
+    height: 26px;
+    padding: 10px 0 0 30px;
     background: url(/admin/ui/images/light-sprite.png) -5px bottom no-repeat transparent;
 }
 .gui-light.green  {background-position: -5px top;}
 .gui-light.red    {background-position: -5px -36px;}
 .gui-light.orange {background-position: -5px -72px;}
+.gui-light.blue   {background-position: -5px -108px;}
 /* END CODE FOR LIGHTS */
 
 /* CODE FOR SLIDING SWITCHES */
@@ -459,13 +460,14 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     padding-right: 15px;
 }
 
+#cluster-table .node td.status-box {
+    padding-right: 15px;
+    width: 90px;
+}
+
 .name {
     padding: 8px 2px;
     height: 22px;
-}
-
-.status-box {
-    width: 90px;
 }
 
 .status {
@@ -501,13 +503,6 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     text-align: center;
     font-size: 14px;
 }
-
-/*
-#cluster-table .node .offline {
-    font-weight:bold;
-    color:#f00;
-}
-*/
 
 
 /* END CODE FOR CLUSTER CONTENT */
@@ -571,29 +566,6 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 
 
 
-
-
-
-
-
-
-
-
-
-
-#container {
-    margin:0 auto;
-    width:900px;
-    background:#fff;
-}
-
-input.field {
-    border:1px solid lightgray;
-    outline:none;
-    padding:4px;
-}
-
-
 /* CASCADING STYLES */
 .left     {float: left;}
 .right    {float: right;}
@@ -611,4 +583,4 @@ input.field {
 .underline:hover {text-decoration: underline;}
 
 .disabled, .down {opacity: .5; filter: alpha(opacity=50);}
-.offline  {color: #e85252;}
+.offline, .unreachable  {color: #e85252;}

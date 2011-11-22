@@ -168,42 +168,8 @@ $(document).ready(function () {
         perform_node_action('/admin/node/' + (node || this_node) + '/leave');
     }
 
-    /*
-    function show_node_actions (node) {
-        $('#node-name').html(node);
-        $('#node-pong-actions').hide();
-        $('#node-pang-actions').hide();
-        $('#node-actions').html('<img src="/admin/ui/spinner.gif">');
-        $('#node-actions').show();
-
-        function action (url, label) {
-            return '<input type="button" value="' + label + '" onclick="perform_node_action(\'' + url + '\')">';
-        }
-
-        function show_actions (data) {
-            this_node = node;
-
-            // get rid of the spinner
-            $('#node-actions').hide();
-
-            // show either pong or pang actions
-            if (data.result != "ok") {
-                $('#node-pang-actions').show();
-            } else {
-                $('#node-pong-actions').show();
-            }
-        }
-
-        $.ajax({
-            url:'/admin/node/' + node + '/ping',
-            dataType:'json',
-            success:show_actions
-        });
-    }
-    */
-
     function set_light_color (jqObj, newColor) {
-        var colors = ['green', 'gray', 'orange', 'red'], i, l = colors.length;
+        var colors = ['green', 'gray', 'orange', 'red', 'blue'], i, l = colors.length;
         newColor = newColor.toLowerCase();
         for (i = 0; i < l; i += 1) {
             if (colors[i] === newColor) {
@@ -215,7 +181,7 @@ $(document).ready(function () {
     }
 
     function set_operability_class (jqObj, newClass) {
-        var classes = ['offline', 'disabled', 'down', 'normal'], i, l = classes.length;
+        var classes = ['unreachable', 'disabled', 'down', 'normal'], i, l = classes.length;
         newClass = newClass.toLowerCase();
         for (i = 0; i < l; i += 1) {
             if (classes[i] === newClass) {
@@ -229,7 +195,6 @@ $(document).ready(function () {
     function update_node_row (node, row) {
         var status = node.status.toLowerCase();
         $('.name', row).text(node.name);
-        $('.status', row).text(node.status);
         $('.gui-slider-groove').trigger('initSlider');
         
         // if the node is the one hosting the console you cannot eff with it
@@ -237,6 +202,7 @@ $(document).ready(function () {
             //$(row).attr('name', 'host');
             $('.markdown-button', row).addClass('hide');
             $('.leave-box', row).html('<a class="current-host gui-text">Hosting Riak Control</a>');
+            $('.status', row).text('Valid');
             set_operability_class($('.name', row), 'normal');
             set_light_color($('.gui-light', row), 'green');
         } else {
@@ -247,23 +213,27 @@ $(document).ready(function () {
                 if (node.reachable === true) {
                     $('.markdown-button', row).addClass('hide');
                     $('.gui-slider', row).removeClass('hide');
+                    $('.status', row).text('Valid');
                     set_operability_class($('.name', row), 'normal');
                     set_light_color($('.gui-light', row), 'green');
                 } else {
                     $('.markdown-button', row).removeClass('hide').removeClass('pressed');
                     $('.gui-slider', row).addClass('hide');
+                    $('.status', row).text('Unreachable');
                     set_light_color($('.gui-light', row), 'red');
-                    set_operability_class($('.name', row), 'offline');
+                    set_operability_class($('.name', row), 'unreachable');
                 }
             } else if (status === 'leaving') {
                 set_light_color($('.gui-light', row), 'orange');
                 $('.gui-slider', row).addClass('hide');
                 $('.gui-slider-leaving', row).removeClass('hide');
                 $('.gui-rect-button-leaving', row).removeClass('hide');
+                $('.status', row).text('Leaving');
                 set_operability_class($('.status', row), 'disabled');
                 set_operability_class($('.name', row), 'disabled');
             } else if (status === 'down') {
                 $('.markdown-button', row).removeClass('hide').addClass('pressed');
+                $('.status', row).text('Down');
                 set_operability_class($('.name', row), 'down');
                 set_light_color($('.gui-light', row), 'gray');
             }
