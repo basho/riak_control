@@ -203,7 +203,7 @@ update_partitions (State=#state{ring=Ring}) ->
 get_member_info (_Member={Node,Status}) ->
     case rpc:call(Node,riak_core_vnode_manager,all_vnodes,[]) of
         {badrpc,_Reason} ->
-            {Node,unreachable,false,[]};
+            {Node,Status,false,[]};
         Vnodes ->
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us

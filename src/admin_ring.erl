@@ -79,11 +79,12 @@ filter_partitions (_Req,_PS,_) ->
 %% return a proplist of details for a given index
 node_ring_details (_P={Index,I,OwnerNode,Vnodes},Nodes) ->
     case lists:keyfind(OwnerNode,1,Nodes) of
-        {_Node,Status,_Online,_} ->
+        {_Node,Status,Reachable,_} ->
             [{index,Index},
              {i,I},
              {node,OwnerNode},
              {status,Status},
+             {reachable,Reachable},
              {vnodes,Vnodes}
             ];
         false -> []
