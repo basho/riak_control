@@ -216,58 +216,86 @@ $(document).ready(function () {
         }
     }
     
-    function set_leaving_status (row) {
+    function set_leaving_status (row, textObj) {
         set_light_color($('.gui-light', row), 'orange');
         $('.gui-slider', row).addClass('hide');
         $('.gui-slider-leaving', row).removeClass('hide');
         $('.gui-rect-button-leaving', row).removeClass('hide');
-        $('.status', row).text('Leaving');
+        if (textObj.status !== 'Leaving') {
+            $('.status', row).text('Leaving');
+        }
         set_operability_class($('.status', row), 'disabled');
         set_operability_class($('.name', row), 'disabled');
     }
     
-    function set_down_status (row) {
+    function set_down_status (row, textObj) {
         $('.markdown-button', row).removeClass('hide').addClass('pressed');
-        $('.status', row).text('Down');
+        if (textObj.status !== 'Down') {
+            $('.status', row).text('Down');
+        }
         set_operability_class($('.name', row), 'down');
         set_light_color($('.gui-light', row), 'gray');
+    }
+    
+    function set_valid_reachable_status (row, textObj) {
+        $('.markdown-button', row).addClass('hide');
+        $('.gui-slider', row).removeClass('hide');
+        if (textObj.status !== 'Valid') {
+            $('.status', row).text('Valid');
+        }
+        set_operability_class($('.name', row), 'normal');
+        set_light_color($('.gui-light', row), 'green');
+    }
+    
+    function set_valid_unreachable_status (row, textObj) {
+        $('.markdown-button', row).removeClass('hide').removeClass('pressed');
+        $('.gui-slider', row).addClass('hide');
+        if (textObj.status !== 'Unreachable') {
+            $('.status', row).text('Unreachable');
+        }
+        set_light_color($('.gui-light', row), 'red');
+        set_operability_class($('.name', row), 'unreachable');
+    }
+    
+    function set_host_node_status (row, textObj) {
+        $('.markdown-button', row).addClass('hide');
+        if (textObj.slider !== 'Hosting Riak Control') { 
+            $('.more-actions-slider-box', row).html('<a class="current-host gui-text">Hosting Riak Control</a>'); 
+        }
+        if (textObj.status !== 'Valid') {
+            $('.status', row).text('Valid');
+        }
+        set_operability_class($('.name', row), 'normal');
+        set_light_color($('.gui-light', row), 'green');
     }
 
     function update_node_row (node, row) {
         var status = node.status.toLowerCase();
-        $('.name', row).text(node.name);
+        var texts = {
+            "status" : $('.status', row).text(),
+            "name"   : $('.name', row).text(),
+            "slider" : $('.more-actions-slider-box a', row).text()
+        };
+        if (texts.name !== node.name) {
+            $('.name', row).text(node.name);
+        }
         $('.gui-slider-groove').trigger('initSlider');
         
         // if the node is the one hosting the console you cannot eff with it
         if (node.me === true) {
-            //$(row).attr('name', 'host');
-            $('.markdown-button', row).addClass('hide');
-            $('.more-actions-slider-box', row).html('<a class="current-host gui-text">Hosting Riak Control</a>');
-            $('.status', row).text('Valid');
-            set_operability_class($('.name', row), 'normal');
-            set_light_color($('.gui-light', row), 'green');
+            set_host_node_status(row, texts);
         } else {
-            //$(row).attr('name', '');
-            
             // handle colors and operability
             if (status === 'valid') {
                 if (node.reachable === true) {
-                    $('.markdown-button', row).addClass('hide');
-                    $('.gui-slider', row).removeClass('hide');
-                    $('.status', row).text('Valid');
-                    set_operability_class($('.name', row), 'normal');
-                    set_light_color($('.gui-light', row), 'green');
+                    set_valid_reachable_status(row, texts);
                 } else {
-                    $('.markdown-button', row).removeClass('hide').removeClass('pressed');
-                    $('.gui-slider', row).addClass('hide');
-                    $('.status', row).text('Unreachable');
-                    set_light_color($('.gui-light', row), 'red');
-                    set_operability_class($('.name', row), 'unreachable');
+                    set_valid_unreachable_status(row, texts);
                 }
             } else if (status === 'leaving') {
-                set_leaving_status(row);
+                set_leaving_status(row, texts);
             } else if (status === 'down') {
-                set_down_status(row);
+                set_down_status(row, texts);
             }
             
         }
@@ -328,8 +356,6 @@ $(document).ready(function () {
     function update_cluster_status (nodes) {
         var html = '', i, l = nodes.length;
 
-        $('#cluster-spinner').hide();
-        $('#node-list').fadeIn(300);
         if ($('#cluster-headline').length) {
             $('#total-number').html('(' + l + ' ' + ((l === 1)?'Node':'Nodes') + ' Total)');
         }
@@ -339,6 +365,9 @@ $(document).ready(function () {
         }
 
         remove_node_rows(nodes);
+        
+        $('#cluster-spinner').hide();
+        $('#node-list').fadeIn(300);
 
         // wait a little and update
         ping_cluster_status();
