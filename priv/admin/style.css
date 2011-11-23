@@ -474,7 +474,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     font-size: 15px;
 }
 
-.statistics, .markdown, .leave-box {
+.statistics, .markdown, .more-actions-slider-box {
     width: 137px;
 }
 
@@ -504,6 +504,35 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     font-size: 14px;
 }
 
+#cluster-table .more-node-actions td {
+    padding: 0;
+    height: 0;
+    line-height: 0;
+}
+
+.actions-pointer {
+    background: url(/admin/ui/images/area-pointer.png) center top no-repeat transparent;
+    height: 9px;
+    line-height: 1;
+}
+
+.actions-box {
+    line-height: 1;
+    background: #242424;
+    padding: 15px;
+    margin-bottom: 36px;
+    border-bottom: 1px solid #3f3f3f;
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    -webkit-box-shadow: inset 0 3px 10px #0f0f0f;
+    -webkit-border-radius: 4px;
+}
+
+.leave-cluster {
+    cursor: pointer;
+}
+.leave-cluster:hover {
+    text-decoration: underline;
+}
 
 /* END CODE FOR CLUSTER CONTENT */
 

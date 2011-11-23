@@ -88,7 +88,6 @@ $(function() {
     /* MAKE CHECKBOXES WORK WHEN YOU CLICK THEM */
     $(document).on('change', '.gui-checkbox', function(e) {
         var me = $(this), parent = me.parent(); checked = me.attr('checked');
-        console.log(parent);
         if (checked) {
             parent.css('background-position', 'left top');
         } else {
@@ -116,10 +115,14 @@ $(function() {
         displayTips('This node is named ' + name + '.  It is a member of this cluster.');
     }).on('mouseout', '.node .name', emptyTips);
     
-    // Leave cluster sliders
-    $(document).on('mouseover', '.leave-box .gui-slider', function () {
+    // View actions cluster sliders
+    $(document).on('mouseover', '.more-actions-slider-box .gui-slider', function () {
+        displayTips('Move the slider over to view possible actions for this node.  Move the slider back to hide those actions again.');
+    }).on('mouseout', '.more-actions-slider-box .gui-slider', emptyTips);
+    
+    $(document).on('mouseover', '.leave-cluster', function () {
         displayTips('This will cause the node to begin relinquishing ownership of its data to other nodes in the cluster.  You will not be able to interact with the node via Riak Control during this process.  Once completed, Riak will shutdown on this node and it will leave the cluster.');
-    }).on('mouseout', '.leave-box .gui-slider', emptyTips);
+    }).on('mouseout', '.leave-cluster', emptyTips);
     
     // The 'Hosting Riak Control' message
     $(document).on('mouseover', '.current-host', function () {

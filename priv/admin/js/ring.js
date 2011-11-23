@@ -1,8 +1,17 @@
 // polls the ring status every so often
-
+var global = 0;
 $(document).ready(function () {
 
     function initialize () {
+        // Make sure our data holders exist
+        $.riakControl.ringData = $.riakControl.ringData || {};
+        $.riakControl.filter = $.riakControl.filter || {
+            "ring" : {
+                "dropdown" : "__all_nodes__",
+                "primary"  : true,
+                "fallback" : true
+            }
+        };
         get_partitions();
         get_filters();
     }
@@ -76,154 +85,196 @@ $(document).ready(function () {
         }
     }
     
-    function partition_row (index) {
-        //console.log(index);
-        //var html = '';
-        var owner = index.node;
+    function filter_row_visibility (infoObj, row) {
+        // collect all current filter values
+        var dropval = $.riakControl.filter.ring.dropdown,
+            showfallback = $.riakControl.filter.ring.fallback,
+            showprimary = $.riakControl.filter.ring.primary;
+        var i, j;
+
+        row.show();
         
-        var numID = index['i'];
-        var row = $('#ring-table #partition-' + numID);
-        if (!row.length) {
+        if (!showprimary) {
+            for (i in infoObj.vnodes) {
+                if (Object.prototype.hasOwnProperty.call(infoObj.vnodes, i)) {
+                    if (infoObj.vnodes[i] === 'primary') {
+                        row.hide();
+                    }
+                }
+            }
+        }
+        
+        if (!showfallback) {
+            for (j in infoObj.vnodes) {
+                if (Object.prototype.hasOwnProperty.call(infoObj.vnodes, j)) {
+                    if (infoObj.vnodes[j] === 'fallback') {
+                        row.hide();
+                    }
+                }
+            }
+        }
+        
+        if (dropval && dropval !== '__all_nodes__') {
+            if (row.find('.owner').text() !== dropval) {
+                row.hide();
+            }
+        }
+        
+    }
+        
+    
+    function partition_row (infoObj, updateDraw) {
+        // called by update_partitions()
+        
+        var owner = infoObj.node;
+        var numID = infoObj['i'];
+        var row;
+
+        function deal_with_lights (obj, row) {
+            // Deal with all green lights 
+            if (obj.reachable === true) {
+                set_operability_class($('.owner', row), 'normal');
+                if (obj.vnodes.riak_kv === 'primary') {
+                    set_light_color($('.kv-light', row),   'green');
+                    $('.kv-status', row).html('Active');
+                }
+                if (obj.vnodes.riak_pipe === 'primary') {
+                    set_light_color($('.pipe-light', row), 'green');
+                    $('.pipe-status', row).html('Active');
+                }
+            }
+            // Deal with all red lights
+            if (obj.reachable === false) {
+                set_operability_class($('.owner', row), 'unreachable');
+                if (obj.vnodes.riak_kv === 'undefined') {
+                    set_light_color($('.kv-light', row),   'red');
+                    $('.kv-status', row).html('Unreachable');
+                }
+                if (obj.vnodes.riak_pipe === 'undefined') {
+                    set_light_color($('.pipe-light', row), 'red');
+                    $('.pipe-status', row).html('Unreachable');
+                }
+            }
+            // Deal with all blue lights
+            if (obj.vnodes.riak_kv === 'fallback') {
+                set_light_color($('.kv-light', row),   'blue');
+                $('.kv-status', row).html('Fallback');
+            } 
+            if (obj.vnodes.riak_pipe === 'fallback') {
+                set_light_color($('.pipe-light', row), 'blue');
+                $('.pipe-status', row).html('Fallback');
+            }
+            // Deal with all orange lights
+            if (obj.handoffs.riak_kv) {
+                set_light_color($('.kv-light', row), 'orange');
+                $('.kv-status', row).html('Handoff');
+            } 
+            if (obj.handoffs.riak_pipe) {
+                set_light_color($('.pipe-light', row), 'orange');
+                $('.pipe-status', row).html('Handoff');
+            }
+        }
+
+        // if updateDraw === 'draw'...
+        if (updateDraw === 'draw') {
+            // clone the partition template
             row = $('.partition-template').clone();
             row.attr('id', 'partition-' + numID);
             row.removeClass('partition-template');
             row.show();
-        }
-        $('.partition-number', row).text(numID);
-        $('.owner', row).text(owner);
 
-        /*
-        if (index.vnodes.riak_kv === 'primary') {
-            set_light_color($('.kv-light', row), 'green');
-            $('.kv-status', row).html('Active');
-        } else {
-            set_light_color($('.kv-light', row), 'gray');
-            $('.kv-status', row).html('Idle');
-        }
-        
-        if (index.vnodes.riak_pipe === 'primary') {
-            set_light_color($('.pipe-light', row), 'green');
-            $('.pipe-status', row).html('Active');
-        } else {
-            set_light_color($('.pipe-light', row), 'gray');
-            $('.pipe-status', row).html('Idle');
-        }
-        
-        if (index.vnodes.riak_search === 'primary') {
-            set_light_color($('.search-light', row), 'green');
-            $('.search-status', row).html('Active');
-        } else {
-            set_light_color($('.search-light', row), 'gray');
-            $('.search-status', row).html('Idle');
-        }
-        */
+            // apply proper text, classes, colors, and whatnot
+            $('.partition-number', row).text(numID);
+            $('.owner', row).text(owner);
+            deal_with_lights(infoObj, row);
 
-        // Deal with all green lights 
-        if (index.reachable === true) {
-            set_operability_class($('.owner', row), 'normal');
-            if (index.vnodes.riak_kv === 'primary') {
-                set_light_color($('.kv-light', row),   'green');
-                $('.kv-status', row).html('Active');
-            }
-            if (index.vnodes.riak_pipe === 'primary') {
-                set_light_color($('.pipe-light', row), 'green');
-                $('.pipe-status', row).html('Active');
-            }
+            // append the row to the table
+            $('#ring-table-body').append(row);
+
+        // else if updateDraw === 'update'...
+        } else if (updateDraw === 'update') {
+            // select the row from the table
+            row = $('#ring-table #partition-' + numID);
+
+            // apply proper text, classes, colors, and whatnot
+            $('.partition-number', row).text(numID);
+            $('.owner', row).text(owner);
+            deal_with_lights(infoObj, row);
         }
 
-        // Deal with all red lights
-        if (index.reachable === false) {
-            set_operability_class($('.owner', row), 'unreachable');
-            if (index.vnodes.riak_kv === 'undefined') {
-                set_light_color($('.kv-light', row),   'red');
-                $('.kv-status', row).html('Unreachable');
-            }
-            if (index.vnodes.riak_pipe === 'undefined') {
-                set_light_color($('.pipe-light', row), 'red');
-                $('.pipe-status', row).html('Unreachable');
-            }
-        }
-
-        // Deal with all blue lights
-        if (index.vnodes.riak_kv === 'fallback') {
-            set_light_color($('.kv-light', row),   'blue');
-            $('.kv-status', row).html('Fallback');
-        } 
-        if (index.vnodes.riak_pipe === 'fallback') {
-            set_light_color($('.pipe-light', row), 'blue');
-            $('.pipe-status', row).html('Fallback');
-        }
-
-        // Deal with all orange lights
-        if (index.handoffs.riak_kv) {
-            set_light_color($('.kv-light', row), 'orange');
-            $('.kv-status', row).html('Handoff');
-        } 
-        if (index.handoffs.riak_pipe) {
-            set_light_color($('.pipe-light', row), 'orange');
-            $('.pipe-status', row).html('Handoff');
-        }
-        
-        return row[0];
-        
     }
+        
     
     function update_partitions (data) {
-        var html = $(), i, l = data.length, 
-            dropVal = $.riakControl.filter.ring.dropdown,
-            showPrimary = $.riakControl.filter.ring.primary,
-            showFallback = $.riakControl.filter.ring.fallback;
-
-        function all_or_by_owner (obj) {
-            if (dropVal === '__all_nodes__') {
-                html.push(partition_row(data[obj]));
-            } else if (dropVal === data[obj].node) {
-                html.push(partition_row(data[obj]));
+        // called by get_partitions() which is called by initialize() and ping_partitions()
+        
+        var i, l = data.length, 
+        drawnPartitions = $('.partition').not('.partition-template').length;
+    
+        // define a function to check properties against each other
+        function keys_are_equal (oldObj, newObj) {
+            var i
+            for (i in oldObj) {
+                if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
+                    if (Object.prototype.toString.call(oldObj[i]) === '[object Object]') {
+                        if (!keys_are_equal(oldObj[i], newObj[i])) {
+                            return false;
+                        }
+                    } else {
+                        if (oldObj[i] !== newObj[i]) {
+                            return false;
+                        }
+                    }
+                }
             }
+            return true;
         }
 
-        // loop over each index
-        for(i = 0;i < l; i += 1) {
-            //console.log(data[i]);
-            if (showPrimary && showFallback) {
-                all_or_by_owner(i);
-            } else if (showPrimary && !showFallback) {
-                if (data[i].vnodes.riak_kv !== 'fallback') {
-                    all_or_by_owner(i);
+        // for each object in data array...
+        for (i = 0; i < l; i += 1) {
+            // if we have a length of drawn partitions, we have already drawn the ring
+            // this also means we have prepopulated the $.riakControl.ringData object
+            if (drawnPartitions) {              
+                // check new data against old data to see if there are status changes
+                // if keys are not equal...
+                if (!keys_are_equal($.riakControl.ringData[data[i]['i']], data[i])) {
+                    // populate $.riakControl.ringData[data[i].i] with the new data
+                    $.riakControl.ringData[data[i]['i']] = data[i];
+                    // send the corresponding node through the partitioning process
+                    partition_row(data[i], 'update');
                 }
-            } else if (!showPrimary && showFallback) {
-                if (data[i].vnodes.riak_kv === 'fallback') {
-                    all_or_by_owner(i);
-                }
+                // send each node through the filtering process
+                filter_row_visibility(data[i], $('#ring-table #partition-' + data[i]['i']));
+            // if we count 0 drawn partitions, we have not drawn the ring
+            } else {
+                // populate $.riakControl.ringData[data[i].i] with the new data
+                $.riakControl.ringData[data[i]['i']] = data[i];
+                // send new data through the partitioning process and draw each node
+                partition_row(data[i], 'draw');
             }
-
         }
         
-        $('#spinner').hide();
-        $('#partition-list').fadeIn(300);
-        if ($('#ring-headline').length) {
-            $('#total-number').html('(' + l + ' ' + ((l === 1)?'Partition':'Partitions') + ' Total)');
+        
+        // hide the #spinner if it is showing
+        if ($('#ring-spinner').css('display') !== 'none') {
+            $('#ring-spinner').hide();
         }
 
-        // update the table
-        $('#ring-table-body').html(html);
-    
-        // check again in a little bit
+        // if the #partition-list is hidden, fade it in
+        if ($('#partition-list').css('display') !== 'block') {
+            $('#partition-list').fadeIn(300);
+        }
+
+        // call self through ping_partitions()
         ping_partitions();
+        
     }
+    
+    
     
     function ping_partitions () {
         setTimeout(get_partitions, 1000);
     }
-    
-    // Make sure our filter data holder exists
-    $.riakControl.filter = $.riakControl.filter || {
-        "ring" : {
-            "dropdown" : "__all_nodes__",
-            "primary"  : true,
-            "fallback" : true
-        }
-    };
     
     // Define what to do when the filter dropdown value changes 
     $(document).on('change', '#filter', function (e) {

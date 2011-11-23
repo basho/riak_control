@@ -40,14 +40,17 @@ $(document).ready(function () {
                 var myHandle = me.find('.ui-slider-handle');
                 var handlePos = myHandle.css('left');
                 var node = $(this).closest('tr').find('.name').text();
+                var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
                 if (handlePos === '100%') {
-                    leave_cluster(node);
+                    //leave_cluster(node);
+                    open_sibling_row(siblingRowID, node);
                 } else if (parseInt(handlePos) < (me.width() * .66)) {
                     myHandle.animate({left:'0px'},{
                         queue:false,
                         duration:200,
                         complete:function() {
                             showMsg($(this).parent());
+                            close_sibling_row(siblingRowID);
                         }
                     });
                 } else {
@@ -56,8 +59,10 @@ $(document).ready(function () {
                         duration:200,
                         complete:function () {
                             var node = $(this).closest('tr').find('.name').text();
+                            var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
                             showMsg($(this).parent());
-                            leave_cluster(node);
+                            //leave_cluster(node);
+                            open_sibling_row(siblingRowID, node);
                         }
                     });
                 }
@@ -80,16 +85,35 @@ $(document).ready(function () {
                 duration:1000,
                 complete:function () {
                     var node = $(this).closest('tr').find('.name').text();
+                    var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
                     showMsg($(this).parent());
-                    leave_cluster(node);
+                    //leave_cluster(node);
+                    open_sibling_row(siblingRowID, node);
                 }
             });
         }
     });
     // END CODE FOR SLIDING SWITCHES
 
+    function open_sibling_row(idText, node) {
+        var row = $('#' + idText);
+        var actionsPointer = row.find('.actions-pointer');
+        var actionsBox = row.find('.actions-box');
+        row.show(function () {
+            actionsPointer.slideDown(100);
+            actionsBox.slideDown(200);
+        });
+    }
 
-
+    function close_sibling_row(idText) {
+        var row = $('#' + idText);
+        var actionsBox = row.find('.actions-box');
+        var actionsPointer = row.find('.actions-pointer');
+        actionsPointer.slideUp(200);
+        actionsBox.slideUp(200, function () {
+            //row.hide();
+        });
+    }
     
     function initialize () {
         get_cluster_status();
@@ -191,6 +215,23 @@ $(document).ready(function () {
             }
         }
     }
+    
+    function set_leaving_status (row) {
+        set_light_color($('.gui-light', row), 'orange');
+        $('.gui-slider', row).addClass('hide');
+        $('.gui-slider-leaving', row).removeClass('hide');
+        $('.gui-rect-button-leaving', row).removeClass('hide');
+        $('.status', row).text('Leaving');
+        set_operability_class($('.status', row), 'disabled');
+        set_operability_class($('.name', row), 'disabled');
+    }
+    
+    function set_down_status (row) {
+        $('.markdown-button', row).removeClass('hide').addClass('pressed');
+        $('.status', row).text('Down');
+        set_operability_class($('.name', row), 'down');
+        set_light_color($('.gui-light', row), 'gray');
+    }
 
     function update_node_row (node, row) {
         var status = node.status.toLowerCase();
@@ -201,7 +242,7 @@ $(document).ready(function () {
         if (node.me === true) {
             //$(row).attr('name', 'host');
             $('.markdown-button', row).addClass('hide');
-            $('.leave-box', row).html('<a class="current-host gui-text">Hosting Riak Control</a>');
+            $('.more-actions-slider-box', row).html('<a class="current-host gui-text">Hosting Riak Control</a>');
             $('.status', row).text('Valid');
             set_operability_class($('.name', row), 'normal');
             set_light_color($('.gui-light', row), 'green');
@@ -224,18 +265,9 @@ $(document).ready(function () {
                     set_operability_class($('.name', row), 'unreachable');
                 }
             } else if (status === 'leaving') {
-                set_light_color($('.gui-light', row), 'orange');
-                $('.gui-slider', row).addClass('hide');
-                $('.gui-slider-leaving', row).removeClass('hide');
-                $('.gui-rect-button-leaving', row).removeClass('hide');
-                $('.status', row).text('Leaving');
-                set_operability_class($('.status', row), 'disabled');
-                set_operability_class($('.name', row), 'disabled');
+                set_leaving_status(row);
             } else if (status === 'down') {
-                $('.markdown-button', row).removeClass('hide').addClass('pressed');
-                $('.status', row).text('Down');
-                set_operability_class($('.name', row), 'down');
-                set_light_color($('.gui-light', row), 'gray');
+                set_down_status(row);
             }
             
         }
@@ -244,22 +276,25 @@ $(document).ready(function () {
     function cluster_node_row (node) {
         var id = node.name.split('@')[0];
         var rows = $('#cluster-table #' + id);
-        var row;
+        var row, extraRow;
 
         // create a new row
         if (rows.length === 0) {
             row = $('.row-template').clone();
+            extraRow = $('.more-actions-template').clone();
 
             // initialize the row
             update_node_row(node, row);
 
             // set the id for this row and display it
-            $(row).attr('id', id);
-            $(row).removeClass('row-template');
-            $(row).show();
+            row.attr('id', id);
+            extraRow.attr('id', id + '-more-actions');
+            row.removeClass('row-template');
+            extraRow.removeClass('more-actions-template');
+            row.show();
 
             // add it to the table
-            $('#cluster-table').append(row);
+            $('#cluster-table').append(row).append(extraRow);
         } else {
             update_node_row(node, rows[0]);
         }
@@ -293,7 +328,7 @@ $(document).ready(function () {
     function update_cluster_status (nodes) {
         var html = '', i, l = nodes.length;
 
-        $('#spinner').hide();
+        $('#cluster-spinner').hide();
         $('#node-list').fadeIn(300);
         if ($('#cluster-headline').length) {
             $('#total-number').html('(' + l + ' ' + ((l === 1)?'Node':'Nodes') + ' Total)');
@@ -318,6 +353,16 @@ $(document).ready(function () {
         var node = $(this).closest('tr').find('.name').text();
         down_node(node);
         $(this).addClass('pressed');
+    });
+    
+    /* MAKE THE LEAVE CLUSTER LINK WORK */
+    $(document).on('click', '.leave-cluster', function () {
+        var myParentID = $(this).closest('tr').attr('id');
+        var node = $('#' + myParentID.split('-more-actions')[0]);
+        var name = node.find('.name').text();
+        set_leaving_status(node);
+        close_sibling_row(myParentID);
+        leave_cluster(name);
     });
 
     initialize();

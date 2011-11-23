@@ -14,7 +14,7 @@
 </div>
 
 <h1 id="ring-headline" class="gui-headline-bold has-cut">Ring <span id="total-number" class="gui-text"></span>
-    <img id="spinner" src="/admin/ui/images/spinner.gif">
+    <img id="ring-spinner" src="/admin/ui/images/spinner.gif">
 </h1>
 
 <div id="partition-list" class="hide">
