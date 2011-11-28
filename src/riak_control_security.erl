@@ -22,7 +22,8 @@
 -module(riak_control_security).
 
 -export([scheme_is_available/2,
-         enforce_auth/2
+         enforce_auth/2,
+         https_redirect_loc/1
         ]).
 
 -include("riak_control.hrl").
@@ -54,12 +55,26 @@ scheme_is_available(RD, Ctx) ->
             end
     end.
 
+%% get the https location to redirect to (callable w/o a request)
+https_redirect_loc (Path) ->
+    case app_helper:get_env(riak_control, enabled, false) of
+        true ->
+            case app_helper:get_env(riak_core, https) of
+                [{Host,Port}|_] ->
+                    {ok,["https://",Host,":",integer_to_list(Port),Path]};
+                _ ->
+                    undefined
+            end;
+        _ ->
+            undefined
+    end.
+
 %% set the redirect header and where to go with it
 https_redirect (RD,Ctx) ->
     Path=wrq:raw_path(RD),
-    Loc=case app_helper:get_env(riak_core, https) of
-            [{Host,Port}|_] ->
-                ["https://",Host,":",integer_to_list(Port),Path];
+    Loc=case https_redirect_loc(Path) of
+            {ok,Dest} ->
+                Dest;
             _ ->
                 Host=string:join(lists:reverse(wrq:host_tokens(RD)),"."),
                 ["https://",Host,Path]
