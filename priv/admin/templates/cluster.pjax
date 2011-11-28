@@ -25,7 +25,8 @@
     </div>
 </div><!-- #add-node -->
 
-<h2 class="gui-headline-bold has-cut">Node List <img id="cluster-spinner" src="/admin/ui/images/spinner.gif">
+<h2 class="gui-headline-bold has-cut">
+    Node List
     <span id="total-number" class="gui-text"></span>
 </h2>
 <div id="node-list" class="hide">
@@ -38,6 +39,7 @@
         </tr>
     </table>
 </div>
+<div class="spinner-box"><img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif"></div>
 
 <!-- node template -->
 <table class="hide">

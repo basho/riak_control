@@ -103,7 +103,7 @@ $(function() {
             $('#tooltips').slideUp(function() {
                 $('#display-tips').empty();
             });
-        }, 2000);
+        }, 1000);
     }
     function displayTips (str) {
         var disp = $('#tooltips').css('display');

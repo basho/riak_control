@@ -440,6 +440,12 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     vertical-align: middle;
 }
 
+.spinner-box {
+    text-align: center;
+    padding: 25px 50px 50px;
+}
+
+
 /* END CODE FOR GENERAL CONTENT WELL */
 
 

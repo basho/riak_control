@@ -157,6 +157,8 @@ $(document).ready(function () {
         nodeToAdd.removeAttr('disabled').removeClass('disabled');
         if (clear === true) {
             nodeToAdd.val('');
+        } else {
+            $('#node-to-add').trigger('focus');
         }
         
         // Make super sure that event handlers are not accumulating...
