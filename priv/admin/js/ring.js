@@ -41,9 +41,7 @@ $(document).ready(function () {
         var html = '', i, l = data.length;
     
         // add the all options
-        html += '<option value="__all_nodes__">Filter partitions...</option>';
-        html += '<option value="__all_nodes__">All</option>';
-        html += '<option value="">-------------------------</option>';
+        html += '<option value="__all_nodes__">All Owners</option>';
     
         for(i = 0; i < l; i += 1) {
             var node = data[i].name;
@@ -89,8 +87,19 @@ $(document).ready(function () {
         // collect all current filter values
         var dropval = $.riakControl.filter.ring.dropdown,
             showfallback = $.riakControl.filter.ring.fallback,
-            showprimary = $.riakControl.filter.ring.primary;
-        var i, j;
+            showprimary = $.riakControl.filter.ring.primary,
+            showhandoff = $.riakControl.filter.ring.handoff,
+            isHandOff = (function () {
+                var i, accum = 0;
+                for (i in infoObj.handoff) {
+                    if (Object.prototype.hasOwnProperty.call(infoObj.handoff, i)) {
+                        accum += 1;
+                    }
+                }
+                return (accum > 0);
+            }());
+
+        var i, j, k;
 
         row.show();
         
@@ -111,6 +120,12 @@ $(document).ready(function () {
                         row.hide();
                     }
                 }
+            }
+        }
+
+        if (!showhandoff) {
+            if (isHandOff) {
+                row.hide();
             }
         }
         
@@ -265,6 +280,8 @@ $(document).ready(function () {
             $('#partition-list').fadeIn(300);
         }
 
+        console.log($('.partition').not('.partition-template').length);
+
         // call self through ping_partitions()
         ping_partitions();
         
@@ -288,6 +305,8 @@ $(document).ready(function () {
             (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.primary = true : $.riakControl.filter.ring.primary = false;
         } else if (myID === 'fallback-nodes') {
             (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.fallback = true : $.riakControl.filter.ring.fallback = false;
+        } else if (myID === 'handoff-nodes') {
+            (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.handoff = true : $.riakControl.filter.ring.handoff = false;
         }
     });
     

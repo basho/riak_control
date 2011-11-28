@@ -8,6 +8,10 @@
         <input id="fallback-nodes" class="gui-checkbox" type="checkbox" name="ringfilter" checked="checked" />
         <span class="gui-text">Fallback&nbsp;&nbsp;&nbsp;</span>
     </div>
+    <div class="gui-checkbox-wrapper">
+        <input id="handoff-nodes" class="gui-checkbox" type="checkbox" name="ringfilter" checked="checked" />
+        <span class="gui-text">Handoff&nbsp;&nbsp;&nbsp;</span>
+    </div>
     <select id="filter">
         <option value="/admin/ring/partitions">All</option>
     </select>

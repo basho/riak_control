@@ -391,8 +391,8 @@ $(document).ready(function () {
         var myParentID = $(this).closest('tr').attr('id');
         var node = $('#' + myParentID.split('-more-actions')[0]);
         var name = node.find('.name').text();
-        set_leaving_status(node);
         close_sibling_row(myParentID);
+        set_leaving_status(node, {"status" : node.find('.status').text()});
         leave_cluster(name);
     });
 
