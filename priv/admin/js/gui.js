@@ -97,11 +97,21 @@ $(function() {
 
     
     /* CODE FOR ALL THE TOOLTIPS */
+    var wait;
     function emptyTips () {
-        $('#display-tips').empty();
+        wait = setTimeout(function () {
+            $('#tooltips').slideUp(function() {
+                $('#display-tips').empty();
+            });
+        }, 2000);
     }
     function displayTips (str) {
+        var disp = $('#tooltips').css('display');
+        if (disp === 'none') {
+            $('#tooltips').slideDown();
+        }
         $('#display-tips').html(str);
+        clearTimeout(wait);
     }
     
     // Add new node area
