@@ -97,7 +97,7 @@ $(document).ready(function () {
                     }
                 }
                 return (accum > 0);
-            }());
+            }()), visiblePartitions;
 
         var i, j, k;
 
@@ -133,6 +133,13 @@ $(document).ready(function () {
             if (row.find('.owner').text() !== dropval) {
                 row.hide();
             }
+        }
+
+        visiblePartitions = $('.partition').not('.partition-template').not(':hidden').length;
+        if (!visiblePartitions) {
+            $('#no-matches').removeClass('hide');
+        } else {
+            $('#no-matches').addClass('hide');
         }
         
     }
@@ -223,8 +230,9 @@ $(document).ready(function () {
     function update_partitions (data) {
         // called by get_partitions() which is called by initialize() and ping_partitions()
         
-        var i, l = data.length, 
-        drawnPartitions = $('.partition').not('.partition-template').length;
+        var i, l = data.length,
+        partitions = $('.partition').not('.partition-template'),
+        drawnPartitions = partitions.length;
     
         // define a function to check properties against each other
         function keys_are_equal (oldObj, newObj) {
@@ -279,8 +287,6 @@ $(document).ready(function () {
         if ($('#partition-list').css('display') !== 'block') {
             $('#partition-list').fadeIn(300);
         }
-
-        console.log($('.partition').not('.partition-template').length);
 
         // call self through ping_partitions()
         ping_partitions();

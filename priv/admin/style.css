@@ -594,6 +594,10 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     font-color:#000;
 }
 
+#no-matches td {
+    padding-top: 12px;
+}
+
 
 /* END CODE FOR RING CONTENT*/
 

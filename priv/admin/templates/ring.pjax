@@ -32,6 +32,9 @@
             <td><h3 class="gui-headline">Pipe</h3></td>
             <td><h3 class="gui-headline">Search</h3></td>
         </tr>
+        <tr id="no-matches" class="hide">
+            <td colspan="5" class="gui-text">No partitions matched your filter.</td>
+        </tr>
         </thead>
         <tbody id="ring-table-body">
         
