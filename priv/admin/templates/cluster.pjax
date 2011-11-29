@@ -77,6 +77,7 @@
         <td colspan="2">
             <div class="actions-pointer hide"></div>
             <div class="actions-box gui-text hide">
+                <a class="shutdown-button"></a>
                 <a class="leave-cluster">Temporary leave cluster link</a>
             </div>
         </td>

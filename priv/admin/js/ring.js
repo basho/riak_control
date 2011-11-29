@@ -42,17 +42,18 @@ $(document).ready(function () {
     
         // add the all options
         html += '<option value="__all_nodes__">All Owners</option>';
+        html += '<option value="">-------------------------</option>';
     
         for(i = 0; i < l; i += 1) {
             var node = data[i].name;
     
             // add this node as an option
             html += '<option value="' + node + '">';
-            html += 'Owner: ' + node + '</option>';
+            html += (node + '</option>');
         }
     
         // add the other common options
-        html += '<option value="">-------------------------</option>';
+        
         
         // update the page
         $('#filter').html(html);

@@ -61,7 +61,6 @@ $(document).ready(function () {
                             var node = $(this).closest('tr').find('.name').text();
                             var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
                             showMsg($(this).parent());
-                            //leave_cluster(node);
                             open_sibling_row(siblingRowID, node);
                         }
                     });
@@ -87,7 +86,6 @@ $(document).ready(function () {
                     var node = $(this).closest('tr').find('.name').text();
                     var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
                     showMsg($(this).parent());
-                    //leave_cluster(node);
                     open_sibling_row(siblingRowID, node);
                 }
             });
@@ -110,9 +108,7 @@ $(document).ready(function () {
         var actionsBox = row.find('.actions-box');
         var actionsPointer = row.find('.actions-pointer');
         actionsPointer.slideUp(200);
-        actionsBox.slideUp(200, function () {
-            //row.hide();
-        });
+        actionsBox.slideUp(200);
     }
     
     function initialize () {
@@ -185,9 +181,8 @@ $(document).ready(function () {
         perform_node_action('/admin/cluster/down/' + (node || this_node))
     }
 
-    function stop_node () {
-        perform_node_action('/admin/node/' + this_node + '/stop');
-        // show_node_actions();
+    function stop_node (node) {
+        perform_node_action('/admin/node/' + (node || this_node) + '/stop');
     }
 
     function leave_cluster (node) {
@@ -240,8 +235,21 @@ $(document).ready(function () {
     }
     
     function set_valid_reachable_status (row, textObj) {
+        var hiddenActions = $('#' + row.id + '-more-actions').find('.actions-box').css('display') !== 'block';
+        var sliderHandle = $('.ui-slider-handle', row);
         $('.markdown-button', row).addClass('hide');
         $('.gui-slider', row).removeClass('hide');
+        $('#' + row.id + '-more-actions').find('.shutdown-button').removeClass('pressed');
+
+        // If the slider handle is all the way to the right but the actions box is hidden,
+        // we need to reset the slider handle.
+        if (sliderHandle.css('left') === '100%' && hiddenActions) {
+            sliderHandle.css('left', '0');
+            sliderHandle.parent().find('.isLeft').fadeIn(200);
+            sliderHandle.parent().find('.isRight').hide();
+            $('.gui-slider-groove', row).trigger('initSlider');
+        }
+
         if (textObj.status !== 'Valid') {
             $('.status', row).text('Valid');
         }
@@ -371,6 +379,8 @@ $(document).ready(function () {
         $('#cluster-spinner').hide();
         $('#node-list').fadeIn(300);
 
+        $('.gui-slider-groove').trigger('initSlider');
+
         // wait a little and update
         ping_cluster_status();
     }
@@ -379,11 +389,21 @@ $(document).ready(function () {
         setTimeout(get_cluster_status, 2000);
     }
 
-    /* MAKE THE MARKDOWN BUTTON STAY DOWN ONCE CLICED */
+    /* MAKE THE MARKDOWN BUTTON STAY DOWN ONCE CLICKED */
     $(document).on('click', '.markdown-button', function () {
         var node = $(this).closest('tr').find('.name').text();
         down_node(node);
         $(this).addClass('pressed');
+    });
+
+    /* MAKE THE SHUTDOWN BUTTON STAY DOWN ONCE CLICKED */
+    $(document).on('click', '.shutdown-button:not(.pressed)', function () {
+        var siblingId = $(this).closest('tr').attr('id');
+        var node = $('#' + siblingId.split('-more-actions')[0]);
+        $(this).addClass('pressed');
+        set_valid_unreachable_status(node, {"status" : node.find('.status').text()});
+        close_sibling_row(siblingId);
+        stop_node(node.find('.name').text());
     });
     
     /* MAKE THE LEAVE CLUSTER LINK WORK */

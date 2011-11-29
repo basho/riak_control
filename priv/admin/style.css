@@ -364,6 +364,18 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .button-column {width: 150px;}
 /* END CODE FOR POINT BUTTONS */
 
+/* CODE FOR SHUTDOWN BUTTON */
+.shutdown-button {
+    display: block;
+    width: 51px;
+    height: 53px;
+    cursor: pointer;
+    background: url(/admin/ui/images/powerbutton-sprite.png) left top no-repeat transparent;
+}
+.shutdown-button:active {background-position: left -53px;}
+.shutdown-button.pressed {background-position: left -106px;}
+/* END CODE FOR SHUTDOWN BUTTON*/
+
 /* CODE FOR LIGHTS */
 .gui-light {
     display: block;
