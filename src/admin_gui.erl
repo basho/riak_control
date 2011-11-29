@@ -25,7 +25,7 @@
          moved_permanently/2,
          previously_existed/2,
          resource_exists/2,
-         get_file/2,
+         to_resource/2,
          is_authorized/2,
          service_available/2
         ]).
@@ -34,15 +34,17 @@
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
--define(CONTENT_TYPES,[{"text/html",get_file},
-                       {"text/plain",get_file},
-                       {"text/javascript",get_file}
+-define(CONTENT_TYPES,[{"text/html",to_resource},
+                       {"text/plain",to_resource},
+                       {"text/javascript",to_resource}
                       ]).
 
 %% defines the webmachine routes this module handles
 routes () ->
     [{admin_routes:admin_route([]),?MODULE,index},
-     {admin_routes:admin_route(["ui",'*']),?MODULE,undefined}].
+     {admin_routes:admin_route(["fallback"]),?MODULE,fallback},
+     {admin_routes:admin_route(["ui",'*']),?MODULE,undefined}
+    ].
 
 %% entry-point for the resource from webmachine
 init (Resource) ->
@@ -74,9 +76,41 @@ is_authorized (RD,C) ->
 content_types_provided (Req,Ctx) ->
     {?CONTENT_TYPES,Req,Ctx}.
 
-%% valid | invalid | joining | leaving | exiting
-get_file (Req,Ctx) ->
+%% loads a resource file from disk and returns it
+get_file (Req) ->
     Path=wrq:path_tokens(Req),
     Index=filename:join([riak_control:priv_dir(),"admin"] ++ Path),
     {ok,Source}=file:read_file(Index),
-    {Source,Req,Ctx}.
+    Source.
+
+%% true if the node is running riak_control
+redirect_loc (Node) ->
+    rpc:call(Node,riak_control_security,https_redirect_loc,[[]]).
+
+%% don't use this node as a fallback, must be valid and reachable
+find_fallbacks (Nodes) ->
+    lists:foldl(fun ({Node,valid,true,_},Acc) ->
+                        case Node == node() of
+                            true -> Acc;
+                            false ->
+                                case redirect_loc(Node) of
+                                    {ok,Loc} ->
+                                        URI=lists:flatten(Loc),
+                                        [list_to_binary(URI)|Acc];
+                                    _ -> Acc
+                                end
+                        end;
+                    (_,Acc) -> Acc
+                end,
+                [],
+                Nodes).
+
+%% find another node in the cluster that is running the GUI
+to_resource (Req,Ctx=fallback) ->
+    {ok,_V,Nodes}=riak_control_session:get_nodes(),
+    NodeURIs=find_fallbacks(Nodes),
+    {mochijson2:encode(NodeURIs),Req,Ctx};
+
+%% respond to a file request
+to_resource (Req,Ctx) ->
+    {get_file(Req),Req,Ctx}.
