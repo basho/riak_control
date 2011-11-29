@@ -340,6 +340,7 @@ h3.no-pad {
     margin-top: 3px;
 }
 .gui-point-button {background: url(/admin/ui/images/pointbutton-sprite.png) left top no-repeat transparent;}
+.gui-rect-button  {background: url(/admin/ui/images/rectbutton-sprite.png)  left top no-repeat transparent;}
 
 .gui-button-msg {
     display: block;
@@ -362,9 +363,22 @@ input.gui-point-button, input.gui-rect-button {padding-bottom: 12px;}
 input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px;}
 
 .button-column {width: 150px;}
+
+.leave-cluster-box {
+    padding: 6px 0 5px 15px;
+    border-left: 1px solid #2f2f2f;
+}
 /* END CODE FOR POINT BUTTONS */
 
 /* CODE FOR SHUTDOWN BUTTON */
+.shutdown-box {
+    height: 53px;
+    padding-right: 20px;
+    border-right: 1px solid #000;
+}
+.shutdown-label {
+    padding: 18px 0 0 10px;
+}
 .shutdown-button {
     display: block;
     width: 51px;
@@ -523,7 +537,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 
 #cluster-table .more-node-actions td {
-    padding: 0;
+    padding: 0 15px 0 2px;
     height: 0;
     line-height: 0;
 }
@@ -537,7 +551,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .actions-box {
     line-height: 1;
     background: #242424;
-    padding: 15px;
+    padding: 15px 15px 12px;
     margin-bottom: 36px;
     border-bottom: 1px solid #3f3f3f;
     border-bottom: 1px solid rgba(255, 255, 255, .15);
@@ -618,17 +632,17 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 
 
 /* CASCADING STYLES */
-.left     {float: left;}
-.right    {float: right;}
-.clear    {clear: both;}
-.clearl   {clear: left;}
-.clearr   {clear: right;}
-.block    {display: block;}
-.inline   {display: inline;}
-.inblock  {display: inline-block;}
-.has-cut  {background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;}
-.hide     {display: none;}
-.monospace{font-family: menlo, monospace;}
+.left      {float: left;}
+.right     {float: right;}
+.clear     {clear: both;}
+.clearl    {clear: left;}
+.clearr    {clear: right;}
+.block     {display: block;}
+.inline    {display: inline;}
+.inblock   {display: inline-block;}
+.has-cut   {background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;}
+.hide      {display: none;}
+.monospace {font-family: menlo, monospace;}
 
 .blue-link:hover {color: #9edad6; cursor: pointer;}
 .underline:hover {text-decoration: underline;}

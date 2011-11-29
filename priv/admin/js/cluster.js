@@ -235,11 +235,13 @@ $(document).ready(function () {
     }
     
     function set_valid_reachable_status (row, textObj) {
-        var hiddenActions = $('#' + row.id + '-more-actions').find('.actions-box').css('display') !== 'block';
+        var myActions = $('#' + row.id + '-more-actions')[0];
+        var hiddenActions = $('.actions-box', myActions).css('display') !== 'block';
         var sliderHandle = $('.ui-slider-handle', row);
         $('.markdown-button', row).addClass('hide');
         $('.gui-slider', row).removeClass('hide');
-        $('#' + row.id + '-more-actions').find('.shutdown-button').removeClass('pressed');
+        $('.shutdown-button', myActions).removeClass('pressed').removeClass('disabled');
+        $('.leave-cluster-button', myActions).removeClass('pressed').removeClass('disabled');
 
         // If the slider handle is all the way to the right but the actions box is hidden,
         // we need to reset the slider handle.
@@ -401,16 +403,19 @@ $(document).ready(function () {
         var siblingId = $(this).closest('tr').attr('id');
         var node = $('#' + siblingId.split('-more-actions')[0]);
         $(this).addClass('pressed');
+        $(this).closest('td').find('.leave-cluster-button').addClass('disabled');
         set_valid_unreachable_status(node, {"status" : node.find('.status').text()});
         close_sibling_row(siblingId);
         stop_node(node.find('.name').text());
     });
     
     /* MAKE THE LEAVE CLUSTER LINK WORK */
-    $(document).on('click', '.leave-cluster', function () {
+    $(document).on('click', '.leave-cluster-button:not(.disabled)', function () {
         var myParentID = $(this).closest('tr').attr('id');
         var node = $('#' + myParentID.split('-more-actions')[0]);
         var name = node.find('.name').text();
+        $(this).addClass('pressed').addClass('disabled');
+        $(this).closest('td').find('.shutdown-button').addClass('pressed').addClass('disabled');
         close_sibling_row(myParentID);
         set_leaving_status(node, {"status" : node.find('.status').text()});
         leave_cluster(name);
