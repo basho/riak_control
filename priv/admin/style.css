@@ -424,6 +424,10 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .gui-slider-leaving {
     background: url(/admin/ui/images/leaving-slider.png) 4px 2px no-repeat transparent;
 }
+.gui-slider-leaving.down {
+    background-position: 4px -34px;
+}
+
 .gui-slider-groove.ui-slider {
     background: transparent;
     width: 117px;

@@ -236,7 +236,7 @@ $(document).ready(function () {
 
         //reset_slider($('.ui-slider-handle', row), row);
         slider.addClass('hide');
-        slider_leaving.removeClass('hide');
+        slider_leaving.removeClass('hide').removeClass('down');
 
         myActions.find('.markdown-button, .markdown-label').addClass('disabled').addClass('pressed');
         myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
@@ -251,12 +251,16 @@ $(document).ready(function () {
         if (textObj.status !== 'Down') {
             $('.status', row).text('Down');
         }
-        console.log(row);
+
+        $('.gui-slider', row).addClass('hide');
+        $('.gui-slider-leaving', row).removeClass('hide').addClass('down');
+
         myActions.find('.markdown-button, .markdown-label').removeClass('disabled').addClass('pressed');
         myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
         myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('disabled').addClass('pressed');
 
         set_operability_class($('.name', row), 'down');
+        set_operability_class($('.status', row), 'down');
         set_light_color($('.gui-light', row), 'gray');
     }
     
@@ -433,7 +437,8 @@ $(document).ready(function () {
     $(document).on('click', '.markdown-button:not(.pressed)', function () {
         var siblingId = $(this).closest('tr').attr('id');
         var node = $('#' + siblingId.split('-more-actions')[0]);
-        set_down_status(node[0], {"status" : node.find('.status').text()})
+        close_sibling_row(siblingId);
+        set_down_status(node[0], {"status" : node.find('.status').text()}, true);
         down_node(node.find('.name').text());
     });
 
