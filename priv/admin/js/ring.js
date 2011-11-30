@@ -272,7 +272,6 @@ $(document).ready(function () {
 
         // for each object in data array...
         for (i = 0; i < l; i += 1) {
-            console.log(data[i]);
             // if we have a length of drawn partitions, we have already drawn the ring
             // this also means we have prepopulated the $.riakControl.ringData object
             if (drawnPartitions) {              

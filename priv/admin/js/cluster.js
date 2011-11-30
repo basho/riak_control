@@ -15,7 +15,7 @@ $(document).ready(function () {
         var myHandle = me.find('.ui-slider-handle');
         var handlePos = parseInt(myHandle.css('left'));
         var myMsg = me.parent().find('.gui-slider-msg');
-        if (handlePos === 100) {
+        if (handlePos > 99) {
             myMsg.filter('.isRight').fadeIn(200);
         } else if (handlePos === 0) {
             myMsg.filter('.isLeft').fadeIn(200);
@@ -228,7 +228,7 @@ $(document).ready(function () {
         var myActions = $('#' + row.id + '-more-actions');
         var slider = $('.gui-slider', row);
         var slider_leaving = $('.gui-slider-leaving', row);
-        set_light_color($('.gui-light', row), 'orange');
+        set_light_color($('.status-light', row), 'orange');
 
         if (textObj.status !== 'Leaving') {
             $('.status', row).text('Leaving');
@@ -261,7 +261,9 @@ $(document).ready(function () {
 
         set_operability_class($('.name', row), 'down');
         set_operability_class($('.status', row), 'down');
-        set_light_color($('.gui-light', row), 'gray');
+        set_operability_class($('.ring_pct', row), 'down');
+        set_operability_class($('.pending_pct', row), 'down');
+        set_light_color($('.status-light', row), 'gray');
     }
     
     function set_valid_reachable_status (row, textObj) {
@@ -281,7 +283,9 @@ $(document).ready(function () {
             set_operability_class($('.status', row), 'normal');
         }
         set_operability_class($('.name', row), 'normal');
-        set_light_color($('.gui-light', row), 'green');
+        set_operability_class($('.ring_pct', row), 'normal');
+        set_operability_class($('.pending_pct', row), 'normal');
+        set_light_color($('.status-light', row), 'green');
     }
     
     function set_valid_unreachable_status (row, textObj) {
@@ -295,7 +299,7 @@ $(document).ready(function () {
             $('.status', row).text('Unreachable');
         }
         reset_slider($('.ui-slider-handle', row), row);
-        set_light_color($('.gui-light', row), 'red');
+        set_light_color($('.status-light', row), 'red');
         set_operability_class($('.name', row), 'unreachable');
     }
     
@@ -308,7 +312,11 @@ $(document).ready(function () {
             $('.status', row).text('Valid');
         }
         set_operability_class($('.name', row), 'normal');
-        set_light_color($('.gui-light', row), 'green');
+        set_light_color($('.status-light', row), 'green');
+    }
+
+    function round_pct (num, decPlaces) {
+        return Math.round(num*Math.pow(10,decPlaces))/Math.pow(10,decPlaces);
     }
 
     function update_node_row (node, row) {
@@ -316,12 +324,29 @@ $(document).ready(function () {
         var texts = {
             "status" : $('.status', row).text(),
             "name"   : $('.name', row).text(),
-            "slider" : $('.more-actions-slider-box a', row).text()
+            "slider" : $('.more-actions-slider-box a', row).text(),
+            "ring_pct" : $('.ring_pct', row).text(),
+            "pending_pct" : $('.pending_pct', row).text()
         };
-        
+
         if (texts.name !== node.name) {
             $('.name', row).text(node.name);
         }
+        if (texts.ring_pct !== round_pct(node.ring_pct * 100, 1) + '%') {
+            $('.ring_pct', row).text(round_pct(node.ring_pct * 100, 1) + '%');
+        }
+        if (texts.pending_pct !== round_pct(node.pending_pct * 100, 1) + '%') {
+            $('.pending_pct', row).text(round_pct(node.pending_pct * 100, 1) + '%');
+        }
+
+        if ($('.ring_pct', row).text() !== $('.pending_pct', row).text()) {
+            set_light_color($('.pct-light', row), 'orange');
+        } else {
+            set_light_color($('.pct-light', row), 'green');
+        }
+        
+
+
         $('.gui-slider-groove').trigger('initSlider');
         
         // if the node is the one hosting the console you cannot eff with it
