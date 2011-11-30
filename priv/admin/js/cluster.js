@@ -318,6 +318,7 @@ $(document).ready(function () {
             "name"   : $('.name', row).text(),
             "slider" : $('.more-actions-slider-box a', row).text()
         };
+        
         if (texts.name !== node.name) {
             $('.name', row).text(node.name);
         }

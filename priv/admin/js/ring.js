@@ -307,7 +307,7 @@ $(document).ready(function () {
         }
 
         // call self through ping_partitions()
-        //ping_partitions();
+        ping_partitions();
         
     }
     
