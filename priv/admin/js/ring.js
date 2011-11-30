@@ -165,6 +165,10 @@ $(document).ready(function () {
                     set_light_color($('.pipe-light', row), 'green');
                     $('.pipe-status', row).html('Active');
                 }
+                if (obj.vnodes.riak_search === 'primary') {
+                    set_light_color($('.search-light', row), 'green');
+                    $('.search-status', row).html('Active');
+                }
             }
             // Deal with all red lights
             if (obj.reachable === false) {
@@ -177,6 +181,10 @@ $(document).ready(function () {
                     set_light_color($('.pipe-light', row), 'red');
                     $('.pipe-status', row).html('Unreachable');
                 }
+                if (obj.vnodes.riak_search === 'undefined') {
+                    set_light_color($('.search-light', row), 'red');
+                    $('.search-status', row).html('Unreachable');
+                }
             }
             // Deal with all blue lights
             if (obj.vnodes.riak_kv === 'fallback') {
@@ -187,6 +195,10 @@ $(document).ready(function () {
                 set_light_color($('.pipe-light', row), 'blue');
                 $('.pipe-status', row).html('Fallback');
             }
+            if (obj.vnodes.riak_search === 'fallback') {
+                set_light_color($('.search-light', row), 'blue');
+                $('.search-status', row).html('Fallback');
+            }
             // Deal with all orange lights
             if (obj.handoffs.riak_kv) {
                 set_light_color($('.kv-light', row), 'orange');
@@ -195,6 +207,10 @@ $(document).ready(function () {
             if (obj.handoffs.riak_pipe) {
                 set_light_color($('.pipe-light', row), 'orange');
                 $('.pipe-status', row).html('Handoff');
+            }
+            if (obj.handoffs.riak_search) {
+                set_light_color($('.search-light', row), 'orange');
+                $('.search-status', row).html('Handoff');
             }
         }
 
@@ -256,6 +272,7 @@ $(document).ready(function () {
 
         // for each object in data array...
         for (i = 0; i < l; i += 1) {
+            console.log(data[i]);
             // if we have a length of drawn partitions, we have already drawn the ring
             // this also means we have prepopulated the $.riakControl.ringData object
             if (drawnPartitions) {              
@@ -290,7 +307,7 @@ $(document).ready(function () {
         }
 
         // call self through ping_partitions()
-        ping_partitions();
+        //ping_partitions();
         
     }
     

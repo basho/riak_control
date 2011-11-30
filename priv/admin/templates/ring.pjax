@@ -57,13 +57,13 @@
             </div>
         </td>
         <td class="kv-box gui-text">
-            <a class="gui-light kv-light"><span class="kv-status"></span></a>
+            <a class="gui-light kv-light"><span class="kv-status">Disabled</span></a>
         </td>
         <td class="pipe-box gui-text">
-            <a class="gui-light pipe-light"><span class="pipe-status"></span></a>
+            <a class="gui-light pipe-light"><span class="pipe-status">Disabled</span></a>
         </td>
         <td class="search-box gui-text">
-            <a class="gui-light search-light"><span class="search-status"></span></a>
+            <a class="gui-light search-light"><span class="search-status">Disabled</span></a>
         </td>
     </tr>
 </table>
