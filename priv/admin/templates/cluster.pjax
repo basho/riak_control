@@ -44,7 +44,7 @@
 <table class="hide">
     <tr class="node row-template">
         <td class="status-box gui-text">
-            <a class="gui-light"><span class="status"></span></a>
+            <a class="gui-light"><span class="status">Joining...</span></a>
         </td>
         <td class="name-box gui-text">
             <div class="gui-field gui-text">
