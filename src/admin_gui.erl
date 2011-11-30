@@ -30,7 +30,8 @@
          service_available/2
         ]).
 
-%% webmachine dependencies
+%% riak_control and webmachine dependencies
+-include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
@@ -89,7 +90,7 @@ redirect_loc (Node) ->
 
 %% don't use this node as a fallback, must be valid and reachable
 find_fallbacks (Nodes) ->
-    lists:foldl(fun ({Node,valid,true,_},Acc) ->
+    lists:foldl(fun (#member_info{node=Node,status=valid,reachable=true},Acc) ->
                         case Node == node() of
                             true -> Acc;
                             false ->

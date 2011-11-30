@@ -27,7 +27,8 @@
          service_available/2
         ]).
 
-%% webmachine dependencies
+%% riak_control and webmachine dependencies
+-include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
@@ -77,40 +78,30 @@ filter_partitions (_Req,_PS,_) ->
     [].
 
 %% return a proplist of details for a given index
-node_ring_details (_P={Index,I,OwnerNode,Vnodes},Nodes) ->
+node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
     {ok,Hoffs}=riak_core_handoff_manager:get_handoffs(Index),
 
     %% lookup the owner in the node list to get its status
-    case lists:keyfind(OwnerNode,1,Nodes) of
-        {_Node,Status,Reachable,_} ->
+    case lists:keyfind(P#partition_info.owner,2,Nodes) of
+        #member_info{node=Node,status=Status,reachable=Reachable} ->
             [{index,list_to_binary(integer_to_list(Index))},
-             {i,I},
-             {node,OwnerNode},
+             {i,P#partition_info.partition},
+             {node,Node},
              {status,Status},
              {reachable,Reachable},
              {vnodes,Vnodes},
-             {handoffs,{struct,vnode_handoffs(Vnodes,Hoffs)}}
+             {handoffs,{struct,vnode_handoffs(Hoffs)}}
             ];
         false -> []
     end.
 
 %% determine the status for each vnode worker and if there's a handoff
-vnode_handoffs (Vnodes,Hoffs) ->
-    Mods=riak_core:vnode_modules(),
-
-    %% get a list of all handoff targets for each vnode type
-    lists:foldl(fun ({Vnode,_},Acc) ->
-                        case proplists:get_value(Vnode,Mods) of
-                            undefined ->
-                                Acc;
-                            Worker ->
-                                case proplists:get_value(Worker,Hoffs) of
-                                    undefined ->
-                                        Acc;
-                                    TargetNode ->
-                                        [{Vnode,TargetNode}|Acc]
-                                end
+vnode_handoffs (Hoffs) ->
+    lists:foldl(fun ({Service,Worker},Acc) ->
+                        case proplists:get_value(Worker,Hoffs) of
+                            undefined -> Acc;
+                            Target -> [{Service,Target}|Acc]
                         end
                 end,
                 [],
-                Vnodes).
+                riak_core:vnode_modules()).

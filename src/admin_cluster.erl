@@ -27,7 +27,8 @@
          service_available/2
         ]).
 
-%% webmachine dependencies
+%% riak_control and webmachine dependencies
+-include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
@@ -66,12 +67,14 @@ cluster_action_result (_,Req,C) ->
 %% get a list of all the nodes in the ring and their status
 to_json (Req,C=list) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Status=[{struct,[{"name",N},
-                     {"status",S},
-                     {"reachable",Online},
-                     {"me",N == node()}
+    Status=[{struct,[{"name",Node#member_info.node},
+                     {"status",Node#member_info.status},
+                     {"reachable",Node#member_info.reachable},
+                     {"ring_pct",Node#member_info.ring_pct},
+                     {"pending_pct",Node#member_info.pending_pct},
+                     {"me",Node#member_info.node == node()}
                     ]}
-            || {N,S,Online,_} <- Nodes],
+            || Node=#member_info{} <- Nodes],
     {mochijson2:encode(Status),Req,C};
 
 %% join this node to the cluster of another ring

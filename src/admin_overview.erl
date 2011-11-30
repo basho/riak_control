@@ -27,7 +27,8 @@
          service_available/2
         ]).
 
-%% webmachine dependencies
+%% riak_control and webmachine dependencies
+-include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
@@ -62,8 +63,8 @@ to_json (Req,C) ->
 
 %% get a list of all the nodes that are current partitioned
 get_unreachable_nodes (Nodes) ->
-    [Node || {Node,_,false,_} <- Nodes].
+    [Node || #member_info{node=Node,reachable=false} <- Nodes].
 
 %% get a list of all nodes currently marked down
 get_down_nodes (Nodes) ->
-    [Node || {Node,down,_,_} <- Nodes].
+    [Node || #member_info{node=Node,status=down} <- Nodes].
