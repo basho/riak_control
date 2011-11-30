@@ -43,7 +43,7 @@
 %% defines the webmachine routes this module handles
 routes () ->
     [{admin_routes:admin_route([]),?MODULE,index},
-     {admin_routes:admin_route(["fallback"]),?MODULE,fallback},
+     {admin_routes:admin_route(["fallbacks"]),?MODULE,fallback},
      {admin_routes:admin_route(["ui",'*']),?MODULE,undefined}
     ].
 
