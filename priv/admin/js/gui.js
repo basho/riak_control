@@ -130,9 +130,9 @@ $(function() {
         displayTips('Move the slider over to view possible actions for this node.  Move the slider back to hide those actions again.');
     }).on('mouseout', '.more-actions-slider-box .gui-slider', emptyTips);
     
-    $(document).on('mouseover', '.leave-cluster', function () {
+    $(document).on('mouseover', '.leave-cluster-button', function () {
         displayTips('This will cause the node to begin relinquishing ownership of its data to other nodes in the cluster.  You will not be able to interact with the node via Riak Control during this process.  Once completed, Riak will shutdown on this node and it will leave the cluster.');
-    }).on('mouseout', '.leave-cluster', emptyTips);
+    }).on('mouseout', '.leave-cluster-button', emptyTips);
     
     // The 'Hosting Riak Control' message
     $(document).on('mouseover', '.current-host', function () {
@@ -141,8 +141,13 @@ $(function() {
     
     // Markdown button
     $(document).on('mouseover', '.markdown-button', function () {
-        displayTips('This node is currently unreachable.  While in this state, it may hinder cluster membership changes of other nodes.  Marking this node as "down" will allow other nodes to engage in membership changes unimpeded.');
+        displayTips('This button becomes active when the node becomes unreachable.  While in an unreachable state, a node may hinder cluster membership changes of other nodes.  Marking this node as "down" will allow other nodes to engage in membership changes unimpeded.');
     }).on('mouseout', '.markdown-button', emptyTips);
+
+    // Shutdown button
+    $(document).on('mouseover', '.shutdown-button', function () {
+        displayTips('This button will stop the Riak process on this node.  If this button is not active, your node is already unreachable.  It will have to be restarted manually.');
+    }).on('mouseout', '.shutdown-button', emptyTips);
     
     // Node status
     $(document).on('mouseover', '.status-box', function () {

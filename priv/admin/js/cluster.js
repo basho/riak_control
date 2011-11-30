@@ -212,59 +212,85 @@ $(document).ready(function () {
             }
         }
     }
+
+    function reset_slider (sliderHandle, rowNode) {
+        var myActions = $('#' + rowNode.id + '-more-actions');
+        var hiddenActions = $('.actions-box', myActions[0]).css('display') !== 'block';
+        if (sliderHandle.css('left') === '100%' && hiddenActions) {
+            sliderHandle.css('left', '0');
+            sliderHandle.parent().find('.isLeft').fadeIn(200);
+            sliderHandle.parent().find('.isRight').hide();
+            $('.gui-slider-groove', rowNode).trigger('initSlider');
+        }
+    }
     
     function set_leaving_status (row, textObj) {
+        var myActions = $('#' + row.id + '-more-actions');
+        var slider = $('.gui-slider', row);
+        var slider_leaving = $('.gui-slider-leaving', row);
         set_light_color($('.gui-light', row), 'orange');
-        $('.gui-slider', row).addClass('hide');
-        $('.gui-slider-leaving', row).removeClass('hide');
-        $('.gui-rect-button-leaving', row).removeClass('hide');
+
         if (textObj.status !== 'Leaving') {
             $('.status', row).text('Leaving');
         }
+
+        //reset_slider($('.ui-slider-handle', row), row);
+        slider.addClass('hide');
+        slider_leaving.removeClass('hide');
+
+        myActions.find('.markdown-button, .markdown-label').addClass('disabled').addClass('pressed');
+        myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
+        myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('disabled').addClass('pressed');
+
         set_operability_class($('.status', row), 'disabled');
         set_operability_class($('.name', row), 'disabled');
     }
     
     function set_down_status (row, textObj) {
-        $('.markdown-button', row).removeClass('hide').addClass('pressed');
+        var myActions = $('#' + row.id + '-more-actions');
         if (textObj.status !== 'Down') {
             $('.status', row).text('Down');
         }
+        console.log(row);
+        myActions.find('.markdown-button, .markdown-label').removeClass('disabled').addClass('pressed');
+        myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
+        myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('disabled').addClass('pressed');
+
         set_operability_class($('.name', row), 'down');
         set_light_color($('.gui-light', row), 'gray');
     }
     
     function set_valid_reachable_status (row, textObj) {
-        var myActions = $('#' + row.id + '-more-actions')[0];
-        var hiddenActions = $('.actions-box', myActions).css('display') !== 'block';
+        var myActions = $('#' + row.id + '-more-actions');
         var sliderHandle = $('.ui-slider-handle', row);
-        $('.markdown-button', row).addClass('hide');
-        $('.gui-slider', row).removeClass('hide');
-        $('.shutdown-button', myActions).removeClass('pressed').removeClass('disabled');
-        $('.leave-cluster-button', myActions).removeClass('pressed').removeClass('disabled');
 
-        // If the slider handle is all the way to the right but the actions box is hidden,
-        // we need to reset the slider handle.
-        if (sliderHandle.css('left') === '100%' && hiddenActions) {
-            sliderHandle.css('left', '0');
-            sliderHandle.parent().find('.isLeft').fadeIn(200);
-            sliderHandle.parent().find('.isRight').hide();
-            $('.gui-slider-groove', row).trigger('initSlider');
-        }
+        myActions.find('.markdown-button, .markdown-label').addClass('disabled').addClass('pressed');
+        myActions.find('.shutdown-button, .shutdown-label').removeClass('disabled').removeClass('pressed');
+        myActions.find('.leave-cluster-button, .leave-cluster-label').removeClass('disabled').removeClass('pressed');
+
+        $('.gui-slider', row).removeClass('hide');
+        $('.gui-slider-leaving', row).addClass('hide');
+        reset_slider($('.ui-slider-handle', row), row);
 
         if (textObj.status !== 'Valid') {
             $('.status', row).text('Valid');
+            set_operability_class($('.status', row), 'normal');
         }
         set_operability_class($('.name', row), 'normal');
         set_light_color($('.gui-light', row), 'green');
     }
     
     function set_valid_unreachable_status (row, textObj) {
-        $('.markdown-button', row).removeClass('hide').removeClass('pressed');
-        $('.gui-slider', row).addClass('hide');
+        var myActions = $('#' + row.id + '-more-actions');
+        myActions.find('.markdown-button, .markdown-label').removeClass('disabled').removeClass('pressed');
+        myActions.find('.shutdown-button, .shutdown-label').addClass('pressed').addClass('disabled');
+        myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('pressed').addClass('disabled');
+        $('.gui-slider', row).removeClass('hide');
+        $('.gui-slider-leaving', row).addClass('hide');
         if (textObj.status !== 'Unreachable') {
             $('.status', row).text('Unreachable');
         }
+        reset_slider($('.ui-slider-handle', row), row);
         set_light_color($('.gui-light', row), 'red');
         set_operability_class($('.name', row), 'unreachable');
     }
@@ -354,15 +380,27 @@ $(document).ready(function () {
             return false;
         }
 
+        function check_and_remove (i) {
+            var nodeName = $('.name', rows[i]).text(),
+                theRow = $(rows[i]),
+                theSibling;
+            if (theRow.length) {
+                theSibling = $('#' + rows[i].id + '-more-actions');
+            }
+            if (node_in_cluster_p(nodeName) === false) {
+                theRow.remove();
+                if (theSibling) {
+                    theSibling.remove();
+                }
+            }
+        }
+
         // remove any node rows no long in the cluster
         r = rows.length;
         for(i = 0; i < 4; i += 1) {
-            var node = $('.name', rows[i]).text();
-
-            if (node_in_cluster_p(node) === false) {
-                $(rows[i]).remove();
-            }
+            check_and_remove(i);
         }
+
     }
 
     function update_cluster_status (nodes) {
@@ -392,20 +430,18 @@ $(document).ready(function () {
     }
 
     /* MAKE THE MARKDOWN BUTTON STAY DOWN ONCE CLICKED */
-    $(document).on('click', '.markdown-button', function () {
-        var node = $(this).closest('tr').find('.name').text();
-        down_node(node);
-        $(this).addClass('pressed');
+    $(document).on('click', '.markdown-button:not(.pressed)', function () {
+        var siblingId = $(this).closest('tr').attr('id');
+        var node = $('#' + siblingId.split('-more-actions')[0]);
+        set_down_status(node[0], {"status" : node.find('.status').text()})
+        down_node(node.find('.name').text());
     });
 
     /* MAKE THE SHUTDOWN BUTTON STAY DOWN ONCE CLICKED */
     $(document).on('click', '.shutdown-button:not(.pressed)', function () {
         var siblingId = $(this).closest('tr').attr('id');
         var node = $('#' + siblingId.split('-more-actions')[0]);
-        $(this).addClass('pressed');
-        $(this).closest('td').find('.leave-cluster-button').addClass('disabled');
-        set_valid_unreachable_status(node, {"status" : node.find('.status').text()});
-        close_sibling_row(siblingId);
+        set_valid_unreachable_status(node[0], {"status" : node.find('.status').text()});
         stop_node(node.find('.name').text());
     });
     
@@ -414,10 +450,8 @@ $(document).ready(function () {
         var myParentID = $(this).closest('tr').attr('id');
         var node = $('#' + myParentID.split('-more-actions')[0]);
         var name = node.find('.name').text();
-        $(this).addClass('pressed').addClass('disabled');
-        $(this).closest('td').find('.shutdown-button').addClass('pressed').addClass('disabled');
         close_sibling_row(myParentID);
-        set_leaving_status(node, {"status" : node.find('.status').text()});
+        set_leaving_status(node[0], {"status" : node.find('.status').text()});
         leave_cluster(name);
     });
 

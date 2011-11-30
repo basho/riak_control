@@ -34,8 +34,7 @@
         <tr class="table-head has-cut">
             <td><h3 class="gui-headline">Status</h3></td>
             <td><h3 class="gui-headline">Name</h3></td>
-            <td><h3 class="gui-headline">Controls</h3></td>
-            <td>&nbsp;</td>
+            <td><h3 class="gui-headline">Actions</h3></td>
         </tr>
     </table>
 </div>
@@ -57,7 +56,7 @@
             </div>
         </td>
         <td class="more-actions-slider-box gui-text">
-            <div class="gui-slider gui-text hide">
+            <div class="gui-slider gui-text">
                 <div class="gui-slider-activate"></div>
                 <div class="gui-slider-groove">
                     <div class="gui-slider-msg isLeft">View Actions</div>
@@ -66,15 +65,10 @@
             </div>
             <div class="gui-slider-leaving hide"></div>
         </td>
-        <td class="markdown">
-            <a class="markdown-button gui-point-button gui-text-bold hide">
-                <span class="gui-button-msg">Mark Down</span>
-            </a>
-        </td>
     </tr>
     <tr class="more-node-actions more-actions-template">
         <td>&nbsp;</td>
-        <td class="more-actions-td">
+        <td colspan="2" class="more-actions-td">
             <div class="actions-pointer hide"></div>
             <div class="actions-box gui-text hide">
                 <div class="shutdown-box left">
@@ -83,16 +77,19 @@
                     <div class="clear"></div>
                 </div>
                 <div class="leave-cluster-box left">
-                    <a class="leave-cluster-button gui-rect-button gui-text-bold left">
-                        <span class="gui-button-msg">Leave Cluster</span>
-                    </a>
+                    <a class="leave-cluster-button left"></a>
+                    <span class="leave-cluster-label gui-text block left">Leave Cluster</span>
+                    <div class="clear"></div>
+                </div>
+                <div class="markdown-box left">
+                    <a class="markdown-button left pressed disabled"></a>
+                    <span class="markdown-label gui-text block left disabled">Mark Down</span>
                     <div class="clear"></div>
                 </div>
                 <div class="clear"></div>
             </div>
+            <div class="clear"></div>
         </td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
     </tr>
 </table>
 <!-- end node template -->
