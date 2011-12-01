@@ -120,7 +120,9 @@ $(document).ready(function () {
             method:'GET',
             url:'/admin/cluster/list',
             dataType:'json',
-            success:update_cluster_status,
+            success: function (d) {
+                update_cluster_status(d);
+            },
             failure:ping_cluster_status
         });
     }
@@ -347,8 +349,6 @@ $(document).ready(function () {
         } else {
             set_light_color($('.pct-light', row), 'green');
         }
-        
-
 
         $('.gui-slider-groove').trigger('initSlider');
         
@@ -382,18 +382,22 @@ $(document).ready(function () {
             row = $('.row-template').clone();
             extraRow = $('.more-actions-template').clone();
 
-            // initialize the row
-            update_node_row(node, row);
 
             // set the id for this row and display it
             row.attr('id', id);
             extraRow.attr('id', id + '-more-actions');
             row.removeClass('row-template');
             extraRow.removeClass('more-actions-template');
-            row.show();
 
             // add it to the table
             $('#cluster-table').append(row).append(extraRow);
+
+            // initialize the row
+            update_node_row(node, row[0]);
+
+            // and lastly, show it
+            row.show();
+
         } else {
             update_node_row(node, rows[0]);
         }
@@ -436,6 +440,10 @@ $(document).ready(function () {
 
     }
 
+    function ping_cluster_status () {
+        setTimeout(get_cluster_status, 2000);
+    }
+
     function update_cluster_status (nodes) {
         var html = '', i, l = nodes.length;
 
@@ -455,11 +463,8 @@ $(document).ready(function () {
         $('.gui-slider-groove').trigger('initSlider');
 
         // wait a little and update
+        //console.log('pinging');
         ping_cluster_status();
-    }
-
-    function ping_cluster_status () {
-        setTimeout(get_cluster_status, 2000);
     }
 
     /* MAKE THE MARKDOWN BUTTON STAY DOWN ONCE CLICKED */
