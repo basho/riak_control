@@ -58,19 +58,19 @@
             </div>
         </td>
         <td class="kv-box gui-text">
-            <a class="gui-light kv-light">
+            <a class="gui-light kv-light gray">
                 <span class="kv-status">Disabled</span>
                 <span class="hide fallback-to"></span>
             </a>
         </td>
         <td class="pipe-box gui-text">
-            <a class="gui-light pipe-light">
+            <a class="gui-light pipe-light gray">
                 <span class="pipe-status">Disabled</span>
                 <span class="hide fallback-to"></span>
             </a>
         </td>
         <td class="search-box gui-text">
-            <a class="gui-light search-light">
+            <a class="gui-light search-light gray">
                 <span class="search-status">Disabled</span>
                 <span class="hide fallback-to"></span>
             </a>

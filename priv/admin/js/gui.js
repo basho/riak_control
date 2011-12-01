@@ -166,7 +166,7 @@ $(function() {
 
     // Ring ownership percent
     $(document).on('mouseover', '.ring_pct', function () {
-        displayTips('This is the portion of the ring owned by this node.');
+        displayTips('The portion of the ring owned by this node.');
     }).on('mouseout', '.ring_pct', emptyTips);
 
     // Ring pending ownership percent

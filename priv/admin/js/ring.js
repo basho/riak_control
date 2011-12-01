@@ -153,68 +153,41 @@ $(document).ready(function () {
         var row;
 
         function deal_with_lights (obj, row) {
-            // Deal with all green lights 
+            var i, kind;
             if (obj.reachable === true) {
                 set_operability_class($('.owner', row), 'normal');
-                if (obj.vnodes.riak_kv === 'primary') {
-                    set_light_color($('.kv-light', row),   'green');
-                    $('.kv-status', row).html('Active');
-                }
-                if (obj.vnodes.riak_pipe === 'primary') {
-                    set_light_color($('.pipe-light', row), 'green');
-                    $('.pipe-status', row).html('Active');
-                }
-                if (obj.vnodes.riak_search === 'primary') {
-                    set_light_color($('.search-light', row), 'green');
-                    $('.search-status', row).html('Active');
-                }
-            }
-            // Deal with all red lights
-            if (obj.reachable === false) {
+            } else {
                 set_operability_class($('.owner', row), 'unreachable');
-                if (obj.vnodes.riak_kv === 'undefined') {
-                    set_light_color($('.kv-light', row),   'red');
-                    $('.kv-status', row).html('Unreachable');
+            }
+            for (i in obj.vnodes) {
+                if (Object.prototype.hasOwnProperty.call(obj.vnodes, i)) {
+                    kind = i.split('_')[1];
+                    if (obj.reachable === true && (obj.vnodes[i] || obj.vnodes[i] !== 'undefined')) {
+                        set_light_color($('.' + kind + '-light', row), 'green');
+                        $('.' + kind + '-status', row).html('Active');
+                    } else if (obj.vnodes[i] === 'fallback') {
+                        set_light_color($('.' + kind + '-light', row), 'blue');
+                        $('.' + kind + '-status', row).html('Fallback');
+                    } else if (!obj.vnodes[i] || obj.vnodes[i] === 'undefined') {
+                        set_light_color($('.' + kind + '-light', row), 'red');
+                        $('.' + kind + '-status', row).html('Unreachable');
+                    }
                 }
-                if (obj.vnodes.riak_pipe === 'undefined') {
-                    set_light_color($('.pipe-light', row), 'red');
-                    $('.pipe-status', row).html('Unreachable');
+            }
+            for (i in obj.handoffs) {
+                if (Object.prototype.hasOwnProperty.call(obj.handoffs[i])) {
+                    kind = i.split('_')[1];
+                    if (obj.handoffs[i] || obj.handoffs[i] !== 'undefined') {
+                        set_light_color($('.' + kind + '-light', row), 'orange');
+                        $('.' + kind + '-status', row).html('Handoff');
+                    }
                 }
-                if (obj.vnodes.riak_search === 'undefined') {
-                    set_light_color($('.search-light', row), 'red');
-                    $('.search-status', row).html('Unreachable');
-                }
-            }
-            // Deal with all blue lights
-            if (obj.vnodes.riak_kv === 'fallback') {
-                set_light_color($('.kv-light', row),   'blue');
-                $('.kv-status', row).html('Fallback');
-            } 
-            if (obj.vnodes.riak_pipe === 'fallback') {
-                set_light_color($('.pipe-light', row), 'blue');
-                $('.pipe-status', row).html('Fallback');
-            }
-            if (obj.vnodes.riak_search === 'fallback') {
-                set_light_color($('.search-light', row), 'blue');
-                $('.search-status', row).html('Fallback');
-            }
-            // Deal with all orange lights
-            if (obj.handoffs.riak_kv) {
-                set_light_color($('.kv-light', row), 'orange');
-                $('.kv-status', row).html('Handoff');
-            } 
-            if (obj.handoffs.riak_pipe) {
-                set_light_color($('.pipe-light', row), 'orange');
-                $('.pipe-status', row).html('Handoff');
-            }
-            if (obj.handoffs.riak_search) {
-                set_light_color($('.search-light', row), 'orange');
-                $('.search-status', row).html('Handoff');
             }
         }
 
         // if updateDraw === 'draw'...
         if (updateDraw === 'draw') {
+            console.log(infoObj);
             // clone the partition template
             row = $('.partition-template').clone();
             row.attr('id', 'partition-' + numID);
