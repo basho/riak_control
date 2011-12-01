@@ -145,7 +145,6 @@ $(document).ready(function () {
         
     }
         
-    
     function partition_row (infoObj, updateDraw) {
         // called by update_partitions()
         
@@ -243,7 +242,6 @@ $(document).ready(function () {
 
     }
         
-    
     function update_partitions (data) {
         // called by get_partitions() which is called by initialize() and ping_partitions()
         
@@ -313,10 +311,14 @@ $(document).ready(function () {
         
     }
     
-    
-    
     function ping_partitions () {
-        setTimeout(get_partitions, 1000);
+        setTimeout(function () {
+            if ($('#ring-headline').length) {
+                get_partitions();
+            } else {
+                ping_partitions();
+            }
+        }, 1000);
     }
     
     // Define what to do when the filter dropdown value changes 

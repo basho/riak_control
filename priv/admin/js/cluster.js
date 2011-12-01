@@ -232,13 +232,11 @@ $(document).ready(function () {
         var slider_leaving = $('.gui-slider-leaving', row);
         if (myActions) {
             set_light_color($('.status-light', row), 'orange');
-            set_light_color($('.pct-light', row), 'gray');
 
             if (textObj.status !== 'Leaving') {
                 $('.status', row).text('Leaving');
             }
 
-            //reset_slider($('.ui-slider-handle', row), row);
             slider.addClass('hide');
             slider_leaving.removeClass('hide').removeClass('down');
 
@@ -295,7 +293,8 @@ $(document).ready(function () {
             set_operability_class($('.name', row), 'normal');
             set_operability_class($('.ring_pct', row), 'normal');
             set_operability_class($('.pending_pct', row), 'normal');
-            set_light_color($('.status-light', row), 'green');
+
+            //set_light_color($('.status-light', row), 'green');
         }
     }
     
@@ -325,7 +324,7 @@ $(document).ready(function () {
             $('.status', row).text('Valid');
         }
         set_operability_class($('.name', row), 'normal');
-        set_light_color($('.status-light', row), 'green');
+        //set_light_color($('.status-light', row), 'green');
     }
 
     function round_pct (num, decPlaces) {
@@ -342,20 +341,24 @@ $(document).ready(function () {
             "pending_pct" : $('.pending_pct', row).text()
         };
 
+        node.ring_pct = round_pct(node.ring_pct * 100, 1) + '%';
+        node.pending_pct = round_pct(node.pending_pct * 100, 1) + '%';
+
         if (texts.name !== node.name) {
             $('.name', row).text(node.name);
         }
-        if (texts.ring_pct !== round_pct(node.ring_pct * 100, 1) + '%') {
-            $('.ring_pct', row).text(round_pct(node.ring_pct * 100, 1) + '%');
+        if (texts.ring_pct !== node.ring_pct) {
+            $('.ring_pct', row).text(node.ring_pct);
         }
-        if (texts.pending_pct !== round_pct(node.pending_pct * 100, 1) + '%') {
-            $('.pending_pct', row).text(round_pct(node.pending_pct * 100, 1) + '%');
+        if (texts.pending_pct !== node.pending_pct) {
+            $('.pending_pct', row).text(node.pending_pct);
         }
-
-        if ($('.ring_pct', row).text() !== $('.pending_pct', row).text()) {
-            set_light_color($('.pct-light', row), 'orange');
+        if ($('.ring_pct', row).text() !== $('.pending_pct', row).text() && status !== 'leaving') {
+            set_light_color($('.status-light', row), 'orange');
         } else {
-            set_light_color($('.pct-light', row), 'green');
+            if (status !== 'leaving' && node.reachable && status !== 'down') {
+                set_light_color($('.status-light', row), 'green');
+            }
         }
 
         $('.gui-slider-groove').trigger('initSlider');
@@ -449,7 +452,13 @@ $(document).ready(function () {
     }
 
     function ping_cluster_status () {
-        setTimeout(get_cluster_status, 2000);
+        setTimeout(function () {
+            if ($('#cluster-headline').length) {
+                get_cluster_status();
+            } else {
+                ping_cluster_status();
+            }
+        }, 1000);
     }
 
     function update_cluster_status (nodes) {

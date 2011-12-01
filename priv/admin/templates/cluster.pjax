@@ -36,7 +36,6 @@
             <td><h3 class="gui-headline">Name</h3></td>
             <td><h3 class="gui-headline">Actions</h3></td>
             <td><h3 class="gui-headline">% Owned</h3></td>
-            <td>&nbsp;</td>
             <td><h3 class="gui-headline">% Pending</h3></td>
         </tr>
     </table>
@@ -78,9 +77,6 @@
             </div>
             <div class="clear"></div>
         </td>
-        <td class="pct-light-box">
-            <a class="gui-light pct-light"></a>
-        </td>
         <td class="gui-text pending_pct-box">
             <div class="gui-field gui-text">
                 <div class="gui-field-bg">
@@ -93,7 +89,7 @@
     </tr>
     <tr class="more-node-actions more-actions-template">
         <td>&nbsp;</td>
-        <td colspan="5" class="more-actions-td">
+        <td colspan="4" class="more-actions-td">
             <div class="actions-pointer hide"></div>
             <div class="actions-box gui-text hide">
                 <div class="shutdown-box left">

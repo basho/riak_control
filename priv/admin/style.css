@@ -512,9 +512,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 #cluster-table .node td.pending_pct-box {
     width: 100px;
 }
-#cluster-table .node td.ring_pct-box {
-    padding-right: 0;
-}
+
 #cluster-table .node td.pending_pct-box {
     padding-right: 6px;
 }
