@@ -162,7 +162,7 @@ $(document).ready(function () {
             for (i in obj.vnodes) {
                 if (Object.prototype.hasOwnProperty.call(obj.vnodes, i)) {
                     kind = i.split('_')[1];
-                    if (obj.reachable === true && (obj.vnodes[i] || obj.vnodes[i] !== 'undefined')) {
+                    if (obj.reachable === true && (obj.vnodes[i] === 'primary')) {
                         set_light_color($('.' + kind + '-light', row), 'green');
                         $('.' + kind + '-status', row).html('Active');
                     } else if (obj.vnodes[i] === 'fallback') {
@@ -177,7 +177,7 @@ $(document).ready(function () {
             for (i in obj.handoffs) {
                 if (Object.prototype.hasOwnProperty.call(obj.handoffs, i)) {
                     kind = i.split('_')[1];
-                    if (obj.handoffs[i] || obj.handoffs[i] !== 'undefined') {
+                    if (obj.handoffs[i]) {
                         set_light_color($('.' + kind + '-light', row), 'orange');
                         $('.' + kind + '-status', row).html('Handoff');
                     }
@@ -187,7 +187,6 @@ $(document).ready(function () {
 
         // if updateDraw === 'draw'...
         if (updateDraw === 'draw') {
-            console.log(infoObj);
             // clone the partition template
             row = $('.partition-template').clone();
             row.attr('id', 'partition-' + numID);
@@ -237,6 +236,20 @@ $(document).ready(function () {
                         }
                     } else {
                         if (!oldObj[i] || oldObj[i] !== newObj[i]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            // now run over the old object in case the new object did lose keys
+            for (i in oldObj) {
+                if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
+                    if (typeof oldObj[i] === 'object' && (newObj[i] && typeof newObj[i] === 'object')) {
+                        if (!keys_are_equal(newObj[i], oldObj[i])) {
+                            return false;
+                        }
+                    } else {
+                        if (!newObj[i] || newObj[i] !== oldObj[i]) {
                             return false;
                         }
                     }

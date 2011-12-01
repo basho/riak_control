@@ -480,7 +480,6 @@ $(document).ready(function () {
         $('.gui-slider-groove').trigger('initSlider');
 
         // wait a little and update
-        //console.log('pinging');
         ping_cluster_status();
     }
 
