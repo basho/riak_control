@@ -227,85 +227,93 @@ $(document).ready(function () {
     }
     
     function set_leaving_status (row, textObj) {
-        var myActions = $('#' + row.id + '-more-actions');
+        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
         var slider = $('.gui-slider', row);
         var slider_leaving = $('.gui-slider-leaving', row);
-        set_light_color($('.status-light', row), 'orange');
-        set_light_color($('.pct-light', row), 'gray');
+        if (myActions) {
+            set_light_color($('.status-light', row), 'orange');
+            set_light_color($('.pct-light', row), 'gray');
 
-        if (textObj.status !== 'Leaving') {
-            $('.status', row).text('Leaving');
+            if (textObj.status !== 'Leaving') {
+                $('.status', row).text('Leaving');
+            }
+
+            //reset_slider($('.ui-slider-handle', row), row);
+            slider.addClass('hide');
+            slider_leaving.removeClass('hide').removeClass('down');
+
+            myActions.find('.markdown-button, .markdown-label').addClass('disabled').addClass('pressed');
+            myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
+            myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('disabled').addClass('pressed');
+
+            set_operability_class($('.status', row), 'disabled');
+            set_operability_class($('.name', row), 'disabled');
+            set_operability_class($('.ring_pct', row), 'disabled');
+            set_operability_class($('.pending_pct', row), 'disabled');
         }
-
-        //reset_slider($('.ui-slider-handle', row), row);
-        slider.addClass('hide');
-        slider_leaving.removeClass('hide').removeClass('down');
-
-        myActions.find('.markdown-button, .markdown-label').addClass('disabled').addClass('pressed');
-        myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
-        myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('disabled').addClass('pressed');
-
-        set_operability_class($('.status', row), 'disabled');
-        set_operability_class($('.name', row), 'disabled');
-        set_operability_class($('.ring_pct', row), 'disabled');
-        set_operability_class($('.pending_pct', row), 'disabled');
     }
     
     function set_down_status (row, textObj) {
-        var myActions = $('#' + row.id + '-more-actions');
-        if (textObj.status !== 'Down') {
-            $('.status', row).text('Down');
+        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
+        if (myActions) {
+            if (textObj.status !== 'Down') {
+                $('.status', row).text('Down');
+            }
+
+            $('.gui-slider', row).addClass('hide');
+            $('.gui-slider-leaving', row).removeClass('hide').addClass('down');
+
+            myActions.find('.markdown-button, .markdown-label').removeClass('disabled').addClass('pressed');
+            myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
+            myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('disabled').addClass('pressed');
+
+            set_operability_class($('.name', row), 'down');
+            set_operability_class($('.status', row), 'down');
+            set_operability_class($('.ring_pct', row), 'down');
+            set_operability_class($('.pending_pct', row), 'down');
+            set_light_color($('.status-light', row), 'gray');
         }
-
-        $('.gui-slider', row).addClass('hide');
-        $('.gui-slider-leaving', row).removeClass('hide').addClass('down');
-
-        myActions.find('.markdown-button, .markdown-label').removeClass('disabled').addClass('pressed');
-        myActions.find('.shutdown-button, .shutdown-label').addClass('disabled').addClass('pressed');
-        myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('disabled').addClass('pressed');
-
-        set_operability_class($('.name', row), 'down');
-        set_operability_class($('.status', row), 'down');
-        set_operability_class($('.ring_pct', row), 'down');
-        set_operability_class($('.pending_pct', row), 'down');
-        set_light_color($('.status-light', row), 'gray');
     }
     
     function set_valid_reachable_status (row, textObj) {
-        var myActions = $('#' + row.id + '-more-actions');
+        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
         var sliderHandle = $('.ui-slider-handle', row);
 
-        myActions.find('.markdown-button, .markdown-label').addClass('disabled').addClass('pressed');
-        myActions.find('.shutdown-button, .shutdown-label').removeClass('disabled').removeClass('pressed');
-        myActions.find('.leave-cluster-button, .leave-cluster-label').removeClass('disabled').removeClass('pressed');
+        if (myActions) {
+            myActions.find('.markdown-button, .markdown-label').addClass('disabled').addClass('pressed');
+            myActions.find('.shutdown-button, .shutdown-label').removeClass('disabled').removeClass('pressed');
+            myActions.find('.leave-cluster-button, .leave-cluster-label').removeClass('disabled').removeClass('pressed');
 
-        $('.gui-slider', row).removeClass('hide');
-        $('.gui-slider-leaving', row).addClass('hide');
-        reset_slider($('.ui-slider-handle', row), row);
+            $('.gui-slider', row).removeClass('hide');
+            $('.gui-slider-leaving', row).addClass('hide');
+            reset_slider($('.ui-slider-handle', row), row);
 
-        if (textObj.status !== 'Valid') {
-            $('.status', row).text('Valid');
-            set_operability_class($('.status', row), 'normal');
+            if (textObj.status !== 'Valid') {
+                $('.status', row).text('Valid');
+                set_operability_class($('.status', row), 'normal');
+            }
+            set_operability_class($('.name', row), 'normal');
+            set_operability_class($('.ring_pct', row), 'normal');
+            set_operability_class($('.pending_pct', row), 'normal');
+            set_light_color($('.status-light', row), 'green');
         }
-        set_operability_class($('.name', row), 'normal');
-        set_operability_class($('.ring_pct', row), 'normal');
-        set_operability_class($('.pending_pct', row), 'normal');
-        set_light_color($('.status-light', row), 'green');
     }
     
     function set_valid_unreachable_status (row, textObj) {
-        var myActions = $('#' + row.id + '-more-actions');
-        myActions.find('.markdown-button, .markdown-label').removeClass('disabled').removeClass('pressed');
-        myActions.find('.shutdown-button, .shutdown-label').addClass('pressed').addClass('disabled');
-        myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('pressed').addClass('disabled');
-        $('.gui-slider', row).removeClass('hide');
-        $('.gui-slider-leaving', row).addClass('hide');
-        if (textObj.status !== 'Unreachable') {
-            $('.status', row).text('Unreachable');
+        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
+        if (myActions) {
+            myActions.find('.markdown-button, .markdown-label').removeClass('disabled').removeClass('pressed');
+            myActions.find('.shutdown-button, .shutdown-label').addClass('pressed').addClass('disabled');
+            myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('pressed').addClass('disabled');
+            $('.gui-slider', row).removeClass('hide');
+            $('.gui-slider-leaving', row).addClass('hide');
+            if (textObj.status !== 'Unreachable') {
+                $('.status', row).text('Unreachable');
+            }
+            reset_slider($('.ui-slider-handle', row), row);
+            set_light_color($('.status-light', row), 'red');
+            set_operability_class($('.name', row), 'unreachable');
         }
-        reset_slider($('.ui-slider-handle', row), row);
-        set_light_color($('.status-light', row), 'red');
-        set_operability_class($('.name', row), 'unreachable');
     }
     
     function set_host_node_status (row, textObj) {
@@ -374,7 +382,7 @@ $(document).ready(function () {
 
     function cluster_node_row (node) {
         var id = node.name.split('@')[0];
-        var rows = $('#cluster-table #' + id);
+        var rows = $('#cluster-table #' + id) || null;
         var row, extraRow;
 
         // create a new row
