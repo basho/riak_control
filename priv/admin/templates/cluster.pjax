@@ -1,0 +1,116 @@
+<h1 id="cluster-headline" class="gui-headline-bold">Cluster View</h1>
+<div id="add-node">
+    <h3 class="gui-headline">Add Nodes to the Cluster...</h3>
+    <table>
+        <tr>
+            <td id="add-node-box">
+                <div class="gui-field gui-text">
+                    <div class="gui-field-bg">
+                        <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
+                    </div>
+                    <div class="gui-field-cap-left"></div>
+                    <div class="gui-field-cap-right"></div>
+                </div>
+            </td>
+            <td class="button-column">
+                <a id="add-node-button" class="gui-point-button gui-text-bold right">
+                    <span class="gui-button-msg">Add Node</span>
+                </a>
+            </td>
+        </tr>
+    </table>
+    <div id="node-error" class="hide">
+        <a class="error-text offline"></a>
+        <a class="error-link gui-text underline" href="#"></a>
+    </div>
+</div><!-- #add-node -->
+
+<h2 class="gui-headline-bold has-cut">
+    Node List
+    <span id="total-number" class="gui-text"></span>
+</h2>
+<div id="node-list" class="hide">
+    <table class="list-table" id="cluster-table">
+        <tr class="table-head has-cut">
+            <td><h3 class="gui-headline">Status</h3></td>
+            <td><h3 class="gui-headline">Name</h3></td>
+            <td><h3 class="gui-headline">Actions</h3></td>
+            <td><h3 class="gui-headline">% Owned</h3></td>
+            <td><h3 class="gui-headline">% Pending</h3></td>
+        </tr>
+    </table>
+</div>
+<div class="spinner-box"><img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif"></div>
+
+<!-- node template -->
+<table class="hide">
+    <tr class="node row-template">
+        <td class="status-box gui-text">
+            <a class="gui-light status-light"><span class="status">Joining...</span></a>
+        </td>
+        <td class="name-box gui-text">
+            <div class="gui-field gui-text">
+                <div class="gui-field-bg">
+                    <div class="name gui-field-input"></div>
+                </div>
+                <div class="gui-field-cap-left"></div>
+                <div class="gui-field-cap-right"></div>
+            </div>
+        </td>
+        <td class="more-actions-slider-box gui-text">
+            <div class="gui-slider gui-text">
+                <div class="gui-slider-activate"></div>
+                <div class="gui-slider-groove">
+                    <div class="gui-slider-msg isLeft">View Actions</div>
+                    <div class="gui-slider-msg isRight">Hide Actions</div>
+                </div>
+            </div>
+            <div class="gui-slider-leaving hide"></div>
+        </td>
+        <td class="gui-text ring_pct-box">
+            <div class="gui-field gui-text pct-box">
+                <div class="gui-field-bg">
+                    <div class="ring_pct gui-field-input"></div>
+                </div>
+                <div class="gui-field-cap-left"></div>
+                <div class="gui-field-cap-right"></div>
+            </div>
+            <div class="clear"></div>
+        </td>
+        <td class="gui-text pending_pct-box">
+            <div class="gui-field gui-text">
+                <div class="gui-field-bg">
+                    <div class="pending_pct gui-field-input"></div>
+                </div>
+                <div class="gui-field-cap-left"></div>
+                <div class="gui-field-cap-right"></div>
+            </div>
+        </td>
+    </tr>
+    <tr class="more-node-actions more-actions-template">
+        <td>&nbsp;</td>
+        <td colspan="4" class="more-actions-td">
+            <div class="actions-pointer hide"></div>
+            <div class="actions-box gui-text hide">
+                <div class="shutdown-box left">
+                    <a class="shutdown-button left"></a>
+                    <span class="shutdown-label gui-text block left">Stop Node</span>
+                    <div class="clear"></div>
+                </div>
+                <div class="leave-cluster-box left">
+                    <a class="leave-cluster-button left"></a>
+                    <span class="leave-cluster-label gui-text block left">Leave Cluster</span>
+                    <div class="clear"></div>
+                </div>
+                <div class="markdown-box left">
+                    <a class="markdown-button left pressed disabled"></a>
+                    <span class="markdown-label gui-text block left disabled">Mark Down</span>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+        </td>
+    </tr>
+</table>
+<!-- end node template -->

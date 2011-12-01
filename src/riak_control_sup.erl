@@ -46,6 +46,7 @@ init([]) ->
     case app_helper:get_env(riak_control,enabled,false) of
         true ->
             Resources = [{admin, admin_gui},
+                         {admin, admin_overview},
                          {admin, admin_ring},
                          {admin, admin_cluster},
                          {admin, admin_node}
@@ -59,9 +60,9 @@ init([]) ->
     %% modules to be started up
     Riak_control_session={riak_control_session,
                           {riak_control_session, start_link, []},
-                          permanent, 
-                          5000, 
-                          worker, 
+                          permanent,
+                          5000,
+                          worker,
                           [riak_control_session]},
 
     {ok, { {one_for_one, 5, 10}, [Riak_control_session] } }.

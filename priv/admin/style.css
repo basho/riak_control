@@ -1,11 +1,11 @@
 /* IMPORT FONTS */
 @font-face {
     font-family: 'rokkitt';
-    src: url('/admin/ui/rokkitt.eot?') format('eot'), url('/admin/ui/rokkitt.woff') format('woff'), url('/admin/ui/rokkitt.ttf') format('truetype');
+    src: url('/admin/ui/fonts/rokkitt.eot?') format('eot'), url('/admin/ui/fonts/rokkitt.woff') format('woff'), url('/admin/ui/fonts/rokkitt.ttf') format('truetype');
 }
 @font-face {
     font-family: 'rokkitt';
-    src: url('/admin/ui/rokkitt-bold.eot?') format('eot'), url('/admin/ui/rokkitt-bold.woff') format('woff'), url('/admin/ui/rokkitt-bold.ttf') format('truetype');
+    src: url('/admin/ui/fonts/rokkitt-bold.eot?') format('eot'), url('/admin/ui/fonts/rokkitt-bold.woff') format('woff'), url('/admin/ui/fonts/rokkitt-bold.ttf') format('truetype');
     font-weight: bold;
 }
 
@@ -60,7 +60,7 @@ td {
 
 /* CODE FOR GLOBAL STYLES */ 
 html {
-    background: url(/admin/ui/gui-bg.jpg) left top repeat #2d2d2d;
+    background: url(/admin/ui/images/gui-bg.jpg) left top repeat #2d2d2d;
 }
 
 body {
@@ -88,6 +88,9 @@ h3 {
     display: block;
     padding-bottom: 8px;
 }
+h3.no-pad {
+    padding: 0;
+}
 
 
 #tooltips {
@@ -95,13 +98,23 @@ h3 {
     bottom: 0;
     width: 100%;
     height: 50px;
+    background: transparent;
+    text-align: center;
+}
+#inner-tooltips {
+    text-align: left;
+    margin: 0 16px;;
+    height: 50px;
     background: #1d1d1d;
     background: rgba(15, 15, 15, .8);
-    border-top: 3px solid #444;
-    border-top: 3px solid rgba(255, 255, 255, .25);
+    border: 2px solid #444;
+    border: 2px solid rgba(255, 255, 255, .25);
     -webkit-box-shadow: 0 0 15px #111; 
     -moz-box-shadow: 0 0 15px #111;
     box-shadow: 0 0 15px #111;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
 }
 #display-tips {
     width: auto;
@@ -142,14 +155,14 @@ h3 {
 
 /* HEADER PORTION */
 #header {
-    background: url(/admin/ui/header-bg.png) left top repeat-x transparent;
+    background: url(/admin/ui/images/header-bg.png) left top repeat-x transparent;
     height: 67px;
     width: auto;
     margin: 0 0 22px 0; 
 }
 #riak-control-logo {
     display: block;
-    background: url(/admin/ui/riak-control-logo.gif) right bottom no-repeat transparent;
+    background: url(/admin/ui/images/riak-control-logo.gif) right bottom no-repeat transparent;
     width: 201px;
     height: 56px;
     float: left;
@@ -166,7 +179,7 @@ h3 {
 
 #split-bar {
 	width: 6px;
-	background: url(/admin/ui/resizer-bg.png) left top repeat transparent;
+	background: url(/admin/ui/images/resizer-bg.png) left top repeat transparent;
 	border: 1px solid #fff;
 	float: left;
 	opacity: .2;
@@ -198,16 +211,16 @@ h3 {
     left: 0;
     width: 14px;
     height: 48px;
-    background: url(/admin/ui/active-nav.png) left top no-repeat transparent;
+    background: url(/admin/ui/images/active-nav.png) left top no-repeat transparent;
 }
 
 .nav-li {
-    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    background: url(/admin/ui/images/nav-icons.png) 12px 10px no-repeat transparent;
     padding: 0 0 0 14px;
     height: 48px;
 }
 .nav-li-disabled {
-    background: url(/admin/ui/nav-icons.png) 12px 10px no-repeat transparent;
+    background: url(/admin/ui/images/nav-icons.png) 12px 10px no-repeat transparent;
     padding: 0 0 0 14px;
     height: 48px;
     opacity: .3;
@@ -225,7 +238,7 @@ h3 {
     font-size: 18px;
     height: 33px;
     vertical-align: middle;
-    background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;
+    background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;
     padding: 15px 0 0 40px;
 }
 .nav-li .nav-item:hover {
@@ -253,6 +266,30 @@ h3 {
     -webkit-text-stroke: none;
 }
 
+/* CODE FOR CHECKBOXES */
+.gui-checkbox-wrapper {
+    height: 20px;
+    background: url(/admin/ui/images/checkbox-sprite.png) left top no-repeat transparent;
+    vertical-align: middle;
+    display: inline-block;
+}
+.gui-checkbox {
+    display: block;
+    float: left;
+    width: 20px;
+    height: 20px;
+    opacity: 0;
+    margin: 0;
+    filter: alpha(opacity=0);
+}
+.gui-checkbox-wrapper .gui-text {
+    display: block;
+    height: 20px;
+    float: left;
+    padding-left: 5px;
+    font-size: 15px;
+}
+/* END CODE FOR CHECKBOXES */
 
 /* CODE FOR TEXT FIELDS */
 .gui-field {
@@ -268,17 +305,17 @@ h3 {
     background: left top no-repeat transparent;
 }
 .gui-field-cap-left  {
-    background-image: url(/admin/ui/fieldcap-left.png);
+    background-image: url(/admin/ui/images/fieldcap-left.png);
     left: 0;
 }
 .gui-field-cap-right {
-    background-image: url(/admin/ui/fieldcap-right.png);
+    background-image: url(/admin/ui/images/fieldcap-right.png);
     right: 0;
 }
 .gui-field-bg {
     width: auto;
     height: 30px;
-    background: url(/admin/ui/field-bg.png) left top repeat-x transparent;
+    background: url(/admin/ui/images/field-bg.png) left top repeat-x transparent;
     margin: 0 9px;
 }
 .gui-field-input {
@@ -302,7 +339,8 @@ h3 {
     border: 0;
     margin-top: 3px;
 }
-.gui-point-button {background: url(/admin/ui/pointbutton-sprite.png) left top no-repeat transparent;}
+.gui-point-button {background: url(/admin/ui/images/pointbutton-sprite.png) left top no-repeat transparent;}
+.gui-rect-button  {background: url(/admin/ui/images/rectbutton-sprite.png)  left top no-repeat transparent;}
 
 .gui-button-msg {
     display: block;
@@ -327,22 +365,55 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .button-column {width: 150px;}
 /* END CODE FOR POINT BUTTONS */
 
+/* CODE FOR SHUTDOWN BUTTON */
+.shutdown-box, .leave-cluster-box, .markdown-box {
+    height: 53px;
+    padding-right: 20px;
+    border-right: 1px solid #000;
+}
+.leave-cluster-box, .markdown-box {
+    padding-left: 15px;
+    border-left: 1px solid #333;
+}
+.markdown-box {
+    border-right: none;
+}
+.shutdown-label, .leave-cluster-label, .markdown-label {
+    padding: 18px 0 0 10px;
+}
+.shutdown-button, .leave-cluster-button, .markdown-button {
+    display: block;
+    width: 51px;
+    height: 53px;
+    cursor: pointer;
+}
+.shutdown-button {background: url(/admin/ui/images/powerbutton-sprite.png) left top no-repeat transparent;}
+.leave-cluster-button {background: url(/admin/ui/images/leavecluster-sprite.png) left top no-repeat transparent;}
+.markdown-button {background: url(/admin/ui/images/markdown-sprite.png) left top no-repeat transparent;}
+.shutdown-button:active, .leave-cluster-button:active, .markdown-button:active   {background-position: left -53px;}
+.shutdown-button.pressed, .leave-cluster-button.pressed, .markdown-button.pressed {
+    background-position: left -106px;
+    cursor: default;
+}
+/* END CODE FOR SHUTDOWN BUTTON*/
+
 /* CODE FOR LIGHTS */
 .gui-light {
     display: block;
     width: auto;
-    height: 27px;
-    padding: 9px 0 0 32px;
-    background: url(/admin/ui/light-sprite.png) -5px bottom no-repeat transparent;
+    height: 26px;
+    padding: 10px 0 0 30px;
+    background: url(/admin/ui/images/light-sprite.png) -5px bottom no-repeat transparent;
 }
 .gui-light.green  {background-position: -5px top;}
 .gui-light.red    {background-position: -5px -36px;}
 .gui-light.orange {background-position: -5px -72px;}
+.gui-light.blue   {background-position: -5px -108px;}
 /* END CODE FOR LIGHTS */
 
 /* CODE FOR SLIDING SWITCHES */
 .gui-slider, .gui-slider-leaving {
-    background: url(/admin/ui/slider-groove.png) 4px 2px no-repeat transparent;
+    background: url(/admin/ui/images/slider-groove.png) 4px 2px no-repeat transparent;
     height: 36px;
     width: 150px;
     position: relative;
@@ -351,8 +422,12 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     margin-top: 3px;
 }
 .gui-slider-leaving {
-    background: url(/admin/ui/leaving-slider.png) 4px 2px no-repeat transparent;
+    background: url(/admin/ui/images/leaving-slider.png) 4px 2px no-repeat transparent;
 }
+.gui-slider-leaving.down {
+    background-position: 4px -34px;
+}
+
 .gui-slider-groove.ui-slider {
     background: transparent;
     width: 117px;
@@ -370,7 +445,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .gui-slider-msg.isLeft {display: block; left: 43px;}
 .gui-slider-msg.isRight {display: none; left: 18px;}
 .gui-slider .ui-slider-handle {
-    background: url(/admin/ui/slider-handle.png) left top no-repeat transparent;
+    background: url(/admin/ui/images/slider-handle.png) left top no-repeat transparent;
     height: 36px;
     width: 36px;
     display: block;
@@ -402,6 +477,12 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     vertical-align: middle;
 }
 
+.spinner-box {
+    text-align: center;
+    padding: 25px 50px 50px;
+}
+
+
 /* END CODE FOR GENERAL CONTENT WELL */
 
 
@@ -414,7 +495,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 
 #cluster-table .node td {
-    padding: 2px;
+    padding: 2px 15px 2px 0;
     height: 52px;
 }
 
@@ -422,20 +503,36 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     padding-right: 15px;
 }
 
-.name {
-    padding: 8px 2px;
-    height: 22px;
+#cluster-table .node td.status-box {
+    padding-right: 15px;
+    width: 90px;
 }
 
-.status-box {
-    width: 90px;
+#cluster-table .node td.ring_pct-box,
+#cluster-table .node td.pending_pct-box {
+    width: 100px;
+}
+
+#cluster-table .node td.pending_pct-box {
+    padding-right: 6px;
+}
+
+#cluster-table .node td.pct-light-box {
+    width: 25px;
+    padding-right: 0;
+    padding-left: 3px;
+}
+
+.name, .ring_pct, .pending_pct {
+    padding: 8px 2px;
+    height: 22px;
 }
 
 .status {
     font-size: 15px;
 }
 
-.statistics, .markdown, .leave-box {
+.statistics, .more-actions-slider-box {
     width: 137px;
 }
 
@@ -445,7 +542,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 
 #cluster-table .node:hover {
-    background: url(/admin/ui/node-bg.png) left top repeat transparent;
+    background: url(/admin/ui/images/node-bg.png) left top repeat transparent;
     background: rgba(255,255,255,.1);
 }
 
@@ -465,53 +562,88 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     font-size: 14px;
 }
 
-/*
-#cluster-table .node .offline {
-    font-weight:bold;
-    color:#f00;
+#cluster-table .more-node-actions td {
+    padding: 0;
+    height: 0;
+    line-height: 0;
 }
-*/
 
+.actions-pointer {
+    background: url(/admin/ui/images/area-pointer.png) 36px top no-repeat transparent;
+    height: 9px;
+    line-height: 1;
+}
+
+.actions-box {
+    line-height: 1;
+    background: #111;
+    background: rgba(36, 36, 36, 1);
+    padding: 15px 15px 10px;
+    margin-bottom: 15px;
+    float: left;
+    border-bottom: 1px solid #3f3f3f;
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    -webkit-box-shadow: inset 0 3px 10px #0f0f0f;
+    -webkit-border-radius: 4px;
+    -moz-box-shadow: inset 0 3px 10px #0f0f0f;
+    -moz-border-radius: 4px;
+    box-shadow: inset 0 3px 10px #0f0f0f;
+    border-radius: 4px;
+
+}
+
+.leave-cluster {
+    cursor: pointer;
+}
+.leave-cluster:hover {
+    text-decoration: underline;
+}
+
+.pct-light {
+    height: 24px;
+}
 
 /* END CODE FOR CLUSTER CONTENT */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#container {
-    margin:0 auto;
-    width:900px;
-    background:#fff;
+/* CODE FOR RING CONTENT */
+#ring-filter {
+    padding-top: 20px;
 }
 
-input.field {
-    border:1px solid lightgray;
-    outline:none;
-    padding:4px;
+#ring-table {
+    margin-bottom: 75px;
 }
 
+#ring-table .partition td {
+    padding: 2px 2px 0;
+    height: 45px;
+}
 
+#ring-table .partition td.owner-box {
+    padding-right: 15px;
+}
 
-/*
- * RING STYLE
- */
+#ring-table .partition td.partition-number {
+    width: 20px;
+    padding: 2px 5px 2px 7px;
+}
+
+#ring-table .partition:hover {
+    background: url(/admin/ui/images/node-bg.png) left top repeat transparent;
+    background: rgba(255,255,255,.1);
+}
+
+.owner {
+    padding: 8px 2px;
+    height: 22px;
+}
+
+.kv-box, .pipe-box, .search-box {
+    width: 100px;
+}
 
 #ring-table div {
-    padding:2px 0 2px 0;
     cursor:pointer;
     cursor:hand;
 }
@@ -525,25 +657,32 @@ input.field {
     font-color:#000;
 }
 
-#ring-table div:hover {
-    background:#fe9925;
+#no-matches td {
+    padding-top: 12px;
 }
 
+
+/* END CODE FOR RING CONTENT*/
+
+
+
+
+
 /* CASCADING STYLES */
-.left     {float: left;}
-.right    {float: right;}
-.clear    {clear: both;}
-.clearl   {clear: left;}
-.clearr   {clear: right;}
-.block    {display: block;}
-.inline   {display: inline;}
-.inblock  {display: inline-block;}
-.has-cut  {background: url(/admin/ui/cut-bg.png) left bottom repeat-x transparent;}
-.hide     {display: none;}
-.monospace{font-family: menlo, monospace;}
+.left      {float: left;}
+.right     {float: right;}
+.clear     {clear: both;}
+.clearl    {clear: left;}
+.clearr    {clear: right;}
+.block     {display: block;}
+.inline    {display: inline;}
+.inblock   {display: inline-block;}
+.has-cut   {background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;}
+.hide      {display: none;}
+.monospace {font-family: menlo, monospace;}
 
 .blue-link:hover {color: #9edad6; cursor: pointer;}
 .underline:hover {text-decoration: underline;}
 
 .disabled, .down {opacity: .5; filter: alpha(opacity=50);}
-.offline  {color: #e85252;}
+.offline, .unreachable  {color: #e85252;}

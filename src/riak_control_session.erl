@@ -39,34 +39,16 @@
          code_change/3
         ]).
 
--type version()  :: integer().
--type index()    :: binary().
--type status()   :: valid | invalid | down | leaving.
--type home()     :: primary | fallback | undefined.
--type service()  :: atom().
--type services() :: [{service(),home()}].
--type owner()    :: atom().
--type vnode()    :: {{atom(),atom()},atom()}.
--type online()   :: boolean().
+%% record definitions
+-include_lib("riak_control/include/riak_control.hrl").
 
--type partition() :: { index(),    % 160-bit hash index
-                       integer(),   % [0,n) partition value
-                       owner(),     % owning node
-                       services()   % vnodes and their status
-                     }.
-
--type node_status() :: { atom(),    % name of the node
-                         status(),  % current status of the node
-                         online(),  % true if the node is reachable
-                         [vnode()]  % list of vnode workers
-                       }.
-
--record(state, { vsn        :: version(),
-                 services   :: [service()],
-                 ring       :: riak_core_ring:riak_core_ring(),
-                 partitions :: [partition()],
-                 nodes      :: [node_status()]
-               }).
+-record(state,
+        { vsn         :: version(),
+          services    :: [service()],
+          ring        :: riak_core_ring:riak_core_ring(),
+          partitions  :: [tuple()],
+          nodes       :: [tuple()]
+        }).
 
 %% hack: periodically update the ring with itself
 -define(INTERVAL, 3000).
@@ -190,7 +172,7 @@ update_ring (State,Ring) ->
 %% update the state cache with node status information
 update_nodes (State=#state{ring=Ring}) ->
     Members=riak_core_ring:all_member_status(Ring),
-    Nodes=[get_member_info(Member) || Member <- Members],
+    Nodes=[get_member_info(Member,Ring) || Member <- Members],
     State#state{nodes=Nodes}.
 
 %% update the state information with partitions
@@ -200,50 +182,69 @@ update_partitions (State=#state{ring=Ring}) ->
     State#state{partitions=Partitions}.
 
 %% ping a node and get all its vnode workers at the same time
-get_member_info (_Member={Node,Status}) ->
+get_member_info (_Member={Node,Status},Ring) ->
+    RingSize=riak_core_ring:num_partitions(Ring),
+
+    %% calculate how much of the ring this node owns vs. targetted
+    Indices=riak_core_ring:indices(Ring,Node),
+    FutureIndices=riak_core_ring:future_indices(Ring,Node),
+    PctRing=length(Indices) / RingSize,
+    PctPending=length(FutureIndices) / RingSize,
+
+    %% try and get a list of all the vnodes running on the node
     case rpc:call(Node,riak_core_vnode_manager,all_vnodes,[]) of
         {badrpc,_Reason} ->
-            {Node,Status,false,[]};
+            #member_info{ node=Node,
+                          status=Status,
+                          reachable=false,
+                          vnodes=[],
+                          ring_pct=PctRing,
+                          pending_pct=PctPending
+                        };
         Vnodes ->
+
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
             %% before the node is actually down and the rpc call will
             %% succeed, but since it's shutting down it won't have any
             %% vnode workers running...
-            {Node,Status,Vnodes =/= [],Vnodes}
+            #member_info{ node=Node,
+                          status=Status,
+                          reachable=Vnodes =/= [],
+                          vnodes=Vnodes,
+                          ring_pct=PctRing,
+                          pending_pct=PctPending
+                        }
     end.
 
 %% return a proplist of details for a given index
 get_partition_details (#state{services=S,nodes=Nodes,ring=R},{Index,Node}) ->
-    case lists:keysearch(Node,1,Nodes) of
-        {value,{_Node,_Status,_Online,Vnodes}} ->
+    case lists:keysearch(Node,2,Nodes) of
+        {value,#member_info{vnodes=Vnodes}} ->
             Statuses=[get_vnode_status(Service,R,Index,Vnodes) || Service <- S],
-            {Index,partition_index(R,Index),Node,Statuses};
+            #partition_info{ index=Index,
+                             partition=partition_index(R,Index),
+                             owner=Node,
+                             vnodes=Statuses
+                           };
         false ->
-            {Index,partition_index(R,Index),Node,[]}
+            #partition_info{ index=Index,
+                             partition=partition_index(R,Index),
+                             owner=Node,
+                             vnodes=[]
+                           }
     end.
 
 %% get the partition number of a given index
 partition_index (Ring,Index) ->
     NumPartitions=riak_core_ring:num_partitions(Ring),
-    Inc=chash:ring_increment(NumPartitions),
-    ((Index div Inc) + 1) rem NumPartitions.
+    Index div chash:ring_increment(NumPartitions).
 
 %% get the current status of a vnode for a given partition
-get_vnode_status (Service,Ring,Index,Vnodes) ->
+get_vnode_status (Service,Ring,Index,_Vnodes) ->
     UpNodes=riak_core_node_watcher:nodes(Service),
     case riak_core_apl:get_apl_ann(<<(Index-1):160>>,1,Ring,UpNodes) of
-        [{{_,_},Status}|_] ->
-            case is_vnode_running(Index,Service,Vnodes) of
-                true -> {Service,Status};
-                false -> {Service,undefined}
-            end;
+        [{{_,_Node},Status}|_] -> {Service,Status};
         [] -> {Service,undefined}
     end.
 
-%% check to see if a particular index vnode worker is running
-is_vnode_running (Index,Service,Vnodes) ->
-    Worker=proplists:get_value(Service,riak_core:vnode_modules()),
-
-    %% just check for any worker vnode that matches the type
-    [P || {T,I,P} <- Vnodes, (T==Worker) and (I==Index)] =/= [].

@@ -42,7 +42,11 @@
                             <tr>
                                 <td id="add-node-box">
                                     <div class="gui-field gui-text">
-                                        <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
+                                        <div class="gui-field-bg">
+                                            <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
+                                        </div>
+                                        <div class="gui-field-cap-left"></div>
+                                        <div class="gui-field-cap-right"></div>
                                     </div>
                                 </td>
                                 <td class="button-column">
@@ -78,7 +82,11 @@
                             </td>
                             <td class="name-box gui-text">
                                 <div class="gui-field gui-text">
-                                    <div class="name gui-field-input"></div>
+                                    <div class="gui-field-bg">
+                                        <div class="name gui-field-input"></div>
+                                    </div>
+                                    <div class="gui-field-cap-left"></div>
+                                    <div class="gui-field-cap-right"></div>
                                 </div>
                             </td>
                             <td class="leave-box gui-text">
@@ -116,78 +124,8 @@
     
     
     
-    
-    
-    
-    
-    
-
-    <!-- page container -->
-    <div id="container">
-        
-        <!-- node context menu -->
-        <!--
-        <div id="cmenu" style="display:none; position:absolute;">
-            <ul>
-                <li><a href="#">Status</a></li>
-                <li><a href="#">Shutdown</a></li>
-                <li><a href="#">Leave Cluster</a></li>
-                <li><a href="#">Mark Down</a></li>
-            </ul>
-        </div>
-        -->        
-        <!-- primary content view -->
-        <div id="content-container">
-        
-    
-            <!-- side panel for node details -->
-            <!--
-            <div id="aside">
-
-                <div id="node-pang-actions" style="display:none">
-                    <input type="button" onclick="down_node()" value="Mark Down">
-                    <p style="margin:10px;">
-                        This node is currently offline. It must be restarted manually
-                        to rejoin the cluster. If some nodes are currently stuck
-                        trying to leave the cluster or handoff data, then marking
-                        this node as 'down' should take care of the problem.
-                    </p>
-                </div>
-                <div id="node-pong-actions" style="display:none">
-                    <input type="button" onclick="stop_node()" value="Shutdown">
-                    <p style="margin:10px;">
-                        This will take the node offline and stop the Riak process
-                        on it. This will <b>not</b> mark the node as 'down'. You
-                        will need to manually restart the node.
-                    </p>
-                </div>
-            </div>--><!-- #aside -->
-    
-            <!-- footer, basho copyright -->
-            <!--
-            <div id="footer">
-                <table width="100%">
-                    <tr>
-                        <td align="left">
-                            <img src="/admin/ui/basho-logo.png">
-                        </td>
-                        <td align="right">
-                            <span style="font-size:small">
-                                Copyright &copy; 2011 <b>Basho Technologies, Inc.</b>
-                                All rights reserved.
-                            </span>
-                        </td>
-                    </tr>
-                </table>
-            </div>--><!-- #footer -->
-
-        </div><!-- #content-container -->
-        
-    </div><!-- #container -->
-    
     <script src="/admin/ui/jquery-1.7.min.js"></script>
     <script src="/admin/ui/jquery-ui-1.8.16.custom.min.js"></script>
-    <script src="/admin/ui/admin.js"></script>
     <script src="/admin/ui/cluster.js"></script>
     <script src="/admin/ui/gui.js"></script>
 </body>

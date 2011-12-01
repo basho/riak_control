@@ -22,30 +22,20 @@
 -module(riak_control_security).
 
 -export([scheme_is_available/2,
-         enforce_auth/2
+         enforce_auth/2,
+         https_redirect_loc/1
         ]).
 
 -include("riak_control.hrl").
 
-%% @doc Intended to be called from a webmachine resource's
-%% service_available function.  The return value is a valid resource
-%% return value (`{Result, ReqData, Context}').
-%%
-%% If the appenv `riak_control:admin_https_only' is `true', this
-%% function checks whether the request came in via HTTPS.  If it did
-%% not, it generates a response to redirect to the same path via HTTPS
-%% (via Location header and code 303).  If the request came in via
-%% HTTPS, or the appenv is set to `false', the request is allowed to
-%% proceed.
--spec scheme_is_available(wrq:reqdata(), term()) ->
-         {true | {halt, 303}, wrq:reqdata(), Ctx::term()}.
+%% if riak_control has an auth scheme selected, then we enforce
+%% use of HTTPS and will redirect the user to the HTTPS version
+%% of the page requested
 scheme_is_available(RD, Ctx) ->
-    case app_helper:get_env(riak_control, admin_https_only, true) of
-        false ->
-            %% make http-is-okay very specific, but https-is-required
-            %% catch-all, for a small bit of config safety
+    case app_helper:get_env(riak_control, auth, none) of
+        none ->
             {true, RD, Ctx};
-        _True ->
+        _ ->
             case wrq:scheme(RD) of
                 https ->
                     {true, RD, Ctx};
@@ -54,17 +44,31 @@ scheme_is_available(RD, Ctx) ->
             end
     end.
 
+%% get the https location to redirect to (callable w/o a request)
+https_redirect_loc (Path) ->
+    case app_helper:get_env(riak_control, enabled, false) of
+        true ->
+            case app_helper:get_env(riak_core, https) of
+                [{Host,Port}|_] ->
+                    {ok,["https://",Host,":",integer_to_list(Port),Path]};
+                _ ->
+                    undefined
+            end;
+        _ ->
+            undefined
+    end.
+
 %% set the redirect header and where to go with it
 https_redirect (RD,Ctx) ->
     Path=wrq:raw_path(RD),
-    Loc=case app_helper:get_env(riak_core, https) of
-            [{Host,Port}|_] ->
-                ["https://",Host,":",integer_to_list(Port),Path];
+    Loc=case https_redirect_loc(Path) of
+            {ok,Dest} ->
+                Dest;
             _ ->
                 Host=string:join(lists:reverse(wrq:host_tokens(RD)),"."),
                 ["https://",Host,Path]
         end,
-    {{halt,303},wrq:set_resp_header("Locatiom",Loc,RD),Ctx}.
+    {{halt,303},wrq:set_resp_header("Location",Loc,RD),Ctx}.
 
 %% @doc Intended to be called from a webmachine resource's
 %% is_authorized function.  The return value is a valid resource
