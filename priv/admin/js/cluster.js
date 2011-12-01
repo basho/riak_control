@@ -229,6 +229,7 @@ $(document).ready(function () {
         var slider = $('.gui-slider', row);
         var slider_leaving = $('.gui-slider-leaving', row);
         set_light_color($('.status-light', row), 'orange');
+        set_light_color($('.pct-light', row), 'gray');
 
         if (textObj.status !== 'Leaving') {
             $('.status', row).text('Leaving');
@@ -244,6 +245,8 @@ $(document).ready(function () {
 
         set_operability_class($('.status', row), 'disabled');
         set_operability_class($('.name', row), 'disabled');
+        set_operability_class($('.ring_pct', row), 'disabled');
+        set_operability_class($('.pending_pct', row), 'disabled');
     }
     
     function set_down_status (row, textObj) {

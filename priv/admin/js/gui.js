@@ -113,7 +113,17 @@ $(function() {
         $('#display-tips').html(str);
         clearTimeout(wait);
     }
+
+    // Cluster link in navigation
+    $(document).on('mouseover', '#nav-cluster', function () {
+        displayTips('The cluster view allows you to add and remove nodes from your cluster as well as stop Riak on various nodes or mark them as down.  You will also be able to view percentages indicating how much ring data is owned by each node.');
+    }).on('mouseout', '#nav-cluster', emptyTips);
     
+    // Ring link in navigation
+    $(document).on('mouseover', '#nav-ring', function () {
+        displayTips('The ring view shows a list of your partitions indicating which node owns each partition.  You have the ability to apply filters to your view of the partitions and see indicators showing the status of various node workers, whether they are in active, fallback, or handoff states.');
+    }).on('mouseout', '#nav-ring table', emptyTips);
+
     // Add new node area
     $(document).on('mouseover', '#add-node table', function () {
         displayTips('Type a node name (for example: dev2@127.0.0.1) and hit "Add Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
@@ -148,6 +158,16 @@ $(function() {
     $(document).on('mouseover', '.shutdown-button', function () {
         displayTips('This button will stop the Riak process on this node.  If this button is not active, your node is already unreachable.  It will have to be restarted manually.');
     }).on('mouseout', '.shutdown-button', emptyTips);
+
+    // Ring ownership percent
+    $(document).on('mouseover', '.ring_pct', function () {
+        displayTips('This number reflects how much of the data in your ring is currently owned by this node.');
+    }).on('mouseout', '.ring_pct', emptyTips);
+
+    // Ring pending ownership percent
+    $(document).on('mouseover', '.pending_pct', function () {
+        displayTips('This number reflects how much of the data in your ring this node will own after all handoffs are complete.');
+    }).on('mouseout', '.pending_pct', emptyTips);
     
     // Node status
     $(document).on('mouseover', '.status-box', function () {

@@ -253,15 +253,18 @@ $(document).ready(function () {
     
         // define a function to check properties against each other
         function keys_are_equal (oldObj, newObj) {
-            var i
-            for (i in oldObj) {
-                if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
-                    if (Object.prototype.toString.call(oldObj[i]) === '[object Object]') {
+            var i; 
+            // loop through the new object because it's more likely to have extra properties
+            for (i in newObj) {
+                // avoid prototypal mistakes
+                if (Object.prototype.hasOwnProperty.call(newObj, i)) {
+                    // we only want to loop through a subobject if we can prove it's JSON for now
+                    if (typeof newObj[i] === 'object' && (oldObj[i] && typeof oldObj[i] === 'object')) {
                         if (!keys_are_equal(oldObj[i], newObj[i])) {
                             return false;
                         }
                     } else {
-                        if (oldObj[i] !== newObj[i]) {
+                        if (!oldObj[i] || oldObj[i] !== newObj[i]) {
                             return false;
                         }
                     }
