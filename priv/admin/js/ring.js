@@ -175,7 +175,7 @@ $(document).ready(function () {
                 }
             }
             for (i in obj.handoffs) {
-                if (Object.prototype.hasOwnProperty.call(obj.handoffs[i])) {
+                if (Object.prototype.hasOwnProperty.call(obj.handoffs, i)) {
                     kind = i.split('_')[1];
                     if (obj.handoffs[i] || obj.handoffs[i] !== 'undefined') {
                         set_light_color($('.' + kind + '-light', row), 'orange');
