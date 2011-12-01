@@ -238,8 +238,7 @@ get_partition_details (#state{services=S,nodes=Nodes,ring=R},{Index,Node}) ->
 %% get the partition number of a given index
 partition_index (Ring,Index) ->
     NumPartitions=riak_core_ring:num_partitions(Ring),
-    Inc=chash:ring_increment(NumPartitions),
-    ((Index div Inc) + 1) rem NumPartitions.
+    Index div chash:ring_increment(NumPartitions).
 
 %% get the current status of a vnode for a given partition
 get_vnode_status (Service,Ring,Index,_Vnodes) ->
