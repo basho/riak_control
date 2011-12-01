@@ -147,7 +147,7 @@ $(document).ready(function () {
         
     function partition_row (infoObj, updateDraw) {
         // called by update_partitions()
-        
+        var partitionIndex = infoObj['index'];
         var owner = infoObj.node;
         var numID = infoObj['i'];
         var row;
@@ -224,6 +224,7 @@ $(document).ready(function () {
             // apply proper text, classes, colors, and whatnot
             $('.partition-number', row).text(numID);
             $('.owner', row).text(owner);
+            $('.partition-index', row).text(partitionIndex);
             deal_with_lights(infoObj, row);
 
             // append the row to the table

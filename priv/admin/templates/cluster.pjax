@@ -1,4 +1,4 @@
-<h1 id="cluster-headline" class="gui-headline-bold">Cluster Overview</h1>
+<h1 id="cluster-headline" class="gui-headline-bold">Cluster View</h1>
 <div id="add-node">
     <h3 class="gui-headline">Add Nodes to the Cluster...</h3>
     <table>

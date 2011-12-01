@@ -103,7 +103,7 @@ $(function() {
             $('#tooltips').slideUp(function() {
                 $('#display-tips').empty();
             });
-        }, 1000);
+        }, 500);
     }
     function displayTips (str) {
         var disp = $('#tooltips').css('display');
@@ -114,6 +114,8 @@ $(function() {
         clearTimeout(wait);
     }
 
+    // Navigation
+
     // Cluster link in navigation
     $(document).on('mouseover', '#nav-cluster', function () {
         displayTips('The cluster view allows you to add and remove nodes from your cluster as well as stop Riak on various nodes or mark them as down.  You will also be able to view percentages indicating how much ring data is owned by each node.');
@@ -122,7 +124,9 @@ $(function() {
     // Ring link in navigation
     $(document).on('mouseover', '#nav-ring', function () {
         displayTips('The ring view shows a list of your partitions indicating which node owns each partition.  You have the ability to apply filters to your view of the partitions and see indicators showing the status of various node workers, whether they are in active, fallback, or handoff states.');
-    }).on('mouseout', '#nav-ring table', emptyTips);
+    }).on('mouseout', '#nav-ring', emptyTips);
+
+    // Cluster View
 
     // Add new node area
     $(document).on('mouseover', '#add-node table', function () {
@@ -140,6 +144,7 @@ $(function() {
         displayTips('Move the slider over to view possible actions for this node.  Move the slider back to hide those actions again.');
     }).on('mouseout', '.more-actions-slider-box .gui-slider', emptyTips);
     
+    // Leave cluster button
     $(document).on('mouseover', '.leave-cluster-button', function () {
         displayTips('This will cause the node to begin relinquishing ownership of its data to other nodes in the cluster.  You will not be able to interact with the node via Riak Control during this process.  Once completed, Riak will shutdown on this node and it will leave the cluster.');
     }).on('mouseout', '.leave-cluster-button', emptyTips);
@@ -161,17 +166,17 @@ $(function() {
 
     // Ring ownership percent
     $(document).on('mouseover', '.ring_pct', function () {
-        displayTips('This number reflects how much of the data in your ring is currently owned by this node.');
+        displayTips('This is the portion of the ring owned by this node.');
     }).on('mouseout', '.ring_pct', emptyTips);
 
     // Ring pending ownership percent
     $(document).on('mouseover', '.pending_pct', function () {
-        displayTips('This number reflects how much of the data in your ring this node will own after all handoffs are complete.');
+        displayTips('This is the desired portion of the ring this node should own.  As long as "% Owned" does not equal "% Pending," it means that this node is either in the process of receiving partition data from other nodes or handing some (or all) of its data off to other nodes.');
     }).on('mouseout', '.pending_pct', emptyTips);
     
     // Node status
     $(document).on('mouseover', '.status-box', function () {
-        var mytext = $(this).find('.status').text();
+        var mytext = $(this).find('.status').text().toLowerCase();
         if (mytext === 'valid') {
             displayTips('This node is currently online and working.');
         } else if (mytext === 'unreachable') {
@@ -182,6 +187,36 @@ $(function() {
             displayTips('This node is in process of leaving the cluster.  When it has finished relinquishing ownership and transferring data to other nodes, Riak will stop on this node and it will cease to be a member of the cluster.  You can not interact with this node during this process.');
         }
     }).on('mouseout', '.status-box', emptyTips);
+
+    // Ring View
+
+    // Partition owner
+    $(document).on('mouseover', '.owner', function () {
+        var partitionIndex = $(this).next().text();
+        displayTips('The name of the node that owns this partition. (Partition Index: ' + partitionIndex + ')');
+    }).on('mouseout', '.owner', emptyTips);
+
+    // Worker Lights
+    $(document).on('mouseover', '.kv-light, .pipe-light, .search-light', function () {
+        var that = $(this);
+        var texts;
+
+        if (that.hasClass('kv-light')) {
+            texts = {"status": that.find('.kv-status').text().toLowerCase(), "msg" : "Key-Value Store: "};
+        } else if (that.hasClass('pipe-light')) {
+            texts = {"status": that.find('.pipe-status').text().toLowerCase(), "msg" : "Pipeline Queue Process: "};
+        } else if (that.hasClass('search-light')) {
+            texts = {"status": that.find('.search-status').text().toLowerCase(), "msg" : "Riak Search: "};
+        }
+
+        if (texts.status === 'active') {
+            displayTips(texts.msg + 'This node worker is active and ready.');
+        } else if (texts.status === 'fallback') {
+            displayTips(texts.msg + 'This node worker is not currently active.  This may be because its owner node is down or unreachable.  Operations normally handled by this node are currently in fallback to another node.');
+        } else if (texts.status === 'handoff') {
+            displayTips(texts.msg + 'This node worker is currently in the process of handing off its data to other nodes.');
+        }
+    }).on('mouseout', '.kv-light, .pipe-light, .search-light', emptyTips);
     
     
         

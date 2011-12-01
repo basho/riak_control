@@ -18,7 +18,7 @@
 </div>
 
 <h1 id="ring-headline" class="gui-headline-bold has-cut">
-    Ring 
+    Ring View
     <span id="total-number" class="gui-text"></span>
 </h1>
 
@@ -51,19 +51,29 @@
             <div class="gui-field gui-text">
                 <div class="gui-field-bg">
                     <div class="owner gui-field-input"></div>
+                    <div class="partition-index hide"></div>
                 </div>
                 <div class="gui-field-cap-left"></div>
                 <div class="gui-field-cap-right"></div>
             </div>
         </td>
         <td class="kv-box gui-text">
-            <a class="gui-light kv-light"><span class="kv-status">Disabled</span></a>
+            <a class="gui-light kv-light">
+                <span class="kv-status">Disabled</span>
+                <span class="hide fallback-to"></span>
+            </a>
         </td>
         <td class="pipe-box gui-text">
-            <a class="gui-light pipe-light"><span class="pipe-status">Disabled</span></a>
+            <a class="gui-light pipe-light">
+                <span class="pipe-status">Disabled</span>
+                <span class="hide fallback-to"></span>
+            </a>
         </td>
         <td class="search-box gui-text">
-            <a class="gui-light search-light"><span class="search-status">Disabled</span></a>
+            <a class="gui-light search-light">
+                <span class="search-status">Disabled</span>
+                <span class="hide fallback-to"></span>
+            </a>
         </td>
     </tr>
 </table>

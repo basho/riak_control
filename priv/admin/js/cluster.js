@@ -356,7 +356,7 @@ $(document).ready(function () {
         if ($('.ring_pct', row).text() !== $('.pending_pct', row).text() && status !== 'leaving') {
             set_light_color($('.status-light', row), 'orange');
         } else {
-            if (status !== 'leaving' && node.reachable && status !== 'down') {
+            if (node.reachable && status !== 'leaving' && status !== 'joining' && status !== 'down') {
                 set_light_color($('.status-light', row), 'green');
             }
         }
