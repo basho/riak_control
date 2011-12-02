@@ -510,7 +510,12 @@ ul.bulleted li {
 #healthy-cluster {
     text-align: left;
     background: url(/admin/ui/images/healthy-cluster.png) left top no-repeat transparent;
-    padding: 100px 0 175px 333px;
+    padding: 100px 0 175px 343px;
+}
+#unhealthy-cluster {
+    text-align: left;
+    background: url(/admin/ui/images/unhealthy-cluster.png) left top no-repeat transparent;
+    padding: 75px 0 200px 343px;
 }
 /* END CODE FOR OVERVIEW CONTENT*/
 
