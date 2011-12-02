@@ -236,7 +236,7 @@ h3.no-pad {
     opacity: .3;
     filter: alpha(opacity=30);
 }
-#nav-overview  {background-position:14px -344px;}
+#nav-snapshot  {background-position:14px -344px;}
 #nav-cluster   {background-position:14px 10px;}
 #nav-ring      {background-position:14px -39px;}
 #nav-objects   {background-position:14px -90px;}
@@ -506,7 +506,7 @@ ul.bulleted li {
 /* END CODE FOR GENERAL CONTENT WELL */
 
 
-/* CODE FOR OVERVIEW CONTENT */
+/* CODE FOR SNAPSHOT CONTENT */
 #healthy-cluster {
     text-align: left;
     background: url(/admin/ui/images/healthy-cluster.png) left top no-repeat transparent;
@@ -517,7 +517,7 @@ ul.bulleted li {
     background: url(/admin/ui/images/unhealthy-cluster.png) left top no-repeat transparent;
     padding: 75px 0 200px 343px;
 }
-/* END CODE FOR OVERVIEW CONTENT*/
+/* END CODE FOR SNAPSHOT CONTENT*/
 
 
 /* CODE FOR CLUSTER CONTENT */

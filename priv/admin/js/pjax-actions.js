@@ -27,15 +27,15 @@ $(function () {
         }
     }
     
-    // Call the overview page by default on docready
-    grabPjax('/admin/ui/templates/overview.pjax', function () {
-        appendScript('#overview-script', '/admin/ui/js/overview.js');
+    // Call the snapshot page by default on docready
+    grabPjax('/admin/ui/templates/snapshot.pjax', function () {
+        appendScript('#snapshot-script', '/admin/ui/js/snapshot.js');
     });
 
-    // Calling the overview page on nav click...
-    $('#nav-overview').on('click', function () {
-        return grabPjax('/admin/ui/templates/overview.pjax', function () {
-            appendScript('#overview-script', '/admin/ui/js/overview.js');
+    // Calling the snapshot page on nav click...
+    $('#nav-snapshot').on('click', function () {
+        return grabPjax('/admin/ui/templates/snapshot.pjax', function () {
+            appendScript('#snapshot-script', '/admin/ui/js/snapshot.js');
         });
     });
 

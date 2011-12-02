@@ -1,6 +1,13 @@
 $(document).ready(function () {
 
 	function unhealthy_cluster(obj) {
+		var i;
+		for (i in obj) {
+			if (Object.prototype.hasOwnProperty.call(obj, i)) {
+				
+			}
+		}
+
 		$('#unhealthy-cluster').show();
 	}
 
