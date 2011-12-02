@@ -27,9 +27,16 @@ $(function () {
         }
     }
     
-    // Call the cluster page by default on docready
-    grabPjax('/admin/ui/templates/cluster.pjax', function () {
-        appendScript('#cluster-script', '/admin/ui/js/cluster.js');
+    // Call the overview page by default on docready
+    grabPjax('/admin/ui/templates/overview.pjax', function () {
+        appendScript('#overview-script', '/admin/ui/js/overview.js');
+    });
+
+    // Calling the overview page on nav click...
+    $('#nav-overview').on('click', function () {
+        return grabPjax('/admin/ui/templates/overview.pjax', function () {
+            appendScript('#overview-script', '/admin/ui/js/overview.js');
+        });
     });
 
     // Calling the cluster page on nav click...

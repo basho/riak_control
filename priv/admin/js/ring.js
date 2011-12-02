@@ -1,5 +1,4 @@
 // polls the ring status every so often
-var global = 0;
 $(document).ready(function () {
 
     function initialize () {
