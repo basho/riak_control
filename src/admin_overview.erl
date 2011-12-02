@@ -76,4 +76,4 @@ get_low_mem_nodes (Nodes) ->
     Filter=fun (#member_info{mem_total=Total,mem_used=Used}) ->
                    Used/Total > LowMemFree
            end,
-    [Node || Node <- Nodes, Filter(Node)].
+    [Node#member_info.node || Node <- Nodes, Filter(Node)].
