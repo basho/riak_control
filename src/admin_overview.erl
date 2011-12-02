@@ -57,7 +57,8 @@ content_types_provided (Req,C) ->
 to_json (Req,C) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     Json=[{unreachable_nodes, get_unreachable_nodes(Nodes)},
-          {down_nodes, get_down_nodes(Nodes)}
+          {down_nodes, get_down_nodes(Nodes)},
+          {low_mem_nodes, get_low_mem_nodes(Nodes)}
          ],
     {mochijson2:encode({struct,Json}),Req,C}.
 
@@ -68,3 +69,11 @@ get_unreachable_nodes (Nodes) ->
 %% get a list of all nodes currently marked down
 get_down_nodes (Nodes) ->
     [Node || #member_info{node=Node,status=down} <- Nodes].
+
+%% get a list of all nodes with low memory
+get_low_mem_nodes (Nodes) ->
+    LowMemFree=app_helper:get_env(riak_control,low_mem_watermark,0.8),
+    Filter=fun (#member_info{mem_total=Total,mem_used=Used}) ->
+                   Used/Total > LowMemFree
+           end,
+    [Node#member_info.node || Node <- Nodes, Filter(Node)].
