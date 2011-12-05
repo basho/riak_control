@@ -326,5 +326,13 @@ $(document).ready(function () {
     
     // Start everything on initial load
     initialize();
+
+    // Subscribe to the 'templateSwitch' event.
+    // This function will run when a template is switched.
+    $.riakControl.sub('templateSwitch', function (templateName) {
+        if (templateName === 'ring') {
+            initialize();
+        }
+    });
     
 });

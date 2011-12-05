@@ -121,6 +121,11 @@ $(function() {
 
     // Navigation
 
+    // Basho Logo
+    $(document).on('mouseover', '#basho-logo', function () {
+        displayTips('Riak and Riak Control are products of Basho Technologies.  Visit our website to learn more.');
+    }).on('mouseout', '#basho-logo', emptyTips);
+
     // Cluster link in navigation
     $(document).on('mouseover', '#nav-cluster', function () {
         displayTips('The cluster view allows you to add and remove nodes from your cluster as well as stop Riak on various nodes or mark them as down.  You will also be able to view percentages indicating how much ring data is owned by each node.');
@@ -131,11 +136,16 @@ $(function() {
         displayTips('The ring view shows a list of your partitions indicating which node owns each partition.  You have the ability to apply filters to your view of the partitions and see indicators showing the status of various node workers, whether they are in active, fallback, or handoff states.');
     }).on('mouseout', '#nav-ring', emptyTips);
 
+    // Snapshot link in navigation
+    $(document).on('mouseover', '#nav-snapshot', function () {
+        displayTips('Selecting the snapshot view commands Riak Control to gather some general information related to the current health of your cluster.  It is useful in quickly determining whether or not there are any issues to be concerned about.');
+    }).on('mouseout', '#nav-snapshot', emptyTips);
+
     // Cluster View
 
     // Add new node area
     $(document).on('mouseover', '#add-node table', function () {
-        displayTips('Type a node name (for example: dev2@127.0.0.1) and hit "Add Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
+        displayTips('Type a node name (for example: dev2@127.0.0.1) into the text field and hit "Add Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
     }).on('mouseout', '#add-node table', emptyTips);
     
     // Name of a node
@@ -194,6 +204,11 @@ $(function() {
     }).on('mouseout', '.status-box', emptyTips);
 
     // Ring View
+
+    // Ring filter
+    $(document).on('mouseover', '#ring-filter', function () {
+        displayTips('Select a node from the dropdown to view only the partitions owned by that node.  If you uncheck the boxes next to "Primary" or "Fallback", partitions in primary or fallback states will be removed from the view.');
+    }).on('mouseout', '#ring-filter', emptyTips);
 
     // Partition owner
     $(document).on('mouseover', '.owner', function () {
