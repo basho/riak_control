@@ -6,6 +6,8 @@ $(document).ready(function () {
 
     var stopping = {};
 
+    var pingAllowed = true;
+
 
 
 
@@ -28,6 +30,10 @@ $(document).ready(function () {
     // as well.
     $(document).on('initSlider', '.gui-slider-groove', function () {
         $(this).slider({
+            start : function () {
+                // Disallow pings while the slider handle is dragging
+                pingAllowed = false;
+            },
             slide : function() {
                 var me = $(this);
                 var myMsg = me.parent().find('.gui-slider-msg');
@@ -42,6 +48,8 @@ $(document).ready(function () {
                 var handlePos = myHandle.css('left');
                 var node = $(this).closest('tr').find('.name').text();
                 var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
+                // Re-allow pings when we let go of the slider handle
+                pingAllowed = true;
                 if (handlePos === '100%') {
                     //leave_cluster(node);
                     open_sibling_row(siblingRowID, node);
@@ -82,7 +90,7 @@ $(document).ready(function () {
         if (handlePos < 100) {
             myHandle.animate({left:'100%'},{
                 queue:false,
-                duration:1000,
+                duration:200,
                 complete:function () {
                     var node = $(this).closest('tr').find('.name').text();
                     var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
@@ -181,7 +189,6 @@ $(document).ready(function () {
     }
 
     function down_node (node) {
-
         perform_node_action('/admin/cluster/down/' + (node || this_node))
     }
 
@@ -297,7 +304,6 @@ $(document).ready(function () {
             set_operability_class($('.ring_pct', row), 'normal');
             set_operability_class($('.pending_pct', row), 'normal');
 
-            //set_light_color($('.status-light', row), 'green');
         }
     }
     
@@ -327,7 +333,6 @@ $(document).ready(function () {
             $('.status', row).text('Valid');
         }
         set_operability_class($('.name', row), 'normal');
-        //set_light_color($('.status-light', row), 'green');
     }
 
     function round_pct (num, decPlaces) {
@@ -466,7 +471,7 @@ $(document).ready(function () {
 
     function ping_cluster_status () {
         setTimeout(function () {
-            if ($('#cluster-headline').length) {
+            if ($('#cluster-headline').length && pingAllowed === true) {
                 get_cluster_status();
             } else {
                 ping_cluster_status();

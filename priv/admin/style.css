@@ -451,7 +451,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     position: absolute;
     top: 2px;
     left: 36px;
-    padding-top: 6px;
+    padding: 6px 0 8px;
 }
 .gui-slider-msg.isLeft {display: block; left: 43px;}
 .gui-slider-msg.isRight {display: none; left: 18px;}

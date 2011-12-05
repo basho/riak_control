@@ -5,7 +5,7 @@ $(document).ready(function () {
 		
 		$('#unhealthy-cluster').show();
 
-		console.log(obj);
+		//console.log(obj);
 
 		if (obj.down_nodes.length) {
 			$('#down-nodes-title, #down-nodes-list').show();
