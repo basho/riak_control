@@ -72,8 +72,5 @@ get_down_nodes (Nodes) ->
 
 %% get a list of all nodes with low memory
 get_low_mem_nodes (Nodes) ->
-    LowMemFree=app_helper:get_env(riak_control,low_mem_watermark,0.8),
-    Filter=fun (#member_info{mem_total=Total,mem_used=Used}) ->
-                   Used/Total > LowMemFree
-           end,
-    [Node#member_info.node || Node <- Nodes, Filter(Node)].
+    LWM=app_helper:get_env(riak_control,low_mem_watermark,0.8),
+    [Node || #member_info{node=Node,reachable=true,mem_total=T,mem_used=U} <- Nodes, U/T > LWM].
