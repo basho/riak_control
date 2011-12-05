@@ -1,9 +1,10 @@
 // polls the ring status every so often
 
-
 $(document).ready(function () {
 
     var this_node = undefined;
+
+    var stopping = {};
 
 
 
@@ -180,10 +181,12 @@ $(document).ready(function () {
     }
 
     function down_node (node) {
+
         perform_node_action('/admin/cluster/down/' + (node || this_node))
     }
 
     function stop_node (node) {
+        stopping[node] = true;
         perform_node_action('/admin/node/' + (node || this_node) + '/stop');
     }
 
@@ -344,6 +347,12 @@ $(document).ready(function () {
         node.ring_pct = round_pct(node.ring_pct * 100, 1) + '%';
         node.pending_pct = round_pct(node.pending_pct * 100, 1) + '%';
 
+        if (!node.reachable) {
+            // Once a node actually shows up as being unreachable we can
+            // unflag it as a node that is currently stopping.
+            delete stopping[texts.name];
+        }
+
         if (texts.name !== node.name) {
             $('.name', row).text(node.name);
         }
@@ -356,7 +365,11 @@ $(document).ready(function () {
         if ($('.ring_pct', row).text() !== $('.pending_pct', row).text() && status !== 'leaving') {
             set_light_color($('.status-light', row), 'orange');
         } else {
-            if (node.reachable && status !== 'leaving' && status !== 'joining' && status !== 'down') {
+            if (node.reachable &&
+                status !== 'leaving' &&
+                status !== 'joining' &&
+                status !== 'down' &&
+                !stopping[texts.name]) {
                 set_light_color($('.status-light', row), 'green');
             }
         }
@@ -368,7 +381,7 @@ $(document).ready(function () {
             set_host_node_status(row, texts);
         } else {
             // handle colors and operability
-            if (status === 'valid') {
+            if (status === 'valid' && !stopping[texts.name]) {
                 if (node.reachable === true) {
                     set_valid_reachable_status(row, texts);
                 } else {

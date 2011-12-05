@@ -11,6 +11,11 @@ $(function() {
             $('#add-node-button').trigger('click');
         }
     });
+
+    /* MAKE ALL CLOSE ERROR BUTTONS WORK */
+    $(document).on('click', '.close-error', function () {
+        $(this).parent().hide();
+    });
     
 
     /* ENABLE THE SPLIT BAR */

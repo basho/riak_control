@@ -590,6 +590,18 @@ ul.bulleted li {
 #node-error .error-text {letter-spacing: 1px;}
 #node-error .error-link {font-size: 13px;}
 
+.close-error {
+    background: url(/admin/ui/images/close-error.png) left top no-repeat transparent;
+    padding: 0 10px;
+    opacity: .4;
+    filter: alpha(opacity=40);
+    cursor: pointer;
+}
+.close-error:hover {
+    opacity: .7;
+    filter: alpha(opacity=70);
+}
+
 .current-host {
     padding: 7px 0 0 5px;
     text-align: center;
