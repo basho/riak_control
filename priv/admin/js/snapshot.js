@@ -1,14 +1,35 @@
 $(document).ready(function () {
 
 	function unhealthy_cluster(obj) {
-		var i;
-		for (i in obj) {
-			if (Object.prototype.hasOwnProperty.call(obj, i)) {
-				
+		var i, l;
+		
+		$('#unhealthy-cluster').show();
+
+		console.log(obj);
+
+		if (obj.down_nodes.length) {
+			$('#down-nodes-title, #down-nodes-list').show();
+			l = obj.down_nodes.length;
+			for (i = 0; i < l; i += 1) {
+				$('#down-nodes-list').append('<li name="' + obj.down_nodes[i] + '"><a class="go-to-cluster">' + obj.down_nodes[i] + '</a></li>');
 			}
 		}
 
-		$('#unhealthy-cluster').show();
+		if (obj.unreachable_nodes.length) {
+			$('#unreachable-nodes-title, #unreachable-nodes-list').show();
+			l = obj.unreachable_nodes.length;
+			for (i = 0; i < l; i += 1) {
+				$('#unreachable-nodes-list').append('<li name=' + obj.unreachable_nodes[i] + '><a class="go-to-cluster">' + obj.unreachable_nodes[i] + '</a></li>');
+			}
+		}
+
+		if (obj.low_mem_nodes.length) {
+			$('#low-mem-nodes-title, #low-mem-nodes-list').show();
+			l = obj.low_mem_nodes.length;
+			for (i = 0; i < l; i += 1) {
+				$('#low-mem-nodes-list').append('<li name=' + obj.low_mem_nodes[i] + '><a class="go-to-cluster">' + obj.low_mem_nodes[i] + '</a></li>');
+			}
+		}
 	}
 
 	function healthy_cluster(obj) {
@@ -50,5 +71,13 @@ $(document).ready(function () {
 	}
 
 	initialize();
+
+	// Subscribe to the 'templateSwitch' event.
+	// This function will run when a template is switched.
+	$.riakControl.sub('templateSwitch', function (templateName) {
+		if (templateName === 'snapshot') {
+			initialize();
+		}
+	});
 
 });
