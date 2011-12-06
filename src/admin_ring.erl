@@ -27,7 +27,8 @@
          service_available/2
         ]).
 
-%% webmachine dependencies
+%% riak_control and webmachine dependencies
+-include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
@@ -62,8 +63,9 @@ content_types_provided (Req,C) ->
 
 %% valid | invalid | joining | leaving | exiting
 to_json (Req,C={Partitions,Filter}) ->
+    {ok,_V,Nodes}=riak_control_session:get_nodes(),
     PS=filter_partitions(Req,Partitions,Filter),
-    Details=[{struct,node_ring_details(P)} || P <- PS],
+    Details=[{struct,node_ring_details(P,Nodes)} || P <- PS],
     {mochijson2:encode(Details),Req,C}.
 
 %% filter a ring based on a given filter name
@@ -76,9 +78,30 @@ filter_partitions (_Req,_PS,_) ->
     [].
 
 %% return a proplist of details for a given index
-node_ring_details (_P={Index,I,OwnerNode,Vnodes}) ->
-    [{index,Index},
-     {i,I},
-     {node,OwnerNode},
-     {vnodes,Vnodes}
-    ].
+node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
+    {ok,Hoffs}=riak_core_handoff_manager:get_handoffs(Index),
+
+    %% lookup the owner in the node list to get its status
+    case lists:keyfind(P#partition_info.owner,2,Nodes) of
+        #member_info{node=Node,status=Status,reachable=Reachable} ->
+            [{index,list_to_binary(integer_to_list(Index))},
+             {i,P#partition_info.partition},
+             {node,Node},
+             {status,Status},
+             {reachable,Reachable},
+             {vnodes,Vnodes},
+             {handoffs,{struct,vnode_handoffs(Hoffs)}}
+            ];
+        false -> []
+    end.
+
+%% determine the status for each vnode worker and if there's a handoff
+vnode_handoffs (Hoffs) ->
+    lists:foldl(fun ({Service,Worker},Acc) ->
+                        case proplists:get_value(Worker,Hoffs) of
+                            undefined -> Acc;
+                            Target -> [{Service,Target}|Acc]
+                        end
+                end,
+                [],
+                riak_core:vnode_modules()).
