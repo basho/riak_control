@@ -1,4 +1,4 @@
-<h1 id="cluster-headline" class="gui-headline-bold">Current Snapshot...</h1>
+<h1 id="snapshot-headline" class="gui-headline-bold">Current Snapshot...</h1>
 <div id="healthy-cluster" class="hide">
     <h2 class="gui-headline-bold has-cut">Your cluster is healthy.</h2>
     <h3 class="gui-headline vertical-padding-small">You currently have...</h3>

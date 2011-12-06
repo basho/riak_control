@@ -1,44 +1,80 @@
 $(document).ready(function () {
 
+	var pingAllowed = true;
+
+	var previousProblems = {
+		"down" : {},
+		"unreachable" : {},
+		"low_mem" : {}
+	};
+
+	function byId(str) {
+		return document.getElementById(str);
+	}
+
 	function unhealthy_cluster(obj) {
-		var i, l;
+		var i, l, newProblems = {
+			"down" : {},
+			"unreachable" : {},
+			"low_mem" : {}
+		};
 		
-		$('#unhealthy-cluster').show();
+		if ($('#healthy-cluster').css('display') === 'block') {
+			$('#healthy-cluster').hide();
+		}
+		if ($('#unhealthy-cluster').css('display') === 'none') {
+			$('#unhealthy-cluster').show();
+		}
 
-		//console.log(obj);
-
-		if (obj.down_nodes.length) {
-			$('#down-nodes-title, #down-nodes-list').show();
-			l = obj.down_nodes.length;
-			for (i = 0; i < l; i += 1) {
-				$('#down-nodes-list').append('<li name="' + obj.down_nodes[i] + '"><a class="go-to-cluster">' + obj.down_nodes[i] + '</a></li>');
+		function cycle_problems(category) {
+			var cat = category + '_nodes', len = obj[cat].length, i;
+			if (len) {
+				$('#' + category + '-nodes-title, #' + category + '-nodes-list').show();
+				for (i = 0; i < len; i += 1) {
+					if (!byId(category + '_' + obj[cat][i])) {
+						$('#' + category + '-nodes-list').append('<li id="' + category + '_' + obj[cat][i] + '"><a class="go-to-cluster">' + obj[cat][i] + '</a></li>');
+					}
+					newProblems[category][obj[cat][i]] = true;
+				}
+				for (i in previousProblems[category]) {
+					if (Object.prototype.hasOwnProperty.call(previousProblems[category], i)) {
+						if (!newProblems[category][i]) {
+							byId(category + '_' + i).parentNode.removeChild(byId(category + '_' + i));
+						}
+					}
+				}
+			} else {
+				$('#' + category + '-nodes-list').empty();
+				$('#' + category + '-nodes-title, #' + category + '-nodes-list').hide();
 			}
 		}
 
-		if (obj.unreachable_nodes.length) {
-			$('#unreachable-nodes-title, #unreachable-nodes-list').show();
-			l = obj.unreachable_nodes.length;
-			for (i = 0; i < l; i += 1) {
-				$('#unreachable-nodes-list').append('<li name=' + obj.unreachable_nodes[i] + '><a class="go-to-cluster">' + obj.unreachable_nodes[i] + '</a></li>');
-			}
-		}
+		cycle_problems('down');
+		cycle_problems('unreachable');
+		cycle_problems('low_mem');
 
-		if (obj.low_mem_nodes.length) {
-			$('#low-mem-nodes-title, #low-mem-nodes-list').show();
-			l = obj.low_mem_nodes.length;
-			for (i = 0; i < l; i += 1) {
-				$('#low-mem-nodes-list').append('<li name=' + obj.low_mem_nodes[i] + '><a class="go-to-cluster">' + obj.low_mem_nodes[i] + '</a></li>');
-			}
-		}
+		previousProblems = newProblems;
+
+		ping_overview_data();
 	}
 
 	function healthy_cluster(obj) {
-		$('#healthy-cluster').show();
+		if ($('#unhealthy-cluster').css('display') === 'block') {
+			$('#unhealthy-cluster').hide();
+		}
+		if ($('#healthy-cluster').css('display') === 'none') {
+			$('#healthy-cluster').show();
+		}
+		ping_overview_data()
 	}
 
 	function ping_overview_data() {
 		setTimeout(function () {
-			get_overview_data();
+			if ($('#snapshot-headline').length && pingAllowed === true) {
+				get_overview_data();
+			} else {
+				pingAllowed = false;
+			}
 		}, 1000);
 	}
 
@@ -76,6 +112,7 @@ $(document).ready(function () {
 	// This function will run when a template is switched.
 	$.riakControl.sub('templateSwitch', function (templateName) {
 		if (templateName === 'snapshot') {
+			pingAllowed = true;
 			initialize();
 		}
 	});
