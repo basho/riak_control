@@ -229,6 +229,10 @@ h3.no-pad {
     padding: 0 0 0 14px;
     height: 48px;
 }
+.nav-li:hover {
+    background-color: #252525;
+    background-color: rgba(0, 0, 0, .3);
+}
 .nav-li-disabled {
     background: url(/admin/ui/images/nav-icons.png) 12px 10px no-repeat transparent;
     padding: 0 0 0 14px;
@@ -253,7 +257,6 @@ h3.no-pad {
     padding: 15px 0 0 40px;
 }
 .nav-li .nav-item:hover {
-    text-shadow: 0 0 3px #fff;
     cursor: pointer;
 }
 /* END CODE FOR NAVIGATION */
