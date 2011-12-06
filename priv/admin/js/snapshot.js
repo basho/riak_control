@@ -20,10 +20,18 @@ $(document).ready(function () {
 		};
 		
 		if ($('#healthy-cluster').css('display') === 'block') {
-			$('#healthy-cluster').hide();
+			$('#healthy-cluster').fadeOut();
 		}
 		if ($('#unhealthy-cluster').css('display') === 'none') {
-			$('#unhealthy-cluster').show();
+			$('#unhealthy-cluster').css({
+				"position" : "absolute",
+				"top" : 0
+			}).fadeIn(function () {
+				$(this).css({
+					"position" : "",
+					"top" : ""
+				})
+			});
 		}
 
 		function cycle_problems(category) {
@@ -60,10 +68,18 @@ $(document).ready(function () {
 
 	function healthy_cluster(obj) {
 		if ($('#unhealthy-cluster').css('display') === 'block') {
-			$('#unhealthy-cluster').hide();
+			$('#unhealthy-cluster').fadeOut();
 		}
 		if ($('#healthy-cluster').css('display') === 'none') {
-			$('#healthy-cluster').show();
+			$('#healthy-cluster').css({
+				"position" : "absolute",
+				"top" : 0
+			}).fadeIn(function () {
+				$(this).css({
+					"position" : "",
+					"top" : ""
+				})
+			});
 		}
 		ping_overview_data()
 	}
@@ -75,7 +91,7 @@ $(document).ready(function () {
 			} else {
 				pingAllowed = false;
 			}
-		}, 1000);
+		}, 5000);
 	}
 
 	function update_overview_data(d) {

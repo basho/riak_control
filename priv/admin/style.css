@@ -742,6 +742,7 @@ ul.bulleted li {
 .monospace {font-family: menlo, monospace;}
 .bold      {font-weight: bold;}
 .emphasize {font-size: 110%;}
+.relative  {position: relative;}
 
 .vertical-padding-small {padding: 10px 0;}
 
