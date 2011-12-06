@@ -132,7 +132,7 @@ $(document).ready(function () {
             success: function (d) {
                 update_cluster_status(d);
             },
-            failure:ping_cluster_status
+            failure: ping_cluster_status
         });
     }
 
@@ -474,7 +474,9 @@ $(document).ready(function () {
             if ($('#cluster-headline').length && pingAllowed === true) {
                 get_cluster_status();
             } else {
-                ping_cluster_status();
+                // If we're no longer on the cluster page, we disallow pinging and
+                // the script dies here.
+                pingAllowed = false;
             }
         }, 1000);
     }
@@ -530,5 +532,14 @@ $(document).ready(function () {
 
     initialize();
     enable_adding();
+
+    // Subscribe to the 'templateSwitch' event.
+    // As soon as we switch back to the cluster page, we re-initialize
+    $.riakControl.sub('templateSwitch', function (templateName) {
+        if (templateName === 'cluster') {
+            pingAllowed = true;
+            initialize();
+        }
+    });
 
 });

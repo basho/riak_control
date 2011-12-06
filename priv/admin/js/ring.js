@@ -1,6 +1,8 @@
 // polls the ring status every so often
 $(document).ready(function () {
 
+    var pingAllowed = true;
+
     function initialize () {
         // Make sure our data holders exist
         $.riakControl.ringData = $.riakControl.ringData || {};
@@ -299,10 +301,11 @@ $(document).ready(function () {
     
     function ping_partitions () {
         setTimeout(function () {
-            if ($('#ring-headline').length) {
+            if ($('#ring-headline').length && pingAllowed === true) {
                 get_partitions();
             } else {
-                ping_partitions();
+                // If we're not on the ring page or pinging is not allowed, the script dies here.
+                pingAllowed = false;
             }
         }, 1000);
     }
@@ -331,6 +334,7 @@ $(document).ready(function () {
     // This function will run when a template is switched.
     $.riakControl.sub('templateSwitch', function (templateName) {
         if (templateName === 'ring') {
+            pingAllowed = true;
             initialize();
         }
     });

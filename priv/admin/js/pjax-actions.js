@@ -21,7 +21,7 @@ $(function () {
             $.riakControl.events[eventName][i].apply(context, argArray);
             counter += 1;
         }
-        return (counter > 0) ? true : false;
+        return (counter > 0);
     };
 
     // General subscribe function.
