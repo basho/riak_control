@@ -11,7 +11,7 @@
 </div>
 
 <div id="unhealthy-cluster" class="hide">
-    <h2 class="gui-headline-bold has-cut">Your cluster has some problems.</h2>
+    <h2 class="gui-headline-bold has-cut">Your cluster has problems.</h2>
 
     <!-- Unreachable Nodes List -->
     <h3 id="unreachable-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently unreachable:</h3>
