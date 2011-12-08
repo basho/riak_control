@@ -124,7 +124,7 @@ h3.no-pad {
     line-height: 1.3;
     vertical-align: middle;
     font-size: 13px;
-    color: #888;
+    color: #999;
 }
 
 
@@ -158,7 +158,8 @@ h3.no-pad {
     background: url(/admin/ui/images/header-bg.png) left top repeat-x transparent;
     height: 67px;
     width: auto;
-    margin: 0 0 22px 0; 
+    margin: 0 0 22px 0;
+    position: relative;
 }
 #riak-control-logo {
     display: block;
@@ -167,6 +168,15 @@ h3.no-pad {
     height: 56px;
     float: left;
     padding: 5px 0 0 12px;
+}
+#basho-logo {
+    background: url(/admin/ui/images/basho-logo.png) left top no-repeat transparent;
+    width: 43px;
+    height: 44px;
+    display: block;
+    position: absolute;
+    top: 12px;
+    right: 12px;
 }
 /* END HEADER PORTION */
 
@@ -219,6 +229,10 @@ h3.no-pad {
     padding: 0 0 0 14px;
     height: 48px;
 }
+.nav-li:hover {
+    background-color: #252525;
+    background-color: rgba(0, 0, 0, .3);
+}
 .nav-li-disabled {
     background: url(/admin/ui/images/nav-icons.png) 12px 10px no-repeat transparent;
     padding: 0 0 0 14px;
@@ -226,6 +240,7 @@ h3.no-pad {
     opacity: .3;
     filter: alpha(opacity=30);
 }
+#nav-snapshot  {background-position:14px -344px;}
 #nav-cluster   {background-position:14px 10px;}
 #nav-ring      {background-position:14px -39px;}
 #nav-objects   {background-position:14px -90px;}
@@ -242,7 +257,6 @@ h3.no-pad {
     padding: 15px 0 0 40px;
 }
 .nav-li .nav-item:hover {
-    text-shadow: 0 0 3px #fff;
     cursor: pointer;
 }
 /* END CODE FOR NAVIGATION */
@@ -440,7 +454,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     position: absolute;
     top: 2px;
     left: 36px;
-    padding-top: 6px;
+    padding: 6px 0 8px;
 }
 .gui-slider-msg.isLeft {display: block; left: 43px;}
 .gui-slider-msg.isRight {display: none; left: 18px;}
@@ -482,8 +496,42 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     padding: 25px 50px 50px;
 }
 
+ul.bulleted {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+ul.bulleted li {
+    padding: 3px 0;
+    line-height: 1.2;
+}
+
 
 /* END CODE FOR GENERAL CONTENT WELL */
+
+
+/* CODE FOR SNAPSHOT CONTENT */
+#healthy-cluster {
+    text-align: left;
+    background: url(/admin/ui/images/healthy-cluster.png) left top no-repeat transparent;
+    padding: 45px 0 175px 343px;
+}
+#unhealthy-cluster {
+    text-align: left;
+    background: url(/admin/ui/images/unhealthy-cluster.png) left top no-repeat transparent;
+    padding: 45px 0 200px 343px;
+}
+
+#unreachable-nodes-list, #down-nodes-list {
+    margin-bottom: 25px;
+}
+
+.go-to-cluster {
+    cursor: pointer;
+}
+.go-to-cluster:hover {
+    text-decoration: underline;
+}
+/* END CODE FOR SNAPSHOT CONTENT*/
 
 
 /* CODE FOR CLUSTER CONTENT */
@@ -555,6 +603,18 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 }
 #node-error .error-text {letter-spacing: 1px;}
 #node-error .error-link {font-size: 13px;}
+
+.close-error {
+    background: url(/admin/ui/images/close-error.png) left top no-repeat transparent;
+    padding: 0 10px;
+    opacity: .4;
+    filter: alpha(opacity=40);
+    cursor: pointer;
+}
+.close-error:hover {
+    opacity: .7;
+    filter: alpha(opacity=70);
+}
 
 .current-host {
     padding: 7px 0 0 5px;
@@ -680,6 +740,11 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
 .has-cut   {background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;}
 .hide      {display: none;}
 .monospace {font-family: menlo, monospace;}
+.bold      {font-weight: bold;}
+.emphasize {font-size: 110%;}
+.relative  {position: relative;}
+
+.vertical-padding-small {padding: 10px 0;}
 
 .blue-link:hover {color: #9edad6; cursor: pointer;}
 .underline:hover {text-decoration: underline;}

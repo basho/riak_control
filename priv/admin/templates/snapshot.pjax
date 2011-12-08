@@ -1,0 +1,30 @@
+<h1 id="snapshot-headline" class="gui-headline-bold">Current Snapshot...</h1>
+<div class="relative">
+    <div id="healthy-cluster" class="hide">
+        <h2 class="gui-headline-bold has-cut">Your cluster is healthy.</h2>
+        <h3 class="gui-headline vertical-padding-small">You currently have...</h3>
+        <ul class="gui-text bulleted">
+            <li><span class="emphasize monospace">0</span> Unreachable nodes</li>
+            <li><span class="emphasize monospace">0</span> Nodes marked as 'down'</li>
+            <li><span class="emphasize monospace">0</span> Nodes experiencing low memory</li>
+            <li>Nothing to worry about because Riak is your friend</li>
+        </ul>
+    </div>
+
+    <div id="unhealthy-cluster" class="hide">
+        <h2 class="gui-headline-bold has-cut">Your cluster has problems.</h2>
+
+        <!-- Unreachable Nodes List -->
+        <h3 id="unreachable-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently unreachable:</h3>
+        <ul id="unreachable-nodes-list" class="gui-text bulleted hide monospace"></ul>
+
+        <!-- Down Nodes List -->
+        <h3 id="down-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently marked as 'down':</h3>
+        <ul id="down-nodes-list" class="gui-text bulleted hide monospace"></ul>
+
+        <!-- Low-Mem Nodes List -->
+        <h3 id="low_mem-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently experiencing low memory:</h3>
+        <ul id="low_mem-nodes-list" class="gui-text bulleted hide monospace"></ul>
+
+    </div>
+</div>

@@ -20,6 +20,7 @@
         </tr>
     </table>
     <div id="node-error" class="hide">
+        <a class="close-error gui-text"></a>
         <a class="error-text offline"></a>
         <a class="error-link gui-text underline" href="#"></a>
     </div>

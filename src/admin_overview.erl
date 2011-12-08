@@ -56,15 +56,25 @@ content_types_provided (Req,C) ->
 %% get a list of all the nodes in the ring and their status
 to_json (Req,C) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Json=[{unreachable_nodes, get_unreachable_nodes(Nodes)},
-          {down_nodes, get_down_nodes(Nodes)}
+    Down=get_down_nodes(Nodes),
+    Unreachable=get_unreachable_nodes(Nodes,Down),
+    LowMem=get_low_mem_nodes(Nodes),
+    Json=[{unreachable_nodes, Unreachable},
+          {down_nodes, Down},
+          {low_mem_nodes, LowMem}
          ],
     {mochijson2:encode({struct,Json}),Req,C}.
 
 %% get a list of all the nodes that are current partitioned
-get_unreachable_nodes (Nodes) ->
-    [Node || #member_info{node=Node,reachable=false} <- Nodes].
+get_unreachable_nodes (Nodes,Down) ->
+    Unreachable=[Node || #member_info{node=Node,reachable=false} <- Nodes],
+    lists:foldl(fun lists:delete/2,Unreachable,Down).
 
 %% get a list of all nodes currently marked down
 get_down_nodes (Nodes) ->
     [Node || #member_info{node=Node,status=down} <- Nodes].
+
+%% get a list of all nodes with low memory
+get_low_mem_nodes (Nodes) ->
+    LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
+    [Node || #member_info{node=Node,reachable=true,mem_total=T,mem_used=U} <- Nodes, 1.0 - (U/T) < LWM].

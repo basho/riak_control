@@ -72,6 +72,9 @@ to_json (Req,C=list) ->
                      {"reachable",Node#member_info.reachable},
                      {"ring_pct",Node#member_info.ring_pct},
                      {"pending_pct",Node#member_info.pending_pct},
+                     {"mem_total",Node#member_info.mem_total},
+                     {"mem_used",Node#member_info.mem_used},
+                     {"mem_erlang",Node#member_info.mem_erlang},
                      {"me",Node#member_info.node == node()}
                     ]}
             || Node=#member_info{} <- Nodes],
