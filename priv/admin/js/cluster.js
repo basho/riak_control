@@ -349,15 +349,13 @@ $(document).ready(function () {
             "ring_pct" : $('.ring_pct', row).text(),
             "pending_pct" : $('.pending_pct', row).text(),
             "mem_erlang" : $('.erlang-mem', row).attr('name'),
-            "mem_non_erlang" : $('.non-erlang-mem'. row).attr('name')
+            "mem_non_erlang" : $('.non-erlang-mem'. row).attr('name'),
+            "mem_free" : parseInt($('.free-memory', row).text())
         };
-        var memdivider = node.mem_total / 100, mem_erlang, mem_non_erlang;
+        var memdivider = node.mem_total / 100, mem_erlang, mem_non_erlang, mem_free;
 
         node.ring_pct = round_pct(node.ring_pct * 100, 0) + '%';
         node.pending_pct = round_pct(node.pending_pct * 100, 0) + '%';
-
-        mem_erlang = Math.ceil(node.mem_erlang / memdivider);
-        mem_non_erlang = Math.round((node.mem_used / memdivider) - mem_erlang);
 
         if (!node.reachable) {
             // Once a node actually shows up as being unreachable we can
@@ -385,11 +383,19 @@ $(document).ready(function () {
                 set_light_color($('.status-light', row), 'green');
             }
         }
+
+        mem_erlang = Math.ceil(node.mem_erlang / memdivider);
+        mem_non_erlang = Math.round((node.mem_used / memdivider) - mem_erlang);
+        mem_free = Math.round((node.mem_total - node.mem_used) / memdivider);
+
         if (texts.mem_erlang !== mem_erlang) {
             $('.erlang-mem', row).attr('name', mem_erlang).css('width', mem_erlang + '%');
         }
         if (texts.mem_non_erlang !== mem_non_erlang) {
             $('.non-erlang-mem', row).attr('name', mem_non_erlang).css('width', mem_non_erlang + '%');
+        }
+        if (texts.mem_free !== mem_free) {
+            $('.free-memory', row).text(mem_free + '% Free');
         }
 
         $('.gui-slider-groove').trigger('initSlider');
