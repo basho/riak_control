@@ -556,14 +556,14 @@ ul.bulleted li {
     width: 90px;
 }
 
-#cluster-table .node td.ring_pct-box,
-#cluster-table .node td.pending_pct-box {
-    width: 100px;
+#cluster-table .node td.ring_pct-box {
+   width: 100px;
 }
 
-#cluster-table .node td.pending_pct-box {
-    padding-right: 6px;
+#cluster-table .node td.memory-box {
+    width: 125px;
 }
+
 
 #cluster-table .node td.pct-light-box {
     width: 25px;
@@ -574,6 +574,7 @@ ul.bulleted li {
 .name, .ring_pct, .pending_pct {
     padding: 8px 2px;
     height: 22px;
+    width: auto;
 }
 
 .status {
@@ -663,6 +664,27 @@ ul.bulleted li {
     height: 24px;
 }
 
+.membar-bg {
+    width: 99px;
+    height: 26px;
+    padding: 2px 2px 0;
+    position: relative;
+}
+.membar-fg {
+    background: url(/admin/ui/images/membar-fg.png) left top no-repeat transparent;
+    width: 101px;
+    height: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.mem-color {
+    height: 25px;
+    opacity: .75;
+}
+.erlang-mem {background: #0da5e4;}
+.non-erlang-mem {background: #4bc534;}
+
 /* END CODE FOR CLUSTER CONTENT */
 
 
@@ -735,6 +757,7 @@ ul.bulleted li {
 .clearl    {clear: left;}
 .clearr    {clear: right;}
 .block     {display: block;}
+.i-block   {display: inline-block;}
 .inline    {display: inline;}
 .inblock   {display: inline-block;}
 .has-cut   {background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;}
@@ -743,6 +766,7 @@ ul.bulleted li {
 .bold      {font-weight: bold;}
 .emphasize {font-size: 110%;}
 .relative  {position: relative;}
+.gray-text {color: #666;}
 
 .vertical-padding-small {padding: 10px 0;}
 
