@@ -23,8 +23,8 @@
         <ul id="down-nodes-list" class="gui-text bulleted hide monospace"></ul>
 
         <!-- Low-Mem Nodes List -->
-        <h3 id="low-mem-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently experiencing low memory:</h3>
-        <ul id="low-mem-nodes-list" class="gui-text bulleted hide monospace"></ul>
+        <h3 id="low_mem-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently experiencing low memory:</h3>
+        <ul id="low_mem-nodes-list" class="gui-text bulleted hide monospace"></ul>
 
     </div>
 </div>
