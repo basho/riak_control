@@ -224,13 +224,42 @@ $(document).ready(function () {
         drawnPartitions = partitions.length;
 
         // define a function to check properties against each other
+        // We're doing it this long, convoluted way to guard against erlang giving
+        // us equal objects where the keys are in a different order
         function keys_are_equal (oldObj, newObj) {
-            var older = JSON.stringify(oldObj);
-            var newer = JSON.stringify(newObj);
-            if (older === newer) {
-                return true;
+            var i; 
+            // loop through the new object because it's more likely to have extra properties
+            for (i in newObj) {
+                // avoid prototypal mistakes
+                if (Object.prototype.hasOwnProperty.call(newObj, i)) {
+                    // we only want to loop through a subobject if we can prove it's JSON for now
+                    if (typeof newObj[i] === 'object' && (oldObj[i] && typeof oldObj[i] === 'object')) {
+                        if (!keys_are_equal(oldObj[i], newObj[i])) {
+                            return false;
+                        }
+                    } else {
+                        if (!oldObj[i] || oldObj[i] !== newObj[i]) {
+                            return false;
+                        }
+                    }
+                }
             }
-            return false;
+            // now run over the old object in case the new object did lose keys
+            for (i in oldObj) {
+                if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
+                    if (typeof oldObj[i] === 'object' && (newObj[i] && typeof newObj[i] === 'object')) {
+                        if (!keys_are_equal(newObj[i], oldObj[i])) {
+                            return false;
+                        }
+                    } else {
+                        if (!newObj[i] || newObj[i] !== oldObj[i]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            //console.log('true');
+            return true;
         }
 
         // for each object in data array...
