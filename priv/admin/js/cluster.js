@@ -130,7 +130,7 @@ $(document).ready(function () {
             url:'/admin/cluster/list',
             dataType:'json',
             success: function (d) {
-                console.log(d);
+                //console.log(d);
                 update_cluster_status(d);
             },
             failure: ping_cluster_status
