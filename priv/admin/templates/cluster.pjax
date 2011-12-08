@@ -81,12 +81,12 @@
             <div class="clear"></div>
         </td>
         <td class="gui-text memory-box">
-            <div class="membar-bg">
-                <div class="erlang-mem mem-color left"></div>
-                <div class="non-erlang-mem mem-color left"></div>
+            <div class="left membar-bg">
+                <div class="erlang-mem mem-color left" name=""></div>
+                <div class="non-erlang-mem mem-color left" name=""></div>
                 <div class="membar-fg"></div>
             </div>
-            <span class="free-memory"></span>
+            <span class="free-memory left"></span>
         </td>
     </tr>
     <tr class="more-node-actions more-actions-template">
