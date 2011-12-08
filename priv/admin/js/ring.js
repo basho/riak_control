@@ -222,7 +222,7 @@ $(document).ready(function () {
         var i, l = data.length,
         partitions = $('.partition').not('.partition-template'),
         drawnPartitions = partitions.length;
-
+    
         // define a function to check properties against each other
         // We're doing it this long, convoluted way to guard against erlang giving
         // us equal objects where the keys are in a different order
