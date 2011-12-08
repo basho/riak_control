@@ -1,9 +1,12 @@
 // polls the ring status every so often
 
-
 $(document).ready(function () {
 
     var this_node = undefined;
+
+    var stopping = {};
+
+    var pingAllowed = true;
 
 
 
@@ -27,6 +30,10 @@ $(document).ready(function () {
     // as well.
     $(document).on('initSlider', '.gui-slider-groove', function () {
         $(this).slider({
+            start : function () {
+                // Disallow pings while the slider handle is dragging
+                pingAllowed = false;
+            },
             slide : function() {
                 var me = $(this);
                 var myMsg = me.parent().find('.gui-slider-msg');
@@ -41,6 +48,8 @@ $(document).ready(function () {
                 var handlePos = myHandle.css('left');
                 var node = $(this).closest('tr').find('.name').text();
                 var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
+                // Re-allow pings when we let go of the slider handle
+                pingAllowed = true;
                 if (handlePos === '100%') {
                     //leave_cluster(node);
                     open_sibling_row(siblingRowID, node);
@@ -81,7 +90,7 @@ $(document).ready(function () {
         if (handlePos < 100) {
             myHandle.animate({left:'100%'},{
                 queue:false,
-                duration:1000,
+                duration:200,
                 complete:function () {
                     var node = $(this).closest('tr').find('.name').text();
                     var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
@@ -123,7 +132,7 @@ $(document).ready(function () {
             success: function (d) {
                 update_cluster_status(d);
             },
-            failure:ping_cluster_status
+            failure: ping_cluster_status
         });
     }
 
@@ -184,6 +193,7 @@ $(document).ready(function () {
     }
 
     function stop_node (node) {
+        stopping[node] = true;
         perform_node_action('/admin/node/' + (node || this_node) + '/stop');
     }
 
@@ -294,7 +304,6 @@ $(document).ready(function () {
             set_operability_class($('.ring_pct', row), 'normal');
             set_operability_class($('.pending_pct', row), 'normal');
 
-            //set_light_color($('.status-light', row), 'green');
         }
     }
     
@@ -324,7 +333,6 @@ $(document).ready(function () {
             $('.status', row).text('Valid');
         }
         set_operability_class($('.name', row), 'normal');
-        //set_light_color($('.status-light', row), 'green');
     }
 
     function round_pct (num, decPlaces) {
@@ -344,6 +352,12 @@ $(document).ready(function () {
         node.ring_pct = round_pct(node.ring_pct * 100, 1) + '%';
         node.pending_pct = round_pct(node.pending_pct * 100, 1) + '%';
 
+        if (!node.reachable) {
+            // Once a node actually shows up as being unreachable we can
+            // unflag it as a node that is currently stopping.
+            delete stopping[texts.name];
+        }
+
         if (texts.name !== node.name) {
             $('.name', row).text(node.name);
         }
@@ -356,7 +370,11 @@ $(document).ready(function () {
         if ($('.ring_pct', row).text() !== $('.pending_pct', row).text() && status !== 'leaving') {
             set_light_color($('.status-light', row), 'orange');
         } else {
-            if (node.reachable && status !== 'leaving' && status !== 'joining' && status !== 'down') {
+            if (node.reachable &&
+                status !== 'leaving' &&
+                status !== 'joining' &&
+                status !== 'down' &&
+                !stopping[texts.name]) {
                 set_light_color($('.status-light', row), 'green');
             }
         }
@@ -368,7 +386,7 @@ $(document).ready(function () {
             set_host_node_status(row, texts);
         } else {
             // handle colors and operability
-            if (status === 'valid') {
+            if (status === 'valid' && !stopping[texts.name]) {
                 if (node.reachable === true) {
                     set_valid_reachable_status(row, texts);
                 } else {
@@ -453,10 +471,12 @@ $(document).ready(function () {
 
     function ping_cluster_status () {
         setTimeout(function () {
-            if ($('#cluster-headline').length) {
+            if ($('#cluster-headline').length && pingAllowed === true) {
                 get_cluster_status();
             } else {
-                ping_cluster_status();
+                // If we're no longer on the cluster page, we disallow pinging and
+                // the script dies here.
+                pingAllowed = false;
             }
         }, 1000);
     }
@@ -512,5 +532,14 @@ $(document).ready(function () {
 
     initialize();
     enable_adding();
+
+    // Subscribe to the 'templateSwitch' event.
+    // As soon as we switch back to the cluster page, we re-initialize
+    $.riakControl.sub('templateSwitch', function (templateName) {
+        if (templateName === 'cluster') {
+            pingAllowed = true;
+            initialize();
+        }
+    });
 
 });

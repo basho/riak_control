@@ -39,6 +39,9 @@
          code_change/3
         ]).
 
+%% private method only used in rpc calls
+-export([get_my_info/0]).
+
 %% record definitions
 -include_lib("riak_control/include/riak_control.hrl").
 
@@ -192,7 +195,7 @@ get_member_info (_Member={Node,Status},Ring) ->
     PctPending=length(FutureIndices) / RingSize,
 
     %% try and get a list of all the vnodes running on the node
-    case rpc:call(Node,riak_core_vnode_manager,all_vnodes,[]) of
+    case rpc:call(Node,riak_control_session,get_my_info,[]) of
         {badrpc,_Reason} ->
             #member_info{ node=Node,
                           status=Status,
@@ -201,21 +204,31 @@ get_member_info (_Member={Node,Status},Ring) ->
                           ring_pct=PctRing,
                           pending_pct=PctPending
                         };
-        Vnodes ->
+        Member_info ->
 
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
             %% before the node is actually down and the rpc call will
             %% succeed, but since it's shutting down it won't have any
             %% vnode workers running...
-            #member_info{ node=Node,
-                          status=Status,
-                          reachable=Vnodes =/= [],
-                          vnodes=Vnodes,
-                          ring_pct=PctRing,
-                          pending_pct=PctPending
-                        }
+            Member_info#member_info{ status=Status,
+                                     ring_pct=PctRing,
+                                     pending_pct=PctPending
+                                   }
     end.
+
+%% run locally per-node, collects information about this node for the session
+get_my_info () ->
+    {Total,Used,_}=memsup:get_memory_data(),
+
+    %% construct the member information for this node
+    #member_info{ node=node(),
+                  reachable=true,
+                  mem_total=Total,
+                  mem_used=Used,
+                  mem_erlang=proplists:get_value(total,erlang:memory()),
+                  vnodes=riak_core_vnode_manager:all_vnodes()
+                }.
 
 %% return a proplist of details for a given index
 get_partition_details (#state{services=S,nodes=Nodes,ring=R},{Index,Node}) ->
