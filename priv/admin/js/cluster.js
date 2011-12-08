@@ -130,6 +130,7 @@ $(document).ready(function () {
             url:'/admin/cluster/list',
             dataType:'json',
             success: function (d) {
+                console.log(d);
                 update_cluster_status(d);
             },
             failure: ping_cluster_status
@@ -346,11 +347,17 @@ $(document).ready(function () {
             "name"   : $('.name', row).text(),
             "slider" : $('.more-actions-slider-box a', row).text(),
             "ring_pct" : $('.ring_pct', row).text(),
-            "pending_pct" : $('.pending_pct', row).text()
+            "pending_pct" : $('.pending_pct', row).text(),
+            "mem_erlang" : $('.erlang-mem', row).attr('name'),
+            "mem_non_erlang" : $('.non-erlang-mem'. row).attr('name')
         };
+        var memdivider = node.mem_total / 100, mem_erlang, mem_non_erlang;
 
-        node.ring_pct = round_pct(node.ring_pct * 100, 1) + '%';
-        node.pending_pct = round_pct(node.pending_pct * 100, 1) + '%';
+        node.ring_pct = round_pct(node.ring_pct * 100, 0) + '%';
+        node.pending_pct = round_pct(node.pending_pct * 100, 0) + '%';
+
+        mem_erlang = Math.ceil(node.mem_erlang / memdivider);
+        mem_non_erlang = Math.round((node.mem_used / memdivider) - mem_erlang);
 
         if (!node.reachable) {
             // Once a node actually shows up as being unreachable we can
@@ -377,6 +384,12 @@ $(document).ready(function () {
                 !stopping[texts.name]) {
                 set_light_color($('.status-light', row), 'green');
             }
+        }
+        if (texts.mem_erlang !== mem_erlang) {
+            $('.erlang-mem', row).attr('name', mem_erlang).css('width', mem_erlang + '%');
+        }
+        if (texts.mem_non_erlang !== mem_non_erlang) {
+            $('.non-erlang-mem', row).attr('name', mem_non_erlang).css('width', mem_non_erlang + '%');
         }
 
         $('.gui-slider-groove').trigger('initSlider');
