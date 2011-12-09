@@ -224,6 +224,8 @@ $(document).ready(function () {
         drawnPartitions = partitions.length;
     
         // define a function to check properties against each other
+        // We're doing it this long, convoluted way to guard against erlang giving
+        // us equal objects where the keys are in a different order
         function keys_are_equal (oldObj, newObj) {
             var i; 
             // loop through the new object because it's more likely to have extra properties
@@ -256,6 +258,7 @@ $(document).ready(function () {
                     }
                 }
             }
+            //console.log('true');
             return true;
         }
 
