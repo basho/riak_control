@@ -386,7 +386,7 @@ $(document).ready(function () {
 
         mem_erlang = Math.ceil(node.mem_erlang / memdivider);
         mem_non_erlang = Math.round((node.mem_used / memdivider) - mem_erlang);
-        mem_free = Math.round((node.mem_total - node.mem_used) / memdivider);
+        mem_free = Math.round((node.mem_total - node.mem_used) / memdivider);;
 
         if (texts.mem_erlang !== mem_erlang) {
             $('.erlang-mem', row).attr('name', mem_erlang).css('width', mem_erlang + '%');
