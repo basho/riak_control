@@ -666,29 +666,37 @@ ul.bulleted li {
 }
 
 .membar-bg {
-    width: 99px;
-    height: 26px;
-    padding: 2px 2px 0;
+    width: 97px;
+    height: 23px;
+    padding: 0px 3px 0 2px;
     position: relative;
+    overflow: hidden;
+    margin-top: 4px;
+    overflow: hidden;
 }
 .membar-fg {
     background: url(/admin/ui/images/membar-fg.png) left top no-repeat transparent;
     width: 101px;
-    height: 30px;
+    height: 23px;
     position: absolute;
     top: 0;
     left: 0;
 }
 .mem-color {
-    height: 25px;
-    opacity: .75;
+    height: 21px;
 }
-.erlang-mem {background: #0da5e4;}
-.non-erlang-mem {background: #4bc534;}
+.erlang-mem {
+    background: #6cfff5;
+    -webkit-box-shadow: 0 2px 100px /*#6cfff5*/ rgba(108, 255, 245, .2);
+}
+.non-erlang-mem {
+    background: #0da5e4; 
+    -webkit-box-shadow: 0 2px 5px /*#0da5e4*/ rgba(13, 165, 228, .2);
+}
 .free-memory {
     display: block;
-    padding-top: 8px;
-    padding-left: 5px;
+    padding-top: 7px;
+    padding-left: 8px;
 }
 
 /* END CODE FOR CLUSTER CONTENT */
