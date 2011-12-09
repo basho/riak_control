@@ -698,6 +698,15 @@ ul.bulleted li {
     padding-top: 7px;
     padding-left: 8px;
 }
+.unknown-mem {
+    background: #666;
+    display: none;
+    width: 100%;
+    position: relative;
+    height: 21px;
+    top: 0;
+    left: 0;
+}
 
 /* END CODE FOR CLUSTER CONTENT */
 
