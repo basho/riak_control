@@ -49,7 +49,9 @@ $(document).ready(function () {
                 var node = $(this).closest('tr').find('.name').text();
                 var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
                 // Re-allow pings when we let go of the slider handle
+                // And tell it to ping since the ping loop will have died
                 pingAllowed = true;
+                get_cluster_status();
                 if (handlePos === '100%') {
                     //leave_cluster(node);
                     open_sibling_row(siblingRowID, node);
@@ -225,6 +227,18 @@ $(document).ready(function () {
         }
     }
 
+    function set_handoff_light_class(jqObj, newClass) {
+        var classes = ['pct-static', 'pct-gaining', 'pct-losing'], i, l = classes.length;
+        newClass = newClass.toLowerCase();
+        for (i = 0; i < l; i += 1) {
+            if (classes[i] === newClass) {
+                jqObj.addClass(newClass);
+            } else {
+                jqObj.removeClass(classes[i]);
+            }
+        }
+    }
+
     function reset_slider(sliderHandle, rowNode) {
         var myActions = $('#' + rowNode.id + '-more-actions');
         var hiddenActions = $('.actions-box', myActions[0]).css('display') !== 'block';
@@ -299,6 +313,7 @@ $(document).ready(function () {
             if (textObj.status !== 'Valid') {
                 $('.status', row).text('Valid');
                 set_operability_class($('.status', row), 'normal');
+                set_light_color($('.status-light', row), 'green');
             }
             set_operability_class($('.name', row), 'normal');
             set_operability_class($('.ring_pct', row), 'normal');
@@ -333,6 +348,7 @@ $(document).ready(function () {
             $('.status', row).text('Valid');
         }
         set_operability_class($('.name', row), 'normal');
+        set_light_color($('.status-light', row), 'green');
     }
 
     function round_pct(num, decPlaces) {
@@ -340,27 +356,28 @@ $(document).ready(function () {
     }
 
     function set_pct(node, texts, row) {
-        node.ring_pct = round_pct(node.ring_pct * 100, 0) + '%';
-        node.pending_pct = round_pct(node.pending_pct * 100, 0) + '%';
+        node.ring_pct = round_pct(node.ring_pct * 100, 0);
+        node.pending_pct = round_pct(node.pending_pct * 100, 0);
 
         if (texts.name !== node.name) {
             $('.name', row).text(node.name);
         }
         if (texts.ring_pct !== node.ring_pct) {
-            $('.ring_pct', row).text(node.ring_pct);
+            $('.ring_pct', row).text(node.ring_pct + '%');
         }
-        if (texts.pending_pct !== node.pending_pct) {
-            $('.pending_pct', row).text(node.pending_pct);
-        }
-        if ($('.ring_pct', row).text() !== $('.pending_pct', row).text() && status !== 'leaving') {
-            set_light_color($('.status-light', row), 'orange');
+
+        if (node.ring_pct > node.pending_pct) {
+            set_handoff_light_class($('.pct-arrows', row), 'pct-losing');
+        } else if (node.ring_pct < node.pending_pct) {
+            set_handoff_light_class($('.pct-arrows', row), 'pct-gaining');
         } else {
-            if (node.reachable &&
-                status !== 'leaving' &&
-                status !== 'joining' &&
-                status !== 'down' &&
-                !stopping[texts.name]) {
-                set_light_color($('.status-light', row), 'green');
+            if (!$('.pct-arrows', row).hasClass('pct-static')) {
+                set_handoff_light_class($('.pct-arrows', row), 'pct-static');
+                $('.green-pct-arrow', row).show(0, function () {
+                    $(this).fadeOut(2000);
+                });
+            } else {
+                set_handoff_light_class($('.pct-arrows', row), 'pct-static');
             }
         }
     }
@@ -421,7 +438,7 @@ $(document).ready(function () {
             "name"   : $('.name', row).text(),
             "slider" : $('.more-actions-slider-box a', row).text(),
             "ring_pct" : $('.ring_pct', row).text(),
-            "pending_pct" : $('.pending_pct', row).text(),
+            //"pending_pct" : $('.pending_pct', row).text(),
             "mem_erlang" : $('.erlang-mem', row).attr('name'),
             "mem_non_erlang" : $('.non-erlang-mem'. row).attr('name'),
             "mem_free" : parseInt($('.free-memory', row).text())
@@ -444,6 +461,8 @@ $(document).ready(function () {
         var id = node.name.split('@')[0];
         var rows = $('#cluster-table #' + id) || null;
         var row, extraRow;
+
+        //console.log(node);
 
         // create a new row
         if (rows.length === 0) {

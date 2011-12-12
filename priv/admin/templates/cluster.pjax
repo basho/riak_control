@@ -69,11 +69,16 @@
             <div class="gui-slider-leaving hide"></div>
         </td>
         <td class="gui-text ring_pct-box">
-            <div class="gui-field gui-text pct-box">
+            <div class="left pct-arrows pct-static">
+                <div class="green-pct-arrow"></div>
+            </div>
+            <div class="left gui-field gui-text pct-box">
                 <div class="gui-field-bg">
                     <div class="i-block ring_pct gui-field-input"></div>
+                    <!--
                     <span class="monospace gray-text">:</span>
                     <div class="i-block pending_pct gui-field-input"></div>
+                    -->
                 </div>
                 <div class="gui-field-cap-left"></div>
                 <div class="gui-field-cap-right"></div>
