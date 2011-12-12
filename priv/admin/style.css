@@ -661,8 +661,33 @@ ul.bulleted li {
     text-decoration: underline;
 }
 
-.pct-light {
-    height: 24px;
+.pct-box {
+    margin-top: 1px;
+    width: 65px;
+}
+
+.pct-arrows {
+    background: url(/admin/ui/images/pct-arrows-sprite.png) no-repeat transparent;
+    height: 33px;
+    width: 19px;
+    margin: 0 5px 0 0;
+}
+.pct-gaining {
+    background-position:-19px top;
+}
+.pct-losing {
+    background-position:-38px top;
+}
+.pct-static {
+    background-position:left top;
+}
+
+.green-pct-arrow {
+    background: url(/admin/ui/images/pct-arrows-sprite.png) no-repeat -57px top transparent;
+    height: 33px;
+    width: 19px;
+    margin: 0 5px 0 0;
+    display: none;
 }
 
 .membar-bg {
