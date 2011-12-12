@@ -188,6 +188,21 @@ $(function() {
     $(document).on('mouseover', '.pending_pct', function () {
         displayTips('This is the desired portion of the ring this node should own.  As long as "% Owned" does not equal "% Pending," it means that this node is either in the process of receiving partition data from other nodes or handing some (or all) of its data off to other nodes.');
     }).on('mouseout', '.pending_pct', emptyTips);
+
+    // Memory usage
+    $(document).on('mouseover', '.membar-bg, .free-memory', function () {
+        var parent = $(this).parent(), 
+            free_mem = parent.find('.free-memory').text(),
+            erlang_mem, non_erlang_mem;
+        if (free_mem.charAt(0) === '?') {
+            displayTips('Because this node is currently unreachable, Riak Control is not able to assess its memory usage.');
+        } else {
+            free_mem = parseInt(free_mem);
+            erlang_mem = parseInt(parent.find('.erlang-mem').attr('name'));
+            non_erlang_mem = parseInt(parent.find('.non-erlang-mem').attr('name'));
+            displayTips('The machine running this node currently has ' + free_mem + '% free memory.  Of the ' + (erlang_mem + non_erlang_mem) + '% currently in use, ' + erlang_mem + '% is being used by Riak and ' + non_erlang_mem + '% is being used by other processes.');
+        }
+    }).on('mouseout', '.membar-bg, .free-memory', emptyTips);
     
     // Node status
     $(document).on('mouseover', '.status-box', function () {

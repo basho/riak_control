@@ -84,6 +84,7 @@
             <div class="left membar-bg">
                 <div class="erlang-mem mem-color left" name=""></div>
                 <div class="non-erlang-mem mem-color left" name=""></div>
+                <div class="unknown-mem"></div>
                 <div class="membar-fg"></div>
             </div>
             <span class="free-memory left"></span>
