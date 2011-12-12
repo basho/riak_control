@@ -18,33 +18,33 @@
 %%
 %% -------------------------------------------------------------------
 
--type version()       :: integer().
--type index()         :: binary().
--type status()        :: valid | invalid | down | leaving.
--type home()          :: primary | fallback | undefined.
--type service()       :: atom().
--type services()      :: [{service(),home()}].
--type owner()         :: atom().
--type vnode()         :: {{atom(),atom()},atom()}.
--type online()        :: boolean().
+-type version()              :: integer().
+-type index()                :: binary().
+-type status()               :: valid | invalid | down | leaving.
+-type home()                 :: primary | fallback | undefined.
+-type service()              :: atom().
+-type services()             :: [{service(),home()}].
+-type owner()                :: atom().
+-type vnode()                :: {{atom(),atom()},atom()}.
+-type online()               :: boolean().
 
 -record(partition_info,
-        { index       :: index(),
-          partition   :: integer(),
-          owner       :: owner(),
-          vnodes      :: services()
+        { index              :: index(),
+          partition          :: integer(),
+          owner              :: owner(),
+          vnodes             :: services()
         }).
 
 -record(member_info,
-        { node        :: atom(),
-          status      :: status(),
-          reachable   :: boolean(),
-          vnodes      :: [vnode()],
-          ring_pct    :: float(),
-          pending_pct :: float(),
-          mem_total   :: integer(),
-          mem_used    :: integer(),
-          mem_erlang  :: integer()
+        { node               :: atom(),
+          status             :: status(),
+          reachable          :: boolean(),
+          vnodes             :: [vnode()],
+          ring_partitions    :: float(),
+          pending_partitions :: float(),
+          mem_total          :: integer(),
+          mem_used           :: integer(),
+          mem_erlang         :: integer()
         }).
 
 %% These two should always match, in terms of webmachine dispatcher

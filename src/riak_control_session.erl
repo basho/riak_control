@@ -186,13 +186,9 @@ update_partitions (State=#state{ring=Ring}) ->
 
 %% ping a node and get all its vnode workers at the same time
 get_member_info (_Member={Node,Status},Ring) ->
-    RingSize=riak_core_ring:num_partitions(Ring),
-
     %% calculate how much of the ring this node owns vs. targetted
-    Indices=riak_core_ring:indices(Ring,Node),
-    FutureIndices=riak_core_ring:future_indices(Ring,Node),
-    PctRing=length(Indices) / RingSize,
-    PctPending=length(FutureIndices) / RingSize,
+    Indices=erlang:length(riak_core_ring:indices(Ring,Node)),
+    FutureIndices=erlang:length(riak_core_ring:future_indices(Ring,Node)),
 
     %% try and get a list of all the vnodes running on the node
     case rpc:call(Node,riak_control_session,get_my_info,[]) of
@@ -201,8 +197,8 @@ get_member_info (_Member={Node,Status},Ring) ->
                           status=Status,
                           reachable=false,
                           vnodes=[],
-                          ring_pct=PctRing,
-                          pending_pct=PctPending
+                          ring_partitions=Indices,
+                          pending_partitions=FutureIndices
                         };
         Member_info ->
 
@@ -212,8 +208,8 @@ get_member_info (_Member={Node,Status},Ring) ->
             %% succeed, but since it's shutting down it won't have any
             %% vnode workers running...
             Member_info#member_info{ status=Status,
-                                     ring_pct=PctRing,
-                                     pending_pct=PctPending
+                                     ring_partitions=Indices,
+                                     pending_partitions=FutureIndices
                                    }
     end.
 
