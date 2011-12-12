@@ -36,8 +36,8 @@
             <td><h3 class="gui-headline">Status</h3></td>
             <td><h3 class="gui-headline">Name</h3></td>
             <td><h3 class="gui-headline">Actions</h3></td>
-            <td><h3 class="gui-headline">Ring %</h3></td>
-            <td><h3 class="gui-headline">Memory Used</h3></td>
+            <td><h3 class="gui-headline">Partitions</h3></td>
+            <td><h3 class="gui-headline">Memory Usage</h3></td>
         </tr>
     </table>
 </div>

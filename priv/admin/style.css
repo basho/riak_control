@@ -684,13 +684,14 @@ ul.bulleted li {
 }
 .mem-color {
     height: 21px;
+    background: url(/admin/ui/images/mem-bar-overlay.png) left top repeat transparent;
 }
 .erlang-mem {
-    background: #6cfff5;
+    background-color: #6cfff5;
     -webkit-box-shadow: 0 2px 100px /*#6cfff5*/ rgba(108, 255, 245, .2);
 }
 .non-erlang-mem {
-    background: #0da5e4; 
+    background-color: #0da5e4; 
     -webkit-box-shadow: 0 2px 5px /*#0da5e4*/ rgba(13, 165, 228, .2);
 }
 .free-memory {

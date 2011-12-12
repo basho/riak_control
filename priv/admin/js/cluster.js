@@ -371,7 +371,7 @@ $(document).ready(function () {
         if (node.reachable === false) {
             $('.unknown-mem', row).show();
             $('.mem-color', row).hide();
-            $('.free-memory', row).text('?? Free');
+            $('.used-memory', row).text('?? Free');
         } else {
             memdivider = node.mem_total / 100;
             mem_erlang = Math.ceil(node.mem_erlang / memdivider);
