@@ -180,14 +180,9 @@ $(function() {
     }).on('mouseout', '.shutdown-button', emptyTips);
 
     // Ring ownership percent
-    $(document).on('mouseover', '.ring_pct', function () {
-        displayTips('The portion of the ring owned by this node.');
-    }).on('mouseout', '.ring_pct', emptyTips);
-
-    // Ring pending ownership percent
-    $(document).on('mouseover', '.pending_pct', function () {
-        displayTips('This is the desired portion of the ring this node should own.  As long as "% Owned" does not equal "% Pending," it means that this node is either in the process of receiving partition data from other nodes or handing some (or all) of its data off to other nodes.');
-    }).on('mouseout', '.pending_pct', emptyTips);
+    $(document).on('mouseover', '.pct-box, .pct-arrows', function () {
+        displayTips('This is the portion of the ring currently owned by this node.  If the up-arrow is lit, it means that this node is currently gaining ring data and will soon own a larger percentage.  If the down-arrow is lit, this node is currently handing ring data off to other nodes and will soon own a smaller percentage.');
+    }).on('mouseout', '.pct-box, .pct-arrows', emptyTips);
 
     // Memory usage
     $(document).on('mouseover', '.membar-bg, .free-memory', function () {
