@@ -181,7 +181,7 @@ $(function() {
 
     // Ring ownership percent
     $(document).on('mouseover', '.pct-box, .pct-arrows', function () {
-        displayTips('This is the portion of the ring currently owned by this node.  If the up-arrow is lit, it means that this node is currently gaining ring data and will soon own a larger percentage.  If the down-arrow is lit, this node is currently handing ring data off to other nodes and will soon own a smaller percentage.');
+        displayTips('The portion of the ring owned by this node.  When an arrow LED is lit, it is either in the process of receiving a partition from another node (up) or sending a partition to another node (down).');
     }).on('mouseout', '.pct-box, .pct-arrows', emptyTips);
 
     // Memory usage
