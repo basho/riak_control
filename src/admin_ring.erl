@@ -65,8 +65,13 @@ content_types_provided (Req,C) ->
 to_json (Req,C={Partitions,Filter}) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     PS=filter_partitions(Req,Partitions,Filter),
-    Details=[{struct,node_ring_details(P,Nodes)} || P <- PS],
-    {mochijson2:encode(Details),Req,C}.
+    {Page,N,XS}=paginate_results(Req,PS),
+    Details=[{struct,node_ring_details(P,Nodes)} || P <- XS],
+    {mochijson2:encode({struct,[{pages,N},
+                                {page,Page},
+                                {contents,Details}
+                               ]}),
+     Req,C}.
 
 %% filter a ring based on a given filter name
 filter_partitions (Req,PS,node) ->
@@ -76,6 +81,32 @@ filter_partitions (_Req,PS,all) ->
     PS;
 filter_partitions (_Req,_PS,_) ->
     [].
+
+%% the url can optionally specify paging for the partitions
+paginate_results (Req,XS) ->
+    N=max(16,list_to_integer(wrq:get_qs_value("n","64",Req))),
+    Len=length(XS),
+    D=trunc(Len / N),
+
+    %% there might be a left over page with < N items on it
+    Pages=case D * N of
+              Len -> D;
+              _ -> D+1
+          end,
+
+    %% cap the page # we can be within
+    P=min(Pages,max(1,list_to_integer(wrq:get_qs_value("p","1",Req)))),
+
+    %% if this is the last page, just grab whatever's left over
+    Page=case P of
+             Pages -> {_,C}=lists:split((P-1)*N,XS), C;
+             _ -> {_,Rest}=lists:split((P-1)*N,XS),
+                  {C,_}=lists:split(N,Rest),
+                  C
+         end,
+
+    %% return the page #, how many pages there are, and this page's contents
+    {P,Pages,Page}.
 
 %% return a proplist of details for a given index
 node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
