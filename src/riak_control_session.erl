@@ -50,11 +50,15 @@
           services    :: [service()],
           ring        :: riak_core_ring:riak_core_ring(),
           partitions  :: [tuple()],
-          nodes       :: [tuple()]
+          nodes       :: [tuple()],
+          update      :: reference()
         }).
 
 %% hack: periodically update the ring with itself
 -define(INTERVAL, 3000).
+
+%% delay used after a ring update
+-define(RING_UPDATE_DELAY, 500).
 
 %% ===================================================================
 %% Public API
@@ -95,11 +99,21 @@ init ([]) ->
     %% get the current ring so we have a baseline to work from
     {ok,Ring}=riak_core_ring_manager:get_my_ring(),
 
+    %% start a timer that will allow us
+
     %% start a timer that will allow us to periodically ping cluster nodes
     erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
 
+    %% the initial state of the session
+    State=#state{ vsn=1,
+                  partitions=[],
+                  nodes=[],
+                  services=[],
+                  update=make_ref()
+                },
+
     %% start the server
-    {ok,update_ring(#state{vsn=0,partitions=[],nodes=[],services=[]},Ring)}.
+    {ok,update_ring(State,Ring)}.
 
 %% calls that block until a reply is sent
 handle_call (get_version,_From,State=#state{vsn=V}) ->
@@ -118,8 +132,21 @@ handle_call (get_partitions,_From,State=#state{vsn=V,partitions=P}) ->
     {reply,{ok,V,P},State}.
 
 %% calls that don't block and don't reply
-handle_cast ({update_ring,Ring},State) ->
-    {noreply,update_ring(State,Ring)};
+handle_cast ({update_ring,Ring},State=#state{update=TimerRef}) ->
+    %% Whenever we receive a ring update, what we actually do is start
+    %% a timer that will actually process the new ring after a certain
+    %% period of time has elapsed. We do this because ring updates come
+    %% in spurts and we don't want to process all of those changes, we
+    %% only want the last change.
+
+    %% cancel the current delay timer, and wait a bit longer
+    erlang:cancel_timer(TimerRef),
+
+    %% setup the new timer to actually update with the new ring
+    NewRef=erlang:send_after(?RING_UPDATE_DELAY,
+                             self(),
+                             {actually_update_ring,Ring}),
+    {noreply,State#state{update=NewRef}};
 
 handle_cast ({update_services,Services},State) ->
     {noreply,update_services(State,Services)}.
@@ -127,6 +154,9 @@ handle_cast ({update_services,Services},State) ->
 %% misc. messages
 handle_info (ping_ring_nodes,State=#state{ring=Ring}) ->
     erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
+    handle_cast({update_ring,Ring},State);
+
+handle_info ({actually_update_ring,Ring},State) ->
     {noreply,update_ring(State,Ring)};
 
 handle_info (_,State) ->
@@ -201,11 +231,11 @@ get_member_info (_Member={Node,Status},Ring) ->
                           status=Status,
                           reachable=false,
                           vnodes=[],
+                          handoffs=[],
                           ring_pct=PctRing,
                           pending_pct=PctPending
                         };
         Member_info ->
-
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
             %% before the node is actually down and the rpc call will
@@ -220,6 +250,7 @@ get_member_info (_Member={Node,Status},Ring) ->
 %% run locally per-node, collects information about this node for the session
 get_my_info () ->
     {Total,Used,_}=memsup:get_memory_data(),
+    {ok,Active,Pending}=riak_core_handoff_manager:all_handoffs(),
 
     %% construct the member information for this node
     #member_info{ node=node(),
@@ -227,24 +258,32 @@ get_my_info () ->
                   mem_total=Total,
                   mem_used=Used,
                   mem_erlang=proplists:get_value(total,erlang:memory()),
-                  vnodes=riak_core_vnode_manager:all_vnodes()
+                  vnodes=riak_core_vnode_manager:all_vnodes(),
+                  handoffs=Active ++ Pending
                 }.
 
 %% return a proplist of details for a given index
 get_partition_details (#state{services=S,nodes=Nodes,ring=R},{Index,Node}) ->
     case lists:keysearch(Node,2,Nodes) of
-        {value,#member_info{vnodes=Vnodes}} ->
+        {value,#member_info{vnodes=Vnodes,handoffs=HS}} ->
             Statuses=[get_vnode_status(Service,R,Index,Vnodes) || Service <- S],
+            Handoffs=[{M,N} || {{M,I},N,_} <- HS, I==Index],
+            case Handoffs of
+                [] -> ok;
+                _  -> io:format(">>>>> ~w~n", [Handoffs])
+            end,
             #partition_info{ index=Index,
                              partition=partition_index(R,Index),
                              owner=Node,
-                             vnodes=Statuses
+                             vnodes=Statuses,
+                             handoffs=Handoffs
                            };
         false ->
             #partition_info{ index=Index,
                              partition=partition_index(R,Index),
                              owner=Node,
-                             vnodes=[]
+                             vnodes=[],
+                             handoffs=[]
                            }
     end.
 

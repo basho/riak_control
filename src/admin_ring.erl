@@ -79,9 +79,6 @@ filter_partitions (_Req,_PS,_) ->
 
 %% return a proplist of details for a given index
 node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
-    {ok,Hoffs}=riak_core_handoff_manager:get_handoffs(Index),
-
-    %% lookup the owner in the node list to get its status
     case lists:keyfind(P#partition_info.owner,2,Nodes) of
         #member_info{node=Node,status=Status,reachable=Reachable} ->
             [{index,list_to_binary(integer_to_list(Index))},
@@ -90,7 +87,7 @@ node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
              {status,Status},
              {reachable,Reachable},
              {vnodes,Vnodes},
-             {handoffs,{struct,vnode_handoffs(Hoffs)}}
+             {handoffs,{struct,vnode_handoffs(P#partition_info.handoffs)}}
             ];
         false -> []
     end.
