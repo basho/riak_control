@@ -19,12 +19,23 @@
     </select>
 </div>
 
-<h1 id="ring-headline" class="gui-headline-bold has-cut">
+<h1 id="ring-headline" class="gui-headline-bold">
     Ring View
     <span id="total-number" class="gui-text"></span>
 </h1>
 
-<div id="partition-list" class="hide">
+<ul class="pagination gui-text">
+    <!--
+    <li name="prev"><span class="paginator">Prev</span></li>
+    <li name="1"><span class="paginator pageNumber active">1</span></li>
+    <li name="2"><span class="paginator pageNumber">2</span></li>
+    <li name="3"><span class="paginator pageNumber">3</span></li>
+    <li name="next"><span class="paginator">Next</span></li>
+    -->
+</ul>
+<div class="cut"></div>
+
+<div id="partition-list" class="hide has-cut">
     <table class="list-table" id="ring-table">
         <thead>
         <tr class="table-head has-cut">
@@ -37,13 +48,19 @@
         <tr id="no-matches" class="hide">
             <td colspan="5" class="gui-text">No partitions matched your filter.</td>
         </tr>
+        <tr class="spinner-box">
+            <td colspan="5"><img id="ring-spinner" class="spinner" src="/admin/ui/images/spinner.gif"></td>
+        </tr>
         </thead>
         <tbody id="ring-table-body">
         
         </tbody>
     </table>
 </div>
-<div class="spinner-box"><img id="ring-spinner" class="spinner" src="/admin/ui/images/spinner.gif"></div>
+
+<ul class="pagination gui-text"></ul>
+
+
 
 <!-- partition template -->
 <table class="hide">

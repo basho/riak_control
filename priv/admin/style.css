@@ -734,6 +734,62 @@ ul.bulleted li {
     left: 0;
 }
 
+.pagination {
+    text-align: center;
+    font-size: 12px;
+}
+
+.pagination li {
+    display: inline-block;
+    background: #1d1d1d;
+    padding: 2px;
+    margin: 0 2px 10px;
+    border-bottom: 1px solid #434343;
+    border-bottom: 1px solid rgba(255, 255, 255, .18);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.paginator {
+    display: block;
+    background: #434343;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#616161), to(#434343));
+    background: -moz-linear-gradient(100% 100% 90deg, #434343, #616161);
+    border-top: 1px solid #777;
+    cursor: pointer;
+    padding: 3px 8px 4px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.paginator:hover {
+    background: #535353;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#777), to(#434343));
+    background: -moz-linear-gradient(100% 100% 90deg, #434343, #777);
+}
+.paginator:active {
+    background: #535353;
+    cursor: pointer;
+}
+.paginator.pageNumber {
+    opacity: .4;
+    filter: alpha(opacity=40);
+}
+.paginator.pageNumber:hover, .paginator.pageNumber:active, .pageNumber.active {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+.pagination li.disabled .paginator:hover,
+.pagination li.disapled .paginator:active,
+.pageNumber.active:hover, 
+.pageNumber.active:active {
+    background: #434343;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#616161), to(#434343));
+    background: -moz-linear-gradient(100% 100% 90deg, #434343, #616161);
+    cursor: default;
+}
+
 /* END CODE FOR CLUSTER CONTENT */
 
 
@@ -742,8 +798,13 @@ ul.bulleted li {
     padding-top: 20px;
 }
 
+#partition-list {
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
 #ring-table {
-    margin-bottom: 75px;
+    /*margin-bottom: 75px;*/
 }
 
 #ring-table .partition td {
@@ -809,6 +870,7 @@ ul.bulleted li {
 .i-block   {display: inline-block;}
 .inline    {display: inline;}
 .inblock   {display: inline-block;}
+.cut       {height: 2px; background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;}
 .has-cut   {background: url(/admin/ui/images/cut-bg.png) left bottom repeat-x transparent;}
 .hide      {display: none;}
 .monospace {font-family: menlo, monospace;}
