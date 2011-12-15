@@ -59,7 +59,7 @@
 -define(INTERVAL, 3000).
 
 %% delay used after a ring update
--define(UPDATE_TICK_TIMEOUT, 2000).
+-define(UPDATE_TICK_TIMEOUT, 1000).
 
 %% ===================================================================
 %% Public API
