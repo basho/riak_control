@@ -3,7 +3,13 @@ $(document).ready(function () {
 
     var pingAllowed = true;
 
-    function initialize () {
+    var currentPage;
+
+    var pageAmount;
+
+    var mainTimer;
+
+    function initialize() {
         // Make sure our data holders exist
         $.riakControl.ringData = $.riakControl.ringData || {};
         $.riakControl.filter = $.riakControl.filter || {
@@ -13,11 +19,11 @@ $(document).ready(function () {
                 "fallback" : true
             }
         };
-        get_partitions();
+        get_partitions(1, 64);
         get_filters();
     }
     
-    function get_filters () {
+    function get_filters() {
         $.ajax({
             method:'GET',
             url:'/admin/cluster/list',
@@ -26,19 +32,76 @@ $(document).ready(function () {
         });
     }
     
-    function get_partitions () {
+    function get_partitions(pageNum, amountPerPage) {
         $.ajax({
             method:'GET',
-            url:'/admin/ring/partitions',
+            url:'/admin/ring/partitions?p=' + pageNum /* + '&n=' + amountPerPage */,
             dataType:'json',
             failure:ping_partitions,
             success: function (d) {
+                draw_pagination(d.page, d.pages);
                 update_partitions(d.contents);
             }
         });
     }
+
+    function draw_pagination(pageNum, totalPages) {
+        var i, pagination, thisPage;
+
+        // Die if we don't need to change anything
+        if (pageNum === currentPage && totalPages === pageAmount) {
+            return false;
+        }
+
+        currentPage = pageNum;
+        
+        if ($('.pagination li').length) {
+            if (currentPage === 1) {
+                $('.pagination li[name=prev]').addClass('disabled');
+            } else {
+                $('.pagination li[name=prev]').removeClass('disabled');
+            }
+
+            if (currentPage === totalPages) {
+                $('.pagination li[name=next]').addClass('disabled');
+            } else {
+                $('.pagination li[name=next]').removeClass('disabled');
+            }
+        }
+
+        // Die if there is only one page
+        if (totalPages === 1) {
+            $('.pagination').hide();
+            return false;
+        }
+
+        // Don't redraw pagination if the amount of pages hasn't changed
+        if (totalPages === pageAmount) {
+            return false;
+        }
+
+        pageAmount = totalPages;
+
+        pagination = $('.pagination');
+
+        // Always put in the 'previous' button
+        pagination.empty().show().append('<li name="prev"><span class="paginator">Prev</span></li>');
+
+        // Add page links as necessary
+        for (i = 0; i < totalPages; i += 1) {
+            thisPage = i + 1;
+            pagination.append('<li name="' + thisPage + '"><span class="paginator pageNumber' + ((pageNum === thisPage) ? ' active' : '')  + '">' + thisPage + '</span></li>');
+        }
+
+        // Always put in the 'next' button
+        pagination.append('<li name="next"><span class="paginator">Next</span></li>');
+
+        if (currentPage === 1) {
+            $('.pagination li[name=prev]').addClass('disabled');
+        }
+    }
     
-    function update_filters (data) {
+    function update_filters(data) {
         var html = '', i, l = data.length;
     
         // add the all options
@@ -61,7 +124,7 @@ $(document).ready(function () {
         
     }
     
-    function set_light_color (jqObj, newColor) {
+    function set_light_color(jqObj, newColor) {
         var colors = ['green', 'gray', 'orange', 'red', 'blue'], i, l = colors.length;
         newColor = newColor.toLowerCase();
         for (i = 0; i < l; i += 1) {
@@ -73,7 +136,7 @@ $(document).ready(function () {
         }
     }
 
-    function set_operability_class (jqObj, newClass) {
+    function set_operability_class(jqObj, newClass) {
         var classes = ['unreachable', 'disabled', 'down', 'normal'], i, l = classes.length;
         newClass = newClass.toLowerCase();
         for (i = 0; i < l; i += 1) {
@@ -85,7 +148,7 @@ $(document).ready(function () {
         }
     }
     
-    function filter_row_visibility (infoObj, row) {
+    function filter_row_visibility(infoObj, row) {
         // collect all current filter values
         var dropval = $.riakControl.filter.ring.dropdown,
             showfallback = $.riakControl.filter.ring.fallback,
@@ -146,7 +209,7 @@ $(document).ready(function () {
         
     }
         
-    function partition_row (infoObj, updateDraw) {
+    function partition_row(infoObj, updateDraw) {
         // called by update_partitions()
         var partitionIndex = infoObj['index'];
         var owner = infoObj.node;
@@ -215,74 +278,86 @@ $(document).ready(function () {
         }
 
     }
+
+    // define a function to check properties against each other
+    // We're doing it this long, convoluted way to guard against erlang giving
+    // us equal objects where the keys are in a different order
+    function keys_are_equal(oldObj, newObj) {
+        var i; 
+        // loop through the new object because it's more likely to have extra properties
+        for (i in newObj) {
+            // avoid prototypal mistakes
+            if (Object.prototype.hasOwnProperty.call(newObj, i)) {
+                // we only want to loop through a subobject if we can prove it's JSON for now
+                if (typeof newObj[i] === 'object' && (oldObj[i] && typeof oldObj[i] === 'object')) {
+                    if (!keys_are_equal(oldObj[i], newObj[i])) {
+                        return false;
+                    }
+                } else {
+                    if (!oldObj[i] || oldObj[i] !== newObj[i]) {
+                        return false;
+                    }
+                }
+            }
+        }
+        // now run over the old object in case the new object did lose keys
+        for (i in oldObj) {
+            if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
+                if (typeof oldObj[i] === 'object' && (newObj[i] && typeof newObj[i] === 'object')) {
+                    if (!keys_are_equal(newObj[i], oldObj[i])) {
+                        return false;
+                    }
+                } else {
+                    if (!newObj[i] || newObj[i] !== oldObj[i]) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
         
-    function update_partitions (data) {
+    function update_partitions(data) {
         // called by get_partitions() which is called by initialize() and ping_partitions()
         
-        var i, l = data.length,
+        var i,
+        lowerBound = data[0]['i'],
+        upperBound = data[data.length-1]['i'],
         partitions = $('.partition').not('.partition-template'),
         drawnPartitions = partitions.length;
-    
-        // define a function to check properties against each other
-        // We're doing it this long, convoluted way to guard against erlang giving
-        // us equal objects where the keys are in a different order
-        function keys_are_equal (oldObj, newObj) {
-            var i; 
-            // loop through the new object because it's more likely to have extra properties
-            for (i in newObj) {
-                // avoid prototypal mistakes
-                if (Object.prototype.hasOwnProperty.call(newObj, i)) {
-                    // we only want to loop through a subobject if we can prove it's JSON for now
-                    if (typeof newObj[i] === 'object' && (oldObj[i] && typeof oldObj[i] === 'object')) {
-                        if (!keys_are_equal(oldObj[i], newObj[i])) {
-                            return false;
-                        }
-                    } else {
-                        if (!oldObj[i] || oldObj[i] !== newObj[i]) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            // now run over the old object in case the new object did lose keys
-            for (i in oldObj) {
-                if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
-                    if (typeof oldObj[i] === 'object' && (newObj[i] && typeof newObj[i] === 'object')) {
-                        if (!keys_are_equal(newObj[i], oldObj[i])) {
-                            return false;
-                        }
-                    } else {
-                        if (!newObj[i] || newObj[i] !== oldObj[i]) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            //console.log('true');
-            return true;
+
+        if (!$.riakControl.ringData[lowerBound] && drawnPartitions) {
+            // empty out any drawn partitions that might already exist
+            $('#ring-table-body').empty();
+            // clear out the current ringData object
+            $.riakControl.ringData = {};
         }
 
         // for each object in data array...
-        for (i = 0; i < l; i += 1) {
+        for (i = lowerBound; i < upperBound; i += 1) {
             // if we have a length of drawn partitions, we have already drawn the ring
-            // this also means we have prepopulated the $.riakControl.ringData object
-            if (drawnPartitions) {              
+            // this also means we have prepopulated the $.riakControl.ringData object.
+            // however, if there is a drawn ring but no item in question in the ringData object,
+            // it means that we have moved to a new page of partitions
+            if (drawnPartitions && $.riakControl.ringData[i]) {
                 // check new data against old data to see if there are status changes
                 // if keys are not equal...
-                if (!keys_are_equal($.riakControl.ringData[data[i]['i']], data[i])) {
+                if (!keys_are_equal($.riakControl.ringData[i], data[i-lowerBound])) {
                     // populate $.riakControl.ringData[data[i].i] with the new data
-                    $.riakControl.ringData[data[i]['i']] = data[i];
+                    $.riakControl.ringData[i] = data[i-lowerBound];
                     // send the corresponding node through the partitioning process
-                    partition_row(data[i], 'update');
+                    partition_row(data[i-lowerBound], 'update');
                 }
                 // send each node through the filtering process
-                filter_row_visibility(data[i], $('#ring-table #partition-' + data[i]['i']));
+                filter_row_visibility(data[i-lowerBound], $('#ring-table #partition-' + i));
+
             // if we count 0 drawn partitions, we have not drawn the ring
             } else {
                 // populate $.riakControl.ringData[data[i].i] with the new data
-                $.riakControl.ringData[data[i]['i']] = data[i];
+                $.riakControl.ringData[i] = data[i-lowerBound];
                 // send new data through the partitioning process and draw each node
-                partition_row(data[i], 'draw');
+                partition_row(data[i-lowerBound], 'draw');
             }
         }
         
@@ -297,15 +372,15 @@ $(document).ready(function () {
             $('#partition-list').fadeIn(300);
         }
 
-        // call self through ping_partitions()
+        // call self indirectly through ping_partitions()
         ping_partitions();
         
     }
     
-    function ping_partitions () {
-        setTimeout(function () {
+    function ping_partitions() {
+        mainTimer = setTimeout(function () {
             if ($('#ring-headline').length && pingAllowed === true) {
-                get_partitions();
+                get_partitions(currentPage, 64);
             } else {
                 // If we're not on the ring page or pinging is not allowed, the script dies here.
                 pingAllowed = false;
@@ -327,6 +402,37 @@ $(document).ready(function () {
             (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.fallback = true : $.riakControl.filter.ring.fallback = false;
         } else if (myID === 'handoff-nodes') {
             (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.handoff = true : $.riakControl.filter.ring.handoff = false;
+        }
+    });
+
+    // Define what to do when we click on a non-disabled paginator
+    $(document).on('click', '.pagination li:not(.disabled)', function (e) {
+        var that = $(this), pageNum = that.attr('name');
+
+        // Die if we're already on that page
+        if (pageNum === currentPage) {
+            return false;
+        }
+
+        // Stop the ping timer so we don't get double pings
+        clearTimeout(mainTimer);
+
+        if (pageNum === 'prev') {
+            if (currentPage > 1) {
+                $('.paginator.active').removeClass('active');
+                $('.pagination li[name=' + (currentPage - 1) + '] .paginator').addClass('active');
+                get_partitions(currentPage - 1, 64);
+            }
+        } else if (pageNum === 'next') {
+            if (currentPage < pageAmount) {
+                $('.paginator.active').removeClass('active');
+                $('.pagination li[name=' + (currentPage + 1) + '] .paginator').addClass('active');
+                get_partitions(currentPage + 1, 64);
+            }
+        } else {
+            $('.paginator.active').removeClass('active');
+            $('.pagination li[name=' + pageNum + '] .paginator').addClass('active');
+            get_partitions(pageNum, 64);
         }
     });
     
