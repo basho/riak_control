@@ -27,7 +27,8 @@
          get_ring/0,
          get_nodes/0,
          get_services/0,
-         get_partitions/0
+         get_partitions/0,
+         force_update/0
         ]).
 
 %% gen_server callbacks
@@ -51,14 +52,14 @@
           ring        :: riak_core_ring:riak_core_ring(),
           partitions  :: [tuple()],
           nodes       :: [tuple()],
-          update      :: reference()
+          update_tick :: boolean()
         }).
 
 %% hack: periodically update the ring with itself
 -define(INTERVAL, 3000).
 
 %% delay used after a ring update
--define(RING_UPDATE_DELAY, 500).
+-define(UPDATE_TICK_TIMEOUT, 2000).
 
 %% ===================================================================
 %% Public API
@@ -81,6 +82,9 @@ get_services () ->
 
 get_partitions () ->
     gen_server:call(?MODULE,get_partitions,infinity).
+
+force_update () ->
+    gen_server:cast(?MODULE,update_ring,infinity).
 
 %% ===================================================================
 %% gen_server callbacks
@@ -109,7 +113,7 @@ init ([]) ->
                   partitions=[],
                   nodes=[],
                   services=[],
-                  update=make_ref()
+                  update_tick=false
                 },
 
     %% start the server
@@ -132,21 +136,21 @@ handle_call (get_partitions,_From,State=#state{vsn=V,partitions=P}) ->
     {reply,{ok,V,P},State}.
 
 %% calls that don't block and don't reply
-handle_cast ({update_ring,Ring},State=#state{update=TimerRef}) ->
-    %% Whenever we receive a ring update, what we actually do is start
-    %% a timer that will actually process the new ring after a certain
-    %% period of time has elapsed. We do this because ring updates come
-    %% in spurts and we don't want to process all of those changes, we
-    %% only want the last change.
+handle_cast ({update_ring,Ring},State=#state{update_tick=Tick}) ->
+    %% Whenever there's a change to the ring, we try and update our
+    %% localized view of "the world". However, ring updates can happen
+    %% very often, and large rings change *a lot*. For this reason,
+    %% we only want to update the ring every so often. So once we've
+    %% updated the ring, a tick flag is set indicating that we can't
+    %% update the ring any more until it's cleared.
+    case Tick of
+        false -> {noreply,update_ring(State,Ring)};
+        true -> {noreply,State}
+    end;
 
-    %% cancel the current delay timer, and wait a bit longer
-    erlang:cancel_timer(TimerRef),
-
-    %% setup the new timer to actually update with the new ring
-    NewRef=erlang:send_after(?RING_UPDATE_DELAY,
-                             self(),
-                             {actually_update_ring,Ring}),
-    {noreply,State#state{update=NewRef}};
+handle_cast (update_ring,State) ->
+    {ok,Ring}=riak_core_ring_manager:get_my_ring(),
+    {noreply,update_ring(State,Ring)};
 
 handle_cast ({update_services,Services},State) ->
     {noreply,update_services(State,Services)}.
@@ -154,10 +158,12 @@ handle_cast ({update_services,Services},State) ->
 %% misc. messages
 handle_info (ping_ring_nodes,State=#state{ring=Ring}) ->
     erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
+
+    %% use the same ring we already have, just ping nodes again
     handle_cast({update_ring,Ring},State);
 
-handle_info ({actually_update_ring,Ring},State) ->
-    {noreply,update_ring(State,Ring)};
+handle_info (clear_update_tick,State) ->
+    {noreply,State#state{update_tick=false}};
 
 handle_info (_,State) ->
     {noreply,State}.
@@ -198,7 +204,8 @@ update_services (State=#state{services=S},Services) ->
 
 %% update the ring state, also update nodes and partitions
 update_ring (State,Ring) ->
-    NodeState=update_nodes(State#state{ring=Ring}),
+    erlang:send_after(?UPDATE_TICK_TIMEOUT,self(),clear_update_tick),
+    NodeState=update_nodes(State#state{update_tick=true,ring=Ring}),
     NewState=update_partitions(NodeState),
     rev_state(NewState).
 
