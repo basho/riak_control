@@ -33,7 +33,7 @@ $(document).ready(function () {
             dataType:'json',
             failure:ping_partitions,
             success: function (d) {
-                update_partitions(d);
+                update_partitions(d.contents);
             }
         });
     }
