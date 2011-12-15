@@ -156,10 +156,9 @@ handle_cast ({update_services,Services},State) ->
     {noreply,update_services(State,Services)}.
 
 %% misc. messages
-handle_info (ping_ring_nodes,State=#state{ring=Ring}) ->
+handle_info (ping_ring_nodes,State) ->
     erlang:send_after(?INTERVAL,self(),ping_ring_nodes),
-
-    %% use the same ring we already have, just ping nodes again
+    {ok,Ring}=riak_core_ring_manager:get_my_ring(),
     handle_cast({update_ring,Ring},State);
 
 handle_info (clear_update_tick,State) ->
