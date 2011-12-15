@@ -217,7 +217,8 @@ update_nodes (State=#state{ring=Ring}) ->
 %% update the state information with partitions
 update_partitions (State=#state{ring=Ring}) ->
     Owners=riak_core_ring:all_owners(Ring),
-    Partitions=[get_partition_details(State,Owner) || Owner <- Owners],
+    Handoffs=get_all_handoffs(State),
+    Partitions=[get_partition_details(State,Owner,Handoffs) || Owner <- Owners],
     State#state{partitions=Partitions}.
 
 %% ping a node and get all its vnode workers at the same time
@@ -268,30 +269,20 @@ get_my_info () ->
                   handoffs=Active ++ Pending
                 }.
 
+%% each node knows about its set of handoffs, collect them all together
+get_all_handoffs(_State=#state{nodes=Members}) ->
+    lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
+
 %% return a proplist of details for a given index
-get_partition_details (#state{services=S,nodes=Nodes,ring=R},{Index,Node}) ->
-    case lists:keysearch(Node,2,Nodes) of
-        {value,#member_info{vnodes=Vnodes,handoffs=HS}} ->
-            Statuses=[get_vnode_status(Service,R,Index,Vnodes) || Service <- S],
-            Handoffs=[{M,N} || {{M,I},N,_} <- HS, I==Index],
-            case Handoffs of
-                [] -> ok;
-                _  -> io:format(">>>>> ~w~n", [Handoffs])
-            end,
-            #partition_info{ index=Index,
-                             partition=partition_index(R,Index),
-                             owner=Node,
-                             vnodes=Statuses,
-                             handoffs=Handoffs
-                           };
-        false ->
-            #partition_info{ index=Index,
-                             partition=partition_index(R,Index),
-                             owner=Node,
-                             vnodes=[],
-                             handoffs=[]
-                           }
-    end.
+get_partition_details (#state{services=Services,ring=Ring},{Index,Owner},HS) ->
+    Statuses=[get_vnode_status(Service,Ring,Index) || Service <- Services],
+    Handoffs=[{M,N} || {{M,I},N,_} <- HS, I==Index],
+    #partition_info{ index=Index,
+                     partition=partition_index(Ring,Index),
+                     owner=Owner,
+                     vnodes=Statuses,
+                     handoffs=Handoffs
+                   }.
 
 %% get the partition number of a given index
 partition_index (Ring,Index) ->
@@ -299,7 +290,7 @@ partition_index (Ring,Index) ->
     Index div chash:ring_increment(NumPartitions).
 
 %% get the current status of a vnode for a given partition
-get_vnode_status (Service,Ring,Index,_Vnodes) ->
+get_vnode_status (Service,Ring,Index) ->
     UpNodes=riak_core_node_watcher:nodes(Service),
     case riak_core_apl:get_apl_ann(<<(Index-1):160>>,1,Ring,UpNodes) of
         [{{_,_Node},Status}|_] -> {Service,Status};
