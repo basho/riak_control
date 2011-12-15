@@ -323,7 +323,7 @@ $(document).ready(function () {
         
         var i,
         lowerBound = data[0]['i'],
-        upperBound = data[data.length-1]['i'],
+        upperBound = data[data.length-1]['i'] + 1,
         partitions = $('.partition').not('.partition-template'),
         drawnPartitions = partitions.length;
 
