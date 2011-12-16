@@ -1,13 +1,14 @@
 // polls the ring status every so often
 $(document).ready(function () {
 
-    var pingAllowed = true;
+    var defaults = {
+        "pingFrequency"     : 1000,
+        "pingAllowed"       : true,
+        "onLoadPageNum"     : 1,
+        "partitionsPerPage" : 64
+    };
 
-    var currentPage;
-
-    var pageAmount;
-
-    var mainTimer;
+    var currentPage, pageAmount, mainTimer;
 
     function initialize() {
         // Make sure our data holders exist
@@ -19,7 +20,7 @@ $(document).ready(function () {
                 "fallback" : true
             }
         };
-        get_partitions(1, 64);
+        get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage);
         get_filters();
     }
     
@@ -35,7 +36,7 @@ $(document).ready(function () {
     function get_partitions(pageNum, amountPerPage) {
         $.ajax({
             method:'GET',
-            url:'/admin/ring/partitions?p=' + pageNum /* + '&n=' + amountPerPage */,
+            url:'/admin/ring/partitions?p=' + pageNum + '&n=' + amountPerPage,
             dataType:'json',
             failure:ping_partitions,
             success: function (d) {
@@ -379,13 +380,13 @@ $(document).ready(function () {
     
     function ping_partitions() {
         mainTimer = setTimeout(function () {
-            if ($('#ring-headline').length && pingAllowed === true) {
-                get_partitions(currentPage, 64);
+            if ($('#ring-headline').length && defaults.pingAllowed === true) {
+                get_partitions(currentPage, defaults.partitionsPerPage);
             } else {
                 // If we're not on the ring page or pinging is not allowed, the script dies here.
-                pingAllowed = false;
+                defaults.pingAllowed = false;
             }
-        }, 1000);
+        }, defaults.pingFrequency);
     }
     
     // Define what to do when the filter dropdown value changes 
@@ -421,18 +422,18 @@ $(document).ready(function () {
             if (currentPage > 1) {
                 $('.paginator.active').removeClass('active');
                 $('.pagination li[name=' + (currentPage - 1) + '] .paginator').addClass('active');
-                get_partitions(currentPage - 1, 64);
+                get_partitions(currentPage - 1, defaults.partitionsPerPage);
             }
         } else if (pageNum === 'next') {
             if (currentPage < pageAmount) {
                 $('.paginator.active').removeClass('active');
                 $('.pagination li[name=' + (currentPage + 1) + '] .paginator').addClass('active');
-                get_partitions(currentPage + 1, 64);
+                get_partitions(currentPage + 1, defaults.partitionsPerPage);
             }
         } else {
             $('.paginator.active').removeClass('active');
             $('.pagination li[name=' + pageNum + '] .paginator').addClass('active');
-            get_partitions(pageNum, 64);
+            get_partitions(pageNum, defaults.partitionsPerPage);
         }
     });
     
@@ -443,7 +444,7 @@ $(document).ready(function () {
     // This function will run when a template is switched.
     $.riakControl.sub('templateSwitch', function (templateName) {
         if (templateName === 'ring') {
-            pingAllowed = true;
+            defaults.pingAllowed = true;
             initialize();
         }
     });
