@@ -5,7 +5,8 @@ $(document).ready(function () {
         "pingFrequency"     : 1000,
         "pingAllowed"       : true,
         "onLoadPageNum"     : 1,
-        "partitionsPerPage" : 64
+        "partitionsPerPage" : 2,
+        "maxPageNums"       : 10
     };
 
     var currentPage, pageAmount, mainTimer;
