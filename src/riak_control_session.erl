@@ -44,14 +44,15 @@
 -export([get_my_info/0]).
 
 %% record definitions
+-include_lib("riak_core/include/riak_core_handoff.hrl").
 -include_lib("riak_control/include/riak_control.hrl").
 
 -record(state,
         { vsn         :: version(),
           services    :: [service()],
           ring        :: riak_core_ring:riak_core_ring(),
-          partitions  :: [tuple()],
-          nodes       :: [tuple()],
+          partitions  :: [#partition_info{}],
+          nodes       :: [#member_info{}],
           update_tick :: boolean()
         }).
 
@@ -257,7 +258,7 @@ get_member_info (_Member={Node,Status},Ring) ->
 %% run locally per-node, collects information about this node for the session
 get_my_info () ->
     {Total,Used,_}=memsup:get_memory_data(),
-    {ok,Active,Pending}=riak_core_handoff_manager:all_handoffs(),
+    {ok,Handoffs}=riak_core_handoff_manager:handoff_status(),
 
     %% construct the member information for this node
     #member_info{ node=node(),
@@ -266,7 +267,7 @@ get_my_info () ->
                   mem_used=Used,
                   mem_erlang=proplists:get_value(total,erlang:memory()),
                   vnodes=riak_core_vnode_manager:all_vnodes(),
-                  handoffs=Active ++ Pending
+                  handoffs=[HS || {_Status,HS} <- Handoffs]
                 }.
 
 %% each node knows about its set of handoffs, collect them all together
@@ -274,11 +275,11 @@ get_all_handoffs(_State=#state{nodes=Members}) ->
     lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
 
 %% return a proplist of details for a given index
-get_partition_details (#state{services=Services,ring=Ring},{Index,Owner},HS) ->
-    Statuses=[get_vnode_status(Service,Ring,Index) || Service <- Services],
-    Handoffs=[{M,N} || {{M,I},N,_} <- HS, I==Index],
-    #partition_info{ index=Index,
-                     partition=partition_index(Ring,Index),
+get_partition_details (#state{services=Services,ring=Ring},{Idx,Owner},HS) ->
+    Statuses=[get_vnode_status(Service,Ring,Idx) || Service <- Services],
+    Handoffs=[{M,N} || #handoff{module=M,index=I,target_node=N} <- HS, I==Idx],
+    #partition_info{ index=Idx,
+                     partition=partition_index(Ring,Idx),
                      owner=Owner,
                      vnodes=Statuses,
                      handoffs=Handoffs
