@@ -756,6 +756,10 @@ ul.bulleted li {
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
+.pagination li.dots {
+    background: none;
+    border: 0;
+}
 
 .paginator {
     display: block;

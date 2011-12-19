@@ -6,7 +6,7 @@ $(document).ready(function () {
         "pingAllowed"       : true,
         "onLoadPageNum"     : 1,
         "partitionsPerPage" : 64,
-        "maxPageNums"       : 10
+        "maxPageNums"       : 5
     };
 
     var currentPage, pageAmount, mainTimer;
@@ -40,7 +40,7 @@ $(document).ready(function () {
     // if we changed the filter, we want to redraw the ring
     function get_partitions(pageNum, amountPerPage, filterData) {
         var urlBuilder = '/admin/ring/partitions?p=' + pageNum + '&n=' + amountPerPage, redraw;
-        if (filterData) {
+        if (filterData && filterData.filter) {
             urlBuilder += '&filter=';
             if (filterData.filter.slice(0, 5) === 'node:') {
                 urlBuilder += ('node&q=' + filterData.filter.slice(5));
@@ -50,7 +50,7 @@ $(document).ready(function () {
         } else {
             redraw = false;
         }
-        console.log(urlBuilder);
+
         $.ajax({
             method:'GET',
             url: urlBuilder,
@@ -64,17 +64,7 @@ $(document).ready(function () {
         });
     }
 
-    function draw_pagination(pageNum, totalPages) {
-        var i, pagination, thisPage, isDrawn = $('.paginator').length;
-
-
-        // Die if we don't need to change anything
-        if (pageNum === currentPage && totalPages === pageAmount && isDrawn) {
-            return false;
-        }
-
-        currentPage = pageNum;
-        
+    function handle_prev_next(totalPages) {
         if ($('.pagination li').length) {
             if (currentPage === 1) {
                 $('.pagination li[name=prev]').addClass('disabled');
@@ -83,21 +73,38 @@ $(document).ready(function () {
             }
 
             if (currentPage === totalPages) {
+                console.log($('.pagination li[name=next]'));
                 $('.pagination li[name=next]').addClass('disabled');
             } else {
                 $('.pagination li[name=next]').removeClass('disabled');
             }
         }
+    }
 
+    function draw_pagination(pageNum, totalPages) {
+        var i, pagination, thisPage, isDrawn = $('.paginator').length;
+
+        // Die if we don't need to change anything
+        if (pageNum === currentPage && totalPages === pageAmount && isDrawn) {
+            return false;
+        }
+
+        // Keep track of the current page since we have now changed pages
+        currentPage = pageNum;
+
+        /*
         // Die if there is only one page
         if (totalPages === 1) {
             $('.pagination').hide();
             return false;
         }
+        */
 
         // Don't redraw pagination if the amount of pages hasn't changed
         // and the pagination already exists visually
         if (totalPages === pageAmount && isDrawn) {
+            // Make sure the prev and next buttons gray out at appropriate times
+            handle_prev_next(totalPages);
             return false;
         }
 
@@ -109,17 +116,21 @@ $(document).ready(function () {
         pagination.empty().show().append('<li name="prev"><span class="paginator">Prev</span></li>');
 
         // Add page links as necessary
-        for (i = 0; i < totalPages; i += 1) {
+        for (i = 0; i < /*defaults.maxPageNums*/totalPages; i += 1) {
             thisPage = i + 1;
             pagination.append('<li name="' + thisPage + '"><span class="paginator pageNumber' + ((pageNum === thisPage) ? ' active' : '')  + '">' + thisPage + '</span></li>');
         }
 
+        // if (defaults.maxPageNums < totalPages) {
+        //     console.log('true');
+        //     pagination.append('<li class="dots"><span class="">...</span></li>');
+        // }
+
         // Always put in the 'next' button
         pagination.append('<li name="next"><span class="paginator">Next</span></li>');
 
-        if (currentPage === 1) {
-            $('.pagination li[name=prev]').addClass('disabled');
-        }
+        // Make sure the prev and next buttons gray out at appropriate times
+        handle_prev_next(totalPages);
     }
     
     function update_filters(data) {
@@ -461,7 +472,7 @@ $(document).ready(function () {
     */
 
     // Define what to do when we click on a non-disabled paginator
-    $(document).on('click', '.pagination li:not(.disabled)', function (e) {
+    $(document).on('click', '.pagination li:not(.disabled):not(.dots)', function (e) {
         var that = $(this), pageNum = that.attr('name');
 
         // Die if we're already on that page
