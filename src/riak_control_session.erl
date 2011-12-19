@@ -258,8 +258,6 @@ get_member_info (_Member={Node,Status},Ring) ->
 %% run locally per-node, collects information about this node for the session
 get_my_info () ->
     {Total,Used,_}=memsup:get_memory_data(),
-    {ok,Handoffs}=riak_core_handoff_manager:handoff_status(),
-    Senders=proplists:get_value(senders,Handoffs),
 
     %% construct the member information for this node
     #member_info{ node=node(),
@@ -267,8 +265,7 @@ get_my_info () ->
                   mem_total=Total,
                   mem_used=Used,
                   mem_erlang=proplists:get_value(total,erlang:memory()),
-                  vnodes=riak_core_vnode_manager:all_vnodes(),
-                  handoffs=Senders
+                  vnodes=riak_core_vnode_manager:all_vnodes()
                 }.
 
 %% each node knows about its set of handoffs, collect them all together
