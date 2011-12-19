@@ -16,42 +16,60 @@ $(document).ready(function () {
         $.riakControl.ringData = $.riakControl.ringData || {};
         $.riakControl.filter = $.riakControl.filter || {
             "ring" : {
-                "dropdown" : "__all_nodes__",
-                "primary"  : true,
-                "fallback" : true
+                "dropdown" : "all",
             }
         };
         get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage);
         get_filters();
     }
     
+    
     function get_filters() {
         $.ajax({
             method:'GET',
             url:'/admin/cluster/list',
             dataType:'json',
-            success:update_filters,
+            success:function (d) {
+                update_filters(d);
+            }
         });
     }
     
-    function get_partitions(pageNum, amountPerPage) {
+    // filterData should be an object like this...
+    // {filter: 'fallback', drawRing: true}
+    // if we changed the filter, we want to redraw the ring
+    function get_partitions(pageNum, amountPerPage, filterData) {
+        var urlBuilder = '/admin/ring/partitions?p=' + pageNum + '&n=' + amountPerPage, redraw;
+        if (filterData) {
+            urlBuilder += '&filter=';
+            if (filterData.filter.slice(0, 5) === 'node:') {
+                urlBuilder += ('node&q=' + filterData.filter.slice(5));
+            } else {
+                urlBuilder += filterData.filter;
+            }
+        } else {
+            redraw = false;
+        }
+        console.log(urlBuilder);
         $.ajax({
             method:'GET',
-            url:'/admin/ring/partitions?p=' + pageNum + '&n=' + amountPerPage,
+            url: urlBuilder,
             dataType:'json',
             failure:ping_partitions,
             success: function (d) {
+                //update_filters(d.nodes);
                 draw_pagination(d.page, d.pages);
-                update_partitions(d.contents);
+                update_partitions(d.contents, (filterData) ? filterData.redrawRing : redraw);
             }
         });
     }
 
     function draw_pagination(pageNum, totalPages) {
-        var i, pagination, thisPage;
+        var i, pagination, thisPage, isDrawn = $('.paginator').length;
+
 
         // Die if we don't need to change anything
-        if (pageNum === currentPage && totalPages === pageAmount) {
+        if (pageNum === currentPage && totalPages === pageAmount && isDrawn) {
             return false;
         }
 
@@ -78,7 +96,8 @@ $(document).ready(function () {
         }
 
         // Don't redraw pagination if the amount of pages hasn't changed
-        if (totalPages === pageAmount) {
+        // and the pagination already exists visually
+        if (totalPages === pageAmount && isDrawn) {
             return false;
         }
 
@@ -107,14 +126,16 @@ $(document).ready(function () {
         var html = '', i, l = data.length;
     
         // add the all options
-        html += '<option value="__all_nodes__">All Owners</option>';
+        html += '<option value="all">All</option>';
+        html += '<option value="fallback">Fallback Nodes</option>';
+        html += '<option value="handoff">Handoffs</option>';
         html += '<option value="">-------------------------</option>';
     
         for(i = 0; i < l; i += 1) {
             var node = data[i].name;
     
             // add this node as an option
-            html += '<option value="' + node + '">';
+            html += '<option value="node:' + node + '">';
             html += (node + '</option>');
         }
     
@@ -122,7 +143,10 @@ $(document).ready(function () {
         
         
         // update the page
-        $('#filter').html(html);
+        if (!$.riakControl.filter.ring.prevFilters || $.riakControl.filter.ring.prevFilters !== html) {
+            $.riakControl.filter.ring.prevFilters = html;
+            $('#filter').html(html);
+        }
         
     }
     
@@ -150,6 +174,7 @@ $(document).ready(function () {
         }
     }
     
+    /*
     function filter_row_visibility(infoObj, row) {
         // collect all current filter values
         var dropval = $.riakControl.filter.ring.dropdown,
@@ -210,9 +235,11 @@ $(document).ready(function () {
         }
         
     }
+    */
         
     function partition_row(infoObj, updateDraw) {
         // called by update_partitions()
+
         var partitionIndex = infoObj['index'];
         var owner = infoObj.node;
         var numID = infoObj['i'];
@@ -275,7 +302,9 @@ $(document).ready(function () {
 
             // apply proper text, classes, colors, and whatnot
             $('.partition-number', row).text(numID);
-            $('.owner', row).text(owner);
+            if ($('.owner', row).text() !== owner) {
+                $('.owner', row).text(owner);
+            }
             deal_with_lights(infoObj, row);
         }
 
@@ -320,16 +349,21 @@ $(document).ready(function () {
         return true;
     }
         
-    function update_partitions(data) {
+    function update_partitions(data, forceRedraw) {
         // called by get_partitions() which is called by initialize() and ping_partitions()
         
         var i,
-        lowerBound = data[0]['i'],
-        upperBound = data[data.length-1]['i'] + 1,
         partitions = $('.partition').not('.partition-template'),
         drawnPartitions = partitions.length;
 
-        if (!$.riakControl.ringData[lowerBound] && drawnPartitions) {
+        if (!data.length) {
+            $('#no-matches').removeClass('hide');
+        } else {
+            $('#no-matches').addClass('hide');
+        }
+
+        //if (data.length && !$.riakControl.ringData[data[0]['i']] && drawnPartitions) {
+        if (forceRedraw) {
             // empty out any drawn partitions that might already exist
             $('#ring-table-body').empty();
             // clear out the current ringData object
@@ -337,29 +371,29 @@ $(document).ready(function () {
         }
 
         // for each object in data array...
-        for (i = lowerBound; i < upperBound; i += 1) {
+        for (i = 0; i < data.length; i += 1) {
             // if we have a length of drawn partitions, we have already drawn the ring
             // this also means we have prepopulated the $.riakControl.ringData object.
             // however, if there is a drawn ring but no item in question in the ringData object,
             // it means that we have moved to a new page of partitions
-            if (drawnPartitions && $.riakControl.ringData[i]) {
+            if (drawnPartitions && $.riakControl.ringData[data[i]['i']]) {
                 // check new data against old data to see if there are status changes
                 // if keys are not equal...
-                if (!keys_are_equal($.riakControl.ringData[i], data[i-lowerBound])) {
+                if (!keys_are_equal($.riakControl.ringData[data[i]['i']], data[i])) {
                     // populate $.riakControl.ringData[data[i].i] with the new data
-                    $.riakControl.ringData[i] = data[i-lowerBound];
+                    $.riakControl.ringData[data[i]['i']] = data[i];
                     // send the corresponding node through the partitioning process
-                    partition_row(data[i-lowerBound], 'update');
+                    partition_row(data[i], 'update');
                 }
                 // send each node through the filtering process
-                filter_row_visibility(data[i-lowerBound], $('#ring-table #partition-' + i));
+                //filter_row_visibility(data[i-lowerBound], $('#ring-table #partition-' + i));
 
             // if we count 0 drawn partitions, we have not drawn the ring
             } else {
                 // populate $.riakControl.ringData[data[i].i] with the new data
-                $.riakControl.ringData[i] = data[i-lowerBound];
+                $.riakControl.ringData[data[i]['i']] = data[i];
                 // send new data through the partitioning process and draw each node
-                partition_row(data[i-lowerBound], 'draw');
+                partition_row(data[i], 'draw');
             }
         }
         
@@ -381,9 +415,17 @@ $(document).ready(function () {
     
     function ping_partitions() {
         mainTimer = setTimeout(function () {
-            if ($('#ring-headline').length && defaults.pingAllowed === true) {
-                get_partitions(currentPage, defaults.partitionsPerPage);
+            var ontheringpage = $('#ring-headline').length;
+            if (ontheringpage && defaults.pingAllowed === true) {
+                get_partitions(currentPage, defaults.partitionsPerPage, {
+                    "filter" : $.riakControl.filter.ring.dropdown,
+                    "redrawRing" : false
+                });
+                get_filters();
             } else {
+                if (!ontheringpage) {
+                    $.riakControl.filter.ring.prevFilters = '';
+                }
                 // If we're not on the ring page or pinging is not allowed, the script dies here.
                 defaults.pingAllowed = false;
             }
@@ -392,10 +434,20 @@ $(document).ready(function () {
     
     // Define what to do when the filter dropdown value changes 
     $(document).on('change', '#filter', function (e) {
-        $.riakControl.filter.ring.dropdown = $(this).val();
+        var val = $(this).val();
+        if (val) {
+            $.riakControl.filter.ring.dropdown = $(this).val();
+        }
+        currentPage = 1;
+        clearTimeout(mainTimer);
+        get_partitions(currentPage, defaults.partitionsPerPage, {
+            "filter" : $.riakControl.filter.ring.dropdown,
+            "redrawRing" : true
+        });
     });
 
     // Define what to do when the filter checkboxes change
+    /*
     $(document).on('change', '#ring-filter .gui-checkbox', function (e) {
         var me = $(this), myID = me.attr('id');
         if (myID === 'primary-nodes') {
@@ -406,6 +458,7 @@ $(document).ready(function () {
             (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.handoff = true : $.riakControl.filter.ring.handoff = false;
         }
     });
+    */
 
     // Define what to do when we click on a non-disabled paginator
     $(document).on('click', '.pagination li:not(.disabled)', function (e) {
@@ -423,18 +476,27 @@ $(document).ready(function () {
             if (currentPage > 1) {
                 $('.paginator.active').removeClass('active');
                 $('.pagination li[name=' + (currentPage - 1) + '] .paginator').addClass('active');
-                get_partitions(currentPage - 1, defaults.partitionsPerPage);
+                get_partitions(currentPage - 1, defaults.partitionsPerPage, {
+                    "filter" : $.riakControl.filter.ring.dropdown,
+                    "redrawRing" : true
+                });
             }
         } else if (pageNum === 'next') {
             if (currentPage < pageAmount) {
                 $('.paginator.active').removeClass('active');
                 $('.pagination li[name=' + (currentPage + 1) + '] .paginator').addClass('active');
-                get_partitions(currentPage + 1, defaults.partitionsPerPage);
+                get_partitions(currentPage + 1, defaults.partitionsPerPage, {
+                    "filter" : $.riakControl.filter.ring.dropdown,
+                    "redrawRing" : true
+                });
             }
         } else {
             $('.paginator.active').removeClass('active');
             $('.pagination li[name=' + pageNum + '] .paginator').addClass('active');
-            get_partitions(pageNum, defaults.partitionsPerPage);
+            get_partitions(pageNum, defaults.partitionsPerPage, {
+                "filter" : $.riakControl.filter.ring.dropdown,
+                "redrawRing" : true
+            });
         }
     });
     
@@ -446,6 +508,7 @@ $(document).ready(function () {
     $.riakControl.sub('templateSwitch', function (templateName) {
         if (templateName === 'ring') {
             defaults.pingAllowed = true;
+            $.riakControl.filter.ring.dropdown = '';
             initialize();
         }
     });

@@ -1,5 +1,6 @@
 
 <div id="ring-filter" class="right">
+    <!--
     <div class="gui-checkbox-wrapper">
         <input id="primary-nodes" class="gui-checkbox" type="checkbox" name="ringfilter" checked="checked" />
         <span class="gui-text">Primary&nbsp;&nbsp;&nbsp;</span>
@@ -8,12 +9,14 @@
         <input id="fallback-nodes" class="gui-checkbox" type="checkbox" name="ringfilter" checked="checked" />
         <span class="gui-text">Fallback&nbsp;&nbsp;&nbsp;</span>
     </div>
+    -->
     <!--
     <div class="gui-checkbox-wrapper">
         <input id="handoff-nodes" class="gui-checkbox" type="checkbox" name="ringfilter" checked="checked" />
         <span class="gui-text">Handoff&nbsp;&nbsp;&nbsp;</span>
     </div>
     -->
+    <h4 class="gui-headline">Filter</h4>
     <select id="filter">
         <option value="/admin/ring/partitions">All</option>
     </select>

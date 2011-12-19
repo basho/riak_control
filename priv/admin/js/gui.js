@@ -186,7 +186,7 @@ $(function() {
 
     // Memory usage
     $(document).on('mouseover', '.membar-bg, .free-memory', function () {
-        var parent = $(this).parent(),
+        var parent = $(this).parent(), 
             free_mem = parent.find('.free-memory').text(),
             erlang_mem, non_erlang_mem;
         if (free_mem.charAt(0) === '?') {
@@ -195,7 +195,7 @@ $(function() {
             free_mem = parseInt(free_mem);
             erlang_mem = parseInt(parent.find('.erlang-mem').attr('name'));
             non_erlang_mem = parseInt(parent.find('.non-erlang-mem').attr('name'));
-        displayTips('The machine running this node currently has ' + free_mem + '% free memory.  Of the ' + (erlang_mem + non_erlang_mem) + '% currently in use, ' + erlang_mem + '% is being used by Riak and ' + non_erlang_mem + '% is being used by other processes.');
+            displayTips('The machine running this node currently has ' + free_mem + '% free memory.  Of the ' + (erlang_mem + non_erlang_mem) + '% currently in use, ' + erlang_mem + '% is being used by Riak and ' + non_erlang_mem + '% is being used by other processes.');
         }
     }).on('mouseout', '.membar-bg, .free-memory', emptyTips);
     
