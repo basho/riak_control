@@ -92,6 +92,12 @@ h3.no-pad {
     padding: 0;
 }
 
+h4 {
+    font-size: 20px;
+    padding-bottom: 0px;
+    letter-spacing: 1px;
+}
+
 
 #tooltips {
     position: fixed;
@@ -795,7 +801,7 @@ ul.bulleted li {
 
 /* CODE FOR RING CONTENT */
 #ring-filter {
-    padding-top: 20px;
+    padding-top: 0px;
 }
 
 #partition-list {

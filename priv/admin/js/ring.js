@@ -16,31 +16,40 @@ $(document).ready(function () {
         $.riakControl.ringData = $.riakControl.ringData || {};
         $.riakControl.filter = $.riakControl.filter || {
             "ring" : {
-                "dropdown" : "__all_nodes__",
-                "primary"  : true,
-                "fallback" : true
+                "dropdown" : "all",
             }
         };
         get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage);
         get_filters();
     }
     
+    
     function get_filters() {
         $.ajax({
             method:'GET',
             url:'/admin/cluster/list',
             dataType:'json',
-            success:update_filters,
+            success:function (d) {
+                console.log(d);
+                //update_filters(d);
+            }
         });
     }
     
-    function get_partitions(pageNum, amountPerPage) {
+    
+    function get_partitions(pageNum, amountPerPage, filterData) {
+        var urlBuilder = '/admin/ring/partitions?&p=' + pageNum + '&n=' + amountPerPage;
+        if (filterData) {
+            //urlBuilder += 
+        }
         $.ajax({
             method:'GET',
-            url:'/admin/ring/partitions?p=' + pageNum + '&n=' + amountPerPage,
+            url: urlBuilder,
             dataType:'json',
             failure:ping_partitions,
             success: function (d) {
+                console.log(d);
+                //update_filters(d.nodes);
                 draw_pagination(d.page, d.pages);
                 update_partitions(d.contents);
             }
@@ -48,10 +57,10 @@ $(document).ready(function () {
     }
 
     function draw_pagination(pageNum, totalPages) {
-        var i, pagination, thisPage;
+        var i, pagination, thisPage, isDrawn = $('.paginator').length;
 
         // Die if we don't need to change anything
-        if (pageNum === currentPage && totalPages === pageAmount) {
+        if (pageNum === currentPage && totalPages === pageAmount && isDrawn) {
             return false;
         }
 
@@ -78,7 +87,8 @@ $(document).ready(function () {
         }
 
         // Don't redraw pagination if the amount of pages hasn't changed
-        if (totalPages === pageAmount) {
+        // and the pagination already exists visually
+        if (totalPages === pageAmount && isDrawn) {
             return false;
         }
 
@@ -107,7 +117,9 @@ $(document).ready(function () {
         var html = '', i, l = data.length;
     
         // add the all options
-        html += '<option value="__all_nodes__">All Owners</option>';
+        html += '<option value="all">All</option>';
+        html += '<option value="fallback">Fallback Nodes</option>';
+        html += '<option value="handoffs">Handoffs</option>';
         html += '<option value="">-------------------------</option>';
     
         for(i = 0; i < l; i += 1) {
@@ -150,6 +162,7 @@ $(document).ready(function () {
         }
     }
     
+    /*
     function filter_row_visibility(infoObj, row) {
         // collect all current filter values
         var dropval = $.riakControl.filter.ring.dropdown,
@@ -210,6 +223,7 @@ $(document).ready(function () {
         }
         
     }
+    */
         
     function partition_row(infoObj, updateDraw) {
         // called by update_partitions()
@@ -352,7 +366,7 @@ $(document).ready(function () {
                     partition_row(data[i-lowerBound], 'update');
                 }
                 // send each node through the filtering process
-                filter_row_visibility(data[i-lowerBound], $('#ring-table #partition-' + i));
+                //filter_row_visibility(data[i-lowerBound], $('#ring-table #partition-' + i));
 
             // if we count 0 drawn partitions, we have not drawn the ring
             } else {
@@ -392,10 +406,14 @@ $(document).ready(function () {
     
     // Define what to do when the filter dropdown value changes 
     $(document).on('change', '#filter', function (e) {
-        $.riakControl.filter.ring.dropdown = $(this).val();
+        var val = $(this).val();
+        if (val) {
+            $.riakControl.filter.ring.dropdown = $(this).val();
+        }
     });
 
     // Define what to do when the filter checkboxes change
+    /*
     $(document).on('change', '#ring-filter .gui-checkbox', function (e) {
         var me = $(this), myID = me.attr('id');
         if (myID === 'primary-nodes') {
@@ -406,6 +424,7 @@ $(document).ready(function () {
             (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.handoff = true : $.riakControl.filter.ring.handoff = false;
         }
     });
+    */
 
     // Define what to do when we click on a non-disabled paginator
     $(document).on('click', '.pagination li:not(.disabled)', function (e) {
