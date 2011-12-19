@@ -73,7 +73,11 @@ to_json (Req,C=Partitions) ->
 
 %% filter a ring based on a given filter name
 filter_partitions (Req,PS,"node") ->
-    Node=wrq:get_qs_value("q",Req),
+    Node=try
+             list_to_existing_atom(wrq:get_qs_value("q","undefined",Req))
+         catch
+             _:_ -> undefined
+         end,
     [P || P=#partition_info{owner=N} <- PS, N==Node];
 filter_partitions (_Req,PS,"fallback") ->
     [P || P=#partition_info{vnodes=V} <- PS,

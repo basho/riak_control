@@ -259,6 +259,7 @@ get_member_info (_Member={Node,Status},Ring) ->
 get_my_info () ->
     {Total,Used,_}=memsup:get_memory_data(),
     {ok,Handoffs}=riak_core_handoff_manager:handoff_status(),
+    Senders=proplists:get_value(senders,Handoffs),
 
     %% construct the member information for this node
     #member_info{ node=node(),
@@ -267,7 +268,7 @@ get_my_info () ->
                   mem_used=Used,
                   mem_erlang=proplists:get_value(total,erlang:memory()),
                   vnodes=riak_core_vnode_manager:all_vnodes(),
-                  handoffs=[HS || {_Status,HS} <- Handoffs]
+                  handoffs=Senders
                 }.
 
 %% each node knows about its set of handoffs, collect them all together
@@ -275,14 +276,14 @@ get_all_handoffs(_State=#state{nodes=Members}) ->
     lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
 
 %% return a proplist of details for a given index
-get_partition_details (#state{services=Services,ring=Ring},{Idx,Owner},HS) ->
+get_partition_details (#state{services=Services,ring=Ring},{Idx,Owner},_HS) ->
     Statuses=[get_vnode_status(Service,Ring,Idx) || Service <- Services],
-    Handoffs=[{M,N} || #handoff{module=M,index=I,target_node=N} <- HS, I==Idx],
+    %Handoffs=[{M,N} || #sender{module=M,index=I,target_node=N} <- HS, I==Idx],
     #partition_info{ index=Idx,
                      partition=partition_index(Ring,Idx),
                      owner=Owner,
                      vnodes=Statuses,
-                     handoffs=Handoffs
+                     handoffs=[]%Handoffs
                    }.
 
 %% get the partition number of a given index
