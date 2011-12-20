@@ -393,29 +393,53 @@ $(document).ready(function () {
         
         var i,
         partitions = $('.partition').not('.partition-template'),
-        drawnPartitions = partitions.length;
+        drawnPartitions = partitions.length,
+        toRemove = {}, j;
 
         if (!data.length) {
-            $('#no-matches').removeClass('hide');
+            if (!drawnPartitions || forceRedraw) {
+                $('#no-matches').removeClass('hide');
+            }
         } else {
             $('#no-matches').addClass('hide');
         }
 
-        //if (data.length && !$.riakControl.ringData[data[0]['i']] && drawnPartitions) {
-        if (forceRedraw) {
+        if (forceRedraw /*|| $.riakControl.filter.ring.dropdown === 'handoff'*/) {
             // empty out any drawn partitions that might already exist
             $('#ring-table-body').empty();
             // clear out the current ringData object
             $.riakControl.ringData = {};
+            partitions = [];
+            drawnPartitions = 0;
         }
+
+        // make a list called 'toRemove' of all partition numbers corresponding to nodes on the page
+        if (drawnPartitions) {
+            for (i = 0; i < drawnPartitions; i += 1) {
+                j = $('#' + partitions[i].getAttribute('id'));
+                toRemove[j.attr('id').split('-')[1]] = j[0];
+            }
+        }
+
+        window.x = toRemove;
 
         // for each object in data array...
         for (i = 0; i < data.length; i += 1) {
-            // if we have a length of drawn partitions, we have already drawn the ring
+            // if we have a length of drawn partitions, we have already drawn the ring.
             // this also means we have prepopulated the $.riakControl.ringData object.
-            // however, if there is a drawn ring but no item in question in the ringData object,
-            // it means that we have moved to a new page of partitions in which case we would
-            // need to redraw
+            // however, if there is a drawn ring but no currentitem (i) in the ringData object,
+            // it means that we have either moved to a new page of partitions in which case we would
+            // need to redraw or that something has changed, for example if handoffs are going on.
+            // so if there are items on the page that are not in the data, we need to remove them
+
+            // check to see if there is a node on the page that corresponds to the current dataitem
+            // if so, remove that one from toRemove
+            if (toRemove[data[i]['i']]) {
+                delete toRemove[data[i]['i']];
+            }
+            // in the end, toRemove will only contain nodes that were not in the data and must be removed
+
+            // If we have visible partitions and the item in question is already in our stored data...
             if (drawnPartitions && $.riakControl.ringData[data[i]['i']]) {
                 // check new data against old data to see if there are status changes
                 // if keys are not equal...
@@ -435,6 +459,17 @@ $(document).ready(function () {
                 // send new data through the partitioning process and draw each node
                 partition_row(data[i], 'draw');
             }
+        }
+
+        // Remove all nodes left in the toRemove object from the DOM
+        for (i in toRemove) {
+            if (Object.prototype.hasOwnProperty.call(toRemove, i)) {
+                $('#' + toRemove[i].getAttribute('id')).remove();
+            }
+        }
+
+        if (!$('.partition').not('.partition-template').length) {
+            $('#no-matches').removeClass('hide');
         }
         
         
