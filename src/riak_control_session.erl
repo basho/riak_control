@@ -273,14 +273,14 @@ get_all_handoffs(_State=#state{nodes=Members}) ->
     lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
 
 %% return a proplist of details for a given index
-get_partition_details (#state{services=Services,ring=Ring},{Idx,Owner},_HS) ->
+get_partition_details (#state{services=Services,ring=Ring},{Idx,Owner},HS) ->
     Statuses=[get_vnode_status(Service,Ring,Idx) || Service <- Services],
-    %Handoffs=[{M,N} || #sender{module=M,index=I,target_node=N} <- HS, I==Idx],
+    Handoffs=[{M,N} || #sender{module=M,index=I,target_node=N} <- HS, I==Idx],
     #partition_info{ index=Idx,
                      partition=partition_index(Ring,Idx),
                      owner=Owner,
                      vnodes=Statuses,
-                     handoffs=[]%Handoffs
+                     handoffs=Handoffs
                    }.
 
 %% get the partition number of a given index
