@@ -552,8 +552,14 @@ $(document).ready(function () {
     $.riakControl.sub('templateSwitch', function (templateName) {
         if (templateName === 'ring') {
             defaults.pingAllowed = true;
+            visibleNumbers = [];
             $.riakControl.filter.ring.dropdown = '';
-            initialize();
+            get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage, {
+                "filter" : $.riakControl.filter.ring.dropdown,
+                "redrawRing" : true,
+                "redrawPagination" : 'up'
+            });
+            get_filters();
         }
     });
     
