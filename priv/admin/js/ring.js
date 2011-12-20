@@ -561,7 +561,7 @@ $(document).ready(function () {
         if (templateName === 'ring') {
             defaults.pingAllowed = true;
             visibleNumbers = [];
-            //$.riakControl.filter.ring.dropdown = '';
+            $.riakControl.filter.ring.dropdown = '';
             $.riakControl.filter.ring.prevFilters = null;
             if (mainTimer) {
                 clearTimeout(mainTimer);
