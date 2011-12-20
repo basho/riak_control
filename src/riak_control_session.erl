@@ -57,10 +57,10 @@
         }).
 
 %% hack: periodically update the ring with itself
--define(INTERVAL, 500).
+-define(INTERVAL, 3000).
 
 %% delay used after a ring update
--define(UPDATE_TICK_TIMEOUT, 100).
+-define(UPDATE_TICK_TIMEOUT, 1000).
 
 %% ===================================================================
 %% Public API
