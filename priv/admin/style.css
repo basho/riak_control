@@ -286,6 +286,41 @@ h4 {
     -webkit-text-stroke: none;
 }
 
+/* CODE FOR DROPDOWNS */
+.gui-dropdown-wrapper {
+    height: 30px;
+    background: url(/admin/ui/images/dropdown-left.png) left top no-repeat transparent;
+    position: relative;
+}
+.gui-dropdown-bg {
+    padding-top: 8px;
+    padding-left: 5px;
+    height: 22px;
+    font-size: 14px;
+    width: auto;
+    background: url(/admin/ui/images/dropdown-bg.png) left top repeat-x transparent;
+    margin-left: 10px;
+    margin-right: 28px;
+}
+.gui-dropdown-cap {
+    height: 30px;
+    width: 30px;
+    background: url(/admin/ui/images/dropdown-right.png) right top no-repeat transparent;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.gui-dropdown {
+    border: 0;
+    height: 30px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    outline: none;
+    float: left;
+    margin-top: -30px;
+}
+/* END CODE FOR DROPDOWNS */
+
 /* CODE FOR CHECKBOXES */
 .gui-checkbox-wrapper {
     height: 20px;
@@ -744,6 +779,9 @@ ul.bulleted li {
     text-align: center;
     font-size: 12px;
 }
+.pagination-bottom {
+    margin-bottom: 36px;
+}
 
 .pagination li {
     display: inline-block;
@@ -888,6 +926,7 @@ ul.bulleted li {
 .monospace {font-family: menlo, monospace;}
 .bold      {font-weight: bold;}
 .emphasize {font-size: 110%;}
+.smaller   {font-size: 90%;}
 .relative  {position: relative;}
 .gray-text {color: #666;}
 

@@ -54,6 +54,12 @@ $(function() {
         indicator.animate({"top":me.position().top},{queue:false,duration:200});   
     });
     
+
+    /* MAKE DROPDOWNS WORK */
+    $(document).on('change', '.gui-dropdown', function (e) {
+        var me = $(this), textSpot = me.prev().prev(), selected = me.find('option:selected').text();
+        textSpot.text(selected);
+    });
     
     
     /*

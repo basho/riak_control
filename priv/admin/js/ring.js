@@ -138,7 +138,7 @@ $(document).ready(function () {
 
         // Draw right hand dots
         newLastVisible = visibleNumbers[visibleNumbers.length - 1] || 0;
-        if ((defaults.maxPageNums + newLastVisible) < totalPages) {
+        if (newLastVisible < totalPages) {
             pagination.append('<li class="dots"><span class="">...</span></li>');
         }
 
@@ -159,7 +159,7 @@ $(document).ready(function () {
         var html = '', i, l = data.length;
     
         // add the all options
-        html += '<option value="all">All</option>';
+        html += '<option value="all">All Owners</option>';
         html += '<option value="fallback">Fallback Nodes</option>';
         html += '<option value="handoff">Handoffs</option>';
         html += '<option value="">-------------------------</option>';
@@ -179,6 +179,12 @@ $(document).ready(function () {
         if (!$.riakControl.filter.ring.prevFilters || $.riakControl.filter.ring.prevFilters !== html) {
             $.riakControl.filter.ring.prevFilters = html;
             $('#filter').html(html);
+        }
+
+        if ($.riakControl.filter.ring.prevFilters && $.riakControl.filter.ring.prevFilters !== html) {
+            $('#filter').trigger('change');
+        } else {
+            $('#filter').prev().prev().text($('#filter option:selected').text());
         }
         
     }
@@ -408,7 +414,8 @@ $(document).ready(function () {
             // if we have a length of drawn partitions, we have already drawn the ring
             // this also means we have prepopulated the $.riakControl.ringData object.
             // however, if there is a drawn ring but no item in question in the ringData object,
-            // it means that we have moved to a new page of partitions
+            // it means that we have moved to a new page of partitions in which case we would
+            // need to redraw
             if (drawnPartitions && $.riakControl.ringData[data[i]['i']]) {
                 // check new data against old data to see if there are status changes
                 // if keys are not equal...
@@ -472,6 +479,7 @@ $(document).ready(function () {
             $.riakControl.filter.ring.dropdown = $(this).val();
         }
         currentPage = 1;
+        visibleNumbers = [];
         clearTimeout(mainTimer);
         get_partitions(currentPage, defaults.partitionsPerPage, {
             "filter" : $.riakControl.filter.ring.dropdown,
@@ -480,7 +488,7 @@ $(document).ready(function () {
     });
 
     // Define what to do when the filter checkboxes change
-    /*
+    /* As of now there are no checkboxes on this page
     $(document).on('change', '#ring-filter .gui-checkbox', function (e) {
         var me = $(this), myID = me.attr('id');
         if (myID === 'primary-nodes') {
@@ -494,7 +502,7 @@ $(document).ready(function () {
     */
 
     // Define what to do when we click on a non-disabled paginator
-    $(document).on('click', '.pagination li:not(.disabled):not(.dots)', function (e) {
+    $(document).on('click', '.pagination li:not(.disabled):not(.dots):not(.active)', function (e) {
         var that = $(this), pageNum = that.attr('name'), 
             firstVisible = visibleNumbers[0], 
             lastVisible = visibleNumbers[visibleNumbers.length - 1],
@@ -553,7 +561,11 @@ $(document).ready(function () {
         if (templateName === 'ring') {
             defaults.pingAllowed = true;
             visibleNumbers = [];
-            $.riakControl.filter.ring.dropdown = '';
+            //$.riakControl.filter.ring.dropdown = '';
+            $.riakControl.filter.ring.prevFilters = null;
+            if (mainTimer) {
+                clearTimeout(mainTimer);
+            }
             get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage, {
                 "filter" : $.riakControl.filter.ring.dropdown,
                 "redrawRing" : true,

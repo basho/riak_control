@@ -17,9 +17,13 @@
     </div>
     -->
     <h4 class="gui-headline">Filter</h4>
-    <select id="filter">
-        <option value="/admin/ring/partitions">All</option>
-    </select>
+    <div class="gui-dropdown-wrapper">
+        <div class="gui-dropdown-bg gui-text smaller"></div>
+        <div class="gui-dropdown-cap left"></div>
+        <select id="filter" class="gui-dropdown">
+            <option value="/admin/ring/partitions">All</option>
+        </select>
+    </div>
 </div>
 
 <h1 id="ring-headline" class="gui-headline-bold">
@@ -61,7 +65,7 @@
     </table>
 </div>
 
-<ul class="pagination gui-text"></ul>
+<ul class="pagination gui-text pagination-bottom"></ul>
 
 
 
