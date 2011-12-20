@@ -759,6 +759,8 @@ ul.bulleted li {
 .pagination li.dots {
     background: none;
     border: 0;
+    letter-spacing: 1px;
+    padding: 2px 4px;
 }
 
 .paginator {

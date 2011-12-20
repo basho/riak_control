@@ -6,10 +6,10 @@ $(document).ready(function () {
         "pingAllowed"       : true,
         "onLoadPageNum"     : 1,
         "partitionsPerPage" : 64,
-        "maxPageNums"       : 5
+        "maxPageNums"       : 10
     };
 
-    var currentPage, pageAmount, mainTimer;
+    var currentPage, pageAmount, mainTimer, visibleNumbers = [];
 
     function initialize() {
         // Make sure our data holders exist
@@ -58,7 +58,7 @@ $(document).ready(function () {
             failure:ping_partitions,
             success: function (d) {
                 //update_filters(d.nodes);
-                draw_pagination(d.page, d.pages);
+                draw_pagination(d.page, d.pages, (filterData) ? filterData.redrawPagination : false);
                 update_partitions(d.contents, (filterData) ? filterData.redrawRing : redraw);
             }
         });
@@ -73,7 +73,6 @@ $(document).ready(function () {
             }
 
             if (currentPage === totalPages) {
-                console.log($('.pagination li[name=next]'));
                 $('.pagination li[name=next]').addClass('disabled');
             } else {
                 $('.pagination li[name=next]').removeClass('disabled');
@@ -81,8 +80,10 @@ $(document).ready(function () {
         }
     }
 
-    function draw_pagination(pageNum, totalPages) {
-        var i, pagination, thisPage, isDrawn = $('.paginator').length;
+    function draw_pagination(pageNum, totalPages, forceRedraw) {
+        var i, pagination, thisPage, isDrawn = $('.paginator').length, 
+            lastVisible = visibleNumbers[visibleNumbers.length - 1] || 0, 
+            firstVisible, newLastVisible, newFirstVisible;
 
         // Die if we don't need to change anything
         if (pageNum === currentPage && totalPages === pageAmount && isDrawn) {
@@ -92,17 +93,11 @@ $(document).ready(function () {
         // Keep track of the current page since we have now changed pages
         currentPage = pageNum;
 
-        /*
-        // Die if there is only one page
-        if (totalPages === 1) {
-            $('.pagination').hide();
-            return false;
-        }
-        */
-
         // Don't redraw pagination if the amount of pages hasn't changed
         // and the pagination already exists visually
-        if (totalPages === pageAmount && isDrawn) {
+        // and we don't need to redraw a new set of page numbers because there
+        // are more pages than maxPageNums
+        if (totalPages === pageAmount && isDrawn && !forceRedraw) {
             // Make sure the prev and next buttons gray out at appropriate times
             handle_prev_next(totalPages);
             return false;
@@ -113,18 +108,45 @@ $(document).ready(function () {
         pagination = $('.pagination');
 
         // Always put in the 'previous' button
-        pagination.empty().show().append('<li name="prev"><span class="paginator">Prev</span></li>');
+        pagination.empty().append('<li name="prev"><span class="paginator">Prev</span></li>');
 
         // Add page links as necessary
-        for (i = 0; i < /*defaults.maxPageNums*/totalPages; i += 1) {
-            thisPage = i + 1;
-            pagination.append('<li name="' + thisPage + '"><span class="paginator pageNumber' + ((pageNum === thisPage) ? ' active' : '')  + '">' + thisPage + '</span></li>');
+        if (!forceRedraw || forceRedraw === 'up') {
+            // Since we're redrawing the pagination, we need to reset our collection of visible numbers
+            visibleNumbers = [];
+            for (i = lastVisible; i < (defaults.maxPageNums + lastVisible); i += 1) {
+                thisPage = i + 1;
+                if (thisPage > totalPages) {
+                    break;
+                }
+                visibleNumbers.push(thisPage);
+                pagination.append('<li name="' + thisPage + '"><span class="paginator pageNumber' + ((pageNum === thisPage) ? ' active' : '')  + '">' + thisPage + '</span></li>');
+            }
+        } else if (forceRedraw === 'down') {
+            // Figure out which number is first in the current pagination before we empty it out
+            firstVisible = visibleNumbers[0];
+            // Since we're redrawing the pagination, we need to reset our collection of visible numbers
+            visibleNumbers = [];
+            for ((i = firstVisible - defaults.maxPageNums); i < firstVisible; i += 1) {
+                if (i > totalPages) {
+                    break;
+                }
+                visibleNumbers.push(i);
+                pagination.append('<li name="' + i + '"><span class="paginator pageNumber' + ((pageNum === i) ? ' active' : '')  + '">' + i + '</span></li>');
+            }
         }
 
-        // if (defaults.maxPageNums < totalPages) {
-        //     console.log('true');
-        //     pagination.append('<li class="dots"><span class="">...</span></li>');
-        // }
+        // Draw right hand dots
+        newLastVisible = visibleNumbers[visibleNumbers.length - 1] || 0;
+        if ((defaults.maxPageNums + newLastVisible) < totalPages) {
+            pagination.append('<li class="dots"><span class="">...</span></li>');
+        }
+
+        // Draw left hand dots
+        newFirstVisible = visibleNumbers[0];
+        if (newFirstVisible > 1) {
+            pagination.find('li[name=prev]').after('<li class="dots"><span class="">...</span></li>');
+        }
 
         // Always put in the 'next' button
         pagination.append('<li name="next"><span class="paginator">Next</span></li>');
@@ -473,7 +495,10 @@ $(document).ready(function () {
 
     // Define what to do when we click on a non-disabled paginator
     $(document).on('click', '.pagination li:not(.disabled):not(.dots)', function (e) {
-        var that = $(this), pageNum = that.attr('name');
+        var that = $(this), pageNum = that.attr('name'), 
+            firstVisible = visibleNumbers[0], 
+            lastVisible = visibleNumbers[visibleNumbers.length - 1],
+            redrawPagination;
 
         // Die if we're already on that page
         if (pageNum === currentPage) {
@@ -484,21 +509,29 @@ $(document).ready(function () {
         clearTimeout(mainTimer);
 
         if (pageNum === 'prev') {
+            if (currentPage === firstVisible && firstVisible > 1) {
+                redrawPagination = 'down';
+            }
             if (currentPage > 1) {
                 $('.paginator.active').removeClass('active');
                 $('.pagination li[name=' + (currentPage - 1) + '] .paginator').addClass('active');
                 get_partitions(currentPage - 1, defaults.partitionsPerPage, {
                     "filter" : $.riakControl.filter.ring.dropdown,
-                    "redrawRing" : true
+                    "redrawRing" : true,
+                    "redrawPagination" : redrawPagination
                 });
             }
         } else if (pageNum === 'next') {
+            if (currentPage === lastVisible) {
+                redrawPagination = 'up';
+            }
             if (currentPage < pageAmount) {
                 $('.paginator.active').removeClass('active');
                 $('.pagination li[name=' + (currentPage + 1) + '] .paginator').addClass('active');
                 get_partitions(currentPage + 1, defaults.partitionsPerPage, {
                     "filter" : $.riakControl.filter.ring.dropdown,
-                    "redrawRing" : true
+                    "redrawRing" : true,
+                    "redrawPagination" : redrawPagination
                 });
             }
         } else {
