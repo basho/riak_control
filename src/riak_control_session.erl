@@ -44,7 +44,6 @@
 -export([get_my_info/0]).
 
 %% record definitions
--include_lib("riak_core/include/riak_core_handoff.hrl").
 -include_lib("riak_control/include/riak_control.hrl").
 
 -record(state,
@@ -277,7 +276,7 @@ get_all_handoffs(#state{nodes=Members}) ->
 %% return a proplist of details for a given index
 get_partition_details (#state{services=Services,ring=Ring},{Idx,Owner},HS) ->
     Statuses=[get_vnode_status(Service,Ring,Idx) || Service <- Services],
-    Handoffs=[{M,N} || #handoff{module=M,index=I,node=N} <- HS, I==Idx],
+    Handoffs=[{Mod,Node} || {Mod,I,Node} <- HS, I==Idx],
     #partition_info{ index=Idx,
                      partition=partition_index(Ring,Idx),
                      owner=Owner,
