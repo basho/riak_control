@@ -25,14 +25,16 @@
 -type service()       :: atom().
 -type services()      :: [{service(),home()}].
 -type owner()         :: atom().
--type vnode()         :: {{atom(),atom()},atom()}.
+-type vnode()         :: {{atom(),atom()},atom()}. % {{Idx,Node},Status}
+-type handoff()       :: {{atom(),atom()},atom()}. % {{Mod,Idx},TargetNode}
 -type online()        :: boolean().
 
 -record(partition_info,
         { index       :: index(),
           partition   :: integer(),
           owner       :: owner(),
-          vnodes      :: services()
+          vnodes      :: services(),
+          handoffs    :: [handoff()]
         }).
 
 -record(member_info,
@@ -40,6 +42,7 @@
           status      :: status(),
           reachable   :: boolean(),
           vnodes      :: [vnode()],
+          handoffs    :: [handoff()],
           ring_pct    :: float(),
           pending_pct :: float(),
           mem_total   :: integer(),

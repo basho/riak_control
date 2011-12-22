@@ -1,55 +1,174 @@
 // polls the ring status every so often
 $(document).ready(function () {
 
-    var pingAllowed = true;
+    var defaults = {
+        "pingFrequency"     : 1000,
+        "pingAllowed"       : true,
+        "onLoadPageNum"     : 1,
+        "partitionsPerPage" : 64,
+        "maxPageNums"       : 10
+    };
 
-    function initialize () {
+    var currentPage, pageAmount, mainTimer, visibleNumbers = [];
+
+    function initialize() {
         // Make sure our data holders exist
         $.riakControl.ringData = $.riakControl.ringData || {};
         $.riakControl.filter = $.riakControl.filter || {
             "ring" : {
-                "dropdown" : "__all_nodes__",
-                "primary"  : true,
-                "fallback" : true
+                "dropdown" : "all",
             }
         };
-        get_partitions();
+        get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage);
         get_filters();
     }
     
-    function get_filters () {
+    
+    function get_filters() {
         $.ajax({
             method:'GET',
             url:'/admin/cluster/list',
             dataType:'json',
-            success:update_filters,
-        });
-    }
-    
-    function get_partitions () {
-        $.ajax({
-            method:'GET',
-            url:'/admin/ring/partitions',
-            dataType:'json',
-            failure:ping_partitions,
-            success: function (d) {
-                update_partitions(d);
+            success:function (d) {
+                update_filters(d);
             }
         });
     }
     
-    function update_filters (data) {
+    // filterData should be an object like this...
+    // {filter: 'fallback', drawRing: true}
+    // if we changed the filter, we want to redraw the ring
+    function get_partitions(pageNum, amountPerPage, filterData) {
+        var urlBuilder = '/admin/ring/partitions?p=' + pageNum + '&n=' + amountPerPage, redraw;
+        if (filterData && filterData.filter) {
+            urlBuilder += '&filter=';
+            if (filterData.filter.slice(0, 5) === 'node:') {
+                urlBuilder += ('node&q=' + filterData.filter.slice(5));
+            } else {
+                urlBuilder += filterData.filter;
+            }
+        } else {
+            redraw = false;
+        }
+
+        $.ajax({
+            method:'GET',
+            url: urlBuilder,
+            dataType:'json',
+            failure:ping_partitions,
+            success: function (d) {
+                //update_filters(d.nodes);
+                draw_pagination(d.page, d.pages, (filterData) ? filterData.redrawPagination : false);
+                update_partitions(d.contents, (filterData) ? filterData.redrawRing : redraw);
+            }
+        });
+    }
+
+    function handle_prev_next(totalPages) {
+        if ($('.pagination li').length) {
+            if (currentPage === 1) {
+                $('.pagination li[name=prev]').addClass('disabled');
+            } else {
+                $('.pagination li[name=prev]').removeClass('disabled');
+            }
+
+            if (currentPage === totalPages) {
+                $('.pagination li[name=next]').addClass('disabled');
+            } else {
+                $('.pagination li[name=next]').removeClass('disabled');
+            }
+        }
+    }
+
+    function draw_pagination(pageNum, totalPages, forceRedraw) {
+        var i, pagination, thisPage, isDrawn = $('.paginator').length, 
+            lastVisible = visibleNumbers[visibleNumbers.length - 1] || 0, 
+            firstVisible, newLastVisible, newFirstVisible;
+
+        // Die if we don't need to change anything
+        if (pageNum === currentPage && totalPages === pageAmount && isDrawn) {
+            return false;
+        }
+
+        // Keep track of the current page since we have now changed pages
+        currentPage = pageNum;
+
+        // Don't redraw pagination if the amount of pages hasn't changed
+        // and the pagination already exists visually
+        // and we don't need to redraw a new set of page numbers because there
+        // are more pages than maxPageNums
+        if (totalPages === pageAmount && isDrawn && !forceRedraw) {
+            // Make sure the prev and next buttons gray out at appropriate times
+            handle_prev_next(totalPages);
+            return false;
+        }
+
+        pageAmount = totalPages;
+
+        pagination = $('.pagination');
+
+        // Always put in the 'previous' button
+        pagination.empty().append('<li name="prev"><span class="paginator">Prev</span></li>');
+
+        // Add page links as necessary
+        if (!forceRedraw || forceRedraw === 'up') {
+            // Since we're redrawing the pagination, we need to reset our collection of visible numbers
+            visibleNumbers = [];
+            for (i = lastVisible; i < (defaults.maxPageNums + lastVisible); i += 1) {
+                thisPage = i + 1;
+                if (thisPage > totalPages) {
+                    break;
+                }
+                visibleNumbers.push(thisPage);
+                pagination.append('<li name="' + thisPage + '"><span class="paginator pageNumber' + ((pageNum === thisPage) ? ' active' : '')  + '">' + thisPage + '</span></li>');
+            }
+        } else if (forceRedraw === 'down') {
+            // Figure out which number is first in the current pagination before we empty it out
+            firstVisible = visibleNumbers[0];
+            // Since we're redrawing the pagination, we need to reset our collection of visible numbers
+            visibleNumbers = [];
+            for ((i = firstVisible - defaults.maxPageNums); i < firstVisible; i += 1) {
+                if (i > totalPages) {
+                    break;
+                }
+                visibleNumbers.push(i);
+                pagination.append('<li name="' + i + '"><span class="paginator pageNumber' + ((pageNum === i) ? ' active' : '')  + '">' + i + '</span></li>');
+            }
+        }
+
+        // Draw right hand dots
+        newLastVisible = visibleNumbers[visibleNumbers.length - 1] || 0;
+        if (newLastVisible < totalPages) {
+            pagination.append('<li class="dots"><span class="">...</span></li>');
+        }
+
+        // Draw left hand dots
+        newFirstVisible = visibleNumbers[0];
+        if (newFirstVisible > 1) {
+            pagination.find('li[name=prev]').after('<li class="dots"><span class="">...</span></li>');
+        }
+
+        // Always put in the 'next' button
+        pagination.append('<li name="next"><span class="paginator">Next</span></li>');
+
+        // Make sure the prev and next buttons gray out at appropriate times
+        handle_prev_next(totalPages);
+    }
+    
+    function update_filters(data) {
         var html = '', i, l = data.length;
     
         // add the all options
-        html += '<option value="__all_nodes__">All Owners</option>';
+        html += '<option value="all">All Owners</option>';
+        html += '<option value="fallback">Fallback Nodes</option>';
+        html += '<option value="handoff">Handoffs</option>';
         html += '<option value="">-------------------------</option>';
     
         for(i = 0; i < l; i += 1) {
             var node = data[i].name;
     
             // add this node as an option
-            html += '<option value="' + node + '">';
+            html += '<option value="node:' + node + '">';
             html += (node + '</option>');
         }
     
@@ -57,11 +176,20 @@ $(document).ready(function () {
         
         
         // update the page
-        $('#filter').html(html);
+        if (!$.riakControl.filter.ring.prevFilters || $.riakControl.filter.ring.prevFilters !== html) {
+            $.riakControl.filter.ring.prevFilters = html;
+            $('#filter').html(html);
+        }
+
+        if ($.riakControl.filter.ring.prevFilters && $.riakControl.filter.ring.prevFilters !== html) {
+            $('#filter').trigger('change');
+        } else {
+            $('#filter').prev().prev().text($('#filter option:selected').text());
+        }
         
     }
     
-    function set_light_color (jqObj, newColor) {
+    function set_light_color(jqObj, newColor) {
         var colors = ['green', 'gray', 'orange', 'red', 'blue'], i, l = colors.length;
         newColor = newColor.toLowerCase();
         for (i = 0; i < l; i += 1) {
@@ -73,7 +201,7 @@ $(document).ready(function () {
         }
     }
 
-    function set_operability_class (jqObj, newClass) {
+    function set_operability_class(jqObj, newClass) {
         var classes = ['unreachable', 'disabled', 'down', 'normal'], i, l = classes.length;
         newClass = newClass.toLowerCase();
         for (i = 0; i < l; i += 1) {
@@ -85,7 +213,8 @@ $(document).ready(function () {
         }
     }
     
-    function filter_row_visibility (infoObj, row) {
+    /*
+    function filter_row_visibility(infoObj, row) {
         // collect all current filter values
         var dropval = $.riakControl.filter.ring.dropdown,
             showfallback = $.riakControl.filter.ring.fallback,
@@ -145,9 +274,11 @@ $(document).ready(function () {
         }
         
     }
+    */
         
-    function partition_row (infoObj, updateDraw) {
+    function partition_row(infoObj, updateDraw) {
         // called by update_partitions()
+
         var partitionIndex = infoObj['index'];
         var owner = infoObj.node;
         var numID = infoObj['i'];
@@ -210,63 +341,106 @@ $(document).ready(function () {
 
             // apply proper text, classes, colors, and whatnot
             $('.partition-number', row).text(numID);
-            $('.owner', row).text(owner);
+            if ($('.owner', row).text() !== owner) {
+                $('.owner', row).text(owner);
+            }
             deal_with_lights(infoObj, row);
         }
 
     }
-        
-    function update_partitions (data) {
-        // called by get_partitions() which is called by initialize() and ping_partitions()
-        
-        var i, l = data.length,
-        partitions = $('.partition').not('.partition-template'),
-        drawnPartitions = partitions.length;
 
-        // define a function to check properties against each other
-        // We're doing it this long, convoluted way to guard against erlang giving
-        // us equal objects where the keys are in a different order
-        function keys_are_equal (oldObj, newObj) {
-            var i; 
-            // loop through the new object because it's more likely to have extra properties
-            for (i in newObj) {
-                // avoid prototypal mistakes
-                if (Object.prototype.hasOwnProperty.call(newObj, i)) {
-                    // we only want to loop through a subobject if we can prove it's JSON for now
-                    if (typeof newObj[i] === 'object' && (oldObj[i] && typeof oldObj[i] === 'object')) {
-                        if (!keys_are_equal(oldObj[i], newObj[i])) {
-                            return false;
-                        }
-                    } else {
-                        if (!oldObj[i] || oldObj[i] !== newObj[i]) {
-                            return false;
-                        }
+    // define a function to check properties against each other
+    // We're doing it this long, convoluted way to guard against erlang giving
+    // us equal objects where the keys are in a different order
+    function keys_are_equal(oldObj, newObj) {
+        var i; 
+        // loop through the new object because it's more likely to have extra properties
+        for (i in newObj) {
+            // avoid prototypal mistakes
+            if (Object.prototype.hasOwnProperty.call(newObj, i)) {
+                // we only want to loop through a subobject if we can prove it's JSON for now
+                if (typeof newObj[i] === 'object' && (oldObj[i] && typeof oldObj[i] === 'object')) {
+                    if (!keys_are_equal(oldObj[i], newObj[i])) {
+                        return false;
+                    }
+                } else {
+                    if (!oldObj[i] || oldObj[i] !== newObj[i]) {
+                        return false;
                     }
                 }
             }
-            // now run over the old object in case the new object did lose keys
-            for (i in oldObj) {
-                if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
-                    if (typeof oldObj[i] === 'object' && (newObj[i] && typeof newObj[i] === 'object')) {
-                        if (!keys_are_equal(newObj[i], oldObj[i])) {
-                            return false;
-                        }
-                    } else {
-                        if (!newObj[i] || newObj[i] !== oldObj[i]) {
-                            return false;
-                        }
+        }
+        // now run over the old object in case the new object did lose keys
+        for (i in oldObj) {
+            if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
+                if (typeof oldObj[i] === 'object' && (newObj[i] && typeof newObj[i] === 'object')) {
+                    if (!keys_are_equal(newObj[i], oldObj[i])) {
+                        return false;
+                    }
+                } else {
+                    if (!newObj[i] || newObj[i] !== oldObj[i]) {
+                        return false;
                     }
                 }
             }
-            //console.log('true');
-            return true;
         }
 
+        return true;
+    }
+        
+    function update_partitions(data, forceRedraw) {
+        // called by get_partitions() which is called by initialize() and ping_partitions()
+        
+        var i,
+        partitions = $('.partition').not('.partition-template'),
+        drawnPartitions = partitions.length,
+        toRemove = {}, j;
+
+        if (!data.length) {
+            if (!drawnPartitions || forceRedraw) {
+                $('#no-matches').removeClass('hide');
+            }
+        } else {
+            $('#no-matches').addClass('hide');
+        }
+
+        if (forceRedraw /*|| $.riakControl.filter.ring.dropdown === 'handoff'*/) {
+            // empty out any drawn partitions that might already exist
+            $('#ring-table-body').empty();
+            // clear out the current ringData object
+            $.riakControl.ringData = {};
+            partitions = [];
+            drawnPartitions = 0;
+        }
+
+        // make a list called 'toRemove' of all partition numbers corresponding to nodes on the page
+        if (drawnPartitions) {
+            for (i = 0; i < drawnPartitions; i += 1) {
+                j = $('#' + partitions[i].getAttribute('id'));
+                toRemove[j.attr('id').split('-')[1]] = j[0];
+            }
+        }
+
+        window.x = toRemove;
+
         // for each object in data array...
-        for (i = 0; i < l; i += 1) {
-            // if we have a length of drawn partitions, we have already drawn the ring
-            // this also means we have prepopulated the $.riakControl.ringData object
-            if (drawnPartitions) {              
+        for (i = 0; i < data.length; i += 1) {
+            // if we have a length of drawn partitions, we have already drawn the ring.
+            // this also means we have prepopulated the $.riakControl.ringData object.
+            // however, if there is a drawn ring but no currentitem (i) in the ringData object,
+            // it means that we have either moved to a new page of partitions in which case we would
+            // need to redraw or that something has changed, for example if handoffs are going on.
+            // so if there are items on the page that are not in the data, we need to remove them
+
+            // check to see if there is a node on the page that corresponds to the current dataitem
+            // if so, remove that one from toRemove
+            if (toRemove[data[i]['i']]) {
+                delete toRemove[data[i]['i']];
+            }
+            // in the end, toRemove will only contain nodes that were not in the data and must be removed
+
+            // If we have visible partitions and the item in question is already in our stored data...
+            if (drawnPartitions && $.riakControl.ringData[data[i]['i']]) {
                 // check new data against old data to see if there are status changes
                 // if keys are not equal...
                 if (!keys_are_equal($.riakControl.ringData[data[i]['i']], data[i])) {
@@ -276,7 +450,8 @@ $(document).ready(function () {
                     partition_row(data[i], 'update');
                 }
                 // send each node through the filtering process
-                filter_row_visibility(data[i], $('#ring-table #partition-' + data[i]['i']));
+                //filter_row_visibility(data[i-lowerBound], $('#ring-table #partition-' + i));
+
             // if we count 0 drawn partitions, we have not drawn the ring
             } else {
                 // populate $.riakControl.ringData[data[i].i] with the new data
@@ -284,6 +459,17 @@ $(document).ready(function () {
                 // send new data through the partitioning process and draw each node
                 partition_row(data[i], 'draw');
             }
+        }
+
+        // Remove all nodes left in the toRemove object from the DOM
+        for (i in toRemove) {
+            if (Object.prototype.hasOwnProperty.call(toRemove, i)) {
+                $('#' + toRemove[i].getAttribute('id')).remove();
+            }
+        }
+
+        if (!$('.partition').not('.partition-template').length) {
+            $('#no-matches').removeClass('hide');
         }
         
         
@@ -297,28 +483,47 @@ $(document).ready(function () {
             $('#partition-list').fadeIn(300);
         }
 
-        // call self through ping_partitions()
+        // call self indirectly through ping_partitions()
         ping_partitions();
         
     }
     
-    function ping_partitions () {
-        setTimeout(function () {
-            if ($('#ring-headline').length && pingAllowed === true) {
-                get_partitions();
+    function ping_partitions() {
+        mainTimer = setTimeout(function () {
+            var ontheringpage = $('#ring-headline').length;
+            if (ontheringpage && defaults.pingAllowed === true) {
+                get_partitions(currentPage, defaults.partitionsPerPage, {
+                    "filter" : $.riakControl.filter.ring.dropdown,
+                    "redrawRing" : false
+                });
+                get_filters();
             } else {
+                if (!ontheringpage) {
+                    $.riakControl.filter.ring.prevFilters = '';
+                }
                 // If we're not on the ring page or pinging is not allowed, the script dies here.
-                pingAllowed = false;
+                defaults.pingAllowed = false;
             }
-        }, 1000);
+        }, defaults.pingFrequency);
     }
     
     // Define what to do when the filter dropdown value changes 
     $(document).on('change', '#filter', function (e) {
-        $.riakControl.filter.ring.dropdown = $(this).val();
+        var val = $(this).val();
+        if (val) {
+            $.riakControl.filter.ring.dropdown = $(this).val();
+        }
+        currentPage = 1;
+        visibleNumbers = [];
+        clearTimeout(mainTimer);
+        get_partitions(currentPage, defaults.partitionsPerPage, {
+            "filter" : $.riakControl.filter.ring.dropdown,
+            "redrawRing" : true
+        });
     });
 
     // Define what to do when the filter checkboxes change
+    /* As of now there are no checkboxes on this page
     $(document).on('change', '#ring-filter .gui-checkbox', function (e) {
         var me = $(this), myID = me.attr('id');
         if (myID === 'primary-nodes') {
@@ -329,6 +534,58 @@ $(document).ready(function () {
             (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.handoff = true : $.riakControl.filter.ring.handoff = false;
         }
     });
+    */
+
+    // Define what to do when we click on a non-disabled paginator
+    $(document).on('click', '.pagination li:not(.disabled):not(.dots):not(.active)', function (e) {
+        var that = $(this), pageNum = that.attr('name'), 
+            firstVisible = visibleNumbers[0], 
+            lastVisible = visibleNumbers[visibleNumbers.length - 1],
+            redrawPagination;
+
+        // Die if we're already on that page
+        if (pageNum === currentPage) {
+            return false;
+        }
+
+        // Stop the ping timer so we don't get double pings
+        clearTimeout(mainTimer);
+
+        if (pageNum === 'prev') {
+            if (currentPage === firstVisible && firstVisible > 1) {
+                redrawPagination = 'down';
+            }
+            if (currentPage > 1) {
+                $('.paginator.active').removeClass('active');
+                $('.pagination li[name=' + (currentPage - 1) + '] .paginator').addClass('active');
+                get_partitions(currentPage - 1, defaults.partitionsPerPage, {
+                    "filter" : $.riakControl.filter.ring.dropdown,
+                    "redrawRing" : true,
+                    "redrawPagination" : redrawPagination
+                });
+            }
+        } else if (pageNum === 'next') {
+            if (currentPage === lastVisible) {
+                redrawPagination = 'up';
+            }
+            if (currentPage < pageAmount) {
+                $('.paginator.active').removeClass('active');
+                $('.pagination li[name=' + (currentPage + 1) + '] .paginator').addClass('active');
+                get_partitions(currentPage + 1, defaults.partitionsPerPage, {
+                    "filter" : $.riakControl.filter.ring.dropdown,
+                    "redrawRing" : true,
+                    "redrawPagination" : redrawPagination
+                });
+            }
+        } else {
+            $('.paginator.active').removeClass('active');
+            $('.pagination li[name=' + pageNum + '] .paginator').addClass('active');
+            get_partitions(pageNum, defaults.partitionsPerPage, {
+                "filter" : $.riakControl.filter.ring.dropdown,
+                "redrawRing" : true
+            });
+        }
+    });
     
     // Start everything on initial load
     initialize();
@@ -337,8 +594,19 @@ $(document).ready(function () {
     // This function will run when a template is switched.
     $.riakControl.sub('templateSwitch', function (templateName) {
         if (templateName === 'ring') {
-            pingAllowed = true;
-            initialize();
+            defaults.pingAllowed = true;
+            visibleNumbers = [];
+            $.riakControl.filter.ring.dropdown = '';
+            $.riakControl.filter.ring.prevFilters = null;
+            if (mainTimer) {
+                clearTimeout(mainTimer);
+            }
+            get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage, {
+                "filter" : $.riakControl.filter.ring.dropdown,
+                "redrawRing" : true,
+                "redrawPagination" : 'up'
+            });
+            get_filters();
         }
     });
     

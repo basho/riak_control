@@ -36,8 +36,8 @@
             <td><h3 class="gui-headline">Status</h3></td>
             <td><h3 class="gui-headline">Name</h3></td>
             <td><h3 class="gui-headline">Actions</h3></td>
-            <td><h3 class="gui-headline">% Owned</h3></td>
-            <td><h3 class="gui-headline">% Pending</h3></td>
+            <td><h3 class="gui-headline">Partitions</h3></td>
+            <td><h3 class="gui-headline">Memory Usage</h3></td>
         </tr>
     </table>
 </div>
@@ -69,23 +69,30 @@
             <div class="gui-slider-leaving hide"></div>
         </td>
         <td class="gui-text ring_pct-box">
-            <div class="gui-field gui-text pct-box">
+            <div class="left pct-arrows pct-static">
+                <div class="green-pct-arrow"></div>
+            </div>
+            <div class="left gui-field gui-text pct-box">
                 <div class="gui-field-bg">
-                    <div class="ring_pct gui-field-input"></div>
+                    <div class="i-block ring_pct gui-field-input"></div>
+                    <!--
+                    <span class="monospace gray-text">:</span>
+                    <div class="i-block pending_pct gui-field-input"></div>
+                    -->
                 </div>
                 <div class="gui-field-cap-left"></div>
                 <div class="gui-field-cap-right"></div>
             </div>
             <div class="clear"></div>
         </td>
-        <td class="gui-text pending_pct-box">
-            <div class="gui-field gui-text">
-                <div class="gui-field-bg">
-                    <div class="pending_pct gui-field-input"></div>
-                </div>
-                <div class="gui-field-cap-left"></div>
-                <div class="gui-field-cap-right"></div>
+        <td class="gui-text memory-box">
+            <div class="left membar-bg">
+                <div class="erlang-mem mem-color left" name=""></div>
+                <div class="non-erlang-mem mem-color left" name=""></div>
+                <div class="unknown-mem"></div>
+                <div class="membar-fg"></div>
             </div>
+            <span class="free-memory left"></span>
         </td>
     </tr>
     <tr class="more-node-actions more-actions-template">
