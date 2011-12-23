@@ -43,6 +43,14 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
+    Riak_control_session={riak_control_session,
+                          {riak_control_session, start_link, []},
+                          permanent,
+                          5000,
+                          worker,
+                          [riak_control_session]},
+
+    %% determine if riak_control is enabled or not
     case app_helper:get_env(riak_control,enabled,false) of
         true ->
             Resources = [{admin, admin_gui},
@@ -52,20 +60,13 @@ init([]) ->
                          {admin, admin_node}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
-            [webmachine_router:add_route(R) || R <- Routes];
+            [webmachine_router:add_route(R) || R <- Routes],
+
+            %% start riak control
+            {ok, { {one_for_one, 5, 10}, [Riak_control_session] } };
         _ ->
-            ok
-    end,
-
-    %% modules to be started up
-    Riak_control_session={riak_control_session,
-                          {riak_control_session, start_link, []},
-                          permanent,
-                          5000,
-                          worker,
-                          [riak_control_session]},
-
-    {ok, { {one_for_one, 5, 10}, [Riak_control_session] } }.
+            {ok, { {one_for_one, 5, 10}, [] } }
+    end.
 
 routes(Env, Module) ->
     case app_helper:get_env(riak_control, Env, false) of
