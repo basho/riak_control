@@ -256,8 +256,8 @@ get_member_info (_Member={Node,Status},Ring) ->
 
 %% run locally per-node, collects information about this node for the session
 get_my_info () ->
-    {Total,Used,_}=memsup:get_memory_data(),
     Handoffs=riak_core_handoff_manager:status(),
+    {Total,Used}=get_my_memory(),
 
     %% construct the member information for this node
     #member_info{ node=node(),
@@ -268,6 +268,30 @@ get_my_info () ->
                   vnodes=riak_core_vnode_manager:all_vnodes(),
                   handoffs=[{M,I,N} || {{M,I},N,outbound,_,_} <- Handoffs]
                   }.
+
+%% get memory information for this machine
+get_my_memory () ->
+    Mem=memsup:get_system_memory_data(),
+
+    %% get the total memory available to erlang and free memory
+    {_,Total}=lists:keyfind(total_memory,1,Mem),
+    {_,Free}=lists:keyfind(free_memory,1,Mem),
+
+    %% buffered memory is available as well
+    Buffered=case lists:keyfind(buffered_memory,1,Mem) of
+                 {_,BufferedMem} -> BufferedMem;
+                 false -> 0
+             end,
+
+    %% so is cached memory
+    Cached=case lists:keyfind(cached_memory,1,Mem) of
+               {_,CachedMem} -> CachedMem;
+               false -> 0
+           end,
+
+    %% return the total memory an memory used
+    {Total,Total - (Free + Cached + Buffered)}.
+
 
 %% each node knows about its set of handoffs, collect them all together
 get_all_handoffs(#state{nodes=Members}) ->
