@@ -1,5 +1,5 @@
 * What is Riak Control?
-Riak Control is a set of webmachine resources, all accessible via 
+Riak Control is a set of webmachine resources, all accessible via
 the /admin/* paths, allow you to inspect your running cluster,
 and manipulate it in various ways.
 
@@ -42,13 +42,22 @@ make sure that it is enabled:
 
 Next, you'll need to specify the style of authentication you would
 like performed when accessing the admin panel. Currently the only
-valid authentication style is 'userlist'.
+valid authentication styles are 'userlist' and 'none'.
 
-Optionally, in the userlist section of riak_control, you can
-specify a list of usernames and passwords (as plaintext) that your
-administrators will use to connect to the admin panel.
+: {auth, userlist}
+
+If you choose 'userlist' as your authentication method, you need to
+also create one. You specify a list of usernames and passwords (as
+plaintext) that your administrators will use to connect to the admin
+panel.
 
 : {userlist, [{"username", "password"}, ...]}
+
+Finally, the Riak Control admin panel is broken up into several
+sections, each can be toggled on and off. Currently, the only section
+is the 'admin' section. You need to ensure that it is enabled.
+
+: {admin, true}
 
 ** Start or Restart Riak
 Once the above changes have been made, you can now start or restart
@@ -63,18 +72,23 @@ in your app.config file.
 * What Information Does Riak Control Provide?
 The Riak Control admin panel is broken up into several sections.
 
+** Snapshot
+This is a quick "health check" for your cluster. If Riak Control finds
+anything worrisome, it will let you know and provide links to pages
+where you can diagnose and/or fix the problem.
+
 ** Cluster
 This is a high-level overview of your cluster. It lists each of the
-nodes in the cluster and their current status. If a node is currently
-offline it will be red.
+nodes in the cluster and their current status, partition ownerships,
+and memory usage. If a node is currently offline it will be red.
 
 If you click on a node, the details to the right should provide you
 with some additional actions you can perform on the node (e.g. shutdown,
 leave the cluster, mark as 'down' if offline).
 
-Additionally, at the bottom of the list of nodes is a field that you
+Additionally, at the top of the list of nodes is a field that you
 can use to either add another, single node to this node's cluster or to
-join this node to an existing cluster. Just type in the name of the 
+join this node to an existing cluster. Just type in the name of the
 node you wish to add/join and click "Add".
 
 ** Ring
@@ -96,7 +110,7 @@ This section will allow you to inspect the riak-admin status attributes
 for any node in your cluster.
 
 ** Objects
-Coming soon... 
+Coming soon...
 
 This section will allow you to add simple objects to your cluster and
 fetch/update existing nodes.
@@ -124,5 +138,5 @@ nodes' log files.
 Coming soon...
 
 This section will easily let you file a bug/ticket with Basho. It
-will also bundle up any graphs, stats, and other data that will 
+will also bundle up any graphs, stats, and other data that will
 assist Basho in diagnosing and fixing the problem.
