@@ -87,34 +87,34 @@ https_redirect (RD,Ctx) ->
 %%    - `none'     :: No authentication.
 %%
 enforce_auth(RD, Ctx) ->
-    case wrq:get_req_header("authorization", RD) of
-        "Basic "++Base64 ->
-            enforce_basic_auth(RD, Ctx, Base64);
-        _ ->
-            {?ADMIN_AUTH_HEAD, RD, Ctx}
+    case app_helper:get_env(riak_control,auth,none) of
+        none ->
+            {true, RD, Ctx};
+        Auth ->
+            case wrq:get_req_header("authorization", RD) of
+                "Basic "++Base64 ->
+                    enforce_basic_auth(RD, Ctx, Base64, Auth);
+                _ ->
+                    {?ADMIN_AUTH_HEAD, RD, Ctx}
+            end
     end.
 
-enforce_basic_auth(RD, Ctx, Base64) ->
+enforce_basic_auth(RD, Ctx, Base64, Auth) ->
     Str = base64:mime_decode_to_string(Base64),
     case string:tokens(Str, ":") of
         [User, Pass] ->
-            enforce_user_pass(RD, Ctx, User, Pass);
+            enforce_user_pass(RD, Ctx, User, Pass, Auth);
         _ ->
             {?ADMIN_AUTH_HEAD, RD, Ctx}
     end.
 
-enforce_user_pass(RD, Ctx, User, Pass) ->
-    case valid_userpass(User, Pass) of
+enforce_user_pass(RD, Ctx, User, Pass, Auth) ->
+    case valid_userpass(User, Pass, Auth) of
         true ->
             {true, RD, Ctx};
         false ->
             {?ADMIN_AUTH_HEAD, RD, Ctx}
     end.
-
-%% validate the username and password
-valid_userpass(User, Pass) ->
-    Auth=app_helper:get_env(riak_control, auth),
-    valid_userpass(User, Pass, Auth).
 
 %% validate the username and password with the given auth style
 valid_userpass(_User, _Pass, none) ->

@@ -21,6 +21,10 @@
 -module(riak_control_session).
 -behavior(gen_server).
 
+-ifdef (TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 %% API
 -export([start_link/0,
          get_version/0,
@@ -321,3 +325,23 @@ get_vnode_status (Service,Ring,Index) ->
         [] -> {Service,undefined}
     end.
 
+
+%% ---------------------------------------------------------------------------
+%% EUNIT tests
+
+-ifdef(TEST).
+
+%% we want to see quickcheck output
+-define(QC_OUT(P),
+        eqc:on_output(fun(Str, Args) ->
+                              io:format(user, Str, Args)
+                      end,
+                      P)).
+
+quickcheck_test_ () ->
+    {timeout, 120,
+     fun() ->
+             ?assert(eqc:quickcheck(?QC_OUT(eqc_routes:prop_routes())))
+     end}.
+
+-endif.
