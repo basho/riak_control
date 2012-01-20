@@ -10,14 +10,14 @@
 %% command generators
 -define(CLUSTER_LIST,{call,?MODULE,cluster_list,[]}).
 -define(PARTITION_LIST,{call,?MODULE,partition_list,[]}).
--define(HTTP_CLUSTER_LIST(U),{call,?MODULE,http_cluster_list,[http,U]}).
--define(HTTP_PARTITION_LIST(U,F),{call,?MODULE,http_partition_list,[http,U,F]}).
+-define(HTTP_CLUSTER_LIST(U),{call,?MODULE,http_cluster_list,[U]}).
+-define(HTTP_PARTITION_LIST(U,F),{call,?MODULE,http_partition_list,[U,F]}).
 
 
 %% ---------------------------------------------------------------------------
 %% statem state
 
--record(state,{auth}).
+-record(state,{auth,ring_size}).
 
 
 %% ---------------------------------------------------------------------------
@@ -41,10 +41,13 @@ prop_routes () ->
 
                 %% ensure riak_control is up and running
                 riak_core:wait_for_application(riak_control),
+                {ok,Size}=application:get_env(riak_core,ring_creation_size),
 
                 %% now run the test with these auth settings
                 ?ALWAYS(10,
-                        ?FORALL(Cmds,commands(?MODULE,#state{auth=Auth}),
+                        ?FORALL(Cmds,commands(?MODULE,#state{auth=Auth,
+                                                             ring_size=Size
+                                                            }),
                                 begin
                                     {H,S,Res}=run_commands(?MODULE,Cmds),
 
@@ -68,7 +71,7 @@ command (_State) ->
            ?PARTITION_LIST,
            ?LET(User,g_userpass(),
                 oneof([?HTTP_CLUSTER_LIST(User),
-                       ?LET(Filter,g_filter(),
+                       ?LET(Filter,g_qs(),
                             ?HTTP_PARTITION_LIST(User,Filter))
                       ]))
           ]).
@@ -76,8 +79,10 @@ command (_State) ->
 precondition (_State,_Gen) ->
     true.
 
-postcondition (State,{call,_,_,[http,User|_]},Res) ->
-    http_validate(State,Res,User);
+postcondition (State,{call,_,http_cluster_list,[User]},Res) ->
+    http_validate(State,Res,User) andalso cluster_validate(State,Res);
+postcondition (State,{call,_,http_partition_list,[User,Filter]},Res) ->
+    http_validate(State,Res,User) andalso filter_validate(State,Res,Filter);
 postcondition (_State,_Gen,_Res) ->
     true.
 
@@ -88,12 +93,44 @@ next_state (State,_V,_Gen) ->
 %% ---------------------------------------------------------------------------
 %% negative testing common post-conditions
 
-http_validate (#state{auth=userlist},{C,_,_},{user,pass}) ->
-    C < 300;
-http_validate (#state{auth=userlist},{C,_,_},_) ->
-    C >= 300;
-http_validate (#state{auth=none},{C,_,_},_) ->
-    C < 300.
+http_validate (#state{auth=userlist},{Code,_,_},{user,pass}) ->
+    Code < 300;
+http_validate (#state{auth=userlist},{Code,_,_},_) ->
+    Code >= 300;
+http_validate (#state{auth=none},{Code,_,_},_) ->
+    Code < 300.
+
+
+cluster_validate (_State,{Code,"",_Url}) ->
+    not (Code < 300);
+cluster_validate (_State,{_Code,Body,_Url}) ->
+    [{struct,Node}]=mochijson2:decode(Body),
+    {_,Name}=lists:keyfind(<<"name">>,1,Node),
+    {_,Me}=lists:keyfind(<<"me">>,1,Node),
+    {_,Reachable}=lists:keyfind(<<"reachable">>,1,Node),
+    binary_to_atom(Name,utf8) == node() andalso Me andalso Reachable.
+
+
+filter_validate (_State,{Code,"",_Url},_Filter) ->
+    not (Code < 300);
+filter_validate (#state{ring_size=Size},{_Code,Body,_Url},Filter) ->
+    {struct,Json}=mochijson2:decode(Body),
+    {_,Pages}=lists:keyfind(<<"pages">>,1,Json),
+    {_,Page}=lists:keyfind(<<"page">>,1,Json),
+    {_,Contents}=lists:keyfind(<<"contents">>,1,Json),
+    filter_validate_n(Size,Pages,Page,Contents,Filter) andalso
+        %% TODO: more validation here
+        true.
+
+
+filter_validate_n (Size,Pages,_Page,Contents,Filter) ->
+    ContentSize=erlang:length(Contents),
+    N=case lists:keyfind(n,1,Filter) of
+          false -> Size div Pages;
+          {_,X} -> X
+      end,
+    %% less than is okay for now, we might have returned the last page
+    ContentSize =< max(N,16).
 
 
 %% ---------------------------------------------------------------------------
@@ -110,11 +147,30 @@ g_userpass () ->
            none % not passing auth data
           ]).
 
+g_qs () ->
+    ?LET(Filter,g_filter(),
+         ?LET(Page,g_page(),
+              Filter ++ Page)).
+
 g_filter () ->
-    oneof([{node,[{q,node()}]},
-           {handoffs,[]},
-           {fallbacks,[]},
-           none]).
+    oneof([oneof([[{filter,node}],
+                  [{filter,node},{q,g_node()}],
+                  [{q,g_node()}]
+                 ]),
+           [{filter,handoffs}],
+           [{filter,fallbacks}],
+           []
+          ]).
+
+g_page () ->
+    oneof([[{n,int()},{p,int()}],
+           [{n,int()}],
+           [{p,int()}],
+           []
+          ]).
+
+g_node () ->
+    oneof([node(),'dummy@nohost']).
 
 
 %% ---------------------------------------------------------------------------
@@ -154,11 +210,11 @@ partition_list () ->
     {ok,_V,Ring}=riak_control_session:get_ring(),
     Ring.
 
-http_cluster_list (_,User) ->
+http_cluster_list (User) ->
     http_request(User,"/admin/cluster/list",[]).
 
-http_partition_list (_,User,_Filter) ->
-    http_request(User,"/admin/ring/partitions",[]).
+http_partition_list (User,Filter) ->
+    http_request(User,"/admin/ring/partitions",Filter).
 
 http_request (User,Route,Query) ->
     Url=request_url(User,Route,Query),
@@ -167,10 +223,13 @@ http_request (User,Route,Query) ->
         {ok,{{_HTTP,Code,_OK},Body}} -> {Code,Body,Url}
     end.
 
-request_url (User,Route,_Query) ->
-    f("https://~slocalhost:18069~s",[auth_user(User),Route]).
+request_url (User,Route,Query) ->
+    f("https://~slocalhost:18069~s?~s",[auth_user(User),Route,qs(Query)]).
 
 auth_user ({User,Pass}) -> f("~s:~s@",[User,Pass]);
 auth_user (_) -> "".
+
+qs ([{K,V}|QS]) -> f("~s=~w&~s", [K,V,qs(QS)]);
+qs ([]) -> "".
 
 -endif. % EQC
