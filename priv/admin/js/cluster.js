@@ -47,21 +47,21 @@ $(document).ready(function () {
                 var myHandle = me.find('.ui-slider-handle');
                 var handlePos = myHandle.css('left');
                 var node = $(this).closest('tr').find('.name').text();
-                var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
+                var siblingRowName = $(this).closest('tr').attr('name') + '-more-actions';
                 // Re-allow pings when we let go of the slider handle
                 // And tell it to ping since the ping loop will have died
                 pingAllowed = true;
                 get_cluster_status();
                 if (handlePos === '100%') {
                     //leave_cluster(node);
-                    open_sibling_row(siblingRowID, node);
+                    open_sibling_row(siblingRowName, node);
                 } else if (parseInt(handlePos) < (me.width() * .66)) {
                     myHandle.animate({left:'0px'},{
                         queue:false,
                         duration:200,
                         complete:function() {
                             showMsg($(this).parent());
-                            close_sibling_row(siblingRowID);
+                            close_sibling_row(siblingRowName);
                         }
                     });
                 } else {
@@ -70,9 +70,9 @@ $(document).ready(function () {
                         duration:200,
                         complete:function () {
                             var node = $(this).closest('tr').find('.name').text();
-                            var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
+                            var siblingRowName = $(this).closest('tr').attr('name') + '-more-actions';
                             showMsg($(this).parent());
-                            open_sibling_row(siblingRowID, node);
+                            open_sibling_row(siblingRowName, node);
                         }
                     });
                 }
@@ -95,17 +95,17 @@ $(document).ready(function () {
                 duration:200,
                 complete:function () {
                     var node = $(this).closest('tr').find('.name').text();
-                    var siblingRowID = $(this).closest('tr').attr('id') + '-more-actions';
+                    var siblingRowName = $(this).closest('tr').attr('name') + '-more-actions';
                     showMsg($(this).parent());
-                    open_sibling_row(siblingRowID, node);
+                    open_sibling_row(siblingRowName, node);
                 }
             });
         }
     });
     // END CODE FOR SLIDING SWITCHES
 
-    function open_sibling_row(idText, node) {
-        var row = $('#' + idText);
+    function open_sibling_row(nameText, node) {
+        var row = $('[name="' + nameText + '"]');
         var actionsPointer = row.find('.actions-pointer');
         var actionsBox = row.find('.actions-box');
         row.show(function () {
@@ -114,8 +114,8 @@ $(document).ready(function () {
         });
     }
 
-    function close_sibling_row(idText) {
-        var row = $('#' + idText);
+    function close_sibling_row(nameText) {
+        var row = $('[name="' + nameText + '"]');
         var actionsBox = row.find('.actions-box');
         var actionsPointer = row.find('.actions-pointer');
         actionsPointer.slideUp(200);
@@ -240,7 +240,7 @@ $(document).ready(function () {
     }
 
     function reset_slider(sliderHandle, rowNode) {
-        var myActions = $('#' + rowNode.id + '-more-actions');
+        var myActions = $('[name="' + rowNode.getAttribute('name') + '-more-actions"]');
         var hiddenActions = $('.actions-box', myActions[0]).css('display') !== 'block';
         if (sliderHandle.css('left') === '100%' && hiddenActions) {
             sliderHandle.css('left', '0');
@@ -251,7 +251,7 @@ $(document).ready(function () {
     }
     
     function set_leaving_status(row, textObj) {
-        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
+        var myActions = (row) ? $('[name="' + row.getAttribute('name') + '-more-actions"]') : null;
         var slider = $('.gui-slider', row);
         var slider_leaving = $('.gui-slider-leaving', row);
         if (myActions) {
@@ -276,7 +276,7 @@ $(document).ready(function () {
     }
     
     function set_down_status(row, textObj) {
-        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
+        var myActions = (row) ? $('[name="' + row.getAttribute('name') + '-more-actions"]') : null;
         if (myActions) {
             if (textObj.status !== 'Down') {
                 $('.status', row).text('Down');
@@ -298,7 +298,7 @@ $(document).ready(function () {
     }
     
     function set_valid_reachable_status(row, textObj) {
-        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
+        var myActions = (row) ? $('[name="' + row.getAttribute('name') + '-more-actions"]') : null;
         var sliderHandle = $('.ui-slider-handle', row);
 
         if (myActions) {
@@ -323,7 +323,7 @@ $(document).ready(function () {
     }
     
     function set_valid_unreachable_status(row, textObj) {
-        var myActions = (row) ? $('#' + row.id + '-more-actions') : null;
+        var myActions = (row) ? $('[name="' + row.getAttribute('name') + '-more-actions"]') : null;
         if (myActions) {
             myActions.find('.markdown-button, .markdown-label').removeClass('disabled').removeClass('pressed');
             myActions.find('.shutdown-button, .shutdown-label').addClass('pressed').addClass('disabled');
@@ -438,7 +438,6 @@ $(document).ready(function () {
             "name"   : $('.name', row).text(),
             "slider" : $('.more-actions-slider-box a', row).text(),
             "ring_pct" : $('.ring_pct', row).text(),
-            //"pending_pct" : $('.pending_pct', row).text(),
             "mem_erlang" : $('.erlang-mem', row).attr('name'),
             "mem_non_erlang" : $('.non-erlang-mem'. row).attr('name'),
             "mem_free" : parseInt($('.free-memory', row).text())
@@ -458,8 +457,9 @@ $(document).ready(function () {
     }
 
     function cluster_node_row(node) {
-        var id = node.name.split('@')[0];
-        var rows = $('#cluster-table #' + id) || null;
+        //var id = node.name.split('@')[0];
+        var nodename = node.name;
+        var rows = $('#cluster-table [name="' + nodename + '"]') || null;
         var row, extraRow;
 
         //console.log(node);
@@ -471,8 +471,8 @@ $(document).ready(function () {
 
 
             // set the id for this row and display it
-            row.attr('id', id);
-            extraRow.attr('id', id + '-more-actions');
+            row.attr('name', nodename);
+            extraRow.attr('name', nodename + '-more-actions');
             row.removeClass('row-template');
             extraRow.removeClass('more-actions-template');
 
@@ -509,7 +509,7 @@ $(document).ready(function () {
                 theRow = $(rows[i]),
                 theSibling;
             if (theRow.length) {
-                theSibling = $('#' + rows[i].id + '-more-actions');
+                theSibling = $('[name="' + rows[i].getAttribute('name') + '-more-actions"]');
             }
             if (node_in_cluster_p(nodeName) === false) {
                 theRow.remove();
@@ -563,27 +563,27 @@ $(document).ready(function () {
 
     /* MAKE THE MARKDOWN BUTTON STAY DOWN ONCE CLICKED */
     $(document).on('click', '.markdown-button:not(.pressed)', function () {
-        var siblingId = $(this).closest('tr').attr('id');
-        var node = $('#' + siblingId.split('-more-actions')[0]);
-        close_sibling_row(siblingId);
+        var siblingName = $(this).closest('tr').attr('name');
+        var node = $('[name="' + siblingName.split('-more-actions')[0] + '"]');
+        close_sibling_row(siblingName);
         set_down_status(node[0], {"status" : node.find('.status').text()}, true);
         down_node(node.find('.name').text());
     });
 
     /* MAKE THE SHUTDOWN BUTTON STAY DOWN ONCE CLICKED */
     $(document).on('click', '.shutdown-button:not(.pressed)', function () {
-        var siblingId = $(this).closest('tr').attr('id');
-        var node = $('#' + siblingId.split('-more-actions')[0]);
+        var siblingName = $(this).closest('tr').attr('name');
+        var node = $('[name="' + siblingName.split('-more-actions')[0] + '"]');
         set_valid_unreachable_status(node[0], {"status" : node.find('.status').text()});
         stop_node(node.find('.name').text());
     });
     
     /* MAKE THE LEAVE CLUSTER LINK WORK */
     $(document).on('click', '.leave-cluster-button:not(.disabled)', function () {
-        var myParentID = $(this).closest('tr').attr('id');
-        var node = $('#' + myParentID.split('-more-actions')[0]);
+        var myParentName = $(this).closest('tr').attr('name');
+        var node = $('[name="' + myParentName.split('-more-actions')[0] + '"]');
         var name = node.find('.name').text();
-        close_sibling_row(myParentID);
+        close_sibling_row(myParentName);
         set_leaving_status(node[0], {"status" : node.find('.status').text()});
         leave_cluster(name);
     });
