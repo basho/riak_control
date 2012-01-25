@@ -136,9 +136,11 @@ filter_validate_n (Size,Pages,_Page,Contents,Filter) ->
 %% ---------------------------------------------------------------------------
 %% eqc generators
 
+%% valid authorization modes for app.config
 g_auth () ->
     oneof([userlist,none]).
 
+%% username and password pairs (none = don't pass user/pass)
 g_userpass () ->
     oneof([{user,pass},
            {user,bad_password},
@@ -147,21 +149,23 @@ g_userpass () ->
            none % not passing auth data
           ]).
 
+%% query string generator
 g_qs () ->
     ?LET(Filter,g_filter(),
          ?LET(Page,g_page(),
               Filter ++ Page)).
 
+%% valid and invalid query string filters for ring page
 g_filter () ->
-    oneof([oneof([[{filter,node}],
-                  [{filter,node},{q,g_node()}],
-                  [{q,g_node()}]
-                 ]),
+    oneof([[{filter,node}],
+           [{filter,node},{q,g_node()}],
+           [{q,g_node()}],
            [{filter,handoffs}],
            [{filter,fallbacks}],
            []
           ]).
 
+%% pagination data for ring page
 g_page () ->
     oneof([[{n,int()},{p,int()}],
            [{n,int()}],
@@ -169,6 +173,7 @@ g_page () ->
            []
           ]).
 
+%% this node or a dummy node
 g_node () ->
     oneof([node(),'dummy@nohost']).
 
