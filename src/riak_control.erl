@@ -22,6 +22,7 @@
 -module(riak_control).
 
 -export([
+         target_node/1,
          is_app_up/1,
          priv_dir/0
         ]).
@@ -35,3 +36,7 @@ is_app_up(App) ->
 -spec priv_dir() -> string().
 priv_dir() ->
     code:priv_dir(?MODULE).
+
+%% @doc Return the target node for a particular action.
+target_node (Req) ->
+    list_to_existing_atom(dict:fetch(node,wrq:path_info(Req))).
