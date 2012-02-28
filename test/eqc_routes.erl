@@ -29,15 +29,12 @@ prop_routes () ->
             begin
                 setup(Auth),
 
-                %% start applications
-                [application:start(App) || App <- [sasl,
-                                                   crypto,
-                                                   inets,
-                                                   riak_sysmon,
-                                                   webmachine,
-                                                   os_mon,
-                                                   riak_core,
-                                                   riak_control]],
+                %% start application dependencies
+                riak_core_util:start_app_deps(riak_core),
+                riak_core_util:start_app_deps(riak_control),
+
+                %% can now start riak control
+                application:start(riak_control),
 
                 %% ensure riak_control is up and running
                 riak_core:wait_for_application(riak_control),
@@ -194,11 +191,17 @@ setup (Auth) ->
     %% hide sasl output
     application:set_env(sasl,sasl_error_logger,false),
 
+    %% local the pem files in the test folder
+    PrivDir=code:priv_dir(riak_control),
+    TestDir=filename:join([PrivDir,"..","test"]),
+    CertFile=filename:join([TestDir,"cert.pem"]),
+    KeyFile=filename:join([TestDir,"key.pem"]),
+
     %% set env values for riak core
     set(http, [{"127.0.0.1",18098}]),
     set(https, [{"127.0.0.1",18069}]),
-    set(ssl, [{certfile, "/Users/jeff/Projects/b/riak/rel/files/cert.pem"},
-              {keyfile, "/Users/jeff/Projects/b/riak/rel/files/key.pem"}
+    set(ssl, [{certfile, CertFile},
+              {keyfile, KeyFile}
              ]),
 
     %% finally, enable riak control
