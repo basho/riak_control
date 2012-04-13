@@ -102,8 +102,7 @@ to_json (Req,C=join) ->
 
 %% mark a node in the cluster as down
 to_json (Req,C=down) ->
-    NodeStr=dict:fetch(node,wrq:path_info(Req)),
-    Node=list_to_existing_atom(NodeStr),
+    Node=riak_control:target_node(Req),
     Result=riak_core:down(Node),
     cluster_action_result(Result,Req,C).
 

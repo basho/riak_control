@@ -57,10 +57,6 @@ is_authorized (RD,C) ->
 content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
-%% get the target node for the action
-target_node (Req) ->
-    list_to_existing_atom(dict:fetch(node,wrq:path_info(Req))).
-
 %% most node actions are simple rpc calls
 to_json (Req,C=ping) ->
     perform_rpc_action(Req,C,net_adm,ping,[node()]);
@@ -77,14 +73,14 @@ to_json (Req,C) ->
 
 %% stats aren't perfectly formatted json (TODO: fix that!)
 get_node_stats (Req,C) ->
-    Node=target_node(Req),
+    Node=riak_control:target_node(Req),
     Result=rpc:call(Node,riak_kv_stat,get_stats,[]),
     Stats=proplists:delete(disk,Result),
     {mochijson2:encode({struct,Stats}),Req,C}.
 
 %% details are ring information for this particular node
 get_node_details (Req,C) ->
-    Node=target_node(Req),
+    Node=riak_control:target_node(Req),
     {ok,Ring}=riak_core_ring_manager:get_my_ring(),
     Indices=rpc:call(Node,riak_core_ring,my_indices,[Ring]),
     PS=[{struct,admin_ring:node_ring_details(Ring,{P,Node})} || P <- Indices],
@@ -92,7 +88,7 @@ get_node_details (Req,C) ->
 
 %% remote to the target node, perform the action, and return
 perform_rpc_action (Req,C,Module,Fun,Args) ->
-    Node=target_node(Req),
+    Node=riak_control:target_node(Req),
     Result=case rpc:call(Node,Module,Fun,Args) of
                {badrpc,Error} -> {error,Error};
                Ok -> Ok
