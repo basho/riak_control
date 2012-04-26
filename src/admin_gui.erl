@@ -35,7 +35,8 @@
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
--define(CONTENT_TYPES,[{"text/html",to_resource},
+-define(CONTENT_TYPES,[{"text/css", to_resource},
+                       {"text/html",to_resource},
                        {"text/plain",to_resource},
                        {"text/javascript",to_resource}
                       ]).
