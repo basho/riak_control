@@ -76,12 +76,18 @@ is_authorized (RD,C) ->
 
 %% return the list of available content types for webmachine
 content_types_provided (Req,Ctx) ->
-    {?CONTENT_TYPES,Req,Ctx}.
+    Index = file_path(Req),
+    MimeType = webmachine_util:guess_mime(Index),
+    {[{MimeType, to_resource}],Req, Ctx}.
+
+%% return file path 
+file_path(Req) -> 
+    Path=wrq:path_tokens(Req),
+    filename:join([riak_control:priv_dir(),"admin"] ++ Path).
 
 %% loads a resource file from disk and returns it
 get_file (Req) ->
-    Path=wrq:path_tokens(Req),
-    Index=filename:join([riak_control:priv_dir(),"admin"] ++ Path),
+    Index = file_path(Req),
     {ok,Source}=file:read_file(Index),
     Source.
 
