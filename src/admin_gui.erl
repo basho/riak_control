@@ -82,8 +82,7 @@ content_types_provided (Req,Ctx) ->
 %% return file path 
 file_path(Req) -> 
     Path=wrq:path_tokens(Req),
-    Index=filename:join([riak_control:priv_dir(),"admin"] ++ Path),
-    Index.
+    filename:join([riak_control:priv_dir(),"admin"] ++ Path).
 
 %% loads a resource file from disk and returns it
 get_file (Req) ->
