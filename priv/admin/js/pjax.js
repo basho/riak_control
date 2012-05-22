@@ -1,8 +1,16 @@
 // jquery.pjax.js
 // copyright chris wanstrath
 // https://github.com/defunkt/jquery-pjax
+// Modified by Basho Technologies to fix a timeout issue for some clients.
 
 (function($){
+
+// The following variable is in milliseconds.
+// It controls the ajax timeouts for page fetching attempts.
+// The pjax default was 650 but this is too early in some use cases.
+// We're setting it high here to account for most foreseeable circumstances.
+// - Basho
+var ajaxTimeout = 10000;
 
 // When called on a link, fetches the href with ajax into the
 // container specified as the first parameter or with the data-pjax
@@ -180,7 +188,7 @@ var pjax = $.pjax = function( options ) {
 
 
 pjax.defaults = {
-  timeout: 650,
+  timeout: ajaxTimeout, // was previously 650 - Basho
   push: true,
   replace: false,
   // We want the browser to maintain two separate internal caches: one for
