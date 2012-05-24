@@ -1,0 +1,180 @@
+<h1 id="cluster-headline" class="gui-headline-bold">MapReduce</h1>
+<div id="load-save-query" class="has-cut pad-bottom push-bottom">
+    <h3 class="gui-headline">Key</h3>
+    <table>
+        <tr>
+            <td id="add-node-box">
+                <div class="gui-field gui-text">
+                    <div class="gui-field-bg">
+                        <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
+                    </div>
+                    <div class="gui-field-cap-left"></div>
+                    <div class="gui-field-cap-right"></div>
+                </div>
+            </td>
+            <td class="button-column">
+                <a id="load-query-button" class="gui-rect-button gui-text-bold right">
+                    <span class="gui-button-msg">Load</span>
+                </a>
+            </td>
+            <td class="button-column">
+                <a id="save-query-button" class="gui-rect-button gui-text-bold right">
+                    <span class="gui-button-msg">Save</span>
+                </a>
+            </td>
+        </tr>
+    </table>
+    <div id="node-error" class="hide">
+        <a class="close-error gui-text"></a>
+        <a class="error-text offline"></a>
+        <a class="error-link gui-text underline" href="#"></a>
+    </div>
+</div><!-- #add-node -->
+
+<h2 class="gui-headline-bold has-cut">Query Phases</h2>
+<div id="node-list" class="pad-bottom has-cut">
+
+    <!-- table containing query items starts here -->
+    <table class="list-table push-bottom" id="mapreduce-table">
+        <tr class="table-head has-cut">
+            <td><h3 class="gui-headline">Phase Status</h3></td>
+            <td><h3 class="gui-headline">Type</h3></td>
+            <td colspan="3"><h3 class="gui-headline">Language</h3></td>
+        </tr>
+
+        <!-- visible row template -->
+        <!-- when the row is active, it should get the .highlight class -->
+        <tr class="query row-template">
+            <td class="phase-status">
+                <a class="left gui-light status-light green"></a>
+                <div class="left gui-slider gui-text">
+                    <div class="gui-slider-activate"></div>
+                    <div class="gui-slider-groove">
+                        <div class="gui-slider-msg isLeft">Phase Is On</div>
+                        <div class="gui-slider-msg isRight">Phase Is Off</div>
+                    </div>
+                </div>
+                <div class="gui-slider-leaving hide"></div>
+                <div class="clear"></div>
+            </td>
+            <td class="phase-type gui-text">
+                <div class="gui-field gui-text">
+                    <div class="gui-field-bg">
+                        <div class="name gui-field-input">Reduce</div>
+                    </div>
+                    <div class="gui-field-cap-left"></div>
+                    <div class="gui-field-cap-right"></div>
+                </div>
+                <div class="gui-dropdown-wrapper">
+                    <div class="gui-dropdown-bg gui-text smaller"></div>
+                    <div class="gui-dropdown-cap left"></div>
+                    <select class="gui-dropdown full-width">
+                        <option value="map">Map</option>
+                        <option value="reduce" selected="selected">Reduce</option>
+                    </select>
+                </div>
+            </td>
+            <td class="phase-language gui-text">
+                <div class="gui-field gui-text">
+                    <div class="gui-field-bg">
+                        <div class="name gui-field-input">JavaScript</div>
+                    </div>
+                    <div class="gui-field-cap-left"></div>
+                    <div class="gui-field-cap-right"></div>
+                </div>
+                <div class="gui-dropdown-wrapper">
+                    <div class="gui-dropdown-bg gui-text smaller"></div>
+                    <div class="gui-dropdown-cap left"></div>
+                    <select class="gui-dropdown full-width">
+                        <option value="map">JavaScript</option>
+                        <option value="reduce" selected="selected">Erlang</option>
+                    </select>
+                </div>
+            </td>
+            <td class="phase-edit">
+                <a class="gui-point-button gui-text-bold right edit-phase-button">
+                    <span class="gui-button-msg">Edit Phase</span>
+                </a>
+            </td>
+            <td class="phase-delete">
+                <a class="remove-phase gui-text"></a>
+            </td>
+        </tr>
+
+        <!-- hidden row template -->
+        <!-- any time the row is visible, it should have the highlight class -->
+        <tr class="query-specifics highlight">
+            <td colspan="5">
+                <div class="query-content">
+                    <table>
+                        <tr>
+                            <td class="stored-funcs">
+                                <h4 class="gui-headline pad-bottom">Stored Functions</h4>
+                                <div class="gui-dropdown-wrapper long nudge-bottom">
+                                    <div class="gui-dropdown-bg gui-text smaller"></div>
+                                    <div class="gui-dropdown-cap left"></div>
+                                    <select class="gui-dropdown full-width">
+                                        <option value="func1">maps.shmaps.go</option>
+                                        <option value="func2" selected="selected">maps.shmaps.shmoyoholikeapirate</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="phase-args">
+                                <h4 class="gui-headline pad-bottom">Arguments</h4>
+                                <div class="gui-field gui-text nudge-bottom">
+                                    <div class="gui-field-bg">
+                                        <div class="name gui-field-input"></div>
+                                    </div>
+                                    <div class="gui-field-cap-left"></div>
+                                    <div class="gui-field-cap-right"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div>
+                                    <h4 class="gui-headline pad-bottom">Source</h4>
+                                    <div class="gui-textarea-wrapper nudge-bottom">
+                                        <div class="gui-textarea-padder">
+                                            <textarea class="gui-text gui-textarea"></textarea>
+                                        </div>
+                                    </div>
+                                    <a class="gui-rect-button gui-text-bold right update-query-content">
+                                        <span class="gui-button-msg">Update</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+
+    </table>
+    <div class="add-phase gui-text pad-bottom">Add New Phase</div>
+</div>
+
+<div class="inputs">
+    <h3 class="gui-headline">Inputs</h3>
+    <table class="inputs-table">
+        <tr>
+            <td>
+                <div class="gui-field gui-text">
+                    <div class="gui-field-bg">
+                        <input id="inputs-field" class="gui-field-input gui-text" type="text" name="nodeName" />
+                    </div>
+                    <div class="gui-field-cap-left"></div>
+                    <div class="gui-field-cap-right"></div>
+                </div>
+            </td>
+            <td class="run-query">
+                <a class="gui-point-button gui-text-bold right run-query-button">
+                    <span class="gui-button-msg">Run Query</span>
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="spinner-box"><img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif"></div>
+

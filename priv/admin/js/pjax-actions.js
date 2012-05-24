@@ -96,6 +96,14 @@ $(function () {
         });
     });
 
+    // Calling the ring page on nav click...
+    $('#nav-mapreduce').on('click', function () {
+        return grabPjax('/admin/ui/templates/mapreduce.pjax', function () {
+            appendScript('#mapreduce-script', '/admin/ui/js/mapreduce.js');
+            $.riakControl.pub('templateSwitch', ['mapreduce']);
+        });
+    });
+
     // Getting places when you're not clicking on the left hand nav
     $(document).on('click', '.go-to-cluster', function () {
         $('#nav-cluster').trigger('click');
