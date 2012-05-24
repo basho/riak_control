@@ -5,6 +5,7 @@
         <h3 class="gui-headline vertical-padding-small">You currently have...</h3>
         <ul class="gui-text bulleted">
             <li><span class="emphasize monospace">0</span> Unreachable nodes</li>
+            <li><span class="emphasize monospace">0</span> Incompatible nodes</li>
             <li><span class="emphasize monospace">0</span> Nodes marked as 'down'</li>
             <li><span class="emphasize monospace">0</span> Nodes experiencing low memory</li>
             <li>Nothing to worry about because Riak is your friend</li>
@@ -17,6 +18,10 @@
         <!-- Unreachable Nodes List -->
         <h3 id="unreachable-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently unreachable:</h3>
         <ul id="unreachable-nodes-list" class="gui-text bulleted hide monospace"></ul>
+
+        <!-- Incompatible Nodes List -->
+        <h3 id="incompatible-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently incompatible with Riak Control:</h3>
+        <ul id="incompatible-nodes-list" class="gui-text bulleted hide monospace"></ul>
 
         <!-- Down Nodes List -->
         <h3 id="down-nodes-title" class="gui-headline vertical-padding-small hide">The following nodes are currently marked as 'down':</h3>

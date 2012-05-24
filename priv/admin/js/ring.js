@@ -202,7 +202,7 @@ $(document).ready(function () {
     }
 
     function set_operability_class(jqObj, newClass) {
-        var classes = ['unreachable', 'disabled', 'down', 'normal'], i, l = classes.length;
+        var classes = ['unreachable', 'incompatible', 'disabled', 'down', 'normal'], i, l = classes.length;
         newClass = newClass.toLowerCase();
         for (i = 0; i < l; i += 1) {
             if (classes[i] === newClass) {
@@ -286,7 +286,9 @@ $(document).ready(function () {
 
         function deal_with_lights (obj, row) {
             var i, kind;
-            if (obj.reachable === true) {
+            if (obj.incompatible == true) { 
+                set_operability_class($('.owner', row), 'incompatible');
+            } else if (obj.reachable === true) {
                 set_operability_class($('.owner', row), 'normal');
             } else {
                 set_operability_class($('.owner', row), 'unreachable');
@@ -294,7 +296,10 @@ $(document).ready(function () {
             for (i in obj.vnodes) {
                 if (Object.prototype.hasOwnProperty.call(obj.vnodes, i)) {
                     kind = i.split('_')[1];
-                    if (obj.reachable === true && (obj.vnodes[i] === 'primary')) {
+                    if (obj.incompatible === true) { 
+                        set_light_color($('.' + kind + '-light', row), 'red');
+                        $('.' + kind + '-status', row).html('Unknown');
+                    } else if (obj.reachable === true && (obj.vnodes[i] === 'primary')) {
                         set_light_color($('.' + kind + '-light', row), 'green');
                         $('.' + kind + '-status', row).html('Active');
                     } else if (obj.vnodes[i] === 'fallback') {

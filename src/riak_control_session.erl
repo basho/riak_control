@@ -237,10 +237,20 @@ get_member_info (_Member={Node,Status},Ring) ->
 
     %% try and get a list of all the vnodes running on the node
     case rpc:call(Node,riak_control_session,get_my_info,[]) of
-        {badrpc,_Reason} ->
+        {badrpc,nodedown} ->
             #member_info{ node=Node,
                           status=Status,
                           reachable=false,
+                          vnodes=[],
+                          handoffs=[],
+                          ring_pct=PctRing,
+                          pending_pct=PctPending
+                        };
+        {badrpc,_Reason} ->
+            #member_info{ node=Node,
+                          status=Status,
+                          reachable=true,
+                          incompatible=true,
                           vnodes=[],
                           handoffs=[],
                           ring_pct=PctRing,
@@ -266,6 +276,7 @@ get_my_info () ->
     %% construct the member information for this node
     #member_info{ node=node(),
                   reachable=true,
+                  incompatible=false,
                   mem_total=Total,
                   mem_used=Used,
                   mem_erlang=proplists:get_value(total,erlang:memory()),
