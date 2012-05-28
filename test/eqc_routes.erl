@@ -28,13 +28,7 @@ prop_routes () ->
             collect(Auth,
             begin
                 setup(Auth),
-
-                %% start application dependencies
-                riak_core_util:start_app_deps(riak_core),
-                riak_core_util:start_app_deps(riak_control),
-
-                %% can now start riak control
-                application:start(riak_control),
+                start_apps(),
 
                 %% ensure riak_control is up and running
                 riak_core:wait_for_application(riak_control),
@@ -55,7 +49,6 @@ prop_routes () ->
                                        Res==ok)
                                 end))
             end)).
-
 
 %% ---------------------------------------------------------------------------
 %% statem behavior
@@ -239,5 +232,19 @@ auth_user (_) -> "".
 
 qs ([{K,V}|QS]) -> f("~s=~w&~s", [K,V,qs(QS)]);
 qs ([]) -> "".
+
+%% TODO Should probably write stop_apps but need to determine all apps
+%% started by start_app_deps.
+start_apps() ->
+    application:start(compiler),
+    application:start(syntax_tools),
+    application:start(mochiweb),
+
+    %% start application dependencies
+    riak_core_util:start_app_deps(riak_core),
+    riak_core_util:start_app_deps(riak_control),
+
+    %% can now start riak control
+    application:start(riak_control).
 
 -endif. % EQC
