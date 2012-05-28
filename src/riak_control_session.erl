@@ -329,7 +329,7 @@ get_vnode_status (Service,Ring,Index) ->
 %% ---------------------------------------------------------------------------
 %% EUNIT tests
 
--ifdef(TEST).
+-ifdef(EQC).
 
 %% we want to see quickcheck output
 -define(QC_OUT(P),
