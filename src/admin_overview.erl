@@ -75,7 +75,7 @@ get_unreachable_nodes (Nodes,Down) ->
 %% get a list of all the nodes that are currently incompatible with
 %% control
 get_incompatible_nodes (Nodes) ->
-    [Node || #member_info{node=Node,incompatible=true} <- Nodes].
+    [Node || #member_info{node=Node,status=incompatible} <- Nodes].
 
 %% get a list of all nodes currently marked down
 get_down_nodes (Nodes) ->

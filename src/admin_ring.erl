@@ -122,13 +122,12 @@ paginate_results (Req,XS) ->
 %% return a proplist of details for a given index
 node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
     case lists:keyfind(P#partition_info.owner,2,Nodes) of
-        #member_info{node=Node,status=Status,reachable=Reachable,incompatible=Incompatible} ->
+        #member_info{node=Node,status=Status,reachable=Reachable} ->
             [{index,list_to_binary(integer_to_list(Index))},
              {i,P#partition_info.partition},
              {node,Node},
              {status,Status},
              {reachable,Reachable},
-             {incompatible,Incompatible},
              {vnodes,Vnodes},
              {handoffs,{struct,vnode_handoffs(P#partition_info.handoffs)}}
             ];

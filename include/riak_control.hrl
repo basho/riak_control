@@ -20,7 +20,7 @@
 
 -type version()       :: integer().
 -type index()         :: binary().
--type status()        :: valid | invalid | down | leaving.
+-type status()        :: valid | invalid | down | leaving | incompatible.
 -type home()          :: primary | fallback | undefined.
 -type service()       :: atom().
 -type services()      :: [{service(),home()}].
@@ -38,17 +38,16 @@
         }).
 
 -record(member_info,
-        { node          :: atom(),
-          status        :: status(),
-          reachable     :: boolean(),
-          vnodes        :: [vnode()],
-          handoffs      :: [handoff()],
-          ring_pct      :: float(),
-          pending_pct   :: float(),
-          mem_total     :: integer(),
-          mem_used      :: integer(),
-          mem_erlang    :: integer(),
-          incompatible  :: boolean()
+        { node        :: atom(),
+          status      :: status(),
+          reachable   :: boolean(),
+          vnodes      :: [vnode()],
+          handoffs    :: [handoff()],
+          ring_pct    :: float(),
+          pending_pct :: float(),
+          mem_total   :: integer(),
+          mem_used    :: integer(),
+          mem_erlang  :: integer()
         }).
 
 %% These two should always match, in terms of webmachine dispatcher

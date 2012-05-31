@@ -248,32 +248,23 @@ get_member_info (_Member={Node,Status},Ring) ->
                         };
         {badrpc,_Reason} ->
             #member_info{ node=Node,
-                          status=Status,
+                          status=incompatible,
                           reachable=true,
-                          incompatible=true,
                           vnodes=[],
                           handoffs=[],
                           ring_pct=PctRing,
                           pending_pct=PctPending
                         };
-        %% upgrade nodes using the previous version of the record, to add
-        %% the incompatible state.
-        Member_info when is_record(Member_info, member_info, 11) ->
-            NewMemberInfo = erlang:append_element(Member_info, false),
-            NewMemberInfo#member_info{ status=Status,
-                                       ring_pct=PctRing,
-                                       pending_pct=PctPending
-                                   };
-        Member_info = #member_info{} ->
+        MemberInfo = #member_info{} ->
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
             %% before the node is actually down and the rpc call will
             %% succeed, but since it's shutting down it won't have any
             %% vnode workers running...
-            Member_info#member_info{ status=Status,
-                                     ring_pct=PctRing,
-                                     pending_pct=PctPending
-                                   }
+            MemberInfo#member_info{ status=Status,
+                                    ring_pct=PctRing,
+                                    pending_pct=PctPending
+                                  }
     end.
 
 %% run locally per-node, collects information about this node for the session
@@ -284,7 +275,6 @@ get_my_info () ->
     %% construct the member information for this node
     #member_info{ node=node(),
                   reachable=true,
-                  incompatible=false,
                   mem_total=Total,
                   mem_used=Used,
                   mem_erlang=proplists:get_value(total,erlang:memory()),

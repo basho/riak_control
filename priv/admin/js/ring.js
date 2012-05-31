@@ -286,7 +286,7 @@ $(document).ready(function () {
 
         function deal_with_lights (obj, row) {
             var i, kind;
-            if (obj.incompatible == true) { 
+            if (obj.status === 'incompatible') { 
                 set_operability_class($('.owner', row), 'incompatible');
             } else if (obj.reachable === true) {
                 set_operability_class($('.owner', row), 'normal');
@@ -296,7 +296,7 @@ $(document).ready(function () {
             for (i in obj.vnodes) {
                 if (Object.prototype.hasOwnProperty.call(obj.vnodes, i)) {
                     kind = i.split('_')[1];
-                    if (obj.incompatible === true) { 
+                    if (obj.status === 'incompatible') { 
                         set_light_color($('.' + kind + '-light', row), 'red');
                         $('.' + kind + '-status', row).html('Unknown');
                     } else if (obj.reachable === true && (obj.vnodes[i] === 'primary')) {

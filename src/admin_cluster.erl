@@ -70,7 +70,6 @@ to_json (Req,C=list) ->
     Status=[{struct,[{"name",Node#member_info.node},
                      {"status",Node#member_info.status},
                      {"reachable",Node#member_info.reachable},
-                     {"incompatible",Node#member_info.incompatible},
                      {"ring_pct",Node#member_info.ring_pct},
                      {"pending_pct",Node#member_info.pending_pct},
                      {"mem_total",Node#member_info.mem_total},

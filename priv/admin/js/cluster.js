@@ -402,7 +402,7 @@ $(document).ready(function () {
     function set_memory(node, texts, row) {
         var memdivider, mem_erlang, mem_non_erlang, mem_free;
 
-        if (node.reachable === false || node.incompatible === true) {
+        if (node.reachable === false || node.status === 'incompatible') {
             $('.unknown-mem', row).show();
             $('.mem-color', row).hide();
             $('.free-memory', row).text('?? Free');
@@ -434,13 +434,13 @@ $(document).ready(function () {
         } else {
             // handle colors and operability
             if (status === 'valid' && !stopping[texts.name]) {
-                if (node.incompatible == true) {
-                    set_valid_incompatible_status(row, texts);
-                } else if (node.reachable === true) {
+                if (node.reachable === true) {
                     set_valid_reachable_status(row, texts);
                 } else {
                     set_valid_unreachable_status(row, texts);
                 }
+            } else if (status === 'incompatible') {
+                set_valid_incompatible_status(row, texts);
             } else if (status === 'leaving') {
                 set_leaving_status(row, texts);
             } else if (status === 'down') {
