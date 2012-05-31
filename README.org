@@ -74,6 +74,11 @@ This is a quick "health check" for your cluster. If Riak Control finds
 anything worrisome, it will let you know and provide links to pages
 where you can diagnose and/or fix the problem.
 
+If a node is running Riak pre-1.1, it will be listed as incompatible
+in the Riak Control interface.  While in this state, Riak Control will
+be unable to retrieve and display statistics and configuration for that
+node.
+
 ** Cluster
 This is a high-level overview of your cluster. It lists each of the
 nodes in the cluster and their current status, partition ownerships,

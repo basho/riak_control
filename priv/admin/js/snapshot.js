@@ -5,6 +5,7 @@ $(document).ready(function () {
 	var previousProblems = {
 		"down" : {},
 		"unreachable" : {},
+    "incompatible" : {},
 		"low_mem" : {}
 	};
 
@@ -16,6 +17,7 @@ $(document).ready(function () {
 		var i, l, newProblems = {
 			"down" : {},
 			"unreachable" : {},
+      "incompatible" : {},
 			"low_mem" : {}
 		};
 		
@@ -30,7 +32,7 @@ $(document).ready(function () {
 				$(this).css({
 					"position" : "",
 					"top" : ""
-				})
+				});
 			});
 		}
 
@@ -59,6 +61,7 @@ $(document).ready(function () {
 
 		cycle_problems('down');
 		cycle_problems('unreachable');
+    cycle_problems('incompatible');
 		cycle_problems('low_mem');
 
 		previousProblems = newProblems;

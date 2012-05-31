@@ -237,7 +237,7 @@ get_member_info (_Member={Node,Status},Ring) ->
 
     %% try and get a list of all the vnodes running on the node
     case rpc:call(Node,riak_control_session,get_my_info,[]) of
-        {badrpc,_Reason} ->
+        {badrpc,nodedown} ->
             #member_info{ node=Node,
                           status=Status,
                           reachable=false,
@@ -246,16 +246,25 @@ get_member_info (_Member={Node,Status},Ring) ->
                           ring_pct=PctRing,
                           pending_pct=PctPending
                         };
-        Member_info ->
+        {badrpc,_Reason} ->
+            #member_info{ node=Node,
+                          status=incompatible,
+                          reachable=true,
+                          vnodes=[],
+                          handoffs=[],
+                          ring_pct=PctRing,
+                          pending_pct=PctPending
+                        };
+        MemberInfo = #member_info{} ->
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
             %% before the node is actually down and the rpc call will
             %% succeed, but since it's shutting down it won't have any
             %% vnode workers running...
-            Member_info#member_info{ status=Status,
-                                     ring_pct=PctRing,
-                                     pending_pct=PctPending
-                                   }
+            MemberInfo#member_info{ status=Status,
+                                    ring_pct=PctRing,
+                                    pending_pct=PctPending
+                                  }
     end.
 
 %% run locally per-node, collects information about this node for the session

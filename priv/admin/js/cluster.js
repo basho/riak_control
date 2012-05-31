@@ -216,7 +216,7 @@ $(document).ready(function () {
     }
 
     function set_operability_class(jqObj, newClass) {
-        var classes = ['unreachable', 'disabled', 'down', 'normal'], i, l = classes.length;
+        var classes = ['unreachable', 'incompatible', 'disabled', 'down', 'normal'], i, l = classes.length;
         newClass = newClass.toLowerCase();
         for (i = 0; i < l; i += 1) {
             if (classes[i] === newClass) {
@@ -321,6 +321,23 @@ $(document).ready(function () {
 
         }
     }
+
+    function set_valid_incompatible_status(row, textObj) {
+        var myActions = (row) ? $('[name="' + row.getAttribute('name') + '-more-actions"]') : null;
+        if (myActions) {
+            myActions.find('.markdown-button, .markdown-label').addClass('pressed').addClass('disabled');
+            myActions.find('.shutdown-button, .shutdown-label').addClass('pressed').addClass('disabled');
+            myActions.find('.leave-cluster-button, .leave-cluster-label').addClass('pressed').addClass('disabled');
+            $('.gui-slider', row).removeClass('hide');
+            $('.gui-slider-leaving', row).addClass('hide');
+            if (textObj.status !== 'Incompatible') {
+                $('.status', row).text('Incompatible');
+            }
+            reset_slider($('.ui-slider-handle', row), row);
+            set_light_color($('.status-light', row), 'red');
+            set_operability_class($('.name', row), 'incompatible');
+        }
+    }
     
     function set_valid_unreachable_status(row, textObj) {
         var myActions = (row) ? $('[name="' + row.getAttribute('name') + '-more-actions"]') : null;
@@ -385,7 +402,7 @@ $(document).ready(function () {
     function set_memory(node, texts, row) {
         var memdivider, mem_erlang, mem_non_erlang, mem_free;
 
-        if (node.reachable === false) {
+        if (node.reachable === false || node.status === 'incompatible') {
             $('.unknown-mem', row).show();
             $('.mem-color', row).hide();
             $('.free-memory', row).text('?? Free');
@@ -422,6 +439,8 @@ $(document).ready(function () {
                 } else {
                     set_valid_unreachable_status(row, texts);
                 }
+            } else if (status === 'incompatible') {
+                set_valid_incompatible_status(row, texts);
             } else if (status === 'leaving') {
                 set_leaving_status(row, texts);
             } else if (status === 'down') {
