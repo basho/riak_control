@@ -256,7 +256,15 @@ get_member_info (_Member={Node,Status},Ring) ->
                           ring_pct=PctRing,
                           pending_pct=PctPending
                         };
-        Member_info ->
+        %% upgrade nodes using the previous version of the record, to add
+        %% the incompatible state.
+        Member_info when is_record(Member_info, member_info, 11) ->
+            NewMemberInfo = erlang:append_element(Member_info, false),
+            NewMemberInfo#member_info{ status=Status,
+                                       ring_pct=PctRing,
+                                       pending_pct=PctPending
+                                   };
+        Member_info = #member_info{} ->
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
             %% before the node is actually down and the rpc call will

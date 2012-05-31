@@ -41,14 +41,14 @@
         { node          :: atom(),
           status        :: status(),
           reachable     :: boolean(),
-          incompatible  :: boolean(),
           vnodes        :: [vnode()],
           handoffs      :: [handoff()],
           ring_pct      :: float(),
           pending_pct   :: float(),
           mem_total     :: integer(),
           mem_used      :: integer(),
-          mem_erlang    :: integer()
+          mem_erlang    :: integer(),
+          incompatible  :: boolean()
         }).
 
 %% These two should always match, in terms of webmachine dispatcher
