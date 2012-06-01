@@ -20,7 +20,7 @@
 
 -type version()       :: integer().
 -type index()         :: binary().
--type status()        :: valid | invalid | down | leaving.
+-type status()        :: valid | invalid | down | leaving | incompatible.
 -type home()          :: primary | fallback | undefined.
 -type service()       :: atom().
 -type services()      :: [{service(),home()}].

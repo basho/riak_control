@@ -196,7 +196,7 @@ $(function() {
             free_mem = parent.find('.free-memory').text(),
             erlang_mem, non_erlang_mem;
         if (free_mem.charAt(0) === '?') {
-            displayTips('Because this node is currently unreachable, Riak Control is not able to assess its memory usage.');
+            displayTips('Because this node is currently unreachable or incompatible with Riak Control, Riak Control is not able to assess its memory usage.');
         } else {
             free_mem = parseInt(free_mem);
             erlang_mem = parseInt(parent.find('.erlang-mem').attr('name'));
@@ -210,6 +210,8 @@ $(function() {
         var mytext = $(this).find('.status').text().toLowerCase();
         if (mytext === 'valid') {
             displayTips('This node is currently online and working.');
+        } else if (mytext === 'incompatible') {
+            displayTips('This node is incompatible with Riak Control.  While in this state, Riak Control will be unable to determine status of this node.');
         } else if (mytext === 'unreachable') {
             displayTips('This node is unreachable.  Riak may need to be restarted or there may be other connectivity issues.  Cluster membership changes like "join" and "leave" cannot complete until this node is reachable or marked as "down".');
         } else if (mytext === 'down') {

@@ -58,8 +58,10 @@ to_json (Req,C) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     Down=get_down_nodes(Nodes),
     Unreachable=get_unreachable_nodes(Nodes,Down),
+    Incompatible=get_incompatible_nodes(Nodes),
     LowMem=get_low_mem_nodes(Nodes),
     Json=[{unreachable_nodes, Unreachable},
+          {incompatible_nodes, Incompatible},
           {down_nodes, Down},
           {low_mem_nodes, LowMem}
          ],
@@ -69,6 +71,11 @@ to_json (Req,C) ->
 get_unreachable_nodes (Nodes,Down) ->
     Unreachable=[Node || #member_info{node=Node,reachable=false} <- Nodes],
     lists:foldl(fun lists:delete/2,Unreachable,Down).
+
+%% get a list of all the nodes that are currently incompatible with
+%% control
+get_incompatible_nodes (Nodes) ->
+    [Node || #member_info{node=Node,status=incompatible} <- Nodes].
 
 %% get a list of all nodes currently marked down
 get_down_nodes (Nodes) ->

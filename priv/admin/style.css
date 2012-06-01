@@ -562,7 +562,7 @@ ul.bulleted li {
     padding: 45px 0 200px 343px;
 }
 
-#unreachable-nodes-list, #down-nodes-list {
+#incompatible-nodes-list, #unreachable-nodes-list, #down-nodes-list {
     margin-bottom: 25px;
 }
 
@@ -936,4 +936,4 @@ ul.bulleted li {
 .underline:hover {text-decoration: underline;}
 
 .disabled, .down {opacity: .5; filter: alpha(opacity=50);}
-.offline, .unreachable  {color: #e85252;}
+.offline, .unreachable, .incompatible {color: #e85252;}
