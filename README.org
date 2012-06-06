@@ -31,6 +31,15 @@ app.config to point to your own:
 :         {keyfile, "./etc/key.pem"}
 :       ]}
 
+**** SSL with Intermediate Authorities
+If you are using a certificate that includes an intermediate authority, include the `cacertfile` key and value:
+
+: {ssl, [
+:        {certfile, "./etc/cert.pem"},
+:        {cacertfile, "./etc/cacert.pem"},
+:        {keyfile, "./etc/key.pem"}
+:       ]},
+
 *** Enable riak_control and setup basic authentication
 In the riak_control section of app.config, first you'll need to
 make sure that it is enabled:
