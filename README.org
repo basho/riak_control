@@ -1,3 +1,5 @@
+  [[http://travis-ci.org/basho/riak_control][Travis-CI]] :: [[https://secure.travis-ci.org/basho/riak_control.png?branch=master]]
+
 * What is Riak Control?
 Riak Control is a set of webmachine resources, all accessible via
 the /admin/* paths, allow you to inspect your running cluster,
