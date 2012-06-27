@@ -1,4 +1,4 @@
-  [[http://travis-ci.org/basho/riak_control][Travis-CI]] :: [[https://secure.travis-ci.org/basho/riak_control.png?branch=master]]
+[[http://travis-ci.org/basho/riak_control][Travis-CI]] :: [[https://secure.travis-ci.org/basho/riak_control.png]]
 
 * What is Riak Control?
 Riak Control is a set of webmachine resources, all accessible via
