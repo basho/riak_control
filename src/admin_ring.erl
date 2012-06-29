@@ -25,7 +25,8 @@
          to_json/2,
          is_authorized/2,
          service_available/2,
-         forbidden/2
+         forbidden/2,
+         node_ring_details/2
         ]).
 
 %% riak_control and webmachine dependencies
