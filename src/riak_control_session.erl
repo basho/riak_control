@@ -88,7 +88,7 @@ get_partitions () ->
     gen_server:call(?MODULE,get_partitions,infinity).
 
 force_update () ->
-    gen_server:cast(?MODULE,update_ring,infinity).
+    gen_server:cast(?MODULE,update_ring).
 
 %% ===================================================================
 %% gen_server callbacks
