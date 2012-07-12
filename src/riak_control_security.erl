@@ -146,6 +146,8 @@ validate_csrf_token(RD, Ctx) ->
     BodyToken = proplists:get_value("csrf_token", Body),
     CookieToken = get_csrf_token(RD, Ctx),
     case BodyToken of
+        undefined ->
+            false;
         CookieToken ->
             true;
         _ ->
