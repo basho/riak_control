@@ -24,7 +24,7 @@
 -export([scheme_is_available/2,
          enforce_auth/2,
          https_redirect_loc/1,
-         set_csrf_token/2,
+         csrf_token/2,
          validate_csrf_token/2
         ]).
 
@@ -129,13 +129,12 @@ valid_userpass(_User, _Pass, _Auth) ->
     false.
 
 %% @doc store a csrf protection token in a cookie.
-set_csrf_token(RD, Ctx) ->
+csrf_token(RD, Ctx) ->
     case get_csrf_token(RD, Ctx) of
         undefined ->
-            Token = binary_to_list(base64:encode(crypto:rand_bytes(256))),
-            wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", RD);
-        _ ->
-            RD
+            binary_to_list(base64:encode(crypto:rand_bytes(256)));
+        Token ->
+            Token
     end.
 
 get_csrf_token(RD, _Ctx) ->
