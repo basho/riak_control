@@ -129,15 +129,23 @@ valid_userpass(_User, _Pass, _Auth) ->
     false.
 
 %% @doc store a csrf protection token in a cookie.
-set_csrf_token(RD, _Ctx) ->
-    Token = base64:encode(crypto:rand_bytes(256)),
-    wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", RD).
+set_csrf_token(RD, Ctx) ->
+    case get_csrf_token(RD, Ctx) of
+        undefined ->
+            Token = binary_to_list(base64:encode(crypto:rand_bytes(256))),
+            wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", RD);
+        _ ->
+            RD
+    end.
+
+get_csrf_token(RD, _Ctx) ->
+    wrq:get_cookie_value("csrf_token", RD).
 
 %% @doc ensure this request contains a valid csrf protection token.
-validate_csrf_token(RD, _Ctx) ->
+validate_csrf_token(RD, Ctx) ->
     Body = mochiweb_util:parse_qs(wrq:req_body(RD)),
     BodyToken = proplists:get_value("csrf_token", Body),
-    CookieToken = wrq:get_cookie_value("csrf_token", RD),
+    CookieToken = get_csrf_token(RD, Ctx),
     case BodyToken of
         CookieToken ->
             true;

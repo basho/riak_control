@@ -121,4 +121,5 @@ to_resource (Req,Ctx=fallback) ->
 
 %% respond to a file request
 to_resource (Req,Ctx) ->
-    {get_file(Req),Req,Ctx}.
+    Req1 = riak_control_security:set_csrf_token(Req, Ctx),
+    {get_file(Req1),Req1,Ctx}.
