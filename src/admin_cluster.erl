@@ -55,7 +55,7 @@ content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
 %% get a list of all the nodes in the ring and their status
-to_json (Req,C=list) ->
+to_json (Req,C) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     Status=[{struct,[{"name",Node#member_info.node},
                      {"status",Node#member_info.status},

@@ -65,7 +65,7 @@ content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
 %% mark a node in the cluster as down
-process_post (Req,C=down) ->
+process_post (Req,C) ->
     NodeStr=dict:fetch(node,wrq:path_info(Req)),
     Node=list_to_existing_atom(NodeStr),
     Result=riak_core:down(Node),
