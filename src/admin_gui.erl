@@ -22,6 +22,9 @@
 -export([routes/0,
          init/1,
          content_types_provided/2,
+         resource_exists/2,
+         previously_existed/2,
+         moved_permanently/2,
          to_resource/2,
          is_authorized/2,
          service_available/2
@@ -39,34 +42,46 @@
                       ]).
 
 %% defines the webmachine routes this module handles
-routes () ->
+routes() ->
     [{admin_routes:admin_route([]),?MODULE,index},
      {admin_routes:admin_route(["fallbacks"]),?MODULE,fallback},
-     {admin_routes:admin_route(["ui",'*']),?MODULE,undefined}
+     {admin_routes:admin_route(["ui",'*']),?MODULE,undefined},
+     {admin_routes:admin_route(["ui","index.html"]),?MODULE,oldindex}
     ].
 
 %% entry-point for the resource from webmachine
-init (Resource) ->
-    {ok,Resource}.
+init(Resource) -> {ok,Resource}.
+
+%% redirect to the index page if no file given
+moved_permanently(Req,oldindex) -> {{true,"/admin"},Req,index};
+moved_permanently(Req,Ctx) -> {false,Req,Ctx}.
+
+%% the index file isn't here
+previously_existed(Req,oldindex) -> {true,Req,oldindex};
+previously_existed(Req,Ctx) -> {false,Req,Ctx}.
+
+%% a resource other than the index is here
+resource_exists (Req,oldindex) -> {false,Req,oldindex};
+resource_exists (Req,Ctx) -> {true,Req,Ctx}.
 
 %% redirect to SSL port if using HTTP
-service_available (RD,C) ->
+service_available(RD,C) ->
     riak_control_security:scheme_is_available(RD,C).
 
 %% validate username and password
-is_authorized (RD,C) ->
+is_authorized(RD,C) ->
     riak_control_security:enforce_auth(RD,C).
 
 %% return the list of available content types for webmachine
-content_types_provided (Req,Ctx=index) ->
+content_types_provided(Req,Ctx=index) ->
     {[{"text/html", to_resource}],Req, Ctx};
-content_types_provided (Req,Ctx) ->
+content_types_provided(Req,Ctx) ->
     Index = file_path(Req),
     MimeType = webmachine_util:guess_mime(Index),
     {[{MimeType, to_resource}],Req, Ctx}.
 
-%% return file path 
-file_path(Req) -> 
+%% return file path
+file_path(Req) ->
     Path=wrq:path_tokens(Req),
     filename:join([riak_control:priv_dir(),"admin"] ++ Path).
 
@@ -109,6 +124,10 @@ to_resource(Req,Ctx=index) ->
     Token = riak_control_security:csrf_token(Req, Ctx),
     {ok, Content} = index_dtl:render([{csrf_token, Token}]),
     {Content, wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", Req), Ctx};
+
+%% respond to a file request
+to_resource(Req,Ctx=oldindex) ->
+    {"a",Req,Ctx};
 
 %% respond to a file request
 to_resource(Req,Ctx) ->
