@@ -24,7 +24,8 @@
          content_types_provided/2,
          to_json/2,
          is_authorized/2,
-         service_available/2
+         service_available/2,
+         forbidden/2
         ]).
 
 %% riak_control and webmachine dependencies
@@ -41,6 +42,10 @@ routes() ->
 %% entry-point for the resource from webmachine
 init(Action) ->
     {ok,Action}.
+
+%% validate origin
+forbidden(RD, C) ->
+    {riak_control_security:is_null_origin(RD), RD, C}.
 
 %% redirect to SSL port if using HTTP
 service_available(RD,C) ->
