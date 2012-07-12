@@ -22,7 +22,6 @@
 -export([routes/0,
          init/1,
          allowed_methods/2,
-         content_types_provided/2,
          process_post/2,
          is_authorized/2,
          service_available/2,
@@ -57,11 +56,7 @@ is_authorized(RD,C) ->
 
 %% validate csfr_token
 forbidden(RD, C) ->
-    {not riak_control_security:is_valid_csrf_token(RD, C), RD, C}.
-
-%% return the list of available content types for webmachine
-content_types_provided(Req,C) ->
-    {?CONTENT_TYPES,Req,C}.
+    {riak_control_security:is_null_origin(RD) or not riak_control_security:is_valid_csrf_token(RD, C), RD, C}.
 
 %% mark a node in the cluster as down
 process_post(Req,C) ->
