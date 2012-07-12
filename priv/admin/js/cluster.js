@@ -141,6 +141,7 @@ $(document).ready(function () {
     function perform_node_action(action) {
         $.ajax({
             url: action,
+            type: 'POST',
             dataType: 'json',
             complete: function (x,y) {
                 var err, errortextbox, errorlinkbox;
