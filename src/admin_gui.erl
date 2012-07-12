@@ -105,7 +105,7 @@ to_resource (Req,Ctx=fallback) ->
 %% respond to an index request
 to_resource (Req,Ctx=index) ->
     Token = riak_control_security:csrf_token(Req, Ctx),
-    {ok, Content} = index_dtl:render([]),
+    {ok, Content} = index_dtl:render([{csrf_token, Token}]),
     {Content, wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", Req), Ctx};
 
 %% respond to a file request
