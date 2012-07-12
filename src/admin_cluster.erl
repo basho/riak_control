@@ -68,12 +68,5 @@ to_json (Req,C=list) ->
                      {"me",Node#member_info.node == node()}
                     ]}
             || Node=#member_info{} <- Nodes],
-    {mochijson2:encode(Status),Req,C};
-
-%% mark a node in the cluster as down
-to_json (Req,C=down) ->
-    NodeStr=dict:fetch(node,wrq:path_info(Req)),
-    Node=list_to_existing_atom(NodeStr),
-    Result=riak_core:down(Node),
-    riak_control_formatting:cluster_action_result(Result,Req,C).
+    {mochijson2:encode(Status),Req,C}.
 
