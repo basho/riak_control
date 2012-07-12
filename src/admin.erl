@@ -50,6 +50,7 @@ content_types_provided (Req,Ctx) ->
 
 %% valid | invalid | joining | leaving | exiting
 to_html (Req,Ctx) ->
+    riak_control_security:set_csrf_token(Req, Ctx),
     Index=filename:join([riak_control:priv_dir(),"admin","index.html"]),
     Source=file:read_file(Index),
     {Source,Req,Ctx}.
