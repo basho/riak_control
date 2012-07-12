@@ -28,15 +28,15 @@
 %% TODO: combine these two.
 
 %% all actions return the same format
-cluster_action_result (Error={error,_},Req,C) ->
+cluster_action_result(Error={error,_},Req,C) ->
     {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (Error={badrpc,_},Req,C) ->
+cluster_action_result(Error={badrpc,_},Req,C) ->
     {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (_,Req,C) ->
+cluster_action_result(_,Req,C) ->
     {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
 
 %% all actions return the same format
-node_action_result ({error,Reason},Req,C) ->
+node_action_result({error,Reason},Req,C) ->
     {{error,Reason},Req,C};
-node_action_result (_,Req,C) ->
+node_action_result(_,Req,C) ->
     {mochijson2:encode({struct,[{result,ok}]}),Req,C}.

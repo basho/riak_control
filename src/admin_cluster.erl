@@ -35,27 +35,27 @@
 -define(CONTENT_TYPES,[{"application/json",to_json}]).
 
 %% defines the webmachine routes this module handles
-routes () ->
+routes() ->
     [{admin_routes:cluster_route(["list"]),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
-init (Action) ->
+init(Action) ->
     {ok,Action}.
 
 %% redirect to SSL port if using HTTP
-service_available (RD,C) ->
+service_available(RD,C) ->
     riak_control_security:scheme_is_available(RD,C).
 
 %% validate username and password
-is_authorized (RD,C) ->
+is_authorized(RD,C) ->
     riak_control_security:enforce_auth(RD,C).
 
 %% return the list of available content types for webmachine
-content_types_provided (Req,C) ->
+content_types_provided(Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
 %% get a list of all the nodes in the ring and their status
-to_json (Req,C) ->
+to_json(Req,C) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     Status=[{struct,[{"name",Node#member_info.node},
                      {"status",Node#member_info.status},

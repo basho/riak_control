@@ -26,11 +26,11 @@
 -include("riak_control.hrl").
 
 %% get the target node for the action
-target_node (Req) ->
+target_node(Req) ->
     list_to_existing_atom(dict:fetch(node,wrq:path_info(Req))).
 
 %% remote to the target node, perform the action, and return
-perform_rpc_action (Req,C,Module,Fun,Args) ->
+perform_rpc_action(Req,C,Module,Fun,Args) ->
     Node=target_node(Req),
     Result=case rpc:call(Node,Module,Fun,Args) of
                {badrpc,Error} -> {error,Error};

@@ -37,22 +37,22 @@
 -define(CONTENT_TYPES,[{"application/json",to_json}]).
 
 %% defines the webmachine routes this module handles
-routes () ->
+routes() ->
     [{admin_routes:node_route(["stop"]),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
-init (Action) -> {ok,Action}.
+init(Action) -> {ok,Action}.
 
 %% alow post
 allowed_methods(RD, C) ->
     {['POST'], RD, C}.
 
 %% redirect to SSL port if using HTTP
-service_available (RD,C) ->
+service_available(RD,C) ->
     riak_control_security:scheme_is_available(RD,C).
 
 %% validate username and password
-is_authorized (RD,C) ->
+is_authorized(RD,C) ->
     riak_control_security:enforce_auth(RD,C).
 
 %% validate csfr_token
@@ -60,9 +60,9 @@ forbidden(RD, C) ->
     {not riak_control_security:validate_csrf_token(RD, C), RD, C}.
 
 %% return the list of available content types for webmachine
-content_types_provided (Req,C) ->
+content_types_provided(Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
 %% most node actions are simple rpc calls
-process_post (Req,C) ->
+process_post(Req,C) ->
     riak_control_rpc:perform_rpc_action(Req,C,riak_core,stop,[]).

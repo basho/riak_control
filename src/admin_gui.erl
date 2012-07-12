@@ -71,17 +71,17 @@ file_path(Req) ->
     filename:join([riak_control:priv_dir(),"admin"] ++ Path).
 
 %% loads a resource file from disk and returns it
-get_file (Req) ->
+get_file(Req) ->
     Index = file_path(Req),
     {ok,Source}=file:read_file(Index),
     Source.
 
 %% true if the node is running riak_control
-redirect_loc (Node) ->
+redirect_loc(Node) ->
     rpc:call(Node,riak_control_security,https_redirect_loc,[[]]).
 
 %% don't use this node as a fallback, must be valid and reachable
-find_fallbacks (Nodes) ->
+find_fallbacks(Nodes) ->
     lists:foldl(fun (#member_info{node=Node,status=valid,reachable=true},Acc) ->
                         case Node == node() of
                             true -> Acc;
@@ -99,17 +99,17 @@ find_fallbacks (Nodes) ->
                 Nodes).
 
 %% find another node in the cluster that is running the GUI
-to_resource (Req,Ctx=fallback) ->
+to_resource(Req,Ctx=fallback) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     NodeURIs=find_fallbacks(Nodes),
     {mochijson2:encode(NodeURIs),Req,Ctx};
 
 %% respond to an index request
-to_resource (Req,Ctx=index) ->
+to_resource(Req,Ctx=index) ->
     Token = riak_control_security:csrf_token(Req, Ctx),
     {ok, Content} = index_dtl:render([{csrf_token, Token}]),
     {Content, wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", Req), Ctx};
 
 %% respond to a file request
-to_resource (Req,Ctx) ->
+to_resource(Req,Ctx) ->
     {get_file(Req),Req,Ctx}.

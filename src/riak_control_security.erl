@@ -47,7 +47,7 @@ scheme_is_available(RD, Ctx) ->
     end.
 
 %% get the https location to redirect to (callable w/o a request)
-https_redirect_loc (Path) ->
+https_redirect_loc(Path) ->
     case app_helper:get_env(riak_control, enabled, false) of
         true ->
             case app_helper:get_env(riak_core, https) of
@@ -61,7 +61,7 @@ https_redirect_loc (Path) ->
     end.
 
 %% set the redirect header and where to go with it
-https_redirect (RD,Ctx) ->
+https_redirect(RD,Ctx) ->
     Path=wrq:raw_path(RD),
     Loc=case https_redirect_loc(Path) of
             {ok,Dest} ->
