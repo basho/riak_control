@@ -139,10 +139,12 @@ $(document).ready(function () {
     }
 
     function perform_node_action(action) {
+        var csrf_token = $('meta[name=csrf-token]').attr('content');
+
         $.ajax({
             url: action,
             type: 'POST',
-            dataType: 'json',
+            data: "csrf_token=" + csrf_token,
             complete: function (x,y) {
                 var err, errortextbox, errorlinkbox;
                 if (y.toLowerCase() === 'error') {
