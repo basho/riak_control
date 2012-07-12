@@ -139,7 +139,7 @@ $(document).ready(function () {
     }
 
     function perform_node_action(action) {
-        var csrf_token = $('meta[name=csrf-token]').attr('content');
+        var csrf_token = $('meta[name=csrf_token]').attr('content');
 
         $.ajax({
             url: action,
