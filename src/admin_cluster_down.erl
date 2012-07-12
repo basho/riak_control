@@ -38,7 +38,7 @@
 
 %% defines the webmachine routes this module handles
 routes () ->
-    [{admin_routes:cluster_route(["down",node]),?MODULE,down}].
+    [{admin_routes:cluster_route(["down",node]),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
 init (Action) ->

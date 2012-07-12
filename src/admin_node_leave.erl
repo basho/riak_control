@@ -38,7 +38,7 @@
 
 %% defines the webmachine routes this module handles
 routes () ->
-    [{admin_routes:node_route(["leave"]),?MODULE,leave}].
+    [{admin_routes:node_route(["leave"]),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
 init (Action) -> {ok,Action}.
