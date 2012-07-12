@@ -41,8 +41,7 @@ routes() ->
     [{admin_routes:cluster_route(["down",node]),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
-init(Action) ->
-    {ok,Action}.
+init([]) -> {ok,undefined}.
 
 %% alow post
 allowed_methods(RD, C) ->
