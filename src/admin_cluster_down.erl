@@ -57,7 +57,7 @@ is_authorized(RD,C) ->
 
 %% validate csfr_token
 forbidden(RD, C) ->
-    {not riak_control_security:validate_csrf_token(RD, C), RD, C}.
+    {not riak_control_security:is_valid_csrf_token(RD, C), RD, C}.
 
 %% return the list of available content types for webmachine
 content_types_provided(Req,C) ->

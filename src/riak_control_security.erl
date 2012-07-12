@@ -25,7 +25,7 @@
          enforce_auth/2,
          https_redirect_loc/1,
          csrf_token/2,
-         validate_csrf_token/2
+         is_valid_csrf_token/2
         ]).
 
 -include("riak_control.hrl").
@@ -141,7 +141,7 @@ get_csrf_token(RD, _Ctx) ->
     wrq:get_cookie_value("csrf_token", RD).
 
 %% @doc ensure this request contains a valid csrf protection token.
-validate_csrf_token(RD, Ctx) ->
+is_valid_csrf_token(RD, Ctx) ->
     Body = mochiweb_util:parse_qs(wrq:req_body(RD)),
     BodyToken = proplists:get_value("csrf_token", Body),
     CookieToken = get_csrf_token(RD, Ctx),
