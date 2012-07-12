@@ -25,7 +25,8 @@
          enforce_auth/2,
          https_redirect_loc/1,
          csrf_token/2,
-         is_valid_csrf_token/2
+         is_valid_csrf_token/2,
+         is_null_origin/1
         ]).
 
 -include("riak_control.hrl").
@@ -149,6 +150,16 @@ is_valid_csrf_token(RD, Ctx) ->
         undefined ->
             false;
         CookieToken ->
+            true;
+        _ ->
+            false
+    end.
+
+%% @doc Check if the Origin header is "null". This is useful to look for attempts
+%%      at CSRF, but is not a complete answer to the problem.
+is_null_origin(RD) ->
+    case wrq:get_req_header("Origin", RD) of
+        "null" ->
             true;
         _ ->
             false
