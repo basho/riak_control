@@ -24,6 +24,7 @@
 -export([scheme_is_available/2,
          enforce_auth/2,
          https_redirect_loc/1,
+         set_csrf_token/2,
          validate_csrf_token/2
         ]).
 
@@ -126,6 +127,11 @@ valid_userpass(User, Pass, userlist) ->
 valid_userpass(_User, _Pass, _Auth) ->
     error_logger:warning_msg("Unknown auth type '~p'", [_Auth]),
     false.
+
+%% @doc store a csrf protection token in a cookie.
+set_csrf_token(RD, _Ctx) ->
+    Token = base64:encode(crypto:rand_bytes(256)),
+    wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", RD).
 
 %% @doc ensure this request contains a valid csrf protection token.
 validate_csrf_token(RD, _Ctx) ->
