@@ -57,6 +57,8 @@ init([]) ->
                          {admin, admin_overview},
                          {admin, admin_ring},
                          {admin, admin_cluster},
+                         {admin, admin_cluster_join},
+                         {admin, admin_cluster_down},
                          {admin, admin_node}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
