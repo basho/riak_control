@@ -38,9 +38,7 @@
 routes () ->
     [{admin_routes:node_route(["ping"]),?MODULE,ping},
      {admin_routes:node_route(["stats"]),?MODULE,stats},
-     {admin_routes:node_route(["details"]),?MODULE,details},
-     {admin_routes:node_route(["stop"]),?MODULE,stop},
-     {admin_routes:node_route(["leave"]),?MODULE,leave}].
+     {admin_routes:node_route(["details"]),?MODULE,details}].
 
 %% entry-point for the resource from webmachine
 init (Action) -> {ok,Action}.
@@ -63,17 +61,13 @@ target_node (Req) ->
 
 %% most node actions are simple rpc calls
 to_json (Req,C=ping) ->
-    perform_rpc_action(Req,C,net_adm,ping,[node()]);
+    riak_control_rpc:perform_rpc_action(Req,C,net_adm,ping,[node()]);
 to_json (Req,C=stats) ->
     get_node_stats(Req,C);
 to_json (Req,C=details) ->
     get_node_details(Req,C);
-to_json (Req,C=stop) ->
-    perform_rpc_action(Req,C,riak_core,stop,[]);
-to_json (Req,C=leave) ->
-    perform_rpc_action(Req,C,riak_core,leave,[]);
 to_json (Req,C) ->
-    node_action_result({error,{struct,[{unknown_action,C}]}},Req,C).
+    riak_control_rpc:node_action_result({error,{struct,[{unknown_action,C}]}},Req,C).
 
 %% stats aren't perfectly formatted json (TODO: fix that!)
 get_node_stats (Req,C) ->
@@ -89,18 +83,3 @@ get_node_details (Req,C) ->
     Indices=rpc:call(Node,riak_core_ring,my_indices,[Ring]),
     PS=[{struct,admin_ring:node_ring_details(Ring,{P,Node})} || P <- Indices],
     {mochijson2:encode(PS),Req,C}.
-
-%% remote to the target node, perform the action, and return
-perform_rpc_action (Req,C,Module,Fun,Args) ->
-    Node=target_node(Req),
-    Result=case rpc:call(Node,Module,Fun,Args) of
-               {badrpc,Error} -> {error,Error};
-               Ok -> Ok
-           end,
-    node_action_result(Result,Req,C).
-
-%% all actions return the same format
-node_action_result ({error,Reason},Req,C) ->
-    {{error,Reason},Req,C};
-node_action_result (_,Req,C) ->
-    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.

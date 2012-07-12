@@ -23,7 +23,9 @@
 
 -export([scheme_is_available/2,
          enforce_auth/2,
-         https_redirect_loc/1
+         https_redirect_loc/1,
+         csrf_token/2,
+         validate_csrf_token/2
         ]).
 
 -include("riak_control.hrl").
@@ -126,3 +128,28 @@ valid_userpass(_User, _Pass, _Auth) ->
     error_logger:warning_msg("Unknown auth type '~p'", [_Auth]),
     false.
 
+%% @doc store a csrf protection token in a cookie.
+csrf_token(RD, Ctx) ->
+    case get_csrf_token(RD, Ctx) of
+        undefined ->
+            binary_to_list(base64:encode(crypto:rand_bytes(256)));
+        Token ->
+            Token
+    end.
+
+get_csrf_token(RD, _Ctx) ->
+    wrq:get_cookie_value("csrf_token", RD).
+
+%% @doc ensure this request contains a valid csrf protection token.
+validate_csrf_token(RD, Ctx) ->
+    Body = mochiweb_util:parse_qs(wrq:req_body(RD)),
+    BodyToken = proplists:get_value("csrf_token", Body),
+    CookieToken = get_csrf_token(RD, Ctx),
+    case BodyToken of
+        undefined ->
+            false;
+        CookieToken ->
+            true;
+        _ ->
+            false
+    end.

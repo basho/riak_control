@@ -22,9 +22,6 @@
 -export([routes/0,
          init/1,
          content_types_provided/2,
-         moved_permanently/2,
-         previously_existed/2,
-         resource_exists/2,
          to_resource/2,
          is_authorized/2,
          service_available/2
@@ -51,20 +48,6 @@ routes () ->
 %% entry-point for the resource from webmachine
 init (Resource) ->
     {ok,Resource}.
-
-%% redirect to the index page if no file given
-moved_permanently (Req,index) ->
-    {{true,"/admin/ui/index.html"},Req,undefined};
-moved_permanently (Req,Ctx) ->
-    {false,Req,Ctx}.
-
-%% the index file isn't here
-previously_existed (Req,index) -> {true,Req,index};
-previously_existed (Req,Ctx) -> {false,Req,Ctx}.
-
-%% a resource other than the index is here
-resource_exists (Req,index) -> {false,Req,index};
-resource_exists (Req,Ctx) -> {true,Req,Ctx}.
 
 %% redirect to SSL port if using HTTP
 service_available (RD,C) ->
@@ -118,6 +101,12 @@ to_resource (Req,Ctx=fallback) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
     NodeURIs=find_fallbacks(Nodes),
     {mochijson2:encode(NodeURIs),Req,Ctx};
+
+%% respond to an index request
+to_resource (Req,Ctx=index) ->
+    Token = riak_control_security:csrf_token(Req, Ctx),
+    {ok, Content} = index_dtl:render([{csrf_token, Token}]),
+    {Content, wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", Req), Ctx};
 
 %% respond to a file request
 to_resource (Req,Ctx) ->
