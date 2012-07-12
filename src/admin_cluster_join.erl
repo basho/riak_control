@@ -71,9 +71,9 @@ process_post(Req,C) ->
         [_Me] ->
             %% we're a single-node cluster, join the other guy...
             Result=riak_core:join(Node),
-            riak_control_formatting:cluster_action_result(Result,Req,C);
+            riak_control_formatting:action_result(Result,Req,C);
         _ ->
             %% we have a cluster, make them join us
             Result=rpc:call(Node,riak_core,join,[node()]),
-            riak_control_formatting:cluster_action_result(Result,Req,C)
+            riak_control_formatting:action_result(Result,Req,C)
     end.

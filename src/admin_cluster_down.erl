@@ -63,5 +63,5 @@ process_post(Req,C) ->
     NodeStr=dict:fetch(node,wrq:path_info(Req)),
     Node=list_to_existing_atom(NodeStr),
     Result=riak_core:down(Node),
-    riak_control_formatting:cluster_action_result(Result,Req,C).
+    riak_control_formatting:action_result(Result,Req,C).
 

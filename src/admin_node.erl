@@ -72,7 +72,7 @@ to_json(Req,C=stats) ->
 to_json(Req,C=details) ->
     get_node_details(Req,C);
 to_json(Req,C) ->
-    riak_control_rpc:node_action_result({error,{struct,[{unknown_action,C}]}},Req,C).
+    riak_control_formatting:action_result({error,unknown_action},Req,C).
 
 %% stats aren't perfectly formatted json (TODO: fix that!)
 get_node_stats(Req,C) ->

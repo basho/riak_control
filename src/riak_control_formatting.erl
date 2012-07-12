@@ -21,22 +21,17 @@
 %% @doc JSON formatting of result
 -module(riak_control_formatting).
 
--export([cluster_action_result/3, node_action_result/3]).
+-export([action_result/3]).
 
 -include("riak_control.hrl").
 
-%% TODO: combine these two.
-
 %% all actions return the same format
-cluster_action_result(Error={error,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result(Error={badrpc,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result(_,Req,C) ->
-    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
-
-%% all actions return the same format
-node_action_result({error,Reason},Req,C) ->
-    {{error,Reason},Req,C};
-node_action_result(_,Req,C) ->
-    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
+action_result(Error={badrpc,_},Req,C) ->
+    Body = mochijson2:encode({struct,[Error]}),
+    {false, wrq:set_resp_body(Body, Req), C};
+action_result(Error={error,_},Req,C) ->
+    Body = mochijson2:encode({struct,[Error]}),
+    {false, wrq:set_resp_body(Body, Req), C};
+action_result(_,Req,C) ->
+    Body = mochijson2:encode({struct,[{result,ok}]}),
+    {true, wrq:set_resp_body(Body, Req), C}.

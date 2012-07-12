@@ -36,4 +36,4 @@ perform_rpc_action(Req,C,Module,Fun,Args) ->
                {badrpc,Error} -> {error,Error};
                Ok -> Ok
            end,
-    riak_control_formatting:node_action_result(Result,Req,C).
+    riak_control_formatting:action_result(Result,Req,C).
