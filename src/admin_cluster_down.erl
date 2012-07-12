@@ -64,18 +64,10 @@ forbidden(RD, C) ->
 content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
-%% all actions return the same format
-cluster_action_result (Error={error,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (Error={badrpc,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (_,Req,C) ->
-    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
-
 %% mark a node in the cluster as down
 process_post (Req,C=down) ->
     NodeStr=dict:fetch(node,wrq:path_info(Req)),
     Node=list_to_existing_atom(NodeStr),
     Result=riak_core:down(Node),
-    cluster_action_result(Result,Req,C).
+    riak_control_formatting:cluster_action_result(Result,Req,C).
 

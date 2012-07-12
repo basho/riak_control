@@ -64,14 +64,6 @@ forbidden(RD, C) ->
 content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
-%% all actions return the same format
-cluster_action_result (Error={error,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (Error={badrpc,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (_,Req,C) ->
-    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
-
 %% join this node to the cluster of another ring
 process_post (Req,C) ->
     {ok,Ring}=riak_core_ring_manager:get_my_ring(),
@@ -85,9 +77,9 @@ process_post (Req,C) ->
         [_Me] ->
             %% we're a single-node cluster, join the other guy...
             Result=riak_core:join(Node),
-            cluster_action_result(Result,Req,C);
+            riak_control_formatting:cluster_action_result(Result,Req,C);
         _ ->
             %% we have a cluster, make them join us
             Result=rpc:call(Node,riak_core,join,[node()]),
-            cluster_action_result(Result,Req,C)
+            riak_control_formatting:cluster_action_result(Result,Req,C)
     end.
