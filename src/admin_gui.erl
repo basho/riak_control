@@ -58,6 +58,8 @@ is_authorized (RD,C) ->
     riak_control_security:enforce_auth(RD,C).
 
 %% return the list of available content types for webmachine
+content_types_provided (Req,Ctx=index) ->
+    {[{"text/html", to_resource}],Req, Ctx};
 content_types_provided (Req,Ctx) ->
     Index = file_path(Req),
     MimeType = webmachine_util:guess_mime(Index),
