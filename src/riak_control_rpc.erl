@@ -18,25 +18,22 @@
 %%
 %% -------------------------------------------------------------------
 
-%% @doc JSON formatting of result
--module(riak_control_formatting).
+%% @doc RPC functions.
+-module(riak_control_rpc).
 
--export([cluster_action_result/3, node_action_result/3]).
+-export([perform_rpc_action/5]).
 
 -include("riak_control.hrl").
 
-%% TODO: combine these two.
+%% get the target node for the action
+target_node (Req) ->
+    list_to_existing_atom(dict:fetch(node,wrq:path_info(Req))).
 
-%% all actions return the same format
-cluster_action_result (Error={error,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (Error={badrpc,_},Req,C) ->
-    {{error,mochijson2:encode({struct,[Error]})},Req,C};
-cluster_action_result (_,Req,C) ->
-    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
-
-%% all actions return the same format
-node_action_result ({error,Reason},Req,C) ->
-    {{error,Reason},Req,C};
-node_action_result (_,Req,C) ->
-    {mochijson2:encode({struct,[{result,ok}]}),Req,C}.
+%% remote to the target node, perform the action, and return
+perform_rpc_action (Req,C,Module,Fun,Args) ->
+    Node=target_node(Req),
+    Result=case rpc:call(Node,Module,Fun,Args) of
+               {badrpc,Error} -> {error,Error};
+               Ok -> Ok
+           end,
+    riak_control_formatting:node_action_result(Result,Req,C).

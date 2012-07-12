@@ -59,7 +59,9 @@ init([]) ->
                          {admin, admin_cluster},
                          {admin, admin_cluster_join},
                          {admin, admin_cluster_down},
-                         {admin, admin_node}
+                         {admin, admin_node},
+                         {admin, admin_node_stop},
+                         {admin, admin_node_leave}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
             [webmachine_router:add_route(R) || R <- Routes],
