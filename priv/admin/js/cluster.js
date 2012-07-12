@@ -145,7 +145,7 @@ $(document).ready(function () {
             url: action,
             type: 'POST',
             data: "csrf_token=" + encodeURIComponent(csrf_token),
-            dataType: 'application/json',
+            dataType: 'json',
             complete: function (x,y) {
                 var err, errortextbox, errorlinkbox;
                 if (y.toLowerCase() === 'error') {
