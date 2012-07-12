@@ -145,10 +145,14 @@ $(document).ready(function () {
             url: action,
             type: 'POST',
             data: "csrf_token=" + encodeURIComponent(csrf_token),
+            dataType: 'application/json',
             complete: function (x,y) {
                 var err, errortextbox, errorlinkbox;
                 if (y.toLowerCase() === 'error') {
-                    err = x.responseText.split('<title>')[1].split('</title>')[0] + ' <a class="monospace">-></a> ' + this.url + '.';
+                    // TODO: This wasn't returning anything meaningful,
+                    // so I'm hardcoding a string until we can get
+                    // actual useful messages in.
+                    err = "An error occurred";
                     $('#node-error .error-text').html(err);
                     $('#node-error .error-link').html('View in Logs &raquo;');
                     $('#node-error').show();
