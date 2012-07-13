@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Riak Control</title>
     <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/style.css" />
+    <meta name="csrf_token" content="{{ csrf_token }}">
 </head>
 
 <!-- when the page finishes loading, start filling in details -->
