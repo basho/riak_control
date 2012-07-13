@@ -23,7 +23,10 @@
 
 -export([scheme_is_available/2,
          enforce_auth/2,
-         https_redirect_loc/1
+         https_redirect_loc/1,
+         csrf_token/2,
+         is_valid_csrf_token/2,
+         is_null_origin/1
         ]).
 
 -include("riak_control.hrl").
@@ -45,7 +48,7 @@ scheme_is_available(RD, Ctx) ->
     end.
 
 %% get the https location to redirect to (callable w/o a request)
-https_redirect_loc (Path) ->
+https_redirect_loc(Path) ->
     case app_helper:get_env(riak_control, enabled, false) of
         true ->
             case app_helper:get_env(riak_core, https) of
@@ -59,7 +62,7 @@ https_redirect_loc (Path) ->
     end.
 
 %% set the redirect header and where to go with it
-https_redirect (RD,Ctx) ->
+https_redirect(RD,Ctx) ->
     Path=wrq:raw_path(RD),
     Loc=case https_redirect_loc(Path) of
             {ok,Dest} ->
@@ -126,3 +129,31 @@ valid_userpass(_User, _Pass, _Auth) ->
     error_logger:warning_msg("Unknown auth type '~p'", [_Auth]),
     false.
 
+%% @doc store a csrf protection token in a cookie.
+csrf_token(RD, Ctx) ->
+    case get_csrf_token(RD, Ctx) of
+        undefined ->
+            binary_to_list(base64:encode(crypto:rand_bytes(256)));
+        Token ->
+            Token
+    end.
+
+get_csrf_token(RD, _Ctx) ->
+    wrq:get_cookie_value("csrf_token", RD).
+
+%% @doc ensure this request contains a valid csrf protection token.
+is_valid_csrf_token(RD, Ctx) ->
+    Body = mochiweb_util:parse_qs(wrq:req_body(RD)),
+    BodyToken = proplists:get_value("csrf_token", Body),
+    CookieToken = get_csrf_token(RD, Ctx),
+    BodyToken /= undefined andalso BodyToken == CookieToken.
+
+%% @doc Check if the Origin header is "null". This is useful to look for attempts
+%%      at CSRF, but is not a complete answer to the problem.
+is_null_origin(RD) ->
+    case wrq:get_req_header("Origin", RD) of
+        "null" ->
+            true;
+        _ ->
+            false
+    end.

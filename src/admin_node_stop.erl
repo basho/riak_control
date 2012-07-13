@@ -18,11 +18,11 @@
 %%
 %% -------------------------------------------------------------------
 
--module(admin_cluster).
+-module(admin_node_stop).
 -export([routes/0,
          init/1,
-         content_types_provided/2,
-         to_json/2,
+         allowed_methods/2,
+         process_post/2,
          is_authorized/2,
          service_available/2,
          forbidden/2
@@ -37,15 +37,14 @@
 
 %% defines the webmachine routes this module handles
 routes() ->
-    [{admin_routes:cluster_route(["list"]),?MODULE,[]}].
+    [{admin_routes:node_route(["stop"]),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
-init(Action) ->
-    {ok,Action}.
+init([]) -> {ok,undefined}.
 
-%% validate origin
-forbidden(RD, C) ->
-    {riak_control_security:is_null_origin(RD), RD, C}.
+%% alow post
+allowed_methods(RD, C) ->
+    {['POST'], RD, C}.
 
 %% redirect to SSL port if using HTTP
 service_available(RD,C) ->
@@ -55,23 +54,10 @@ service_available(RD,C) ->
 is_authorized(RD,C) ->
     riak_control_security:enforce_auth(RD,C).
 
-%% return the list of available content types for webmachine
-content_types_provided(Req,C) ->
-    {?CONTENT_TYPES,Req,C}.
+%% validate csfr_token
+forbidden(RD, C) ->
+    {riak_control_security:is_null_origin(RD) or not riak_control_security:is_valid_csrf_token(RD, C), RD, C}.
 
-%% get a list of all the nodes in the ring and their status
-to_json(Req,C) ->
-    {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Status=[{struct,[{"name",Node#member_info.node},
-                     {"status",Node#member_info.status},
-                     {"reachable",Node#member_info.reachable},
-                     {"ring_pct",Node#member_info.ring_pct},
-                     {"pending_pct",Node#member_info.pending_pct},
-                     {"mem_total",Node#member_info.mem_total},
-                     {"mem_used",Node#member_info.mem_used},
-                     {"mem_erlang",Node#member_info.mem_erlang},
-                     {"me",Node#member_info.node == node()}
-                    ]}
-            || Node=#member_info{} <- Nodes],
-    {mochijson2:encode(Status),Req,C}.
-
+%% most node actions are simple rpc calls
+process_post(Req,C) ->
+    riak_control_rpc:perform_rpc_action(Req,C,riak_core,stop,[]).
