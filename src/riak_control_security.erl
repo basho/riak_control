@@ -146,14 +146,7 @@ is_valid_csrf_token(RD, Ctx) ->
     Body = mochiweb_util:parse_qs(wrq:req_body(RD)),
     BodyToken = proplists:get_value("csrf_token", Body),
     CookieToken = get_csrf_token(RD, Ctx),
-    case BodyToken of
-        undefined ->
-            false;
-        CookieToken ->
-            true;
-        _ ->
-            false
-    end.
+    BodyToken /= undefined andalso BodyToken == CookieToken.
 
 %% @doc Check if the Origin header is "null". This is useful to look for attempts
 %%      at CSRF, but is not a complete answer to the problem.
