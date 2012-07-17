@@ -133,7 +133,7 @@ valid_userpass(_User, _Pass, _Auth) ->
 csrf_token(RD, Ctx) ->
     case get_csrf_token(RD, Ctx) of
         undefined ->
-            binary_to_list(base64:encode(crypto:rand_bytes(256)));
+            binary_to_list(base64url:encode(crypto:rand_bytes(256)));
         Token ->
             Token
     end.

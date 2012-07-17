@@ -5,6 +5,9 @@ Riak Control is a set of webmachine resources, all accessible via
 the /admin/* paths, allow you to inspect your running cluster,
 and manipulate it in various ways.
 
+* Note on Supported Browsers
+Riak Control does not currently support Internet Explorer.
+
 * How Do I Start Riak Control?
 By default, Riak Control is disabled. There are a few, simple steps
 to get it up and running.
