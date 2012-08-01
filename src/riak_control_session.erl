@@ -269,7 +269,6 @@ get_member_info (_Member={Node,Status},Ring) ->
 
 %% run locally per-node, collects information about this node for the session
 get_my_info () ->
-    Handoffs=riak_core_handoff_manager:status(),
     {Total,Used}=get_my_memory(),
 
     %% construct the member information for this node
@@ -279,8 +278,25 @@ get_my_info () ->
                   mem_used=Used,
                   mem_erlang=proplists:get_value(total,erlang:memory()),
                   vnodes=riak_core_vnode_manager:all_vnodes(),
-                  handoffs=[{M,I,N} || {{M,I},N,outbound,_,_} <- Handoffs]
+                  handoffs=get_handoff_status()
                   }.
+
+%% format transfer to unifed display.
+format_transfer(Transfer) ->
+    case Transfer of
+        {{Mod, Partition}, Node, outbound, _, _} ->
+            {Mod, Partition, Node};
+        {status_v2, Status} ->
+            Mod = proplists:get_value(mod, Status),
+            SrcPartition = proplists:get_value(src_partition, Status),
+            SrcNode = proplists:get_value(src_node, Status),
+            {Mod, SrcPartition, SrcNode}
+    end.
+
+%% get handoffs.
+get_handoff_status() ->
+    {Transfers, _Down} = riak_core_status:all_active_transfers(),
+    [format_transfer(Transfer) || Transfer <- lists:flatten(Transfers)].
 
 %% get memory information for this machine
 get_my_memory () ->
