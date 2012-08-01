@@ -295,7 +295,7 @@ format_transfer(Transfer) ->
 
 %% get handoffs.
 get_handoff_status() ->
-    {Transfers, _Down} = riak_core_status:all_active_transfers(),
+    {Transfers, _Down} = riak_core_status:all_active_transfers([{direction, outbound}]),
     [format_transfer(Transfer) || Transfer <- lists:flatten(Transfers)].
 
 %% get memory information for this machine
