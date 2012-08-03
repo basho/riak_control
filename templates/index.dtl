@@ -10,7 +10,6 @@
 <!-- when the page finishes loading, start filling in details -->
 <body>
 
-    
     <!-- header with logo -->
     <div id="header">
         <a id="riak-control-logo"></a>
@@ -37,17 +36,15 @@
                     </div>
                     <div id="split-bar"></div>
                 </td>
-                
+
                 <!-- Swappable content area -->
-                <td id="content-well">
-                </td> 
+                <td id="content-well"></td>
                 <!-- end #content-well (swappable content area) -->
-                
+
             </tr>
         </table>
     </div><!-- #wrapper -->
-    
-    
+
     <div id="tooltips" class="hide">
         <div id="inner-tooltips">
             <table><tr>
@@ -55,12 +52,12 @@
             </tr></table>
         </div>
     </div>
-    
-    
-    
-    
-    <script src="/admin/ui/js/jquery-1.7.min.js"></script>
+
+    <script src="/admin/ui/js/jquery-1.7.2.js"></script>
     <script src="/admin/ui/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script src="/admin/ui/js/handlebars-1.0.0.beta.6.js"></script>
+    <script src="/admin/ui/js/ember-latest.js"></script>
+    <script src="/admin/ui/js/ember-data-latest.js"></script>
     <script src="/admin/ui/js/gui.js"></script>
     <script src="/admin/ui/js/pjax.js"></script>
     <script src="/admin/ui/js/pjax-actions.js"></script>
