@@ -21,17 +21,7 @@ $(function() {
     var splitBar = $('#split-bar');
     var splitBarParent = splitBar.parent();
     splitBar.css('height', splitBarParent.css('height'));
-    
-    /* If you need to resize the split bar when the window resizes
-    var timer;
-    $(window).resize(function(){
-        clearTimeout(timer);
-        timer = setTimeout(function(){
-            var newHeight = splitBarParent.css('height');
-            console.log(newHeight);
-        }, 100);
-    });
-    */
+
     /* TURN ON TOGGLING FOR THE SPLIT BAR */
     splitBar.on('click', function () {
         var nav = $('#navigation'), navwidth = nav.css('width');
