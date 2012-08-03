@@ -16,7 +16,6 @@ $(function() {
     $(document).on('click', '.close-error', function () {
         $(this).parent().hide();
     });
-    
 
     /* ENABLE THE SPLIT BAR */
     var splitBar = $('#split-bar');
@@ -43,25 +42,21 @@ $(function() {
         } else {
             nav.animate({"width":"218px"},{queue:false,duration:200});
             navbox.animate({"width":"226px"},{queue:false,duration:200});
-        } 
+        }
     });
-    
-    
-    
+
     /* HANDLE ACTIVE INDICATOR ANIMATION */
     $('.nav-li').on('click', function () {
         var me = $(this), indicator = $('#active-nav');
-        indicator.animate({"top":me.position().top},{queue:false,duration:200});   
+        indicator.animate({"top":me.position().top},{queue:false,duration:200});
     });
-    
 
     /* MAKE DROPDOWNS WORK */
     $(document).on('change', '.gui-dropdown', function (e) {
         var me = $(this), textSpot = me.prev().prev(), selected = me.find('option:selected').text();
         textSpot.text(selected);
     });
-    
-    
+
     /*
     MAKE ON/OFF SWITCHES WORK
     To set up: each div.gui-switch should contain two radio buttons.  One with an
@@ -94,8 +89,7 @@ $(function() {
         }
     });
     // END CODE FOR ON/OFF SWITCHES
-    
-    
+
     /* MAKE CHECKBOXES WORK WHEN YOU CLICK THEM */
     $(document).on('change', '.gui-checkbox', function(e) {
         var me = $(this), parent = me.parent(); checked = me.attr('checked');
@@ -106,7 +100,6 @@ $(function() {
         }
     });
 
-    
     /* CODE FOR ALL THE TOOLTIPS */
     var wait;
     function emptyTips () {
@@ -136,7 +129,7 @@ $(function() {
     $(document).on('mouseover', '#nav-cluster', function () {
         displayTips('The cluster view allows you to add and remove nodes from your cluster as well as stop Riak on various nodes or mark them as down.  You will also be able to view percentages indicating how much ring data is owned by each node.');
     }).on('mouseout', '#nav-cluster', emptyTips);
-    
+
     // Ring link in navigation
     $(document).on('mouseover', '#nav-ring', function () {
         displayTips('The ring view shows a list of your partitions indicating which node owns each partition.  You have the ability to apply filters to your view of the partitions and see indicators showing the status of various node workers, whether they are in active, fallback, or handoff states.');
@@ -153,28 +146,28 @@ $(function() {
     $(document).on('mouseover', '#add-node table', function () {
         displayTips('Type a node name (for example: dev2@127.0.0.1) into the text field and hit "Add Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
     }).on('mouseout', '#add-node table', emptyTips);
-    
+
     // Name of a node
     $(document).on('mouseover', '.node .name', function () {
         var name = $(this).text();
         displayTips('This node is named ' + name + '.  It is a member of this cluster.');
     }).on('mouseout', '.node .name', emptyTips);
-    
+
     // View actions cluster sliders
     $(document).on('mouseover', '.more-actions-slider-box .gui-slider', function () {
         displayTips('Move the slider over to view possible actions for this node.  Move the slider back to hide those actions again.');
     }).on('mouseout', '.more-actions-slider-box .gui-slider', emptyTips);
-    
+
     // Leave cluster button
     $(document).on('mouseover', '.leave-cluster-button', function () {
         displayTips('This will cause the node to begin relinquishing ownership of its data to other nodes in the cluster.  You will not be able to interact with the node via Riak Control during this process.  Once completed, Riak will shutdown on this node and it will leave the cluster.');
     }).on('mouseout', '.leave-cluster-button', emptyTips);
-    
+
     // The 'Hosting Riak Control' message
     $(document).on('mouseover', '.current-host', function () {
         displayTips('This node cannot be shutdown or removed via Riak Control because it is currently hosting the app.');
     }).on('mouseout', '.current-host', emptyTips);
-    
+
     // Markdown button
     $(document).on('mouseover', '.markdown-button', function () {
         displayTips('This button becomes active when the node becomes unreachable.  While in an unreachable state, a node may hinder cluster membership changes of other nodes.  Marking this node as "down" will allow other nodes to engage in membership changes unimpeded.');
@@ -192,7 +185,7 @@ $(function() {
 
     // Memory usage
     $(document).on('mouseover', '.membar-bg, .free-memory', function () {
-        var parent = $(this).parent(), 
+        var parent = $(this).parent(),
             free_mem = parent.find('.free-memory').text(),
             erlang_mem, non_erlang_mem;
         if (free_mem.charAt(0) === '?') {
@@ -204,7 +197,7 @@ $(function() {
             displayTips('The machine running this node currently has ' + free_mem + '% free memory.  Of the ' + (erlang_mem + non_erlang_mem) + '% currently in use, ' + erlang_mem + '% is being used by Riak and ' + non_erlang_mem + '% is being used by other processes.');
         }
     }).on('mouseout', '.membar-bg, .free-memory', emptyTips);
-    
+
     // Node status
     $(document).on('mouseover', '.status-box', function () {
         var mytext = $(this).find('.status').text().toLowerCase();
@@ -255,8 +248,5 @@ $(function() {
             displayTips(texts.msg + 'This node worker is currently in the process of handing off its data to other nodes.');
         }
     }).on('mouseout', '.kv-light, .pipe-light, .search-light', emptyTips);
-    
-    
-        
-    
+
 });
