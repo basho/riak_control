@@ -7,6 +7,7 @@ RiakControl.ApplicationController = Ember.Controller.extend();
 RiakControl.SnapshotController    = Ember.ArrayController.extend();
 RiakControl.ClusterController     = Ember.ArrayController.extend();
 RiakControl.RingController        = Ember.ArrayController.extend();
+RiakControl.MapReduceController   = Ember.ObjectController.extend();
 
 RiakControl.ApplicationView = Ember.View.extend({
   templateName: 'application'
@@ -24,11 +25,16 @@ RiakControl.RingView = Ember.View.extend({
   templateName: 'ring'
 });
 
+RiakControl.MapReduceView = Ember.View.extend({
+  templateName: 'mapreduce'
+});
+
 RiakControl.Router = Ember.Router.extend({
   root: Ember.Route.extend({
     showSnapshot: Ember.Route.transitionTo('snapshot.index'),
     showCluster: Ember.Route.transitionTo('cluster.index'),
     showRing: Ember.Route.transitionTo('ring.index'),
+    showMapReduce: Ember.Route.transitionTo('mapreduce.index'),
 
     index: Ember.Route.extend({
       route: '/',
@@ -73,6 +79,18 @@ RiakControl.Router = Ember.Router.extend({
 
         $.riakControl.appendScript('#ring-script', '/admin/ui/js/ring.js');
         $.riakControl.pub('templateSwitch', ['ring']);
+      },
+
+      index: Ember.Route.extend({
+        route: '/'
+      })
+    }),
+
+    mapreduce: Ember.Route.extend({
+      route: 'mapreduce',
+
+      connectOutlets: function(router) {
+        router.get('applicationController').connectOutlet('mapReduce');
       },
 
       index: Ember.Route.extend({
