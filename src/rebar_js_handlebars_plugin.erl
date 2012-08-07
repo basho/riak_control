@@ -95,10 +95,8 @@ clean(Config, _AppFile) ->
 %% @spec handlebars(list(), list(), list(), list()) -> binary()
 %% @doc Generate a handlebars compiler line.
 handlebars(Name, Body, Target, Compiler) ->
-    Name1 = case is_binary(Name) of true -> binary_to_list(Name); false -> Name end,
-    Body1 = case is_binary(Body) of true -> binary_to_list(Body); false -> Body end,
-    Targeted = lists:flatten([Target, "['" ++ Name1 ++ "']"]),
-    Compiled = lists:flatten([Compiler, "('" ++ Body1 ++ "');"]),
+    Targeted = lists:flatten([Target, "['" ++ ensure_list(Name) ++ "']"]),
+    Compiled = lists:flatten([Compiler, "('" ++ ensure_list(Body) ++ "');\n"]),
     list_to_binary(lists:flatten([Targeted, " = " ++ Compiled])).
 
 %% ===================================================================
@@ -116,6 +114,14 @@ default(out_dir)   -> "priv/www/javascripts";
 default(target)    -> "Ember.TEMPLATES";
 default(compiler)  -> "Ember.Handlebars.compile";
 default(templates) -> [].
+
+ensure_list(Object) ->
+    case is_binary(Object) of
+        true ->
+            binary_to_list(Object);
+        false ->
+            Object
+    end.
 
 read(File) ->
     case file:read_file(File) of
@@ -172,17 +178,19 @@ delete_each([First | Rest]) ->
 -ifdef(TEST).
 
 handlebars_test() ->
+    Expected = <<"Ember.TEMPLATES['foo'] = Ember.Handlebars.compile('<h1>bar</h1>')">>,
     ListName = "foo",
     ListBody = "<h1>bar</h1>",
     ListTarget = "Ember.TEMPLATES",
     ListCompiler = "Ember.Handlebars.compile",
     ListOutput = handlebars(ListName, ListBody, ListTarget, ListCompiler),
-    ?assertEqual(<<"Ember.TEMPLATES['foo'] = Ember.Handlebars.compile('<h1>bar</h1>')">>, ListOutput),
-    BinaryName = <<"foo">>,
-    BinaryBody = <<"<h1>bar</h1>">>,
-    BinaryTarget = <<"Ember.TEMPLATES">>,
-    BinaryCompiler = <<"Ember.Handlebars.compile">>,
+    ?assertEqual(Expected, ListOutput),
+
+    BinaryName = list_to_binary(ListName),
+    BinaryBody = list_to_binary(ListBody),
+    BinaryTarget = list_to_binary(ListTarget),
+    BinaryCompiler = list_to_binary(ListCompiler),
     BinaryOutput = handlebars(BinaryName, BinaryBody, BinaryTarget, BinaryCompiler),
-    ?assertEqual(<<"Ember.TEMPLATES['foo'] = Ember.Handlebars.compile('<h1>bar</h1>')">>, BinaryOutput).
+    ?assertEqual(Expected, BinaryOutput).
 
 -endif.
