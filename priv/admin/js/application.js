@@ -26,6 +26,10 @@ RiakControl.RingView = Ember.View.extend({
 
 RiakControl.Router = Ember.Router.extend({
   root: Ember.Route.extend({
+    showSnapshot: Ember.Route.transitionTo('snapshot.index'),
+    showCluster: Ember.Route.transitionTo('cluster.index'),
+    showRing: Ember.Route.transitionTo('ring.index'),
+
     index: Ember.Route.extend({
       route: '/',
       redirectsTo: 'snapshot.index'
@@ -36,6 +40,9 @@ RiakControl.Router = Ember.Router.extend({
 
       connectOutlets: function(router) {
         router.get('applicationController').connectOutlet('snapshot');
+
+        $.riakControl.appendScript('#snapshot-script', '/admin/ui/js/snapshot.js');
+        $.riakControl.pub('templateSwitch', ['snapshot']);
       },
 
       index: Ember.Route.extend({
@@ -48,6 +55,9 @@ RiakControl.Router = Ember.Router.extend({
 
       connectOutlets: function(router) {
         router.get('applicationController').connectOutlet('cluster');
+
+        $.riakControl.appendScript('#cluster-script', '/admin/ui/js/cluster.js');
+        $.riakControl.pub('templateSwitch', ['cluster']);
       },
 
       index: Ember.Route.extend({
@@ -60,6 +70,9 @@ RiakControl.Router = Ember.Router.extend({
 
       connectOutlets: function(router) {
         router.get('applicationController').connectOutlet('ring');
+
+        $.riakControl.appendScript('#ring-script', '/admin/ui/js/ring.js');
+        $.riakControl.pub('templateSwitch', ['ring']);
       },
 
       index: Ember.Route.extend({
