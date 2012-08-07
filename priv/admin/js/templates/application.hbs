@@ -1,0 +1,37 @@
+<div id="header">
+    <a id="riak-control-logo"></a>
+    <a id="basho-logo" href="http://www.basho.com" target="_blank"></a>
+</div>
+
+<div id="wrapper" class="split gui-text">
+    <table>
+        <tr>
+            <td id="nav-box">
+                <div id="navigation">
+                    <ul id="nav-ul">
+                        <li id="nav-snapshot" class="nav-li"><a class="gui-text-bold nav-item">Snapshot</a></li>
+                        <li id="nav-cluster" class="nav-li"><a class="gui-text-bold nav-item">Cluster</a></li>
+                        <li id="nav-ring" class="nav-li"><a class="gui-text-bold nav-item">Ring</a></li>
+                        <li id="nav-objects" class="nav-li-disabled"><a class="gui-text-bold nav-item">Objects</a></li>
+                        <li id="nav-mapreduce" class="nav-li-disabled"><a class="gui-text-bold nav-item">Map/Reduce</a></li>
+                        <li id="nav-graphs" class="nav-li-disabled"><a class="gui-text-bold nav-item">Graphs</a></li>
+                        <li id="nav-logs" class="nav-li-disabled"><a class="gui-text-bold nav-item">Logs</a></li>
+                        <li id="nav-support" class="nav-li-disabled"><a class="gui-text-bold nav-item">Support</a></li>
+                    </ul>
+                    <div id="active-nav"></div>
+                </div>
+                <div id="split-bar"></div>
+            </td>
+
+            <td id="content-well">{{ outlet }}</td>
+        </tr>
+    </table>
+</div><!-- #wrapper -->
+
+<div id="tooltips" class="hide">
+    <div id="inner-tooltips">
+        <table><tr>
+            <td id="display-tips" class="gui-text"></td>
+        </tr></table>
+    </div>
+</div>
