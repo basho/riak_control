@@ -36,7 +36,7 @@ $(function() {
     });
 
     /* HANDLE ACTIVE INDICATOR ANIMATION */
-    $('.nav-li').on('click', function () {
+    $(document).on('click', '.nav-li', function(e) {
         var me = $(this), indicator = $('#active-nav');
         indicator.animate({"top":me.position().top},{queue:false,duration:200});
     });
