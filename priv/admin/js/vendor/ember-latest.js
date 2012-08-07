@@ -1,5 +1,5 @@
-// Version: v0.9.8.1-684-ga6b4378
-// Last commit: a6b4378 (2012-08-02 15:10:51 -0700)
+// Version: v1.0.pre-5-gf1ec52a
+// Last commit: f1ec52a (2012-08-06 17:23:55 -0700)
 
 
 (function() {
@@ -142,8 +142,8 @@ window.ember_deprecateFunc  = Ember.deprecateFunc("ember_deprecateFunc is deprec
 
 })();
 
-// Version: v0.9.8.1-684-ga6b4378
-// Last commit: a6b4378 (2012-08-02 15:10:51 -0700)
+// Version: v1.0.pre-5-gf1ec52a
+// Last commit: f1ec52a (2012-08-06 17:23:55 -0700)
 
 
 (function() {
@@ -1010,6 +1010,8 @@ function canInvoke(obj, methodName) {
 
 /**
   Checks to see if the `methodName` exists on the `obj`.
+
+  @function
 
   @param {Object} obj The object to check for the method
   @param {String} methodName The method name to check for
@@ -2811,7 +2813,9 @@ var ComputedPropertyPrototype = ComputedProperty.prototype;
 
   Properties are cacheable by default.
 
-  @name Ember.ComputedProperty.cacheable
+  @memberOf Ember.ComputedProperty.prototype
+  @name cacheable
+  @function
   @param {Boolean} aFlag optional set to false to disable caching
   @returns {Ember.ComputedProperty} receiver
 */
@@ -2830,7 +2834,9 @@ ComputedPropertyPrototype.cacheable = function(aFlag) {
         }.property().volatile()
       });
 
-  @name Ember.ComputedProperty.volatile
+  @memberOf Ember.ComputedProperty.prototype
+  @name volatile
+  @function
   @returns {Ember.ComputedProperty} receiver
 */
 ComputedPropertyPrototype.volatile = function() {
@@ -2850,7 +2856,9 @@ ComputedPropertyPrototype.volatile = function() {
         }).property('firstName', 'lastName')
       });
 
-  @name Ember.ComputedProperty.property
+  @memberOf Ember.ComputedProperty.prototype
+  @name property
+  @function
   @param {String} path... zero or more property paths
   @returns {Ember.ComputedProperty} receiver
 */
@@ -2881,7 +2889,9 @@ ComputedPropertyPrototype.property = function() {
   exposes a public API for retrieving these values from classes,
   via the `metaForProperty()` function.
 
-  @name Ember.ComputedProperty.meta
+  @memberOf Ember.ComputedProperty.prototype
+  @name meta
+  @function
   @param {Hash} meta
   @returns {Ember.ComputedProperty} property descriptor instance
 */
@@ -7049,6 +7059,7 @@ Ember.Copyable = Ember.Mixin.create(
     Override to return a copy of the receiver.  Default implementation raises
     an exception.
 
+    @function
     @param deep {Boolean} if true, a deep copy of the object should be made
     @returns {Object} copy of receiver
   */
@@ -7245,6 +7256,8 @@ Ember.MutableEnumerable = Ember.Mixin.create(Ember.Enumerable,
     If the passed object is of a type not supported by the receiver
     then this method should raise an exception.
 
+    @function
+
     @param {Object} object
       The object to add to the enumerable.
 
@@ -7274,6 +7287,8 @@ Ember.MutableEnumerable = Ember.Mixin.create(Ember.Enumerable,
 
     If the passed object is of a type not supported by the receiver
     then this method should raise an exception.
+
+    @function
 
     @param {Object} object
       The object to remove from the enumerable.
@@ -7344,6 +7359,8 @@ Ember.MutableArray = Ember.Mixin.create(Ember.Array, Ember.MutableEnumerable,
     This is one of the primitives you must implement to support Ember.Array.  You
     should replace amt objects started at idx with the objects in the passed
     array.  You should also call this.enumerableContentDidChange() ;
+
+    @function
 
     @param {Number} idx
       Starting index in the array to replace.  If idx >= length, then append
@@ -10353,6 +10370,8 @@ var get = Ember.get, set = Ember.set;
   perhaps be moved so that it's visible in the JsDoc output.
 */
 /**
+  @class
+
   Ember.Location returns an instance of the correct implementation of
   the `location` API.
 
@@ -10385,11 +10404,18 @@ Ember.Location = {
 var get = Ember.get, set = Ember.set;
 
 /**
+  @class
+
   Ember.HashLocation implements the location API using the browser's
   hash. At present, it relies on a hashchange event existing in the
   browser.
+
+  @extends Ember.Object
 */
-Ember.HashLocation = Ember.Object.extend({
+Ember.HashLocation = Ember.Object.extend(
+/** @scope Ember.HashLocation.prototype */ {
+
+  /** @private */
   init: function() {
     set(this, 'location', get(this, 'location') || window.location);
   },
@@ -10449,6 +10475,7 @@ Ember.HashLocation = Ember.Object.extend({
     return '#'+url;
   },
 
+  /** @private */
   willDestroy: function() {
     var guid = Ember.guidFor(this);
 
@@ -10466,10 +10493,17 @@ Ember.Location.registerImplementation('hash', Ember.HashLocation);
 var get = Ember.get, set = Ember.set;
 
 /**
+  @class
+
   Ember.HistoryLocation implements the location API using the browser's
   history.pushState API.
+
+  @extends Ember.Object
 */
-Ember.HistoryLocation = Ember.Object.extend({
+Ember.HistoryLocation = Ember.Object.extend(
+/** @scope Ember.HistoryLocation.prototype */ {
+
+  /** @private */
   init: function() {
     set(this, 'location', get(this, 'location') || window.location);
     set(this, '_initialURL', get(this, 'location').pathname);
@@ -10551,6 +10585,7 @@ Ember.HistoryLocation = Ember.Object.extend({
     return url;
   },
 
+  /** @private */
   willDestroy: function() {
     var guid = Ember.guidFor(this);
 
@@ -10568,12 +10603,17 @@ Ember.Location.registerImplementation('history', Ember.HistoryLocation);
 var get = Ember.get, set = Ember.set;
 
 /**
+  @class
+
   Ember.NoneLocation does not interact with the browser. It is useful for
   testing, or when you need to manage state with your Router, but temporarily
   don't want it to muck with the URL (for example when you embed your
   application in a larger page).
+
+  @extends Ember.Object
 */
-Ember.NoneLocation = Ember.Object.extend({
+Ember.NoneLocation = Ember.Object.extend(
+/** @scope Ember.NoneLocation.prototype */ {
   path: '',
 
   getURL: function() {
@@ -15873,6 +15913,10 @@ var merge = function(original, hash) {
   }
 };
 
+/**
+  @class
+  @extends Ember.Mixin
+*/
 Ember.Routable = Ember.Mixin.create({
   init: function() {
     var redirection;
@@ -16265,6 +16309,7 @@ Ember.Routable = Ember.Mixin.create({
 (function() {
 /**
   @class
+  @extends Ember.Routable
 */
 Ember.Route = Ember.State.extend(Ember.Routable);
 
@@ -16973,6 +17018,7 @@ Ember.StateManager.reopen(
 var get = Ember.get, set = Ember.set;
 /**
   @class
+  @deprecated
 
   Ember.ViewState extends Ember.State to control the presence of a childView within a
   container based on the current state of the ViewState's StateManager.
@@ -17722,11 +17768,13 @@ Ember.Handlebars.helpers = objectCreate(Handlebars.helpers);
 
 /**
   Override the the opcode compiler and JavaScript compiler for Handlebars.
+  @private
 */
 Ember.Handlebars.Compiler = function() {};
 Ember.Handlebars.Compiler.prototype = objectCreate(Handlebars.Compiler.prototype);
 Ember.Handlebars.Compiler.prototype.compiler = Ember.Handlebars.Compiler;
 
+/** @private */
 Ember.Handlebars.JavaScriptCompiler = function() {};
 Ember.Handlebars.JavaScriptCompiler.prototype = objectCreate(Handlebars.JavaScriptCompiler.prototype);
 Ember.Handlebars.JavaScriptCompiler.prototype.compiler = Ember.Handlebars.JavaScriptCompiler;
@@ -18509,7 +18557,7 @@ EmberHandlebars.registerHelper('bindAttr', function(options) {
       // to which we were bound has been removed from the view.
       // In that case, we can assume the template has been re-rendered
       // and we need to clean up the observer.
-      if (elem.length === 0) {
+      if (!elem || elem.length === 0) {
         Ember.removeObserver(pathRoot, path, invoker);
         return;
       }
@@ -18624,7 +18672,7 @@ EmberHandlebars.bindClasses = function(context, classBindings, view, bindAttrId,
 
       // If we can't find the element anymore, a parent template has been
       // re-rendered and we've been nuked. Remove the observer.
-      if (elem.length === 0) {
+      if (!elem || elem.length === 0) {
         Ember.removeObserver(pathRoot, path, invoker);
       } else {
         // If we had previously added a class to the element, remove it.
@@ -19788,11 +19836,12 @@ var set = Ember.set, get = Ember.get;
   through the Ember object or by interacting with its rendered element representation
   via the mouse, keyboard, or touch.  Updating the value of the checkbox via jQuery will
   result in the checked value of the object and its element losing synchronization.
-  
+
   ## Layout and LayoutName properties
   Because HTML `input` elements are self closing `layout` and `layoutName` properties will
   not be applied. See `Ember.View`'s layout section for more information.
 
+  @extends Ember.View
 */
 Ember.Checkbox = Ember.View.extend({
   classNames: ['ember-checkbox'],
@@ -19844,6 +19893,7 @@ Ember.TextSupport = Ember.Mixin.create(
   insertNewline: Ember.K,
   cancel: Ember.K,
 
+  /** @private */
   init: function() {
     this._super();
     this.on("focusOut", this, this._elementValueDidChange);
@@ -19900,7 +19950,8 @@ var get = Ember.get, set = Ember.set;
   ## Layout and LayoutName properties
   Because HTML `input` elements are self closing `layout` and `layoutName` properties will
   not be applied. See `Ember.View`'s layout section for more information.
-  
+
+  @extends Ember.View
   @extends Ember.TextSupport
 */
 Ember.TextField = Ember.View.extend(Ember.TextSupport,
@@ -20080,6 +20131,7 @@ var get = Ember.get, set = Ember.set;
   Because HTML `textarea` elements do not contain inner HTML the `layout` and `layoutName` 
   properties will not be applied. See `Ember.View`'s layout section for more information.
 
+  @extends Ember.View
   @extends Ember.TextSupport
 */
 Ember.TextArea = Ember.View.extend(Ember.TextSupport,
@@ -20101,6 +20153,7 @@ Ember.TextArea = Ember.View.extend(Ember.TextSupport,
     }
   }, 'value'),
 
+  /** @private */
   init: function() {
     this._super();
     this.on("didInsertElement", this, this._updateElementValue);
@@ -20609,6 +20662,7 @@ Ember.Handlebars.bootstrap = function(ctx) {
   });
 };
 
+/** @private */
 function bootstrap() {
   Ember.Handlebars.bootstrap( Ember.$(document) );
 }
@@ -20640,8 +20694,8 @@ Ember.onLoad('application', bootstrap);
 
 })();
 
-// Version: v0.9.8.1-684-ga6b4378
-// Last commit: a6b4378 (2012-08-02 15:10:51 -0700)
+// Version: v1.0.pre-5-gf1ec52a
+// Last commit: f1ec52a (2012-08-06 17:23:55 -0700)
 
 
 (function() {
