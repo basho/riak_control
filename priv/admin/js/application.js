@@ -4,9 +4,9 @@ var RiakControl = Ember.Application.create({
 
 RiakControl.ApplicationController = Ember.Controller.extend();
 
-RiakControl.SnapshotController = Ember.ArrayController.extend();
-RiakControl.ClusterController  = Ember.ArrayController.extend();
-RiakControl.RingController     = Ember.ArrayController.extend();
+RiakControl.SnapshotController    = Ember.ArrayController.extend();
+RiakControl.ClusterController     = Ember.ArrayController.extend();
+RiakControl.RingController        = Ember.ArrayController.extend();
 
 RiakControl.ApplicationView = Ember.View.extend({
   templateName: 'application'
