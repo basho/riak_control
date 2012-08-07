@@ -20,6 +20,6 @@
     <script src="/admin/ui/js/application.js"></script>
 
     <script src="/admin/ui/js/gui.js"></script>
-    <script src="/admin/ui/js/pjax-actions.js"></script>
+    <script src="/admin/ui/js/actions.js"></script>
 </body>
 </html>
