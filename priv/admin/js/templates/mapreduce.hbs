@@ -1,36 +1,3 @@
-<h1 id="cluster-headline" class="gui-headline-bold">MapReduce</h1>
-<div id="load-save-query" class="has-cut pad-bottom push-bottom">
-    <h3 class="gui-headline">Key</h3>
-    <table>
-        <tr>
-            <td id="add-node-box">
-                <div class="gui-field gui-text">
-                    <div class="gui-field-bg">
-                        <input id="node-to-add" class="gui-field-input gui-text" type="text" name="nodeName" />
-                    </div>
-                    <div class="gui-field-cap-left"></div>
-                    <div class="gui-field-cap-right"></div>
-                </div>
-            </td>
-            <td class="button-column">
-                <a id="load-query-button" class="gui-rect-button gui-text-bold right">
-                    <span class="gui-button-msg">Load</span>
-                </a>
-            </td>
-            <td class="button-column">
-                <a id="save-query-button" class="gui-rect-button gui-text-bold right">
-                    <span class="gui-button-msg">Save</span>
-                </a>
-            </td>
-        </tr>
-    </table>
-    <div id="node-error" class="hide">
-        <a class="close-error gui-text"></a>
-        <a class="error-text offline"></a>
-        <a class="error-link gui-text underline" href="#"></a>
-    </div>
-</div><!-- #add-node -->
-
 <h2 class="gui-headline-bold has-cut">Query Phases</h2>
 <div id="node-list" class="pad-bottom has-cut">
 
@@ -153,28 +120,3 @@
     </table>
     <div class="add-phase gui-text pad-bottom">Add New Phase</div>
 </div>
-
-<div class="inputs">
-    <h3 class="gui-headline">Inputs</h3>
-    <table class="inputs-table">
-        <tr>
-            <td>
-                <div class="gui-field gui-text">
-                    <div class="gui-field-bg">
-                        <input id="inputs-field" class="gui-field-input gui-text" type="text" name="nodeName" />
-                    </div>
-                    <div class="gui-field-cap-left"></div>
-                    <div class="gui-field-cap-right"></div>
-                </div>
-            </td>
-            <td class="run-query">
-                <a class="gui-point-button gui-text-bold right run-query-button">
-                    <span class="gui-button-msg">Run Query</span>
-                </a>
-            </td>
-        </tr>
-    </table>
-</div>
-
-<div class="spinner-box"><img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif"></div>
-
