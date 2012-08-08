@@ -66,63 +66,8 @@ content_types_provided (Req,C) ->
 %% valid | invalid | joining | leaving | exiting
 to_json (Req,C=Partitions) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Filter=wrq:get_qs_value("filter",Req),
-    PS=filter_partitions(Req,Partitions,Filter),
-    {Page,N,XS}=paginate_results(Req,PS),
-    Details=[{struct,node_ring_details(P,Nodes)} || P <- XS],
-    {mochijson2:encode({struct,[{pages,N},
-                                {page,Page},
-                                {contents,Details}
-                               ]}),
-     Req,C}.
-
-%% filter a ring based on a given filter name
-filter_partitions (Req,PS,"node") ->
-    Node=try
-             list_to_existing_atom(wrq:get_qs_value("q","undefined",Req))
-         catch
-             _:_ -> undefined
-         end,
-    [P || P=#partition_info{owner=N} <- PS, N==Node];
-filter_partitions (_Req,PS,"fallback") ->
-    [P || P=#partition_info{vnodes=V} <- PS,
-          lists:keyfind(fallback,2,V) =/= false];
-filter_partitions (_Req,PS,"handoff") ->
-    [P || P=#partition_info{handoffs=H} <- PS, H =/= []];
-filter_partitions (_Req,PS,_) ->
-    PS.
-
-%% the url can optionally specify paging for the partitions
-paginate_results (Req,XS) ->
-    Len=length(XS),
-    N=max(16,list_to_integer(wrq:get_qs_value("n","64",Req))),
-
-    case N > Len of
-        true ->
-            {1,1,XS};
-        false ->
-            D=trunc(Len / N),
-
-            %% there might be a left over page with < N items on it
-            Pages=case D * N of
-                      Len -> D;
-                      _ -> D+1
-                  end,
-
-            %% cap the page # we can be within
-            P=min(Pages,max(1,list_to_integer(wrq:get_qs_value("p","1",Req)))),
-
-            %% if this is the last page, just grab whatever's left over
-            Contents=case P of
-                         Pages -> {_,C}=lists:split((P-1)*N,XS), C;
-                         _ -> {_,Rest}=lists:split((P-1)*N,XS),
-                              {C,_}=lists:split(N,Rest),
-                              C
-                     end,
-
-            %% page #, total page count, contents of this page
-            {P,Pages,Contents}
-    end.
+    Details=[{struct,node_ring_details(P,Nodes)} || P <- Partitions],
+    {mochijson2:encode({struct,[{partitions,Details}]}), Req,C}.
 
 %% return a proplist of details for a given index
 node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
