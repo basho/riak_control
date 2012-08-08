@@ -17,9 +17,15 @@
 
     <script src="/admin/ui/js/templates.js"></script>
 
-    <script src="/admin/ui/js/application.js"></script>
-
     <script src="/admin/ui/js/gui.js"></script>
     <script src="/admin/ui/js/actions.js"></script>
+
+    <script src="/admin/ui/js/app.js"></script>
+    <script src="/admin/ui/js/ring.js"></script>
+    <script src="/admin/ui/js/snapshot.js"></script>
+
+    <script>
+      minispade.require('app');
+    </script>
 </body>
 </html>

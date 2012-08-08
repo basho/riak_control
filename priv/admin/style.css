@@ -498,6 +498,7 @@ input.gui-point-button:active, input.gui-rect-button:active {padding-bottom: 9px
     width: auto;
     height: 26px;
     padding: 10px 0 0 30px;
+    text-transform: capitalize;
     background: url(/admin/ui/images/light-sprite.png) -5px bottom no-repeat transparent;
 }
 .gui-light.green  {background-position: -5px top;}
