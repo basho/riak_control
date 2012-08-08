@@ -49,6 +49,7 @@ RiakControl.Router = Ember.Router.extend({
 
         $.riakControl.appendScript('#snapshot-script', '/admin/ui/js/snapshot.js');
         $.riakControl.pub('templateSwitch', ['snapshot']);
+        $.riakControl.markNavActive('nav-snapshot');
       },
 
       index: Ember.Route.extend({
@@ -64,6 +65,7 @@ RiakControl.Router = Ember.Router.extend({
 
         $.riakControl.appendScript('#cluster-script', '/admin/ui/js/cluster.js');
         $.riakControl.pub('templateSwitch', ['cluster']);
+        $.riakControl.markNavActive('nav-cluster');
       },
 
       index: Ember.Route.extend({
@@ -79,6 +81,7 @@ RiakControl.Router = Ember.Router.extend({
 
         $.riakControl.appendScript('#ring-script', '/admin/ui/js/ring.js');
         $.riakControl.pub('templateSwitch', ['ring']);
+        $.riakControl.markNavActive('nav-ring');
       },
 
       index: Ember.Route.extend({
@@ -94,6 +97,7 @@ RiakControl.Router = Ember.Router.extend({
 
         $.riakControl.appendScript('#mapreduce-script', '/admin/ui/js/mapreduce.js');
         $.riakControl.pub('templateSwitch', ['mapreduce']);
+        $.riakControl.markNavActive('nav-mapreduce');
       },
 
       index: Ember.Route.extend({

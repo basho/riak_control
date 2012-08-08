@@ -35,11 +35,12 @@ $(function() {
         }
     });
 
-    /* HANDLE ACTIVE INDICATOR ANIMATION */
-    $(document).on('click', '.nav-li', function(e) {
-        var me = $(this), indicator = $('#active-nav');
+    $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
+      Ember.run.next(function() {
+        var me = $("#" + id), indicator = $('#active-nav');
         indicator.animate({"top":me.position().top},{queue:false,duration:200});
-    });
+      });
+    };
 
     /* MAKE DROPDOWNS WORK */
     $(document).on('change', '.gui-dropdown', function (e) {
@@ -55,7 +56,7 @@ $(function() {
     */
     // Define a re-usable function to use any time a new node is created.
     // If the node is on or off, set switch class accordingly.
-    function setGuiSwitch (i, e) {
+    $.riakControl.setGuiSwitch = $.riakControl.setGuiSwitch || function setGuiSwitch (i, e) {
         var me = $(e),
             isOn = (me.find('input[checked=checked]').attr('value').toLowerCase() === 'on');
         if (isOn) {
@@ -63,9 +64,10 @@ $(function() {
         } else {
             me.removeClass('on').addClass('off');
         }
-    }
+    };
+
     // When the document is ready, run setGuiSwitch on all on/off switches
-    $('.gui-switch').each(setGuiSwitch);
+    $('.gui-switch').each($.riakControl.setGuiSwitch);
     // When a switch changes, alter its class accordingly.
     $('.gui-switch input').on('change', function(e) {
         var that = $(this),
