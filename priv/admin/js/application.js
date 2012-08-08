@@ -91,6 +91,9 @@ RiakControl.Router = Ember.Router.extend({
 
       connectOutlets: function(router) {
         router.get('applicationController').connectOutlet('mapReduce');
+
+        $.riakControl.appendScript('#mapreduce-script', '/admin/ui/js/mapreduce.js');
+        $.riakControl.pub('templateSwitch', ['mapreduce']);
       },
 
       index: Ember.Route.extend({
