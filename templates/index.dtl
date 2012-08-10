@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>Riak Control</title>
     <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/style.css" />
-    <meta name="csrf_token" content="{{ csrf_token }}">
+    <meta name="csrf_token" content="{{csrf_token}}">
 </head>
 
 <body>
@@ -21,11 +21,10 @@
     <script src="/admin/ui/js/actions.js"></script>
 
     <script src="/admin/ui/js/app.js"></script>
-    <script src="/admin/ui/js/ring.js"></script>
     <script src="/admin/ui/js/snapshot.js"></script>
+    <script src="/admin/ui/js/cluster.js"></script>
+    <script src="/admin/ui/js/ring.js"></script>
 
-    <script>
-      minispade.require('app');
-    </script>
+    <script>minispade.require('app');</script>
 </body>
 </html>
