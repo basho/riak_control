@@ -17,6 +17,8 @@ minispade.register('app', function() {
 
       showRing: Ember.Route.transitionTo('ring.index'),
 
+      filterRing: Ember.Route.transitionTo('ring.filter'),
+
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'snapshot.index'
@@ -81,7 +83,21 @@ minispade.register('app', function() {
         }),
 
         filter: Ember.Route.extend({
-          route: '/:filter'
+          route: '/:filterType/:filterValue',
+
+          serialize: function(router, context) {
+            return {
+              filterType: context.type,
+              filterValue: context.value
+            };
+          },
+
+          deserialize: function(router, params) {
+            return RiakControl.PartitionFilter.create({
+              type: params.filterType,
+              value: params.filterValue
+            });
+          }
         })
       })
     })

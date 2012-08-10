@@ -1,4 +1,6 @@
 minispade.register('ring', function() {
+  RiakControl.PartitionFilter = Ember.Object.extend(),
+
   RiakControl.Partition = Ember.Object.extend({
     kvStatus: function() {
       return this.get("vnodes.riak_kv");
@@ -30,7 +32,20 @@ minispade.register('ring', function() {
         dataType: 'json',
         context: this,
         success: function (data) {
-          this.set('content', data);
+          var nodeFilters = data.map(function(item) {
+            return RiakControl.PartitionFilter.create({
+              type: 'node',
+              name: 'Node: ' + item.name,
+              value: item.name
+            });
+          });
+
+          var statusFilters = [
+            RiakControl.PartitionFilter.create({ type: 'status', value: 'fallback', name: 'Fallback Nodes' }),
+            RiakControl.PartitionFilter.create({ type: 'status', value: 'handoff', name: 'Handoff Nodes' })
+          ];
+
+          this.set('content', nodeFilters.concat(statusFilters));
         }
       });
     }
@@ -73,7 +88,7 @@ minispade.register('ring', function() {
 
   RiakControl.PartitionFilterSelectView = Ember.Select.extend({
     change: function(ev) {
-      Ember.Route.transitionTo('ring.filter', filter);
+      RiakControl.get('router').send('filterRing', this.get('selection'));
     }
   });
 
