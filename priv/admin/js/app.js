@@ -32,8 +32,6 @@ minispade.register('app', function() {
     }
   });
 
-  RiakControl.MapReduceController = Ember.ObjectController.extend();
-
   RiakControl.ApplicationView = Ember.View.extend({
     templateName: 'application'
   });
@@ -42,16 +40,13 @@ minispade.register('app', function() {
     templateName: 'cluster'
   });
 
-  RiakControl.MapReduceView = Ember.View.extend({
-    templateName: 'mapreduce'
-  });
-
   RiakControl.Router = Ember.Router.extend({
     root: Ember.Route.extend({
       showSnapshot: Ember.Route.transitionTo('snapshot.index'),
+
       showCluster: Ember.Route.transitionTo('cluster.index'),
+
       showRing: Ember.Route.transitionTo('ring.index'),
-      showMapReduce: Ember.Route.transitionTo('mapreduce.index'),
 
       index: Ember.Route.extend({
         route: '/',
@@ -126,22 +121,6 @@ minispade.register('app', function() {
 
         filter: Ember.Route.extend({
           route: '/:filter'
-        })
-      }),
-
-      mapreduce: Ember.Route.extend({
-        route: 'mapreduce',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('mapReduce');
-
-          $.riakControl.appendScript('#mapreduce-script', '/admin/ui/js/mapreduce.js');
-          $.riakControl.pub('templateSwitch', ['mapreduce']);
-          $.riakControl.markNavActive('nav-mapreduce');
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
         })
       })
     })
