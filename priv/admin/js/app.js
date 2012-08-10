@@ -85,6 +85,15 @@ minispade.register('app', function() {
         filter: Ember.Route.extend({
           route: '/:filterType/:filterValue',
 
+          connectOutlets: function(router, context) {
+            var ringController = router.get('ringController');
+            ringController.set('selectedPartitionFilter', context);
+          },
+
+          exit: function(router) {
+            router.get('ringController').set('selectedPartitionFilter', undefined);
+          },
+
           serialize: function(router, context) {
             return {
               filterType: context.type,

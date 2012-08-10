@@ -41,17 +41,28 @@ minispade.register('ring', function() {
           });
 
           var statusFilters = [
-            RiakControl.PartitionFilter.create({ type: 'status', value: 'fallback', name: 'Fallback Nodes' }),
-            RiakControl.PartitionFilter.create({ type: 'status', value: 'handoff', name: 'Handoff Nodes' })
+            RiakControl.PartitionFilter.create({
+              type: 'status',
+              value: 'fallback',
+              name: 'Fallback Nodes'
+            }),
+            RiakControl.PartitionFilter.create({
+              type: 'status',
+              value: 'handoff',
+              name: 'Handoff Nodes'
+            })
           ];
 
-          this.set('content', nodeFilters.concat(statusFilters));
+          var filters = nodeFilters.concat(statusFilters);
+          this.set('content', filters);
         }
       });
     }
   });
 
   RiakControl.RingController = Ember.ArrayController.extend({
+    content: [],
+
     init: function() {
       this.load();
     },
@@ -72,14 +83,26 @@ minispade.register('ring', function() {
     },
 
     startInterval: function() {
-      // this._intervalId = setInterval($.proxy(this.load, this), 5000);
+      this._intervalId = setInterval($.proxy(this.load, this), 5000);
     },
 
     cancelInterval: function() {
       if(this._intervalId) {
         clearInterval(this._intervalId);
       }
-    }
+    },
+
+    filteredContent: function() {
+      var selectedPartitionFilter = this.get('selectedPartitionFilter');
+      var filterType = selectedPartitionFilter.get('type');
+      var filterValue = selectedPartitionFilter.get('value');
+
+      if(filterType) {
+        return this.get('content').filterProperty(filterType, filterValue);
+      } else {
+        return this.get('content');
+      }
+    }.property('selectedPartitionFilter', 'content')
   });
 
   RiakControl.PartitionFilterView = Ember.View.extend({
