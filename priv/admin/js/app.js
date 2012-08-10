@@ -5,39 +5,8 @@ minispade.register('app', function() {
 
   RiakControl.ApplicationController = Ember.Controller.extend();
 
-  RiakControl.ClusterController = Ember.ArrayController.extend({
-    init: function() {
-      this.load();
-    },
-
-    load: function() {
-      $.ajax({
-        url: '/admin/cluster/list',
-        dataType: 'json',
-        context: this,
-        success: function (data) {
-          this.set('content', data);
-        }
-      });
-    },
-
-    startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), 5000);
-    },
-
-    cancelInterval: function() {
-      if(this._intervalId) {
-        clearInterval(this._intervalId);
-      }
-    }
-  });
-
   RiakControl.ApplicationView = Ember.View.extend({
     templateName: 'application'
-  });
-
-  RiakControl.ClusterView = Ember.View.extend({
-    templateName: 'cluster'
   });
 
   RiakControl.Router = Ember.Router.extend({
@@ -79,18 +48,10 @@ minispade.register('app', function() {
 
         connectOutlets: function(router) {
           router.get('applicationController').connectOutlet('cluster');
-
-          $.riakControl.appendScript('#cluster-script', '/admin/ui/js/cluster.js');
-          $.riakControl.pub('templateSwitch', ['cluster']);
           $.riakControl.markNavActive('nav-cluster');
-        },
 
-        enter: function(router) {
-          router.get('clusterController').startInterval();
-        },
-
-        exit: function(router) {
-          router.get('clusterController').cancelInterval();
+          $.riakControl.appendScript('#cluster-script', '/admin/ui/js/cluster-legacy.js');
+          $.riakControl.pub('templateSwitch', ['cluster']);
         },
 
         index: Ember.Route.extend({
@@ -127,5 +88,6 @@ minispade.register('app', function() {
   });
 
   minispade.require('snapshot');
+  minispade.require('cluster');
   minispade.require('ring');
 });
