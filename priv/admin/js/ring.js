@@ -94,11 +94,16 @@ minispade.register('ring', function() {
 
     filteredContent: function() {
       var selectedPartitionFilter = this.get('selectedPartitionFilter');
-      var filterType = selectedPartitionFilter.get('type');
-      var filterValue = selectedPartitionFilter.get('value');
 
-      if(filterType) {
-        return this.get('content').filterProperty(filterType, filterValue);
+      if(selectedPartitionFilter) {
+        var filterType = selectedPartitionFilter.get('type');
+        var filterValue = selectedPartitionFilter.get('value');
+
+        if(filterType) {
+          return this.get('content').filterProperty(filterType, filterValue);
+        } else {
+          return this.get('content');
+        }
       } else {
         return this.get('content');
       }
