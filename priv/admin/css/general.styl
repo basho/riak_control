@@ -1,0 +1,181 @@
+
+/* 
+Styles to be applied generally across the UI
+*/
+
+/* Variables */
+darkened  = rgb(0, 0, 0, .3)
+darkGray  = #2d2d2d
+lightGray = #dfdfdf
+
+/* End Variables */
+
+/* Functions */
+vendor(prop, args)
+  -webkit-{prop}: args
+  -moz-{prop}:    args
+  {prop}:         args
+
+corners(curve = 4px)
+  vendor('border-radius', curve)
+
+opaque(dec = 1)
+  opacity: dec
+  filter: unquote('alpha(opacity=' + (dec * 100) + ')')
+
+repeatingBg(path, bgcolor = transparent)
+  background: url(path) left top repeat bgcolor
+
+hSize(fs, ls, pb) // General stylings for h1, h2, h3, etc tags
+  font-size:      fs
+  letter-spacing: ls
+  padding-bottom: pb
+
+dimensions(wUnit = auto, hUnit = auto)
+    width: wUnit
+    height: hUnit
+
+absoluteLeft(l, t)
+  position: absolute
+  left:     l
+  top:      t
+
+absoluteRight(r, t)
+  position: absolute
+  right:    r
+  top:      r
+
+/* End Functions */
+
+/* Extensible Classes */
+
+
+
+/* End Extensible Classes */
+
+/* Tags */
+
+html
+  repeatingBg('/admin/ui/images/gui-bg.jpg', darkGray)
+
+body
+  padding: 8px 0 0 0
+
+a
+  text-decoration: none
+
+  &:visited
+    color: lightGray
+
+h1, h2, h3
+  display: block
+
+h1
+  hSize(48px, 2px, 5px)
+
+h2
+  hSize(38px, 2px, 12px)
+
+h3
+  hSize(24px, 8px, 1px)
+
+/* End Tags */
+
+/* IDs & Classes */
+
+#header
+  dimensions(auto, 67px)
+  background: url('/admin/ui/images/header-bg.png') left top repeat-x transparent
+  margin:     0 0 22px 0
+  position:   relative
+
+#riak-control-logo
+  dimensions(201px, 56px)
+  display:    block
+  background: url('/admin/ui/images/riak-control-logo.gif') right bottom no-repeat transparent
+  float:      left
+  padding:    5px 0 0 12px
+
+#basho-logo
+  dimensions(43px, 44px)
+  absoluteRight(12px, 12px)
+  display:    block
+  background: url('/admin/ui/images/basho-logo.png') left top no-repeat transparent
+
+
+
+#wrapper
+  dimensions()
+  background:    transparent;
+  margin-bottom: 8px;
+
+#split-bar
+  repeatingBg('/admin/ui/images/resizer-bg.png')
+  dimensions(6px)
+  opaque(.2)
+  corners(10px)
+  border: 1px solid #fff;
+  float:  left;
+
+  &:hover
+    opaque(.4)
+    cursor: pointer;
+
+
+
+#navigation
+  dimensions(218px)
+  overflow:   hidden
+  background: transparent
+  float:      left
+  position:   relative
+
+#nav-box
+  dimensions(226px)
+
+#active-nav
+  absoluteLeft(0, 0)
+  dimensions(14px, 18px)
+  background: url('/admin/ui/images/active-nav.png') left top no-repeat transparent
+
+.nav-li
+  dimensions(auto, 48px)
+  background: url('/admin/ui/images/nav-icons.png') 12px 10px no-repeat transparent
+  padding: 0 0 0 14px
+
+.nav-li:hover
+  background-color: darkened
+
+.nav-li-disabled
+  dimensions(auto, 48px)
+  opaque(.3)
+  background: url('/admin/ui/images/nav-icons.png') 12px 10px no-repeat transparent
+  padding: 0 0 0 14px
+
+#nav-snapshot  { background-position: 14px -344px }
+#nav-cluster   { background-position: 14px 10px   }
+#nav-ring      { background-position: 14px -39px  }
+#nav-objects   { background-position: 14px -90px  }
+#nav-mapreduce { background-position: 14px -140px }
+#nav-graphs    { background-position: 14px -192px }
+#nav-logs      { background-position: 14px -248px }
+#nav-support   { background-position: 14px -300px }
+
+.nav-item
+  dimensions(auto, 33px)
+  display:        block
+  font-size:      18px;
+  vertical-align: middle
+  background:     url('/admin/ui/images/cut-bg.png') left bottom repeat-x transparent
+  padding:        15px 0 0 40px
+
+.nav-li .nav-item:hover
+  cursor: pointer
+
+#content-well
+  overflow:   hidden
+  background: transparent
+  padding:    5px 14px 0 25px
+
+
+/* Ende IDs & Classes */
