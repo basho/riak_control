@@ -146,7 +146,13 @@ minispade.register('ring', function() {
 
   RiakControl.PartitionFilterSelectView = Ember.Select.extend({
     change: function(ev) {
-      RiakControl.get('router').send('filterRing', this.get('selection'));
+      var selection = this.get('selection');
+
+      if(selection) {
+        RiakControl.get('router').send('filterRing', this.get('selection'));
+      } else {
+        RiakControl.get('router').send('showRing');
+      }
     }
   });
 
