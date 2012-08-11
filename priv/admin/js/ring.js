@@ -115,7 +115,7 @@ minispade.register('ring', function() {
               return self.get('content').filterProperty('vnodes.' + property, filterValue);
             });
 
-            return filtered.reduce(function(a, b) { return a.concat(b); });
+            return filtered.reduce(function(a, b) { return a.concat(b); }).uniq();
           } else if(filterType == 'handoffs') {
             filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
               return self.get('content').filter(function(item) {
@@ -127,7 +127,7 @@ minispade.register('ring', function() {
               });
             });
 
-            return filtered.reduce(function(a, b) { return a.concat(b); });
+            return filtered.reduce(function(a, b) { return a.concat(b); }).uniq();
           } else {
             return this.get('content').filterProperty(filterType, filterValue);
           }
