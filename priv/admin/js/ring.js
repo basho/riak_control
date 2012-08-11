@@ -2,23 +2,31 @@ minispade.register('ring', function() {
   RiakControl.PartitionFilter = Ember.Object.extend(),
 
   RiakControl.Partition = Ember.Object.extend({
+    vnodeStatus: function(vnode) {
+      var partitionStatus = this.get('status');
+      var vnodeReachable = this.get('reachable');
+      var vnodeStatus = this.get('vnodes.' + vnode);
+      var handoffStatus = this.get('handoffs.' + vnode);
+
+      if(partitionStatus === "incompatible") { return "unknown"; }
+      if(handoffStatus) { return "handoff"; }
+      if(vnodeStatus === "primary" && vnodeReachable === true) { return "active"; }
+      if(vnodeStatus === "fallback") { return "fallback"; }
+
+      return "disabled";
+    },
+
     kvStatus: function() {
-      return this.get("vnodes.riak_kv");
-    }.property("vnodes"),
+      return this.vnodeStatus('riak_kv');
+    }.property("vnodes", "handoffs"),
 
     pipeStatus: function() {
-      return this.get("vnodes.riak_pipe");
-    }.property("vnodes"),
+      return this.vnodeStatus('riak_pipe');
+    }.property("vnodes", "handoffs"),
 
     searchStatus: function() {
-      var status = this.get("vnodes.riak_search");
-
-      if(status) {
-        return status;
-      } else {
-        return "disabled";
-      }
-    }.property("vnodes")
+      return this.vnodeStatus('riak_search');
+    }.property("vnodes", "handoffs")
   });
 
   RiakControl.PartitionFilterController = Ember.ArrayController.extend({
@@ -157,18 +165,22 @@ minispade.register('ring', function() {
       lightClasses: "gui-light gray",
 
       toIndicator: function(status) {
-        if(status === "incompatible") {
+        if(status === "unknown") {
+          return "red";
+        } else if(status === "unreachable") {
           return "red";
         } else if(status === "fallback") {
           return "blue";
-        } else if(status === "primary") {
+        } else if(status === "handoff") {
+          return "orange";
+        } else if(status === "active") {
           return "green";
         }
       },
 
       kvStatus: function() {
         return this.get('content.kvStatus');
-      }.property('content'),
+      }.property("content"),
 
       kvIndicator: function() {
         return this.toIndicator(this.get("kvStatus"));
@@ -176,7 +188,7 @@ minispade.register('ring', function() {
 
       pipeStatus: function() {
         return this.get('content.pipeStatus');
-      }.property('content'),
+      }.property("content"),
 
       pipeIndicator: function() {
         return this.toIndicator(this.get("pipeStatus"));
@@ -184,7 +196,7 @@ minispade.register('ring', function() {
 
       searchStatus: function() {
         return this.get('content.searchStatus');
-      }.property('content'),
+      }.property("content"),
 
       searchIndicator: function() {
         return this.toIndicator(this.get("searchStatus"));
