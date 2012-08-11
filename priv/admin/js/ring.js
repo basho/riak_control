@@ -42,14 +42,14 @@ minispade.register('ring', function() {
 
           var statusFilters = [
             RiakControl.PartitionFilter.create({
-              type: 'status',
+              type: 'vnodes',
               value: 'fallback',
-              name: 'Fallback Nodes'
+              name: 'Fallback'
             }),
             RiakControl.PartitionFilter.create({
-              type: 'status',
+              type: 'vnodes',
               value: 'handoff',
-              name: 'Handoff Nodes'
+              name: 'Handoff'
             })
           ];
 
@@ -100,7 +100,17 @@ minispade.register('ring', function() {
         var filterValue = selectedPartitionFilter.get('value');
 
         if(filterType) {
-          return this.get('content').filterProperty(filterType, filterValue);
+          if(filterType == 'vnodes') {
+            var self = this;
+
+            var filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
+              return self.get('content').filterProperty('vnodes.' + property, filterValue);
+            });
+
+            return filtered.reduce(function(a, b) { return a.concat(b); });
+          } else {
+            return this.get('content').filterProperty(filterType, filterValue);
+          }
         } else {
           return this.get('content');
         }
