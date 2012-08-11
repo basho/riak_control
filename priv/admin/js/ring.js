@@ -47,8 +47,8 @@ minispade.register('ring', function() {
               name: 'Fallback'
             }),
             RiakControl.PartitionFilter.create({
-              type: 'vnodes',
-              value: 'handoff',
+              type: 'handoffs',
+              value: '',
               name: 'Handoff'
             })
           ];
@@ -83,7 +83,7 @@ minispade.register('ring', function() {
     },
 
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), 5000);
+      this._intervalId = setInterval($.proxy(this.load, this), 1000);
     },
 
     cancelInterval: function() {
@@ -98,13 +98,25 @@ minispade.register('ring', function() {
       if(selectedPartitionFilter) {
         var filterType = selectedPartitionFilter.get('type');
         var filterValue = selectedPartitionFilter.get('value');
+        var self = this;
+        var filtered;
 
         if(filterType) {
           if(filterType == 'vnodes') {
-            var self = this;
-
-            var filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
+            filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
               return self.get('content').filterProperty('vnodes.' + property, filterValue);
+            });
+
+            return filtered.reduce(function(a, b) { return a.concat(b); });
+          } else if(filterType == 'handoffs') {
+            filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
+              return self.get('content').filter(function(item) {
+                if(item.get('handoffs.' + property) === undefined) {
+                  return false;
+                } else {
+                  return true;
+                }
+              });
             });
 
             return filtered.reduce(function(a, b) { return a.concat(b); });
@@ -145,7 +157,7 @@ minispade.register('ring', function() {
       lightClasses: "gui-light gray",
 
       toIndicator: function(status) {
-        if( status === "incompatible") {
+        if(status === "incompatible") {
           return "red";
         } else if(status === "fallback") {
           return "blue";

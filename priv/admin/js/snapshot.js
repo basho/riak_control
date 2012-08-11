@@ -16,7 +16,7 @@ minispade.register('snapshot', function() {
     },
 
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), 5000);
+      this._intervalId = setInterval($.proxy(this.load, this), 1000);
     },
 
     cancelInterval: function() {
