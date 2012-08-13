@@ -19,7 +19,7 @@
                 <td><h3 class="gui-headline">Search</h3></td>
             </tr>
         </thead>
-        {{#collection RiakControl.PartitionView contentBinding="controller.filteredContent"}}
+        {{#collection RiakControl.PartitionView contentBinding="controller.paginatedContent"}}
           {{#with view.content}}
           <td class="partition-number gui-text">{{i}}</td>
           <td class="owner-box gui-text">

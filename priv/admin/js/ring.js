@@ -100,6 +100,24 @@ minispade.register('ring', function() {
       }
     },
 
+    availablePages: function() {
+      var filteredContent = this.get('filteredContent');
+      var itemsPerPage = 32;
+
+      return (filteredContent.length / itemsPerPage) || 1;
+    }.property('selectedPage', 'filteredContent', 'content'),
+
+    paginatedContent: function() {
+      var filteredContent = this.get('filteredContent');
+      var selectedPage = this.get('selectedPage') || 1;
+
+      var itemsPerPage = 32;
+      var upperBound = (selectedPage * itemsPerPage);
+      var lowerBound = (selectedPage * itemsPerPage) - itemsPerPage;
+
+      return this.get('filteredContent').slice(lowerBound, upperBound);
+    }.property('selectedPage', 'filteredContent', 'content'),
+
     filteredContent: function() {
       var selectedPartitionFilter = this.get('selectedPartitionFilter');
 

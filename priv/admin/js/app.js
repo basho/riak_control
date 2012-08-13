@@ -17,7 +17,7 @@ minispade.register('app', function() {
 
       showRing: Ember.Route.transitionTo('ring.index'),
 
-      filterRing: Ember.Route.transitionTo('ring.filter'),
+      filterRing: Ember.Route.transitionTo('ring.filtered'),
 
       index: Ember.Route.extend({
         route: '/',
@@ -82,17 +82,44 @@ minispade.register('app', function() {
           route: '/'
         }),
 
-        filter: Ember.Route.extend({
-          route: '/:filterType/:filterValue',
+        paginated: Ember.Route.extend({
+          route: '/page/:page_id',
 
           connectOutlets: function(router, context) {
-            var ringController = router.get('ringController');
-            ringController.set('selectedPartitionFilter', context);
+            router.get('ringController').set('selectedPage', context.page_id);
+          },
+
+          exit: function(router) {
+            router.get('ringController').set('selectedPage', undefined);
+          }
+        }),
+
+        filtered: Ember.Route.extend({
+          route: '/filter/:filterType/:filterValue',
+
+          connectOutlets: function(router, context) {
+            router.get('ringController').set('selectedPartitionFilter', context);
           },
 
           exit: function(router) {
             router.get('ringController').set('selectedPartitionFilter', undefined);
           },
+
+          index: Ember.Route.extend({
+            route: '/'
+          }),
+
+          paginated: Ember.Route.extend({
+            route: '/page/:page_id',
+
+            connectOutlets: function(router, context) {
+              router.get('ringController').set('selectedPage', context.page_id);
+            },
+
+            exit: function(router) {
+              router.get('ringController').set('selectedPage', undefined);
+            }
+          }),
 
           serialize: function(router, context) {
             return {
