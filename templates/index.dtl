@@ -8,13 +8,7 @@
 </head>
 
 <body>
-    <script src="/admin/ui/js/vendor/jquery-1.7.2.js"></script>
-    <script src="/admin/ui/js/vendor/jquery-ui-1.8.16.custom.min.js"></script>
-    <script src="/admin/ui/js/vendor/handlebars-1.0.0.beta.6.js"></script>
-    <script src="/admin/ui/js/vendor/ember-latest.js"></script>
-    <script src="/admin/ui/js/vendor/ember-data-latest.js"></script>
-    <script src="/admin/ui/js/vendor/minispade.js"></script>
-
+    <script src="/admin/ui/js/vendor.js"></script>
     <script src="/admin/ui/js/templates.js"></script>
 
     <script src="/admin/ui/js/gui.js"></script>
