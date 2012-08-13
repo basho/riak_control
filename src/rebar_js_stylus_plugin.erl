@@ -100,7 +100,7 @@ clean(Config, _AppFile) ->
 %% ===================================================================
 
 options(Config) ->
-    rebar_config:get(Config, js_stylus, []).
+    rebar_config:get_local(Config, js_stylus, []).
 
 option(Option, Options) ->
     proplists:get_value(Option, Options, default(Option)).

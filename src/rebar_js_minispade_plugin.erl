@@ -99,7 +99,7 @@ minispade(Module, Contents) ->
 %% ===================================================================
 
 options(Config) ->
-    rebar_config:get(Config, js_minispade, []).
+    rebar_config:get_local(Config, js_minispade, []).
 
 option(Option, Options) ->
     proplists:get_value(Option, Options, default(Option)).

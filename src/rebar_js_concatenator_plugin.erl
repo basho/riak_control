@@ -53,8 +53,8 @@
 %%       {out_dir, "priv/assets/javascripts"},
 %%       {doc_root, "priv/assets/javascripts"},
 %%       {concatenations, [
-%%           {"vendor.js", ["ember.js", "jquery.js"]},
-%%           {"application.js", ["models.js", "controllers.js"]}
+%%           {"vendor.js", ["ember.js", "jquery.js"], []},
+%%           {"application.js", ["models.js", "controllers.js"], []}
 %%       ]}
 %%   ]}.
 %%
@@ -110,7 +110,7 @@ concatenate_files(Sources) ->
 %% ===================================================================
 
 options(Config) ->
-    rebar_config:get(Config, js_concatenator, []).
+    rebar_config:get_local(Config, js_concatenator, []).
 
 option(Option, Options) ->
     proplists:get_value(Option, Options, default(Option)).

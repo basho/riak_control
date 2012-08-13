@@ -130,7 +130,7 @@ compress(Source, Destination, Options) ->
 %% ===================================================================
 
 options(Config) ->
-    rebar_config:get(Config, js_uglifier, []).
+    rebar_config:get_local(Config, js_uglifier, []).
 
 option(Option, Options) ->
     proplists:get_value(Option, Options, default(Option)).

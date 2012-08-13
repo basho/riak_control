@@ -40,6 +40,9 @@
 %%  templates: list of tuples of format {Destination, [Sources]}
 %%             empty list by default.
 %%
+%%  source_ext: file extension to truncate to derive module name
+%%              ".hbs" by default
+%%
 %% The default settings are the equivalent of:
 %%
 %%   {js_handlebars, [
@@ -47,6 +50,7 @@
 %%       {out_dir,   "priv/www/javascripts"},
 %%       {target,    "Ember.TEMPLATES"},
 %%       {compiler,  "Ember.Handlebars.compile"},
+%%       {source_ext,".hbs"},
 %%       {templates, []}
 %%   ]}.
 %%
@@ -104,7 +108,7 @@ handlebars(Name, Body, Target, Compiler) ->
 %% ===================================================================
 
 options(Config) ->
-    rebar_config:get(Config, js_handlebars, []).
+    rebar_config:get_local(Config, js_handlebars, []).
 
 option(Option, Options) ->
     proplists:get_value(Option, Options, default(Option)).
@@ -113,6 +117,7 @@ default(doc_root)  -> "priv/assets/javascripts";
 default(out_dir)   -> "priv/www/javascripts";
 default(target)    -> "Ember.TEMPLATES";
 default(compiler)  -> "Ember.Handlebars.compile";
+default(source_ext)-> ".hbs";
 default(templates) -> [].
 
 ensure_list(Object) ->
@@ -129,7 +134,7 @@ read(File) ->
            list_to_binary(re:replace(binary_to_list(Binary), "\\n+", "",
                     [global]));
         {error, Reason} ->
-           rebar_log:log(error, "Reading asset ~s failed during concatenation:~n  ~p~n",
+           rebar_log:log(error, "Reading asset ~s failed during compilation:~n  ~p~n",
                    [File, Reason]),
            rebar_utils:abort()
     end.
@@ -144,13 +149,13 @@ build_each([]) ->
 build_each([{Destination, Sources, Options} | Rest]) ->
     Target = option(target, Options),
     Compiler = option(compiler, Options),
-    Destination1 = Destination ++ ".js",
-    Contents = [handlebars(filename:basename(Source), read(Source ++ ".hbs"), Target, Compiler)
+    SourceExt = option(source_ext, Options),
+    Contents = [handlebars(filename:basename(Source, SourceExt), read(Source), Target, Compiler)
                     || Source <- Sources],
     Concatenated = rebar_js_concatenator_plugin:concatenate(Contents),
-    case file:write_file(Destination1, Concatenated, [write]) of
+    case file:write_file(Destination, Concatenated, [write]) of
         ok ->
-            io:format("Compiled handlebars asset ~s~n", [Destination ++ ".js"]);
+            io:format("Compiled handlebars asset ~s~n", [Destination]);
         {error, Reason} ->
             rebar_log:log(error, "Handlebars compliation of ~s failed:~n  ~p~n",
                    [Destination, Reason]),
