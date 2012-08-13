@@ -64,6 +64,8 @@ minispade.register('app', function() {
       ring: Ember.Route.extend({
         route: 'ring',
 
+        paginateRing: Ember.Route.transitionTo('paginated'),
+
         connectOutlets: function(router) {
           router.get('applicationController').connectOutlet('ring');
           router.get('ringController').connectOutlet('partitionFilter', 'partitionFilter');

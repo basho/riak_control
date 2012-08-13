@@ -175,7 +175,18 @@ minispade.register('ring', function() {
   });
 
   RiakControl.RingView = Ember.View.extend({
-    templateName: 'ring'
+    templateName: 'ring',
+
+    pages: function() {
+      var availablePages = this.get('controller.availablePages'),
+          pages = [];
+
+      for (i = 0; i < availablePages; i++) {
+        pages.push({ page_id: i + 1 });
+      }
+
+      return pages;
+    }.property('controller.availablePages')
   });
 
   RiakControl.PartitionView = Ember.CollectionView.extend({

@@ -5,7 +5,11 @@
     <span id="total-number" class="gui-text"></span>
 </h1>
 
-<ul class="pagination gui-text"> </ul>
+<ul class="pagination gui-text">
+  {{#each view.pages}}
+    <li><span class="paginator pageNumber"><a {{action paginateRing this}}>{{page_id}}</a></span></li>
+  {{/each}}
+</ul>
 <div class="cut"></div>
 
 <div id="partition-list" class="has-cut">
