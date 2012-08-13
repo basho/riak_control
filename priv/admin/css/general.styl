@@ -19,6 +19,12 @@ vendor(prop, args)
 corners(curve = 4px)
   vendor('border-radius', curve)
 
+textStroke(args = 1.1px #fff)
+  vendor('text-stroke', args)
+
+textShadow(args = 0 2px 0 #000)
+  text-shadow: args
+
 opaque(dec = 1)
   opacity: dec
   filter: unquote('alpha(opacity=' + (dec * 100) + ')')
@@ -32,24 +38,50 @@ hSize(fs, ls, pb) // General stylings for h1, h2, h3, etc tags
   padding-bottom: pb
 
 dimensions(wUnit = auto, hUnit = auto)
-    width: wUnit
-    height: hUnit
+  width:  wUnit
+  height: hUnit
 
-absoluteLeft(l, t)
+absoluteLeft(lUnit, tUnit)
   position: absolute
-  left:     l
-  top:      t
+  left:     lUnit
+  top:      tUnit
 
-absoluteRight(r, t)
+absoluteRight(rUnit, tUnit)
   position: absolute
-  right:    r
-  top:      r
+  right:    rUnit
+  top:      tUnit
 
 /* End Functions */
 
 /* Extensible Classes */
 
+.rokkitt
+  font-family: 'rokkitt', arial, helvetica, sans-serif
 
+.sans
+  font-family: arial, helvetica, sans-serif
+
+.gui-text
+  @extend .sans
+  textShadow()
+  color:     lightGray
+  font-size: 14px
+
+.gui-text-bold
+  @extend .gui-text
+  font-weight: bold
+
+.gui-headline
+  @extend .rokkitt
+  textShadow()
+  color:      lightGray
+  text-shadow: 0 2px 0 #000
+
+.gui-headline-bold
+  @extend .rokkitt
+  @extend .gui-headline
+  textStroke()
+  font-weight: bold
 
 /* End Extensible Classes */
 
@@ -77,7 +109,7 @@ h2
   hSize(38px, 2px, 12px)
 
 h3
-  hSize(24px, 8px, 1px)
+  hSize(24px, 1px, 8px)
 
 /* End Tags */
 
@@ -106,32 +138,28 @@ h3
 
 #wrapper
   dimensions()
-  background:    transparent;
-  margin-bottom: 8px;
+  background:    transparent
+  margin-bottom: 8px
 
 #split-bar
   repeatingBg('/admin/ui/images/resizer-bg.png')
-  dimensions(6px)
+  dimensions(6px, 98%)
+  absoluteRight(0, 0)
   opaque(.2)
   corners(10px)
-  border: 1px solid #fff;
-  float:  left;
-
-  &:hover
-    opaque(.4)
-    cursor: pointer;
+  border: 1px solid #fff
 
 
 
-#navigation
+nav
   dimensions(218px)
   overflow:   hidden
   background: transparent
   float:      left
   position:   relative
 
-#nav-box
-  dimensions(226px)
+#nav-ul
+  dimensions(210px)
 
 #active-nav
   absoluteLeft(0, 0)
@@ -139,6 +167,7 @@ h3
   background: url('/admin/ui/images/active-nav.png') left top no-repeat transparent
 
 .nav-li
+  @extend .gui-text-bold
   dimensions(auto, 48px)
   background: url('/admin/ui/images/nav-icons.png') 12px 10px no-repeat transparent
   padding: 0 0 0 14px
