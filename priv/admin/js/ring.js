@@ -182,7 +182,7 @@ minispade.register('ring', function() {
 
       kvStatus: function() {
         return this.get('content.kvStatus');
-      }.property("content"),
+      }.property("content.kvStatus"),
 
       kvIndicator: function() {
         return this.toIndicator(this.get("kvStatus"));
@@ -190,7 +190,7 @@ minispade.register('ring', function() {
 
       pipeStatus: function() {
         return this.get('content.pipeStatus');
-      }.property("content"),
+      }.property("content.pipeStatus"),
 
       pipeIndicator: function() {
         return this.toIndicator(this.get("pipeStatus"));
@@ -198,7 +198,7 @@ minispade.register('ring', function() {
 
       searchStatus: function() {
         return this.get('content.searchStatus');
-      }.property("content"),
+      }.property("content.searchStatus"),
 
       searchIndicator: function() {
         return this.toIndicator(this.get("searchStatus"));
