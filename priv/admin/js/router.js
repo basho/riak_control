@@ -58,16 +58,18 @@ minispade.register('router', function() {
 
         connectOutlets: function(router) {
           router.get('applicationController').connectOutlet('ring');
-          router.get('ringController').connectOutlet('partitionFilter', 'partitionFilter');
+          router.get('ringController').connectOutlet('partitionFilter', 'partitionFilter', RiakControl.Node.find());
           $.riakControl.markNavActive('nav-ring');
         },
 
         enter: function(router) {
           router.get('ringController').startInterval();
+          router.get('partitionFilterController').startInterval();
         },
 
         exit: function(router) {
           router.get('ringController').cancelInterval();
+          router.get('partitionFilterController').cancelInterval();
         },
 
         index: Ember.Route.extend({

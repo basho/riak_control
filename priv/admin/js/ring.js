@@ -48,42 +48,46 @@ minispade.register('ring', function() {
   });
 
   RiakControl.PartitionFilterController = Ember.ArrayController.extend({
-    init: function() {
-      this.load();
+    load: function() {
+      this.get('content').reload();
     },
 
-    load: function() {
-      $.ajax({
-        url: '/admin/cluster/list',
-        dataType: 'json',
-        context: this,
-        success: function (data) {
-          var nodeFilters = data.map(function(item) {
-            return RiakControl.PartitionFilter.create({
-              type: 'node',
-              name: 'Node: ' + item.name,
-              value: item.name
-            });
-          });
+    startInterval: function() {
+      this._intervalId = setInterval($.proxy(this.load, this), 1000);
+    },
 
-          var statusFilters = [
-            RiakControl.PartitionFilter.create({
-              type: 'vnodes',
-              value: 'fallback',
-              name: 'Fallback'
-            }),
-            RiakControl.PartitionFilter.create({
-              type: 'handoffs',
-              value: '',
-              name: 'Handoff'
-            })
-          ];
+    cancelInterval: function() {
+      if(this._intervalId) {
+        clearInterval(this._intervalId);
+      }
+    },
 
-          var filters = nodeFilters.concat(statusFilters);
-          this.set('content', filters);
-        }
+    filters: function() {
+      var content = this.get('content');
+
+      var nodeFilters = content.map(function(item) {
+        return RiakControl.PartitionFilter.create({
+          type: 'node',
+          name: 'Node: ' + item.get('name'),
+          value: item.get('name')
+        });
       });
-    }
+
+      var statusFilters = [
+        RiakControl.PartitionFilter.create({
+          type: 'vnodes',
+          value: 'fallback',
+          name: 'Fallback'
+        }),
+        RiakControl.PartitionFilter.create({
+          type: 'handoffs',
+          value: '',
+          name: 'Handoff'
+        })
+      ];
+
+      return nodeFilters.concat(statusFilters);
+    }.property('content.@each')
   });
 
   RiakControl.RingController = Ember.ArrayController.extend({
