@@ -3,11 +3,16 @@ minispade.register('ring', function() {
     tagName: 'ul',
 
     itemViewClass: Ember.View.extend({
+      templateName: 'pagination_item',
+
       tagName: 'li',
       spanClasses: 'paginator pageNumber',
 
       isActive: function() {
-        return this.get('parentView.controller.selectedPage') === this.get('content.page_id');
+        var selectedPage = this.get('parentView.controller.selectedPage') || "1";
+        var page_id = this.get('content.page_id');
+
+        return selectedPage === page_id;
       }.property('parentView.controller.selectedPage')
     })
   });

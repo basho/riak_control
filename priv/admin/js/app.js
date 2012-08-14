@@ -17,8 +17,6 @@ minispade.register('app', function() {
 
       showRing: Ember.Route.transitionTo('ring.index'),
 
-      filterRing: Ember.Route.transitionTo('ring.filtered'),
-
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'snapshot.index'
@@ -64,6 +62,8 @@ minispade.register('app', function() {
       ring: Ember.Route.extend({
         route: 'ring',
 
+        filterRing: Ember.Route.transitionTo('ring.filtered.index'),
+
         paginateRing: Ember.Route.transitionTo('paginated'),
 
         connectOutlets: function(router) {
@@ -99,6 +99,24 @@ minispade.register('app', function() {
         filtered: Ember.Route.extend({
           route: '/filter/:filterType/:filterValue',
 
+          serialize: function(router, context) {
+            if(context) {
+              return {
+                filterType: context.type,
+                filterValue: context.value
+              };
+            } else {
+              return {};
+            }
+          },
+
+          deserialize: function(router, params) {
+            return RiakControl.PartitionFilter.create({
+              type: params.filterType,
+              value: params.filterValue
+            });
+          },
+
           connectOutlets: function(router, context) {
             router.get('ringController').set('selectedPartitionFilter', context);
           },
@@ -120,22 +138,16 @@ minispade.register('app', function() {
 
             exit: function(router) {
               router.get('ringController').set('selectedPage', undefined);
+            },
+
+            serialize: function(router, context) {
+              return context;
+            },
+
+            deserialize: function(router, params) {
+              return params;
             }
-          }),
-
-          serialize: function(router, context) {
-            return {
-              filterType: context.type,
-              filterValue: context.value
-            };
-          },
-
-          deserialize: function(router, params) {
-            return RiakControl.PartitionFilter.create({
-              type: params.filterType,
-              value: params.filterValue
-            });
-          }
+          })
         })
       })
     })
