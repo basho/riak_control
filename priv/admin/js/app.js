@@ -9,6 +9,21 @@ minispade.register('app', function() {
     templateName: 'application'
   });
 
+  DS.Model.reopen({
+    reload: function() {
+        var store = this.get('store');
+        store.get('adapter').find(store, this.constructor, this.get('id'));
+      }
+  });
+
+  DS.RecordArray.reopen({
+    reload: function() {
+        Ember.assert("Can only reload base RecordArrays", this.constructor === DS.RecordArray);
+        var store = this.get('store');
+        store.get('adapter').findAll(store, this.get('type'));
+      }
+  });
+
   RiakControl.Store = DS.Store.extend({
     revision: 4,
     adapter: DS.RESTAdapter.create()
