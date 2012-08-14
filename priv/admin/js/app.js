@@ -9,6 +9,13 @@ minispade.register('app', function() {
     templateName: 'application'
   });
 
+  RiakControl.Store = DS.Store.extend({
+    revision: 4,
+    adapter: DS.RESTAdapter.create()
+  });
+
+  RiakControl.store = RiakControl.Store.create();
+
   RiakControl.Router = Ember.Router.extend({
     root: Ember.Route.extend({
       showSnapshot: Ember.Route.transitionTo('snapshot.index'),
