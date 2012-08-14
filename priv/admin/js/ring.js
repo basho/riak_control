@@ -1,4 +1,17 @@
 minispade.register('ring', function() {
+  RiakControl.PaginationView = Ember.CollectionView.extend({
+    tagName: 'ul',
+
+    itemViewClass: Ember.View.extend({
+      tagName: 'li',
+      spanClasses: 'paginator pageNumber',
+
+      isActive: function() {
+        return this.get('parentView.controller.selectedPage') === this.get('content.page_id');
+      }.property('parentView.controller.selectedPage')
+    })
+  });
+
   RiakControl.PartitionFilter = Ember.Object.extend(),
 
   RiakControl.Partition = Ember.Object.extend({
@@ -179,10 +192,12 @@ minispade.register('ring', function() {
 
     pages: function() {
       var availablePages = this.get('controller.availablePages'),
-          pages = [];
+          pages = [],
+          page;
 
       for (i = 0; i < availablePages; i++) {
-        pages.push({ page_id: i + 1 });
+        page = i + 1;
+        pages.push({ page_id: page.toString() });
       }
 
       return pages;
