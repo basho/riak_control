@@ -15,6 +15,7 @@
     <script src="/admin/ui/js/actions.js"></script>
 
     <script src="/admin/ui/js/app.js"></script>
+    <script src="/admin/ui/js/core.js"></script>
     <script src="/admin/ui/js/snapshot.js"></script>
     <script src="/admin/ui/js/cluster.js"></script>
     <script src="/admin/ui/js/ring.js"></script>
