@@ -19,34 +19,6 @@ minispade.register('ring', function() {
 
   RiakControl.PartitionFilter = Ember.Object.extend(),
 
-  RiakControl.Partition = Ember.Object.extend({
-    vnodeStatus: function(vnode) {
-      var partitionStatus = this.get('status');
-      var vnodeReachable = this.get('reachable');
-      var vnodeStatus = this.get('vnodes.' + vnode);
-      var handoffStatus = this.get('handoffs.' + vnode);
-
-      if(partitionStatus === "incompatible") { return "unknown"; }
-      if(handoffStatus) { return "handoff"; }
-      if(vnodeStatus === "primary" && vnodeReachable === true) { return "active"; }
-      if(vnodeStatus === "fallback") { return "fallback"; }
-
-      return "disabled";
-    },
-
-    kvStatus: function() {
-      return this.vnodeStatus('riak_kv');
-    }.property("vnodes", "handoffs"),
-
-    pipeStatus: function() {
-      return this.vnodeStatus('riak_pipe');
-    }.property("vnodes", "handoffs"),
-
-    searchStatus: function() {
-      return this.vnodeStatus('riak_search');
-    }.property("vnodes", "handoffs")
-  });
-
   RiakControl.PartitionFilterController = Ember.ArrayController.extend({
     load: function() {
       this.get('content').reload();
@@ -80,8 +52,8 @@ minispade.register('ring', function() {
           name: 'Fallback'
         }),
         RiakControl.PartitionFilter.create({
-          type: 'handoffs',
-          value: '',
+          type: 'vnodes',
+          value: 'handoff',
           name: 'Handoff'
         })
       ];
@@ -91,25 +63,8 @@ minispade.register('ring', function() {
   });
 
   RiakControl.RingController = Ember.ArrayController.extend({
-    content: [],
-
-    init: function() {
-      this.load();
-    },
-
     load: function() {
-      $.ajax({
-        url: '/admin/ring/partitions',
-        dataType: 'json',
-        context: this,
-        success: function (data) {
-          var partitions = data.partitions.map(function(partition) {
-            return RiakControl.Partition.create(partition);
-          });
-
-          this.set('content', partitions);
-        }
-      });
+      this.get('content').reload();
     },
 
     startInterval: function() {
@@ -123,11 +78,11 @@ minispade.register('ring', function() {
     },
 
     availablePages: function() {
-      var filteredContent = this.get('filteredContent');
+      var length = this.get('filteredContent.length');
       var itemsPerPage = 32;
 
-      return (filteredContent.length / itemsPerPage) || 1;
-    }.property('selectedPage', 'filteredContent', 'content'),
+      return (length / itemsPerPage) || 1;
+    }.property('filteredContent.length'),
 
     paginatedContent: function() {
       var filteredContent = this.get('filteredContent');
@@ -138,7 +93,7 @@ minispade.register('ring', function() {
       var lowerBound = (selectedPage * itemsPerPage) - itemsPerPage;
 
       return this.get('filteredContent').slice(lowerBound, upperBound);
-    }.property('selectedPage', 'filteredContent', 'content'),
+    }.property('selectedPage', 'filteredContent.@each'),
 
     filteredContent: function() {
       var selectedPartitionFilter = this.get('selectedPartitionFilter');
@@ -152,19 +107,7 @@ minispade.register('ring', function() {
         if(filterType) {
           if(filterType == 'vnodes') {
             filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
-              return self.get('content').filterProperty('vnodes.' + property, filterValue);
-            });
-
-            return filtered.reduce(function(a, b) { return a.concat(b); }).uniq();
-          } else if(filterType == 'handoffs') {
-            filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
-              return self.get('content').filter(function(item) {
-                if(item.get('handoffs.' + property) === undefined) {
-                  return false;
-                } else {
-                  return true;
-                }
-              });
+              return self.get('content').filterProperty(property + '_vnode_status', filterValue);
             });
 
             return filtered.reduce(function(a, b) { return a.concat(b); }).uniq();
@@ -177,7 +120,7 @@ minispade.register('ring', function() {
       } else {
         return this.get('content');
       }
-    }.property('selectedPartitionFilter', 'content')
+    }.property('selectedPartitionFilter', 'content.@each')
   });
 
   RiakControl.PartitionFilterView = Ember.View.extend({

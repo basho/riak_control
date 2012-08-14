@@ -57,7 +57,7 @@ minispade.register('router', function() {
         paginateRing: Ember.Route.transitionTo('paginated'),
 
         connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('ring');
+          router.get('applicationController').connectOutlet('ring', RiakControl.Partition.find());
           router.get('ringController').connectOutlet('partitionFilter', 'partitionFilter', RiakControl.Node.find());
           $.riakControl.markNavActive('nav-ring');
         },
@@ -130,14 +130,6 @@ minispade.register('router', function() {
 
             exit: function(router) {
               router.get('ringController').set('selectedPage', undefined);
-            },
-
-            serialize: function(router, context) {
-              return context;
-            },
-
-            deserialize: function(router, params) {
-              return params;
             }
           })
         })
