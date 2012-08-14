@@ -42,3 +42,4 @@ vnode_route () -> admin_route(["vnode",partition]).
 
 %% new restful routes
 nodes_route() -> admin_route(["nodes"]).
+partitions_route() -> admin_route(["partitions"]).
