@@ -1,5 +1,6 @@
 minispade.register('core', function() {
   RiakControl.Node = DS.Model.extend({
+    primaryKey: 'name',
     name: DS.attr("string"),
     status: DS.attr("string"),
     reachable: DS.attr("boolean"),

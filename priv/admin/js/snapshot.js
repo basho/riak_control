@@ -1,18 +1,7 @@
 minispade.register('snapshot', function() {
   RiakControl.SnapshotController = Ember.ObjectController.extend({
-    init: function() {
-      this.load();
-    },
-
     load: function() {
-      $.ajax({
-        url: '/admin/overview',
-        dataType: 'json',
-        context: this,
-        success: function (data) {
-          this.set('content', data);
-        }
-      });
+      this.get('content').reload();
     },
 
     startInterval: function() {
@@ -26,48 +15,45 @@ minispade.register('snapshot', function() {
     },
 
     unreachableNodes: function() {
-      return this.get('content.unreachable_nodes');
-    }.property('content'),
+      return this.get('content').filterProperty('reachable', false);
+    }.property('content.@each.reachable'),
 
     areUnreachableNodes: function() {
-      return this.get('unreachableNodes') && this.get('unreachableNodes').length > 0;
-    }.property('content'),
+      return this.get('unreachableNodes.length') > 0;
+    }.property('content.@each.reachable'),
 
     incompatibleNodes: function() {
-      return this.get('content.incompatible_nodes');
-    }.property('content'),
+      return this.get('content').filterProperty('status', 'incompatible');
+    }.property('content.@each.status'),
 
     areIncompatibleNodes: function() {
-      return this.get('incompatibleNodes') && this.get('incompatibleNodes').length > 0;
-    }.property('content'),
+      return this.get('incompatibleNodes.length') > 0;
+    }.property('content.@each.status'),
 
     downNodes: function() {
-      return this.get('content.down_nodes');
-    }.property('content'),
+      return this.get('content').filterProperty('status', 'down');
+    }.property('content.@each.status'),
 
     areDownNodes: function() {
-      return this.get('downNodes') && this.get('downNodes').length > 0;
-    }.property('content'),
+      return this.get('downNodes.length') > 0;
+    }.property('content.@each.status'),
 
     lowMemNodes: function() {
-      return this.get('content.low_mem_nodes');
-    }.property('content'),
+      return this.get('content').filterProperty('low_mem', true);
+    }.property('content.@each.low_mem'),
 
     areLowMemNodes: function() {
-      return this.get('lowMemNodes') && this.get('lowMemNodes').length > 0;
-    }.property('content'),
+      return this.get('lowMemNodes.length') > 0;
+    }.property('content.@each.low_mem'),
 
     healthyCluster: function() {
-      var unreachableNodes = this.get('unreachableNodes'),
-          incompatibleNodes = this.get('incompatibleNodes'),
-          downNodes = this.get('downNodes'),
-          lowMemNodes = this.get('lowMemNodes');
+      var areUnreachableNodes = this.get('areUnreachableNodes');
+      var areIncompatibleNodes = this.get('areIncompatibleNodes');
+      var areDownNodes = this.get('areDownNodes');
+      var areLowMemNodes = this.get('areLowMemNodes');
 
-      return unreachableNodes && unreachableNodes.length === 0 &&
-        incompatibleNodes && incompatibleNodes.length === 0 &&
-        downNodes && downNodes.length === 0 &&
-        lowMemNodes && lowMemNodes.length === 0;
-    }.property('content')
+      return !(areUnreachableNodes || areIncompatibleNodes || areDownNodes || areLowMemNodes);
+    }.property('content.@each')
   });
 
   RiakControl.SnapshotView = Ember.View.extend({
