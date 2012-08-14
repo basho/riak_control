@@ -54,7 +54,6 @@ init([]) ->
     case app_helper:get_env(riak_control,enabled,false) of
         true ->
             Resources = [{admin, admin_gui},
-                         {admin, admin_overview},
                          {admin, admin_ring},
                          {admin, admin_cluster},
                          {admin, admin_cluster_join},
