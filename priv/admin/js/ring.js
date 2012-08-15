@@ -25,7 +25,7 @@ minispade.register('ring', function() {
     },
 
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), 1000);
+      this._intervalId = setInterval($.proxy(this.load, this), 500);
     },
 
     cancelInterval: function() {
@@ -68,7 +68,7 @@ minispade.register('ring', function() {
     },
 
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), 1000);
+      this._intervalId = setInterval($.proxy(this.load, this), 500);
     },
 
     cancelInterval: function() {

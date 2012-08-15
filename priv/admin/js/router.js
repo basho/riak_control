@@ -111,10 +111,12 @@ minispade.register('router', function() {
 
           connectOutlets: function(router, context) {
             router.get('ringController').set('selectedPartitionFilter', context);
+            router.get('partitionFilterController').set('selectedPartitionFilter', context);
           },
 
           exit: function(router) {
             router.get('ringController').set('selectedPartitionFilter', undefined);
+            router.get('partitionFilterController').set('selectedPartitionFilter', undefined);
           },
 
           index: Ember.Route.extend({
