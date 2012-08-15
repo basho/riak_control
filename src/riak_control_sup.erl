@@ -60,6 +60,7 @@ init([]) ->
                          {admin, admin_cluster_join},
                          {admin, admin_cluster_down},
                          {admin, admin_node},
+                         {admin, admin_nodes},
                          {admin, admin_node_stop},
                          {admin, admin_node_leave},
                          {admin, admin_fallbacks}

@@ -40,3 +40,5 @@ ring_route () -> admin_route(["ring"]).
 vnode_route (Route) -> admin_route(["vnode",partition|Route]).
 vnode_route () -> admin_route(["vnode",partition]).
 
+%% new restful routes
+nodes_route() -> admin_route(["nodes"]).
