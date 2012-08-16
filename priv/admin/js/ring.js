@@ -34,6 +34,18 @@ minispade.register('ring', function() {
       }
     },
 
+    selectedPartitionFilter: function() {
+      var selectedPartitionFilterValue = this.get('selectedPartitionFilterValue');
+      var filters = this.get('filters');
+      var selectedPartitionFilter;
+
+      selectedPartitionFilter = filters.find(function(item) {
+        return item.get('value') === selectedPartitionFilterValue;
+      });
+
+      return selectedPartitionFilter;
+    }.property('filters', 'selectedPartitionFilterValue'),
+
     filters: function() {
       var content = this.get('content');
 
@@ -128,6 +140,11 @@ minispade.register('ring', function() {
   });
 
   RiakControl.PartitionFilterSelectView = Ember.Select.extend({
+    updateDisplay: function() {
+      var val = this.get('controller.selectedPartitionFilter.name');
+      $.riakControl.updateDropdown(this.$(), val);
+    }.observes('controller.selectedPartitionFilter'),
+
     change: function(ev) {
       var selection = this.get('selection');
 

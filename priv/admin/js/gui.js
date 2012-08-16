@@ -43,11 +43,11 @@ $(document).ready(function() {
     });
   };
 
-  /* MAKE DROPDOWNS WORK */
-  $(document).on('change', '.gui-dropdown', function (e) {
-      var me = $(this), textSpot = me.prev().prev(), selected = me.find('option:selected').text();
-      textSpot.text(selected);
-  });
+  $.riakControl.updateDropdown = $.riakControl.updateDropdown || function updateDropdown (me, val) {
+    Ember.run.next(function() {
+      var textSpot = me.prev().prev(); textSpot.text(val);
+    });
+  };
 
   /*
   MAKE ON/OFF SWITCHES WORK
