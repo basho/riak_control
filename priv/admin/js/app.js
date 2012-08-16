@@ -6,7 +6,11 @@ minispade.register('app', function() {
   RiakControl.ApplicationController = Ember.Controller.extend();
 
   RiakControl.ApplicationView = Ember.View.extend({
-    templateName: 'application'
+    templateName: 'application',
+
+    didInsertElement: function() {
+      $.riakControl.resizeSplitBar();
+    }
   });
 
   DS.Model.reopen({

@@ -17,12 +17,14 @@ $(document).ready(function() {
   });
 
   /* ENABLE THE SPLIT BAR */
-  var splitBar = $('#split-bar');
-  var splitBarParent = splitBar.parent();
-  splitBar.css('height', splitBarParent.css('height'));
+  $.riakControl.resizeSplitBar = $.riakControl.resizeSplitBar || function resizeSplitBar() {
+    var splitBar = $('#split-bar');
+    var splitBarParent = splitBar.parent();
+    splitBar.css('height', splitBarParent.css('height'));
+  };
 
   /* TURN ON TOGGLING FOR THE SPLIT BAR */
-  splitBar.on('click', function () {
+  $(document).on('click', '#split-bar', function() {
       var nav = $('#navigation'), navwidth = nav.css('width');
       var navbox = $('#nav-box'), boxwidth = navbox.css('width');
       if (navwidth === '218px') {
