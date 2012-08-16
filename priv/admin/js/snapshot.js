@@ -53,7 +53,7 @@ minispade.register('snapshot', function() {
       var areLowMemNodes = this.get('areLowMemNodes');
 
       return !(areUnreachableNodes || areIncompatibleNodes || areDownNodes || areLowMemNodes);
-    }.property('content.@each')
+    }.property('areUnreachableNodes', 'areIncompatibleNodes', 'areDownNodes', 'areLowMemNodes')
   });
 
   RiakControl.SnapshotView = Ember.View.extend({
