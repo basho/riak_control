@@ -94,5 +94,5 @@ vnode_status(Service, Status, Handoffs) ->
         undefined ->
             Status;
         _ ->
-            "handoff"
+            handoff
     end.
