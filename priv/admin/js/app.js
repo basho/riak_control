@@ -1,8 +1,16 @@
 minispade.register('app', function() {
+
+  /**
+   * RiakControl Ember application.
+   */
   RiakControl = Ember.Application.create({
     ready: Ember.alias('initialize')
   });
 
+  /**
+   * How often to refresh/poll the server for changes in cluster
+   * and partition status
+   */
   RiakControl.refreshInterval = 1000;
 
   RiakControl.ApplicationController = Ember.Controller.extend();
@@ -10,6 +18,12 @@ minispade.register('app', function() {
   RiakControl.ApplicationView = Ember.View.extend({
     templateName: 'application',
 
+    /**
+     * Ensure that the split bar is resized properly once the
+     * application view is initialized.
+     *
+     * @returns {void}
+     */
     didInsertElement: function() {
       $.riakControl.resizeSplitBar();
     }
@@ -42,4 +56,5 @@ minispade.register('app', function() {
   minispade.require('snapshot');
   minispade.require('cluster');
   minispade.require('ring');
+
 });

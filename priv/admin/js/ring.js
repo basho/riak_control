@@ -1,40 +1,91 @@
 minispade.register('ring', function() {
-  RiakControl.PaginationItemView = Ember.View.extend({
+
+  /**
+   * @class
+   *
+   * PaginationItemView handles display of individual pagination links
+   * used as navigation through the partition list.
+   */
+  RiakControl.PaginationItemView = Ember.View.extend(
+    /** @scope RiakControl.PaginationItemView.prototype */ {
     templateName: 'pagination_item',
 
     tagName: 'li',
     spanClasses: 'paginator pageNumber',
 
+    /**
+     * Determine if this is the currently selected page.
+     *
+     * @returns {Boolean}
+     */
     isActive: function() {
-      var selectedPage = this.get('parentView.controller.selectedPage') || "1";
+      var currentPage = this.get('parentView.controller.currentPage');
       var page_id = this.get('content.page_id');
 
-      return selectedPage === page_id;
-    }.property('parentView.controller.selectedPage')
+      if(currentPage) {
+        return currentPage.toString() === page_id.toString();
+      } else {
+        return false;
+      }
+    }.property('parentView.controller.currentPage')
   });
 
-  RiakControl.PaginationView = Ember.CollectionView.extend({
-    tagName: 'ul',
-    itemViewClass: RiakControl.PaginationItemView
-  });
-
+  /**
+   * @class
+   *
+   * PartitionFilter provides a model for filters that will be applied to the
+   * partition list.  Each filter contains a type it filters by and a value, such
+   * as vnodes/handoff, node/dev@127.0.0.1, etc.
+   */
   RiakControl.PartitionFilter = Ember.Object.extend();
 
-  RiakControl.PartitionFilterController = Ember.ArrayController.extend({
-    load: function() {
+  /**
+   * @class
+   *
+   * Responsible for filtering the partition list.
+   */
+  RiakControl.PartitionFilterController = Ember.ArrayController.extend(
+    /** @scope RiakControl.PartitionFilterController.prototype */ {
+
+    /**
+     * Reload the recordarray from the server.
+     *
+     * @returns {void}
+     */
+    reload: function() {
       this.get('content').reload();
     },
 
+    /**
+     * Called by the router to start the polling interval when the page is selected.
+     *
+     * @returns {void}
+     */
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), RiakControl.refreshInterval);
+      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
     },
 
+    /**
+     * Called by the router to stop the polling interval when the page is navigated
+     * away from.
+     *
+     * @returns {void}
+     */
     cancelInterval: function() {
       if(this._intervalId) {
         clearInterval(this._intervalId);
       }
     },
 
+    /**
+     * Given a list of filters and a selected filter value, return the filtering object.
+     *
+     * This is a necessary evil because we async load the partition list when someone directly
+     * links to a filtered view.  This function will fire once the list of filters are loaded,
+     * and correctly return the filter object given an id deserialized by the router upon navigation.
+     *
+     * @returns {Object}
+     */
     selectedPartitionFilter: function() {
       var selectedPartitionFilterValue = this.get('selectedPartitionFilterValue');
       var filters = this.get('filters');
@@ -47,6 +98,13 @@ minispade.register('ring', function() {
       return selectedPartitionFilter;
     }.property('filters', 'selectedPartitionFilterValue'),
 
+    /**
+     * Given a list of nodes retrieved from the server async, convert to a list of filters
+     * for the user interface, while injecting some default filters, such as by various vnode
+     * statuses.
+     *
+     * @returns {Array}
+     */
     filters: function() {
       var content = this.get('content');
 
@@ -75,21 +133,50 @@ minispade.register('ring', function() {
     }.property('content.@each')
   });
 
-  RiakControl.RingController = Ember.ArrayController.extend({
-    load: function() {
+  /**
+   * @class
+   *
+   * Controls filtering, pagination and loading/reloading of the partition list
+   * for the cluster.
+   */
+  RiakControl.RingController = Ember.ArrayController.extend(
+    /** @scope RiakControl.RingController.prototype */ {
+
+    /**
+     * Reload the recordarray from the server.
+     *
+     * @returns {void}
+     */
+    reload: function() {
       this.get('content').reload();
     },
 
+    /**
+     * Called by the router to start polling and reloading of partition list when route is entered.
+     *
+     * @returns {void}
+     */
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), RiakControl.refreshInterval);
+      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
     },
 
+    /**
+     * Called by the router to stop polling when route is left.
+     *
+     * @returns {void}
+     */
     cancelInterval: function() {
       if(this._intervalId) {
         clearInterval(this._intervalId);
       }
     },
 
+    /**
+     * Given a known number of available pages, generate an array of objects which
+     * can be used by the UI for filtering
+     *
+     * @returns {Array}
+     */
     pages: function() {
       var availablePages = this.get('availablePages'),
           pages = [],
@@ -103,13 +190,28 @@ minispade.register('ring', function() {
       return pages;
     }.property('availablePages'),
 
+    /**
+     * Returns the currently selected page as Integer.
+     *
+     * @returns {Integer}
+     */
+    currentPage: function() {
+      return this.get('selectedPage') || 1;
+    }.property('selectedPage'),
+
+    /**
+     * Handle the nextPage event.  Call to the router to advance to the appropriate
+     * page.
+     *
+     * @returns {void}
+     */
     nextPage: function() {
       var availablePages = this.get('availablePages');
-      var selectedPage = parseInt(this.get('selectedPage')) || 1;
+      var currentPage = parseInt(this.get('currentPage'), 10);
       var pages = this.get('pages');
       var nextPage;
 
-      nextPage = selectedPage + 1;
+      nextPage = currentPage + 1;
 
       if(nextPage > availablePages) {
         nextPage = nextPage - availablePages;
@@ -118,13 +220,19 @@ minispade.register('ring', function() {
       RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
     },
 
+    /**
+     * Handle the prevPage event.  Call to the router to advance to the appropriate
+     * page.
+     *
+     * @returns {void}
+     */
     prevPage: function() {
       var availablePages = this.get('availablePages');
-      var selectedPage = parseInt(this.get('selectedPage')) || 1;
+      var currentPage = parseInt(this.get('currentPage'), 10);
       var pages = this.get('pages');
       var nextPage;
 
-      nextPage = selectedPage - 1;
+      nextPage = currentPage - 1;
 
       if(nextPage <= 0) {
         nextPage = nextPage + availablePages;
@@ -133,6 +241,11 @@ minispade.register('ring', function() {
       RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
     },
 
+    /**
+     * Determine the number of available pages for pagination.
+     *
+     * @returns {Number}
+     */
     availablePages: function() {
       var length = this.get('filteredContent.length');
       var itemsPerPage = 32;
@@ -140,6 +253,12 @@ minispade.register('ring', function() {
       return (length / itemsPerPage) || 1;
     }.property('filteredContent.length'),
 
+    /**
+     * Returns filtered content, paginated based on the currently applied
+     * selectedPage property
+     *
+     * @returns {Array}
+     */
     paginatedContent: function() {
       var filteredContent = this.get('filteredContent');
       var selectedPage = this.get('selectedPage') || 1;
@@ -151,6 +270,12 @@ minispade.register('ring', function() {
       return this.get('filteredContent').slice(lowerBound, upperBound);
     }.property('selectedPage', 'filteredContent.@each'),
 
+    /**
+     * Returns content filtered based on the currently applied 
+     * selectedPartitionFilter property.
+     *
+     * @returns {Array}
+     */
     filteredContent: function() {
       var selectedPartitionFilter = this.get('selectedPartitionFilter');
 
@@ -179,16 +304,42 @@ minispade.register('ring', function() {
     }.property('selectedPartitionFilter', 'content.@each')
   });
 
-  RiakControl.PartitionFilterView = Ember.View.extend({
+  /**
+   * @class
+   *
+   * View containing a select field and wrapper for filtering content.
+   */
+  RiakControl.PartitionFilterView = Ember.View.extend(
+    /** @scope RiakControl.PartitionFilterView.prototype */ {
     templateName: 'partition_filter'
   });
 
-  RiakControl.PartitionFilterSelectView = Ember.Select.extend({
+  /**
+   * @class
+   *
+   * View rendering the select box for filtering, handling on change
+   * events and updating of the div wrapping it.
+   */
+  RiakControl.PartitionFilterSelectView = Ember.Select.extend(
+    /** @scope RiakControl.PartitionFilterSelectView.prototype */ {
+
+    /**
+     * As the select is currently wrapped in a span for prettyfying the display,
+     * as the selected value updates, update the display.
+     *
+     * @returns {void}
+     */
     updateDisplay: function() {
       var val = this.get('controller.selectedPartitionFilter.name');
       $.riakControl.updateDropdown(this.$(), val);
     }.observes('controller.selectedPartitionFilter'),
 
+    /**
+     * When the value changes, call to the router to navigate to the appropriate
+     * filtered view.
+     *
+     * @returns {void}
+     */
     change: function(ev) {
       var selection = this.get('selection');
 
@@ -200,12 +351,24 @@ minispade.register('ring', function() {
     }
   });
 
-  RiakControl.RingView = Ember.View.extend({
-    templateName: 'ring',
-
+  /**
+   * @class
+   *
+   * Container view for the ring page.
+   */
+  RiakControl.RingView = Ember.View.extend(
+    /** @scope RiakControl.RingView.prototype */ {
+    templateName: 'ring'
   });
 
-  RiakControl.PartitionView = Ember.CollectionView.extend({
+  /**
+   * @class
+   *
+   * PartitionView is a collection view for wrapping and rendering the
+   * partition list.
+   */
+  RiakControl.PartitionView = Ember.CollectionView.extend(
+    /** @scope RiakControl.PartitionView.prototype */ {
     tagName: 'tbody',
 
     itemViewClass: Ember.View.extend({
@@ -215,6 +378,15 @@ minispade.register('ring', function() {
 
       lightClasses: "gui-light gray",
 
+      /**
+       * Given a textual status, return the appropriate color to be used for rendering
+       * the indicator lights.
+       *
+       * @param {String} status
+       *  Status in text.
+       *
+       * @returns {String}
+       */
       toIndicator: function(status) {
         if(status === "unknown") {
           return "red";
@@ -229,29 +401,60 @@ minispade.register('ring', function() {
         }
       },
 
+      /**
+       * Binding for the kv vnode status field.
+       *
+       * @returns {String}
+       */
       kvStatus: function() {
         return this.get('content.kvStatus');
       }.property("content.kvStatus"),
 
+      /**
+       * Binding for the kv vnode indicator light.
+       *
+       * @returns {String}
+       */
       kvIndicator: function() {
         return this.toIndicator(this.get("kvStatus"));
       }.property("kvStatus"),
 
+      /**
+       * Binding for the pipe vnode status field.
+       *
+       * @returns {String}
+       */
       pipeStatus: function() {
         return this.get('content.pipeStatus');
       }.property("content.pipeStatus"),
 
+      /**
+       * Binding for the pipe vnode indicator light.
+       *
+       * @returns {String}
+       */
       pipeIndicator: function() {
         return this.toIndicator(this.get("pipeStatus"));
       }.property("pipeStatus"),
 
+      /**
+       * Binding for the search vnode status field.
+       *
+       * @returns {String}
+       */
       searchStatus: function() {
         return this.get('content.searchStatus');
       }.property("content.searchStatus"),
 
+      /**
+       * Binding for the search vnode indicator light.
+       *
+       * @returns {String}
+       */
       searchIndicator: function() {
         return this.toIndicator(this.get("searchStatus"));
       }.property("searchStatus")
     })
   });
+
 });

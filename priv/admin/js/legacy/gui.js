@@ -1,5 +1,9 @@
 // Framework for the cool UI tricks
-
+//
+// TODO: These should be moved to didInsertElement hooks on the
+// Ember Views once they are no longer needed by the pages scheduled
+// for deprecation.
+//
 // Set up a safe, global namespace in the jQuery object.
 $(document).ready(function() {
   $.riakControl = $.riakControl || {};

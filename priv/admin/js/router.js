@@ -1,5 +1,15 @@
 minispade.register('router', function() {
-  RiakControl.Router = Ember.Router.extend({
+
+  /**
+   * @class
+   *
+   * Base application router for the RiakControl application.  At this
+   * point its responsibilities include either rendering the new pure
+   * ember-only components, or using the legacy pub/sub implementation
+   * to render older pages which are scheduled for deprecation.
+   */
+  RiakControl.Router = Ember.Router.extend(
+    /** @scope RiakControl.Router.prototype */ {
     root: Ember.Route.extend({
       showSnapshot: Ember.Route.transitionTo('snapshot.index'),
 
@@ -40,7 +50,7 @@ minispade.register('router', function() {
           router.get('applicationController').connectOutlet('cluster');
           $.riakControl.markNavActive('nav-cluster');
 
-          $.riakControl.appendScript('#cluster-script', '/admin/ui/js/cluster-legacy.js');
+          $.riakControl.appendScript('#cluster-script', '/admin/ui/js/legacy/cluster.js');
           $.riakControl.pub('templateSwitch', ['cluster']);
         },
 
@@ -138,4 +148,5 @@ minispade.register('router', function() {
       })
     })
   });
+
 });

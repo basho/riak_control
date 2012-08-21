@@ -9,17 +9,17 @@
 </head>
 
 <body>
-    <script src="/admin/ui/js/vendor.js"></script>
-    <script src="/admin/ui/js/templates.js"></script>
+    <script src="/admin/ui/js/generated/vendor.js"></script>
+    <script src="/admin/ui/js/generated/templates.js"></script>
 
-    <script src="/admin/ui/js/gui.js"></script>
-    <script src="/admin/ui/js/actions.js"></script>
+    <script src="/admin/ui/js/legacy/gui.js"></script>
+    <script src="/admin/ui/js/legacy/actions.js"></script>
 
     <script src="/admin/ui/js/app.js"></script>
     <script src="/admin/ui/js/core.js"></script>
+    <script src="/admin/ui/js/cluster.js"></script>
     <script src="/admin/ui/js/router.js"></script>
     <script src="/admin/ui/js/snapshot.js"></script>
-    <script src="/admin/ui/js/cluster.js"></script>
     <script src="/admin/ui/js/ring.js"></script>
 
     <script>minispade.require('app');</script>
