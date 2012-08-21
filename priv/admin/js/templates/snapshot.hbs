@@ -1,0 +1,60 @@
+<h1 id="snapshot-headline" class="gui-headline-bold">Current Snapshot...</h1>
+<div class="relative">
+  {{#if healthyCluster}}
+    <div id="healthy-cluster">
+        <h2 class="gui-headline-bold has-cut">Your cluster is healthy.</h2>
+        <h3 class="gui-headline vertical-padding-small">You currently have...</h3>
+        <ul class="gui-text bulleted">
+            <li><span class="emphasize monospace">0</span> Unreachable nodes</li>
+            <li><span class="emphasize monospace">0</span> Incompatible nodes</li>
+            <li><span class="emphasize monospace">0</span> Nodes marked as down</li>
+            <li><span class="emphasize monospace">0</span> Nodes experiencing low memory</li>
+            <li>Nothing to worry about because Riak is your friend</li>
+        </ul>
+    </div>
+  {{else}}
+    <div id="unhealthy-cluster">
+        <h2 class="gui-headline-bold has-cut">Your cluster has problems.</h2>
+
+        {{#if areUnreachableNodes}}
+          <!-- Unreachable Nodes List -->
+          <h3 id="unreachable-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently unreachable:</h3>
+          <ul id="unreachable-nodes-list" class="gui-text bulleted monospace">
+            {{#each unreachableNodes}}
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
+            {{/each}}
+          </ul>
+        {{/if}}
+
+        {{#if areIncompatibleNodes}}
+          <!-- Incompatible Nodes List -->
+          <h3 id="incompatible-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently incompatible with Riak Control:</h3>
+          <ul id="incompatible-nodes-list" class="gui-text bulleted monospace">
+            {{#each incompatibleNodes}}
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
+            {{/each}}
+          </ul>
+        {{/if}}
+
+        {{#if areDownNodes}}
+          <!-- Down Nodes List -->
+          <h3 id="down-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently marked down:</h3>
+          <ul id="down-nodes-list" class="gui-text bulleted monospace">
+            {{#each downNodes}}
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
+            {{/each}}
+          </ul>
+        {{/if}}
+
+        {{#if areLowMemNodes}}
+          <!-- Low-Mem Nodes List -->
+          <h3 id="low_mem-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently experiencing low memory:</h3>
+          <ul id="low_mem-nodes-list" class="gui-text bulleted monospace">
+            {{#each lowMemNodes}}
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
+            {{/each}}
+          </ul>
+        {{/if}}
+    </div>
+  {{/if}}
+</div>
