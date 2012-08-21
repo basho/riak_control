@@ -105,7 +105,7 @@ minispade.register('ring', function() {
 
     nextPage: function() {
       var availablePages = this.get('availablePages');
-      var selectedPage = parseInt(this.get('selectedPage'));
+      var selectedPage = parseInt(this.get('selectedPage')) || 1;
       var pages = this.get('pages');
       var nextPage;
 
@@ -120,7 +120,7 @@ minispade.register('ring', function() {
 
     prevPage: function() {
       var availablePages = this.get('availablePages');
-      var selectedPage = parseInt(this.get('selectedPage'));
+      var selectedPage = parseInt(this.get('selectedPage')) || 1;
       var pages = this.get('pages');
       var nextPage;
 
