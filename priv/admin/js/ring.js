@@ -1,6 +1,6 @@
 minispade.register('ring', function() {
   RiakControl.PaginationItemView = Ember.View.extend({
-    templateName: 'pagination_item'
+    templateName: 'pagination_item',
 
     tagName: 'li',
     spanClasses: 'paginator pageNumber',
@@ -11,14 +11,14 @@ minispade.register('ring', function() {
 
       return selectedPage === page_id;
     }.property('parentView.controller.selectedPage')
-  }),
+  });
 
   RiakControl.PaginationView = Ember.CollectionView.extend({
     tagName: 'ul',
     itemViewClass: RiakControl.PaginationItemView
   });
 
-  RiakControl.PartitionFilter = Ember.Object.extend(),
+  RiakControl.PartitionFilter = Ember.Object.extend();
 
   RiakControl.PartitionFilterController = Ember.ArrayController.extend({
     load: function() {
