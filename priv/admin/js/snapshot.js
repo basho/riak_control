@@ -5,7 +5,7 @@ minispade.register('snapshot', function() {
     },
 
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.load, this), 500);
+      this._intervalId = setInterval($.proxy(this.load, this), RiakControl.refreshInterval);
     },
 
     cancelInterval: function() {

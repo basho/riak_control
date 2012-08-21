@@ -3,6 +3,8 @@ minispade.register('app', function() {
     ready: Ember.alias('initialize')
   });
 
+  RiakControl.refreshInterval = 1000;
+
   RiakControl.ApplicationController = Ember.Controller.extend();
 
   RiakControl.ApplicationView = Ember.View.extend({
