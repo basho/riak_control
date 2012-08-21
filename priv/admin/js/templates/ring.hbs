@@ -5,7 +5,13 @@
     <span id="total-number" class="gui-text"></span>
 </h1>
 
-{{collection RiakControl.PaginationView contentBinding="view.pages" classNames="pagination gui-text"}}
+<ul class="pagination gui-text">
+  <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
+  {{#each pages}}
+    {{view RiakControl.PaginationItemView contentBinding="this"}}
+  {{/each}}
+  <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
+</ul>
 <div class="cut"></div>
 
 <div id="partition-list" class="has-cut">
@@ -57,4 +63,11 @@
     </table>
 </div>
 
-{{collection RiakControl.PaginationView contentBinding="view.pages" classNames="pagination gui-text pagination-bottom"}}
+<ul class="pagination gui-text">
+  <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
+  {{#each pages}}
+    {{view RiakControl.PaginationItemView contentBinding="this"}}
+  {{/each}}
+  <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
+</ul>
+<div class="cut"></div>

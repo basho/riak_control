@@ -1,20 +1,21 @@
 minispade.register('ring', function() {
+  RiakControl.PaginationItemView = Ember.View.extend({
+    templateName: 'pagination_item'
+
+    tagName: 'li',
+    spanClasses: 'paginator pageNumber',
+
+    isActive: function() {
+      var selectedPage = this.get('parentView.controller.selectedPage') || "1";
+      var page_id = this.get('content.page_id');
+
+      return selectedPage === page_id;
+    }.property('parentView.controller.selectedPage')
+  }),
+
   RiakControl.PaginationView = Ember.CollectionView.extend({
     tagName: 'ul',
-
-    itemViewClass: Ember.View.extend({
-      templateName: 'pagination_item',
-
-      tagName: 'li',
-      spanClasses: 'paginator pageNumber',
-
-      isActive: function() {
-        var selectedPage = this.get('parentView.controller.selectedPage') || "1";
-        var page_id = this.get('content.page_id');
-
-        return selectedPage === page_id;
-      }.property('parentView.controller.selectedPage')
-    })
+    itemViewClass: RiakControl.PaginationItemView
   });
 
   RiakControl.PartitionFilter = Ember.Object.extend(),
@@ -89,6 +90,49 @@ minispade.register('ring', function() {
       }
     },
 
+    pages: function() {
+      var availablePages = this.get('availablePages'),
+          pages = [],
+          page;
+
+      for (i = 0; i < availablePages; i++) {
+        page = i + 1;
+        pages.push({ page_id: page.toString() });
+      }
+
+      return pages;
+    }.property('availablePages'),
+
+    nextPage: function() {
+      var availablePages = this.get('availablePages');
+      var selectedPage = parseInt(this.get('selectedPage'));
+      var pages = this.get('pages');
+      var nextPage;
+
+      nextPage = selectedPage + 1;
+
+      if(nextPage > availablePages) {
+        nextPage = nextPage - availablePages;
+      }
+
+      RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
+    },
+
+    prevPage: function() {
+      var availablePages = this.get('availablePages');
+      var selectedPage = parseInt(this.get('selectedPage'));
+      var pages = this.get('pages');
+      var nextPage;
+
+      nextPage = selectedPage - 1;
+
+      if(nextPage <= 0) {
+        nextPage = nextPage + availablePages;
+      }
+
+      RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
+    },
+
     availablePages: function() {
       var length = this.get('filteredContent.length');
       var itemsPerPage = 32;
@@ -159,18 +203,6 @@ minispade.register('ring', function() {
   RiakControl.RingView = Ember.View.extend({
     templateName: 'ring',
 
-    pages: function() {
-      var availablePages = this.get('controller.availablePages'),
-          pages = [],
-          page;
-
-      for (i = 0; i < availablePages; i++) {
-        page = i + 1;
-        pages.push({ page_id: page.toString() });
-      }
-
-      return pages;
-    }.property('controller.availablePages')
   });
 
   RiakControl.PartitionView = Ember.CollectionView.extend({
