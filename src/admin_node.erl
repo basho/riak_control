@@ -86,5 +86,5 @@ get_node_details(Req,C) ->
     Node=target_node(Req),
     {ok,Ring}=riak_core_ring_manager:get_my_ring(),
     Indices=rpc:call(Node,riak_core_ring,my_indices,[Ring]),
-    PS=[{struct,admin_ring:node_ring_details(Ring,{P,Node})} || P <- Indices],
+    PS=[{struct,admin_ring:node_ring_details(P,Node)} || P <- Indices],
     {mochijson2:encode(PS),Req,C}.
