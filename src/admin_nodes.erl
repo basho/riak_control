@@ -18,7 +18,7 @@
 %%
 %% -------------------------------------------------------------------
 
--module(admin_ring).
+-module(admin_nodes).
 -export([routes/0,
          init/1,
          content_types_provided/2,
@@ -35,62 +35,54 @@
 %% mappings to the various content types supported for this resource
 -define(CONTENT_TYPES,[{"application/json",to_json}]).
 
-%% the different vnode types we care about
--define(VNODE_TYPES,[riak_kv,riak_pipe,riak_search]).
-
 %% defines the webmachine routes this module handles
-routes () ->
-    [{admin_routes:ring_route(["partitions"]),?MODULE,[]}].
+routes() ->
+    [{admin_routes:nodes_route(),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
-init ([]) ->
-    {ok,_V,Partitions}=riak_control_session:get_partitions(),
-    {ok,Partitions}.
+init(Action) ->
+    {ok,Action}.
 
 %% validate origin
 forbidden(RD, C) ->
     {riak_control_security:is_null_origin(RD), RD, C}.
 
 %% redirect to SSL port if using HTTP
-service_available (RD,C) ->
+service_available(RD,C) ->
     riak_control_security:scheme_is_available(RD,C).
 
 %% validate username and password
-is_authorized (RD,C) ->
+is_authorized(RD,C) ->
     riak_control_security:enforce_auth(RD,C).
 
 %% return the list of available content types for webmachine
-content_types_provided (Req,C) ->
+content_types_provided(Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
-%% valid | invalid | joining | leaving | exiting
-to_json (Req,C=Partitions) ->
-    {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Details=[{struct,node_ring_details(P,Nodes)} || P <- Partitions],
-    {mochijson2:encode({struct,[{partitions,Details}]}), Req,C}.
+%% get a list of all the nodes in the ring and their status
+to_json(Req,C) ->
+    {ok,_V,RawNodes}=riak_control_session:get_nodes(),
+    Nodes=[jsonify_node(Node) || Node=#member_info{} <- RawNodes],
+    {mochijson2:encode({struct, [{nodes, Nodes}]}),Req,C}.
 
-%% return a proplist of details for a given index
-node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
-    case lists:keyfind(P#partition_info.owner,2,Nodes) of
-        #member_info{node=Node,status=Status,reachable=Reachable} ->
-            [{index,list_to_binary(integer_to_list(Index))},
-             {i,P#partition_info.partition},
-             {node,Node},
-             {status,Status},
-             {reachable,Reachable},
-             {vnodes,Vnodes},
-             {handoffs,{struct,vnode_handoffs(P#partition_info.handoffs)}}
-            ];
-        false -> []
-    end.
-
-%% determine the status for each vnode worker and if there's a handoff
-vnode_handoffs (Hoffs) ->
-    lists:foldl(fun ({Service,Worker},Acc) ->
-                        case proplists:get_value(Worker,Hoffs) of
-                            undefined -> Acc;
-                            Target -> [{Service,Target}|Acc]
-                        end
-                end,
-                [],
-                riak_core:vnode_modules()).
+jsonify_node(Node) ->
+    LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
+    MemUsed = Node#member_info.mem_used,
+    MemTotal = Node#member_info.mem_total,
+    Reachable = Node#member_info.reachable,
+    LowMem = case Reachable of
+        false ->
+            false;
+        true ->
+            1.0 - (MemUsed/MemTotal) < LWM
+    end,
+    {struct,[{"name",Node#member_info.node},
+             {"status",Node#member_info.status},
+             {"reachable",Reachable},
+             {"ring_pct",Node#member_info.ring_pct},
+             {"pending_pct",Node#member_info.pending_pct},
+             {"mem_total",MemTotal},
+             {"mem_used",MemUsed},
+             {"mem_erlang",Node#member_info.mem_erlang},
+             {"low_mem",LowMem},
+             {"me",Node#member_info.node == node()}]}.

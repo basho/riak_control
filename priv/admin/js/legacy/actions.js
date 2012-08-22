@@ -1,5 +1,7 @@
 // This file handles all of the page transitions over pjax
-
+//
+// TODO: Remove once the cluster page has been deprecated.
+//
 $(function () {
 
     var mostRecentUrl = '';
@@ -7,6 +9,7 @@ $(function () {
 
     // I have a feeling that having some super-simple, app-wide, event handling could be useful soon...
     $.riakControl = $.riakControl || {};
+
     if (!$.riakControl.events) {
         $.riakControl.events = {};
     }
@@ -37,9 +40,8 @@ $(function () {
         return true;
     };
 
-
     // Define a reusable function to make pjax calls
-    function grabPjax(url, successFunc) {
+    $.riakControl.grabPjax = $.riakControl.grabPjax || function grabPjax(url, successFunc) {
         if (mostRecentUrl !== url) {
             mostRecentUrl = url;
             return $.pjax({
@@ -52,10 +54,10 @@ $(function () {
                 }
             });
         }
-    }
-    
+    };
+
     // Define a reusable function for appending scripts to pages
-    function appendScript(scriptID, scriptSRC) {
+    $.riakControl.appendScript = $.riakControl.appendScript || function (scriptID, scriptSRC) {
         var newScript;
         if (!appendedScripts[scriptID]) {
             newScript = document.createElement('script');
@@ -64,41 +66,6 @@ $(function () {
             document.body.appendChild(newScript);
             appendedScripts[scriptID] = newScript;
         }
-    }
-    
-    // Call the snapshot page by default on docready
-    grabPjax('/admin/ui/templates/snapshot.pjax', function () {
-        appendScript('#snapshot-script', '/admin/ui/js/snapshot.js');
-        $.riakControl.pub('templateSwitch', ['snapshot']);
-    });
-
-    // Calling the snapshot page on nav click...
-    $('#nav-snapshot').on('click', function () {
-        return grabPjax('/admin/ui/templates/snapshot.pjax', function () {
-            appendScript('#snapshot-script', '/admin/ui/js/snapshot.js');
-            $.riakControl.pub('templateSwitch', ['snapshot']);
-        });
-    });
-
-    // Calling the cluster page on nav click...
-    $('#nav-cluster').on('click', function () {
-        return grabPjax('/admin/ui/templates/cluster.pjax', function () {
-            appendScript('#cluster-script', '/admin/ui/js/cluster.js');
-            $.riakControl.pub('templateSwitch', ['cluster']);
-        });
-    });
-
-    // Calling the ring page on nav click...
-    $('#nav-ring').on('click', function () {
-        return grabPjax('/admin/ui/templates/ring.pjax', function () {
-            appendScript('#ring-script', '/admin/ui/js/ring.js');
-            $.riakControl.pub('templateSwitch', ['ring']);
-        });
-    });
-
-    // Getting places when you're not clicking on the left hand nav
-    $(document).on('click', '.go-to-cluster', function () {
-        $('#nav-cluster').trigger('click');
-    });
+    };
 
 });

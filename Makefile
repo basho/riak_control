@@ -5,6 +5,9 @@ all: deps compile
 compile:
 	@./rebar compile
 
+app:
+	@./rebar compile skip_deps=true
+
 deps:
 	@./rebar get-deps
 

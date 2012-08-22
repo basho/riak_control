@@ -1,0 +1,5 @@
+{{#with view}}
+<a {{action paginateRing content href=true}}>
+  <span {{bindAttr class="spanClasses isActive:active"}}>{{content.page_id}}</span>
+</a>
+{{/with}}

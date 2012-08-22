@@ -1,618 +1,460 @@
-// polls the ring status every so often
-$(document).ready(function () {
+minispade.register('ring', function() {
 
-    var defaults = {
-        "pingFrequency"     : 1000,
-        "pingAllowed"       : true,
-        "onLoadPageNum"     : 1,
-        "partitionsPerPage" : 64,
-        "maxPageNums"       : 10
-    };
+  /**
+   * @class
+   *
+   * PaginationItemView handles display of individual pagination links
+   * used as navigation through the partition list.
+   */
+  RiakControl.PaginationItemView = Ember.View.extend(
+    /** @scope RiakControl.PaginationItemView.prototype */ {
+    templateName: 'pagination_item',
 
-    var currentPage, pageAmount, mainTimer, visibleNumbers = [];
+    tagName: 'li',
+    spanClasses: 'paginator pageNumber',
 
-    function initialize() {
-        // Make sure our data holders exist
-        $.riakControl.ringData = $.riakControl.ringData || {};
-        $.riakControl.filter = $.riakControl.filter || {
-            "ring" : {
-                "dropdown" : "all",
-            }
-        };
-        get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage);
-        get_filters();
-    }
-    
-    
-    function get_filters() {
-        $.ajax({
-            method:'GET',
-            url:'/admin/cluster/list',
-            dataType:'json',
-            success:function (d) {
-                update_filters(d);
-            }
+    /**
+     * Determine if this is the currently selected page.
+     *
+     * @returns {Boolean}
+     */
+    isActive: function() {
+      var currentPage = this.get('parentView.controller.currentPage');
+      var page_id = this.get('content.page_id');
+
+      if(currentPage) {
+        return currentPage.toString() === page_id.toString();
+      } else {
+        return false;
+      }
+    }.property('parentView.controller.currentPage')
+  });
+
+  /**
+   * @class
+   *
+   * PartitionFilter provides a model for filters that will be applied to the
+   * partition list.  Each filter contains a type it filters by and a value, such
+   * as vnodes/handoff, node/dev@127.0.0.1, etc.
+   */
+  RiakControl.PartitionFilter = Ember.Object.extend();
+
+  /**
+   * @class
+   *
+   * Responsible for filtering the partition list.
+   */
+  RiakControl.PartitionFilterController = Ember.ArrayController.extend(
+    /** @scope RiakControl.PartitionFilterController.prototype */ {
+
+    /**
+     * Reload the recordarray from the server.
+     *
+     * @returns {void}
+     */
+    reload: function() {
+      this.get('content').reload();
+    },
+
+    /**
+     * Called by the router to start the polling interval when the page is selected.
+     *
+     * @returns {void}
+     */
+    startInterval: function() {
+      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
+    },
+
+    /**
+     * Called by the router to stop the polling interval when the page is navigated
+     * away from.
+     *
+     * @returns {void}
+     */
+    cancelInterval: function() {
+      if(this._intervalId) {
+        clearInterval(this._intervalId);
+      }
+    },
+
+    /**
+     * Given a list of filters and a selected filter value, return the filtering object.
+     *
+     * This is a necessary evil because we async load the partition list when someone directly
+     * links to a filtered view.  This function will fire once the list of filters are loaded,
+     * and correctly return the filter object given an id deserialized by the router upon navigation.
+     *
+     * @returns {Object}
+     */
+    selectedPartitionFilter: function() {
+      var selectedPartitionFilterValue = this.get('selectedPartitionFilterValue');
+      var filters = this.get('filters');
+      var selectedPartitionFilter;
+
+      selectedPartitionFilter = filters.find(function(item) {
+        return item.get('value') === selectedPartitionFilterValue;
+      });
+
+      return selectedPartitionFilter;
+    }.property('filters', 'selectedPartitionFilterValue'),
+
+    /**
+     * Given a list of nodes retrieved from the server async, convert to a list of filters
+     * for the user interface, while injecting some default filters, such as by various vnode
+     * statuses.
+     *
+     * @returns {Array}
+     */
+    filters: function() {
+      var content = this.get('content');
+
+      var nodeFilters = content.map(function(item) {
+        return RiakControl.PartitionFilter.create({
+          type: 'node',
+          name: 'Node: ' + item.get('name'),
+          value: item.get('name')
         });
-    }
-    
-    // filterData should be an object like this...
-    // {filter: 'fallback', drawRing: true}
-    // if we changed the filter, we want to redraw the ring
-    function get_partitions(pageNum, amountPerPage, filterData) {
-        var urlBuilder = '/admin/ring/partitions?p=' + pageNum + '&n=' + amountPerPage, redraw;
-        if (filterData && filterData.filter) {
-            urlBuilder += '&filter=';
-            if (filterData.filter.slice(0, 5) === 'node:') {
-                urlBuilder += ('node&q=' + filterData.filter.slice(5));
-            } else {
-                urlBuilder += filterData.filter;
-            }
-        } else {
-            redraw = false;
-        }
+      });
 
-        $.ajax({
-            method:'GET',
-            url: urlBuilder,
-            dataType:'json',
-            failure:ping_partitions,
-            success: function (d) {
-                //update_filters(d.nodes);
-                draw_pagination(d.page, d.pages, (filterData) ? filterData.redrawPagination : false);
-                update_partitions(d.contents, (filterData) ? filterData.redrawRing : redraw);
-            }
-        });
-    }
+      var statusFilters = [
+        RiakControl.PartitionFilter.create({
+          type: 'vnodes',
+          value: 'fallback',
+          name: 'Fallback'
+        }),
+        RiakControl.PartitionFilter.create({
+          type: 'vnodes',
+          value: 'handoff',
+          name: 'Handoff'
+        })
+      ];
 
-    function handle_prev_next(totalPages) {
-        if ($('.pagination li').length) {
-            if (currentPage === 1) {
-                $('.pagination li[name=prev]').addClass('disabled');
-            } else {
-                $('.pagination li[name=prev]').removeClass('disabled');
-            }
+      return nodeFilters.concat(statusFilters);
+    }.property('content.@each')
+  });
 
-            if (currentPage === totalPages) {
-                $('.pagination li[name=next]').addClass('disabled');
-            } else {
-                $('.pagination li[name=next]').removeClass('disabled');
-            }
-        }
-    }
+  /**
+   * @class
+   *
+   * Controls filtering, pagination and loading/reloading of the partition list
+   * for the cluster.
+   */
+  RiakControl.RingController = Ember.ArrayController.extend(
+    /** @scope RiakControl.RingController.prototype */ {
 
-    function draw_pagination(pageNum, totalPages, forceRedraw) {
-        var i, pagination, thisPage, isDrawn = $('.paginator').length, 
-            lastVisible = visibleNumbers[visibleNumbers.length - 1] || 0, 
-            firstVisible, newLastVisible, newFirstVisible;
+    /**
+     * Reload the recordarray from the server.
+     *
+     * @returns {void}
+     */
+    reload: function() {
+      this.get('content').reload();
+    },
 
-        // Die if we don't need to change anything
-        if (pageNum === currentPage && totalPages === pageAmount && isDrawn) {
-            return false;
-        }
+    /**
+     * Called by the router to start polling and reloading of partition list when route is entered.
+     *
+     * @returns {void}
+     */
+    startInterval: function() {
+      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
+    },
 
-        // Keep track of the current page since we have now changed pages
-        currentPage = pageNum;
+    /**
+     * Called by the router to stop polling when route is left.
+     *
+     * @returns {void}
+     */
+    cancelInterval: function() {
+      if(this._intervalId) {
+        clearInterval(this._intervalId);
+      }
+    },
 
-        // Don't redraw pagination if the amount of pages hasn't changed
-        // and the pagination already exists visually
-        // and we don't need to redraw a new set of page numbers because there
-        // are more pages than maxPageNums
-        if (totalPages === pageAmount && isDrawn && !forceRedraw) {
-            // Make sure the prev and next buttons gray out at appropriate times
-            handle_prev_next(totalPages);
-            return false;
-        }
+    /**
+     * Given a known number of available pages, generate an array of objects which
+     * can be used by the UI for filtering
+     *
+     * @returns {Array}
+     */
+    pages: function() {
+      var availablePages = this.get('availablePages'),
+          pages = [],
+          page;
 
-        pageAmount = totalPages;
+      for (i = 0; i < availablePages; i++) {
+        page = i + 1;
+        pages.push({ page_id: page.toString() });
+      }
 
-        pagination = $('.pagination');
+      return pages;
+    }.property('availablePages'),
 
-        // Always put in the 'previous' button
-        pagination.empty().append('<li name="prev"><span class="paginator">Prev</span></li>');
+    /**
+     * Returns the currently selected page as Integer.
+     *
+     * @returns {Integer}
+     */
+    currentPage: function() {
+      return this.get('selectedPage') || 1;
+    }.property('selectedPage'),
 
-        // Add page links as necessary
-        if (!forceRedraw || forceRedraw === 'up') {
-            // Since we're redrawing the pagination, we need to reset our collection of visible numbers
-            visibleNumbers = [];
-            for (i = lastVisible; i < (defaults.maxPageNums + lastVisible); i += 1) {
-                thisPage = i + 1;
-                if (thisPage > totalPages) {
-                    break;
-                }
-                visibleNumbers.push(thisPage);
-                pagination.append('<li name="' + thisPage + '"><span class="paginator pageNumber' + ((pageNum === thisPage) ? ' active' : '')  + '">' + thisPage + '</span></li>');
-            }
-        } else if (forceRedraw === 'down') {
-            // Figure out which number is first in the current pagination before we empty it out
-            firstVisible = visibleNumbers[0];
-            // Since we're redrawing the pagination, we need to reset our collection of visible numbers
-            visibleNumbers = [];
-            for ((i = firstVisible - defaults.maxPageNums); i < firstVisible; i += 1) {
-                if (i > totalPages) {
-                    break;
-                }
-                visibleNumbers.push(i);
-                pagination.append('<li name="' + i + '"><span class="paginator pageNumber' + ((pageNum === i) ? ' active' : '')  + '">' + i + '</span></li>');
-            }
-        }
+    /**
+     * Handle the nextPage event.  Call to the router to advance to the appropriate
+     * page.
+     *
+     * @returns {void}
+     */
+    nextPage: function() {
+      var availablePages = this.get('availablePages');
+      var currentPage = parseInt(this.get('currentPage'), 10);
+      var pages = this.get('pages');
+      var nextPage;
 
-        // Draw right hand dots
-        newLastVisible = visibleNumbers[visibleNumbers.length - 1] || 0;
-        if (newLastVisible < totalPages) {
-            pagination.append('<li class="dots"><span class="">...</span></li>');
-        }
+      nextPage = currentPage + 1;
 
-        // Draw left hand dots
-        newFirstVisible = visibleNumbers[0];
-        if (newFirstVisible > 1) {
-            pagination.find('li[name=prev]').after('<li class="dots"><span class="">...</span></li>');
-        }
+      if(nextPage > availablePages) {
+        nextPage = nextPage - availablePages;
+      }
 
-        // Always put in the 'next' button
-        pagination.append('<li name="next"><span class="paginator">Next</span></li>');
+      RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
+    },
 
-        // Make sure the prev and next buttons gray out at appropriate times
-        handle_prev_next(totalPages);
-    }
-    
-    function update_filters(data) {
-        var html = '', i, l = data.length;
-    
-        // add the all options
-        html += '<option value="all">All Owners</option>';
-        html += '<option value="fallback">Fallback Nodes</option>';
-        html += '<option value="handoff">Handoffs</option>';
-        html += '<option value="">-------------------------</option>';
-    
-        for(i = 0; i < l; i += 1) {
-            var node = data[i].name;
-    
-            // add this node as an option
-            html += '<option value="node:' + node + '">';
-            html += (node + '</option>');
-        }
-    
-        // add the other common options
-        
-        
-        // update the page
-        if (!$.riakControl.filter.ring.prevFilters || $.riakControl.filter.ring.prevFilters !== html) {
-            $.riakControl.filter.ring.prevFilters = html;
-            $('#filter').html(html);
-        }
+    /**
+     * Handle the prevPage event.  Call to the router to advance to the appropriate
+     * page.
+     *
+     * @returns {void}
+     */
+    prevPage: function() {
+      var availablePages = this.get('availablePages');
+      var currentPage = parseInt(this.get('currentPage'), 10);
+      var pages = this.get('pages');
+      var nextPage;
 
-        if ($.riakControl.filter.ring.prevFilters && $.riakControl.filter.ring.prevFilters !== html) {
-            $('#filter').trigger('change');
-        } else {
-            $('#filter').prev().prev().text($('#filter option:selected').text());
-        }
-        
-    }
-    
-    function set_light_color(jqObj, newColor) {
-        var colors = ['green', 'gray', 'orange', 'red', 'blue'], i, l = colors.length;
-        newColor = newColor.toLowerCase();
-        for (i = 0; i < l; i += 1) {
-            if (colors[i] === newColor) {
-                jqObj.addClass(newColor);
-            } else {
-                jqObj.removeClass(colors[i]);
-            }
-        }
-    }
+      nextPage = currentPage - 1;
 
-    function set_operability_class(jqObj, newClass) {
-        var classes = ['unreachable', 'incompatible', 'disabled', 'down', 'normal'], i, l = classes.length;
-        newClass = newClass.toLowerCase();
-        for (i = 0; i < l; i += 1) {
-            if (classes[i] === newClass) {
-                jqObj.addClass(newClass);
-            } else {
-                jqObj.removeClass(classes[i]);
-            }
-        }
-    }
-    
-    /*
-    function filter_row_visibility(infoObj, row) {
-        // collect all current filter values
-        var dropval = $.riakControl.filter.ring.dropdown,
-            showfallback = $.riakControl.filter.ring.fallback,
-            showprimary = $.riakControl.filter.ring.primary,
-            showhandoff = $.riakControl.filter.ring.handoff,
-            isHandOff = (function () {
-                var i, accum = 0;
-                for (i in infoObj.handoff) {
-                    if (Object.prototype.hasOwnProperty.call(infoObj.handoff, i)) {
-                        accum += 1;
-                    }
-                }
-                return (accum > 0);
-            }()), visiblePartitions;
+      if(nextPage <= 0) {
+        nextPage = nextPage + availablePages;
+      }
 
-        var i, j, k;
+      RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
+    },
 
-        row.show();
-        
-        if (!showprimary) {
-            for (i in infoObj.vnodes) {
-                if (Object.prototype.hasOwnProperty.call(infoObj.vnodes, i)) {
-                    if (infoObj.vnodes[i] === 'primary') {
-                        row.hide();
-                    }
-                }
-            }
-        }
-        
-        if (!showfallback) {
-            for (j in infoObj.vnodes) {
-                if (Object.prototype.hasOwnProperty.call(infoObj.vnodes, j)) {
-                    if (infoObj.vnodes[j] === 'fallback') {
-                        row.hide();
-                    }
-                }
-            }
-        }
+    /**
+     * Determine the number of available pages for pagination.
+     *
+     * @returns {Number}
+     */
+    availablePages: function() {
+      var length = this.get('filteredContent.length');
+      var itemsPerPage = 32;
 
-        if (!showhandoff) {
-            if (isHandOff) {
-                row.hide();
-            }
-        }
-        
-        if (dropval && dropval !== '__all_nodes__') {
-            if (row.find('.owner').text() !== dropval) {
-                row.hide();
-            }
-        }
+      return (length / itemsPerPage) || 1;
+    }.property('filteredContent.length'),
 
-        visiblePartitions = $('.partition').not('.partition-template').not(':hidden').length;
-        if (!visiblePartitions) {
-            $('#no-matches').removeClass('hide');
-        } else {
-            $('#no-matches').addClass('hide');
-        }
-        
-    }
-    */
-        
-    function partition_row(infoObj, updateDraw) {
-        // called by update_partitions()
+    /**
+     * Returns filtered content, paginated based on the currently applied
+     * selectedPage property
+     *
+     * @returns {Array}
+     */
+    paginatedContent: function() {
+      var filteredContent = this.get('filteredContent');
+      var selectedPage = this.get('selectedPage') || 1;
 
-        var partitionIndex = infoObj['index'];
-        var owner = infoObj.node;
-        var numID = infoObj['i'];
-        var row;
+      var itemsPerPage = 32;
+      var upperBound = (selectedPage * itemsPerPage);
+      var lowerBound = (selectedPage * itemsPerPage) - itemsPerPage;
 
-        function deal_with_lights (obj, row) {
-            var i, kind;
-            if (obj.status === 'incompatible') { 
-                set_operability_class($('.owner', row), 'incompatible');
-            } else if (obj.reachable === true) {
-                set_operability_class($('.owner', row), 'normal');
-            } else {
-                set_operability_class($('.owner', row), 'unreachable');
-            }
-            for (i in obj.vnodes) {
-                if (Object.prototype.hasOwnProperty.call(obj.vnodes, i)) {
-                    kind = i.split('_')[1];
-                    if (obj.status === 'incompatible') { 
-                        set_light_color($('.' + kind + '-light', row), 'red');
-                        $('.' + kind + '-status', row).html('Unknown');
-                    } else if (obj.reachable === true && (obj.vnodes[i] === 'primary')) {
-                        set_light_color($('.' + kind + '-light', row), 'green');
-                        $('.' + kind + '-status', row).html('Active');
-                    } else if (obj.vnodes[i] === 'fallback') {
-                        set_light_color($('.' + kind + '-light', row), 'blue');
-                        $('.' + kind + '-status', row).html('Fallback');
-                    } else if (!obj.vnodes[i] || obj.vnodes[i] === 'undefined') {
-                        set_light_color($('.' + kind + '-light', row), 'red');
-                        $('.' + kind + '-status', row).html('Unreachable');
-                    }
-                }
-            }
-            for (i in obj.handoffs) {
-                if (Object.prototype.hasOwnProperty.call(obj.handoffs, i)) {
-                    kind = i.split('_')[1];
-                    if (obj.handoffs[i]) {
-                        set_light_color($('.' + kind + '-light', row), 'orange');
-                        $('.' + kind + '-status', row).html('Handoff');
-                    }
-                }
-            }
-        }
+      return this.get('filteredContent').slice(lowerBound, upperBound);
+    }.property('selectedPage', 'filteredContent.@each'),
 
-        // if updateDraw === 'draw'...
-        if (updateDraw === 'draw') {
-            // clone the partition template
-            row = $('.partition-template').clone();
-            row.attr('id', 'partition-' + numID);
-            row.removeClass('partition-template');
-            row.show();
+    /**
+     * Returns content filtered based on the currently applied 
+     * selectedPartitionFilter property.
+     *
+     * @returns {Array}
+     */
+    filteredContent: function() {
+      var selectedPartitionFilter = this.get('selectedPartitionFilter');
 
-            // apply proper text, classes, colors, and whatnot
-            $('.partition-number', row).text(numID);
-            $('.owner', row).text(owner);
-            $('.partition-index', row).text(partitionIndex);
-            deal_with_lights(infoObj, row);
+      if(selectedPartitionFilter) {
+        var filterType = selectedPartitionFilter.get('type');
+        var filterValue = selectedPartitionFilter.get('value');
+        var self = this;
+        var filtered;
 
-            // append the row to the table
-            $('#ring-table-body').append(row);
-
-        // else if updateDraw === 'update'...
-        } else if (updateDraw === 'update') {
-            // select the row from the table
-            row = $('#ring-table #partition-' + numID);
-
-            // apply proper text, classes, colors, and whatnot
-            $('.partition-number', row).text(numID);
-            if ($('.owner', row).text() !== owner) {
-                $('.owner', row).text(owner);
-            }
-            deal_with_lights(infoObj, row);
-        }
-
-    }
-
-    // define a function to check properties against each other
-    // We're doing it this long, convoluted way to guard against erlang giving
-    // us equal objects where the keys are in a different order
-    function keys_are_equal(oldObj, newObj) {
-        var i; 
-        // loop through the new object because it's more likely to have extra properties
-        for (i in newObj) {
-            // avoid prototypal mistakes
-            if (Object.prototype.hasOwnProperty.call(newObj, i)) {
-                // we only want to loop through a subobject if we can prove it's JSON for now
-                if (typeof newObj[i] === 'object' && (oldObj[i] && typeof oldObj[i] === 'object')) {
-                    if (!keys_are_equal(oldObj[i], newObj[i])) {
-                        return false;
-                    }
-                } else {
-                    if (!oldObj[i] || oldObj[i] !== newObj[i]) {
-                        return false;
-                    }
-                }
-            }
-        }
-        // now run over the old object in case the new object did lose keys
-        for (i in oldObj) {
-            if (Object.prototype.hasOwnProperty.call(oldObj, i)) {
-                if (typeof oldObj[i] === 'object' && (newObj[i] && typeof newObj[i] === 'object')) {
-                    if (!keys_are_equal(newObj[i], oldObj[i])) {
-                        return false;
-                    }
-                } else {
-                    if (!newObj[i] || newObj[i] !== oldObj[i]) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-        
-    function update_partitions(data, forceRedraw) {
-        // called by get_partitions() which is called by initialize() and ping_partitions()
-        
-        var i,
-        partitions = $('.partition').not('.partition-template'),
-        drawnPartitions = partitions.length,
-        toRemove = {}, j;
-
-        if (!data.length) {
-            if (!drawnPartitions || forceRedraw) {
-                $('#no-matches').removeClass('hide');
-            }
-        } else {
-            $('#no-matches').addClass('hide');
-        }
-
-        if (forceRedraw /*|| $.riakControl.filter.ring.dropdown === 'handoff'*/) {
-            // empty out any drawn partitions that might already exist
-            $('#ring-table-body').empty();
-            // clear out the current ringData object
-            $.riakControl.ringData = {};
-            partitions = [];
-            drawnPartitions = 0;
-        }
-
-        // make a list called 'toRemove' of all partition numbers corresponding to nodes on the page
-        if (drawnPartitions) {
-            for (i = 0; i < drawnPartitions; i += 1) {
-                j = $('#' + partitions[i].getAttribute('id'));
-                toRemove[j.attr('id').split('-')[1]] = j[0];
-            }
-        }
-
-        window.x = toRemove;
-
-        // for each object in data array...
-        for (i = 0; i < data.length; i += 1) {
-            // if we have a length of drawn partitions, we have already drawn the ring.
-            // this also means we have prepopulated the $.riakControl.ringData object.
-            // however, if there is a drawn ring but no currentitem (i) in the ringData object,
-            // it means that we have either moved to a new page of partitions in which case we would
-            // need to redraw or that something has changed, for example if handoffs are going on.
-            // so if there are items on the page that are not in the data, we need to remove them
-
-            // check to see if there is a node on the page that corresponds to the current dataitem
-            // if so, remove that one from toRemove
-            if (toRemove[data[i]['i']]) {
-                delete toRemove[data[i]['i']];
-            }
-            // in the end, toRemove will only contain nodes that were not in the data and must be removed
-
-            // If we have visible partitions and the item in question is already in our stored data...
-            if (drawnPartitions && $.riakControl.ringData[data[i]['i']]) {
-                // check new data against old data to see if there are status changes
-                // if keys are not equal...
-                if (!keys_are_equal($.riakControl.ringData[data[i]['i']], data[i])) {
-                    // populate $.riakControl.ringData[data[i].i] with the new data
-                    $.riakControl.ringData[data[i]['i']] = data[i];
-                    // send the corresponding node through the partitioning process
-                    partition_row(data[i], 'update');
-                }
-                // send each node through the filtering process
-                //filter_row_visibility(data[i-lowerBound], $('#ring-table #partition-' + i));
-
-            // if we count 0 drawn partitions, we have not drawn the ring
-            } else {
-                // populate $.riakControl.ringData[data[i].i] with the new data
-                $.riakControl.ringData[data[i]['i']] = data[i];
-                // send new data through the partitioning process and draw each node
-                partition_row(data[i], 'draw');
-            }
-        }
-
-        // Remove all nodes left in the toRemove object from the DOM
-        for (i in toRemove) {
-            if (Object.prototype.hasOwnProperty.call(toRemove, i)) {
-                $('#' + toRemove[i].getAttribute('id')).remove();
-            }
-        }
-
-        if (!$('.partition').not('.partition-template').length) {
-            $('#no-matches').removeClass('hide');
-        }
-        
-        
-        // hide the #spinner if it is showing
-        if ($('#ring-spinner').css('display') !== 'none') {
-            $('#ring-spinner').hide();
-        }
-
-        // if the #partition-list is hidden, fade it in
-        if ($('#partition-list').css('display') !== 'block') {
-            $('#partition-list').fadeIn(300);
-        }
-
-        // call self indirectly through ping_partitions()
-        ping_partitions();
-        
-    }
-    
-    function ping_partitions() {
-        mainTimer = setTimeout(function () {
-            var ontheringpage = $('#ring-headline').length;
-            if (ontheringpage && defaults.pingAllowed === true) {
-                get_partitions(currentPage, defaults.partitionsPerPage, {
-                    "filter" : $.riakControl.filter.ring.dropdown,
-                    "redrawRing" : false
-                });
-                get_filters();
-            } else {
-                if (!ontheringpage) {
-                    $.riakControl.filter.ring.prevFilters = '';
-                }
-                // If we're not on the ring page or pinging is not allowed, the script dies here.
-                defaults.pingAllowed = false;
-            }
-        }, defaults.pingFrequency);
-    }
-    
-    // Define what to do when the filter dropdown value changes 
-    $(document).on('change', '#filter', function (e) {
-        var val = $(this).val();
-        if (val) {
-            $.riakControl.filter.ring.dropdown = $(this).val();
-        }
-        currentPage = 1;
-        visibleNumbers = [];
-        clearTimeout(mainTimer);
-        get_partitions(currentPage, defaults.partitionsPerPage, {
-            "filter" : $.riakControl.filter.ring.dropdown,
-            "redrawRing" : true
-        });
-    });
-
-    // Define what to do when the filter checkboxes change
-    /* As of now there are no checkboxes on this page
-    $(document).on('change', '#ring-filter .gui-checkbox', function (e) {
-        var me = $(this), myID = me.attr('id');
-        if (myID === 'primary-nodes') {
-            (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.primary = true : $.riakControl.filter.ring.primary = false;
-        } else if (myID === 'fallback-nodes') {
-            (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.fallback = true : $.riakControl.filter.ring.fallback = false;
-        } else if (myID === 'handoff-nodes') {
-            (me.attr('checked') === 'checked') ? $.riakControl.filter.ring.handoff = true : $.riakControl.filter.ring.handoff = false;
-        }
-    });
-    */
-
-    // Define what to do when we click on a non-disabled paginator
-    $(document).on('click', '.pagination li:not(.disabled):not(.dots):not(.active)', function (e) {
-        var that = $(this), pageNum = that.attr('name'), 
-            firstVisible = visibleNumbers[0], 
-            lastVisible = visibleNumbers[visibleNumbers.length - 1],
-            redrawPagination;
-
-        // Die if we're already on that page
-        if (pageNum === currentPage) {
-            return false;
-        }
-
-        // Stop the ping timer so we don't get double pings
-        clearTimeout(mainTimer);
-
-        if (pageNum === 'prev') {
-            if (currentPage === firstVisible && firstVisible > 1) {
-                redrawPagination = 'down';
-            }
-            if (currentPage > 1) {
-                $('.paginator.active').removeClass('active');
-                $('.pagination li[name=' + (currentPage - 1) + '] .paginator').addClass('active');
-                get_partitions(currentPage - 1, defaults.partitionsPerPage, {
-                    "filter" : $.riakControl.filter.ring.dropdown,
-                    "redrawRing" : true,
-                    "redrawPagination" : redrawPagination
-                });
-            }
-        } else if (pageNum === 'next') {
-            if (currentPage === lastVisible) {
-                redrawPagination = 'up';
-            }
-            if (currentPage < pageAmount) {
-                $('.paginator.active').removeClass('active');
-                $('.pagination li[name=' + (currentPage + 1) + '] .paginator').addClass('active');
-                get_partitions(currentPage + 1, defaults.partitionsPerPage, {
-                    "filter" : $.riakControl.filter.ring.dropdown,
-                    "redrawRing" : true,
-                    "redrawPagination" : redrawPagination
-                });
-            }
-        } else {
-            $('.paginator.active').removeClass('active');
-            $('.pagination li[name=' + pageNum + '] .paginator').addClass('active');
-            get_partitions(pageNum, defaults.partitionsPerPage, {
-                "filter" : $.riakControl.filter.ring.dropdown,
-                "redrawRing" : true
+        if(filterType) {
+          if(filterType == 'vnodes') {
+            filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
+              return self.get('content').filterProperty(property + '_vnode_status', filterValue);
             });
-        }
-    });
-    
-    // Start everything on initial load
-    initialize();
 
-    // Subscribe to the 'templateSwitch' event.
-    // This function will run when a template is switched.
-    $.riakControl.sub('templateSwitch', function (templateName) {
-        if (templateName === 'ring') {
-            defaults.pingAllowed = true;
-            visibleNumbers = [];
-            $.riakControl.filter.ring.dropdown = '';
-            $.riakControl.filter.ring.prevFilters = null;
-            if (mainTimer) {
-                clearTimeout(mainTimer);
-            }
-            get_partitions(defaults.onLoadPageNum, defaults.partitionsPerPage, {
-                "filter" : $.riakControl.filter.ring.dropdown,
-                "redrawRing" : true,
-                "redrawPagination" : 'up'
-            });
-            get_filters();
+            return filtered.reduce(function(a, b) { return a.concat(b); }).uniq();
+          } else {
+            return this.get('content').filterProperty(filterType, filterValue);
+          }
+        } else {
+          return this.get('content');
         }
-    });
-    
+      } else {
+        return this.get('content');
+      }
+    }.property('selectedPartitionFilter', 'content.@each')
+  });
+
+  /**
+   * @class
+   *
+   * View containing a select field and wrapper for filtering content.
+   */
+  RiakControl.PartitionFilterView = Ember.View.extend(
+    /** @scope RiakControl.PartitionFilterView.prototype */ {
+    templateName: 'partition_filter'
+  });
+
+  /**
+   * @class
+   *
+   * View rendering the select box for filtering, handling on change
+   * events and updating of the div wrapping it.
+   */
+  RiakControl.PartitionFilterSelectView = Ember.Select.extend(
+    /** @scope RiakControl.PartitionFilterSelectView.prototype */ {
+
+    /**
+     * As the select is currently wrapped in a span for prettyfying the display,
+     * as the selected value updates, update the display.
+     *
+     * @returns {void}
+     */
+    updateDisplay: function() {
+      var val = this.get('controller.selectedPartitionFilter.name');
+      $.riakControl.updateDropdown(this.$(), val);
+    }.observes('controller.selectedPartitionFilter'),
+
+    /**
+     * When the value changes, call to the router to navigate to the appropriate
+     * filtered view.
+     *
+     * @returns {void}
+     */
+    change: function(ev) {
+      var selection = this.get('selection');
+
+      if(selection) {
+        RiakControl.get('router').send('filterRing', this.get('selection'));
+      } else {
+        RiakControl.get('router').send('showRing');
+      }
+    }
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the ring page.
+   */
+  RiakControl.RingView = Ember.View.extend(
+    /** @scope RiakControl.RingView.prototype */ {
+    templateName: 'ring'
+  });
+
+  /**
+   * @class
+   *
+   * PartitionView is a collection view for wrapping and rendering the
+   * partition list.
+   */
+  RiakControl.PartitionView = Ember.CollectionView.extend(
+    /** @scope RiakControl.PartitionView.prototype */ {
+    tagName: 'tbody',
+
+    itemViewClass: Ember.View.extend({
+      tagName: 'tr',
+
+      classNames: 'partition',
+
+      lightClasses: "gui-light gray",
+
+      /**
+       * Given a textual status, return the appropriate color to be used for rendering
+       * the indicator lights.
+       *
+       * @param {String} status
+       *  Status in text.
+       *
+       * @returns {String}
+       */
+      toIndicator: function(status) {
+        if(status === "unknown") {
+          return "red";
+        } else if(status === "unreachable") {
+          return "red";
+        } else if(status === "fallback") {
+          return "blue";
+        } else if(status === "handoff") {
+          return "orange";
+        } else if(status === "active") {
+          return "green";
+        }
+      },
+
+      /**
+       * Binding for the kv vnode status field.
+       *
+       * @returns {String}
+       */
+      kvStatus: function() {
+        return this.get('content.kvStatus');
+      }.property("content.kvStatus"),
+
+      /**
+       * Binding for the kv vnode indicator light.
+       *
+       * @returns {String}
+       */
+      kvIndicator: function() {
+        return this.toIndicator(this.get("kvStatus"));
+      }.property("kvStatus"),
+
+      /**
+       * Binding for the pipe vnode status field.
+       *
+       * @returns {String}
+       */
+      pipeStatus: function() {
+        return this.get('content.pipeStatus');
+      }.property("content.pipeStatus"),
+
+      /**
+       * Binding for the pipe vnode indicator light.
+       *
+       * @returns {String}
+       */
+      pipeIndicator: function() {
+        return this.toIndicator(this.get("pipeStatus"));
+      }.property("pipeStatus"),
+
+      /**
+       * Binding for the search vnode status field.
+       *
+       * @returns {String}
+       */
+      searchStatus: function() {
+        return this.get('content.searchStatus');
+      }.property("content.searchStatus"),
+
+      /**
+       * Binding for the search vnode indicator light.
+       *
+       * @returns {String}
+       */
+      searchIndicator: function() {
+        return this.toIndicator(this.get("searchStatus"));
+      }.property("searchStatus")
+    })
+  });
+
 });
