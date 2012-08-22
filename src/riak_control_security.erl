@@ -68,7 +68,7 @@ https_redirect(RD,Ctx) ->
             {ok,Dest} ->
                 Dest;
             _ ->
-                Host=string:join(lists:reverse(wrq:host_tokens(RD)),"."),
+                Host=string:join(wrq:host_tokens(RD),"."),
                 ["https://",Host,Path]
         end,
     {{halt,303},wrq:set_resp_header("Location",Loc,RD),Ctx}.
