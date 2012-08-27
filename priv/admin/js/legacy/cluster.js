@@ -129,10 +129,10 @@ $(document).ready(function () {
     function get_cluster_status() {
         $.ajax({
             method:'GET',
-            url:'/admin/cluster/list',
+            url:'/admin/nodes',
             dataType:'json',
             success: function (d) {
-                update_cluster_status(d);
+                update_cluster_status(d.nodes);
             },
             failure: ping_cluster_status
         });
