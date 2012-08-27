@@ -61,8 +61,7 @@ init([]) ->
                          {admin, admin_nodes},
                          {admin, admin_node_stop},
                          {admin, admin_node_leave},
-                         {admin, admin_partitions},
-                         {admin, admin_fallbacks}
+                         {admin, admin_partitions}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
             [webmachine_router:add_route(R) || R <- Routes],
