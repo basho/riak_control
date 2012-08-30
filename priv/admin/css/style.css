@@ -67,7 +67,7 @@ body {
     padding: 8px 0 0 0;
 }
 
-a { text-decoration: none; }
+a { text-decoration: none; color: #DFDFDF; }
 a:visited { color: #DFDFDF; }
 
 h1 {
@@ -819,6 +819,7 @@ ul.bulleted li {
 .pagination {
     text-align: center;
     font-size: 12px;
+    cursor:pointer;
 }
 .pagination-bottom {
     margin-bottom: 36px;

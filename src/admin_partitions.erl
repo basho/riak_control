@@ -18,7 +18,7 @@
 %%
 %% -------------------------------------------------------------------
 
--module(admin_overview).
+-module(admin_partitions).
 -export([routes/0,
          init/1,
          content_types_provided/2,
@@ -35,12 +35,17 @@
 %% mappings to the various content types supported for this resource
 -define(CONTENT_TYPES,[{"application/json",to_json}]).
 
+%% the different vnode types we care about
+-define(VNODE_TYPES,[riak_kv,riak_pipe,riak_search]).
+
 %% defines the webmachine routes this module handles
-routes () -> [{admin_routes:admin_route(["overview"]),?MODULE,[]}].
+routes () ->
+    [{admin_routes:partitions_route(),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
 init ([]) ->
-    {ok,undefined}.
+    {ok,_V,Partitions}=riak_control_session:get_partitions(),
+    {ok,Partitions}.
 
 %% validate origin
 forbidden(RD, C) ->
@@ -58,35 +63,36 @@ is_authorized (RD,C) ->
 content_types_provided (Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
-%% get a list of all the nodes in the ring and their status
-to_json (Req,C) ->
+%% valid | invalid | joining | leaving | exiting
+to_json (Req,C=Partitions) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Down=get_down_nodes(Nodes),
-    Unreachable=get_unreachable_nodes(Nodes,Down),
-    Incompatible=get_incompatible_nodes(Nodes),
-    LowMem=get_low_mem_nodes(Nodes),
-    Json=[{unreachable_nodes, Unreachable},
-          {incompatible_nodes, Incompatible},
-          {down_nodes, Down},
-          {low_mem_nodes, LowMem}
-         ],
-    {mochijson2:encode({struct,Json}),Req,C}.
+    Details=[{struct,node_ring_details(P,Nodes)} || P <- Partitions],
+    {mochijson2:encode({struct,[{partitions,Details}]}), Req,C}.
 
-%% get a list of all the nodes that are current partitioned
-get_unreachable_nodes (Nodes,Down) ->
-    Unreachable=[Node || #member_info{node=Node,reachable=false} <- Nodes],
-    lists:foldl(fun lists:delete/2,Unreachable,Down).
+%% return a proplist of details for a given index
+node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
+    case lists:keyfind(P#partition_info.owner,2,Nodes) of
+        #member_info{node=Node,status=Status,reachable=Reachable} ->
+            Handoffs = P#partition_info.handoffs,
+            VnodeStatuses = [{atom_to_list(VnodeName) ++
+                              "_vnode_status", vnode_status(VnodeName, VnodeStatus, Handoffs)}
+                             || {VnodeName, VnodeStatus} <- Vnodes],
+            NodeDetails = [{index,list_to_binary(integer_to_list(Index))},
+                       {i,P#partition_info.partition},
+                       {node,Node},
+                       {status,Status},
+                       {reachable,Reachable}
+            ],
+            NodeDetails ++ VnodeStatuses;
+        false -> []
+    end.
 
-%% get a list of all the nodes that are currently incompatible with
-%% control
-get_incompatible_nodes (Nodes) ->
-    [Node || #member_info{node=Node,status=incompatible} <- Nodes].
-
-%% get a list of all nodes currently marked down
-get_down_nodes (Nodes) ->
-    [Node || #member_info{node=Node,status=down} <- Nodes].
-
-%% get a list of all nodes with low memory
-get_low_mem_nodes (Nodes) ->
-    LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
-    [Node || #member_info{node=Node,reachable=true,mem_total=T,mem_used=U} <- Nodes, 1.0 - (U/T) < LWM].
+vnode_status(Service, Status, Handoffs) ->
+    Vnodes = riak_core:vnode_modules(),
+    Worker = proplists:get_value(Service, Vnodes),
+    case proplists:get_value(Worker, Handoffs) of
+        undefined ->
+            Status;
+        _ ->
+            handoff
+    end.

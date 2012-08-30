@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" type="image/vnd.microsoft.icon" href="/admin/ui/favicon.ico" />
     <meta charset="UTF-8" />
     <title>Riak Control</title>
-    <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/style.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/style.css" />
     <meta name="csrf_token" content="{{csrf_token}}">
 </head>
 
 <body>
-    <script src="/admin/ui/js/vendor/jquery-1.7.2.js"></script>
-    <script src="/admin/ui/js/vendor/jquery-ui-1.8.16.custom.min.js"></script>
-    <script src="/admin/ui/js/vendor/handlebars-1.0.0.beta.6.js"></script>
-    <script src="/admin/ui/js/vendor/ember-latest.js"></script>
-    <script src="/admin/ui/js/vendor/ember-data-latest.js"></script>
-    <script src="/admin/ui/js/vendor/minispade.js"></script>
+    <script src="/admin/ui/js/generated/vendor.js"></script>
+    <script src="/admin/ui/js/generated/templates.js"></script>
 
-    <script src="/admin/ui/js/templates.js"></script>
-
-    <script src="/admin/ui/js/gui.js"></script>
-    <script src="/admin/ui/js/actions.js"></script>
+    <script src="/admin/ui/js/legacy/gui.js"></script>
+    <script src="/admin/ui/js/legacy/actions.js"></script>
 
     <script src="/admin/ui/js/app.js"></script>
-    <script src="/admin/ui/js/snapshot.js"></script>
+    <script src="/admin/ui/js/core.js"></script>
     <script src="/admin/ui/js/cluster.js"></script>
+    <script src="/admin/ui/js/router.js"></script>
+    <script src="/admin/ui/js/snapshot.js"></script>
     <script src="/admin/ui/js/ring.js"></script>
 
     <script>minispade.require('app');</script>

@@ -1,0 +1,8 @@
+/* 
+Handle cases to add responsiveness
+*/
+@media screen and (max-width: 768px) {
+  .nav-text {
+    display: none;
+  }
+}

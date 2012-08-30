@@ -18,11 +18,11 @@
 %%
 %% -------------------------------------------------------------------
 
--module(admin_fallbacks).
+-module(admin_nodes).
 -export([routes/0,
          init/1,
          content_types_provided/2,
-         to_resource/2,
+         to_json/2,
          is_authorized/2,
          service_available/2,
          forbidden/2
@@ -33,13 +33,15 @@
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% mappings to the various content types supported for this resource
--define(CONTENT_TYPES,[{"application/json", to_resource}]).
+-define(CONTENT_TYPES,[{"application/json",to_json}]).
 
 %% defines the webmachine routes this module handles
-routes() -> [{admin_routes:admin_route(["fallbacks"]),?MODULE,[]}].
+routes() ->
+    [{admin_routes:nodes_route(),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
-init([]) -> {ok,undefined}.
+init(Action) ->
+    {ok,Action}.
 
 %% validate origin
 forbidden(RD, C) ->
@@ -57,30 +59,30 @@ is_authorized(RD,C) ->
 content_types_provided(Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
-%% true if the node is running riak_control
-redirect_loc(Node) ->
-    rpc:call(Node,riak_control_security,https_redirect_loc,[[]]).
+%% get a list of all the nodes in the ring and their status
+to_json(Req,C) ->
+    {ok,_V,RawNodes}=riak_control_session:get_nodes(),
+    Nodes=[jsonify_node(Node) || Node=#member_info{} <- RawNodes],
+    {mochijson2:encode({struct, [{nodes, Nodes}]}),Req,C}.
 
-%% don't use this node as a fallback, must be valid and reachable
-find_fallbacks(Nodes) ->
-    lists:foldl(fun (#member_info{node=Node,status=valid,reachable=true},Acc) ->
-                        case Node == node() of
-                            true -> Acc;
-                            false ->
-                                case redirect_loc(Node) of
-                                    {ok,Loc} ->
-                                        URI=lists:flatten(Loc),
-                                        [list_to_binary(URI)|Acc];
-                                    _ -> Acc
-                                end
-                        end;
-                    (_,Acc) -> Acc
-                end,
-                [],
-                Nodes).
-
-%% find another node in the cluster that is running the GUI
-to_resource(Req,Ctx) ->
-    {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    NodeURIs=find_fallbacks(Nodes),
-    {mochijson2:encode(NodeURIs),Req,Ctx}.
+jsonify_node(Node) ->
+    LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
+    MemUsed = Node#member_info.mem_used,
+    MemTotal = Node#member_info.mem_total,
+    Reachable = Node#member_info.reachable,
+    LowMem = case Reachable of
+        false ->
+            false;
+        true ->
+            1.0 - (MemUsed/MemTotal) < LWM
+    end,
+    {struct,[{"name",Node#member_info.node},
+             {"status",Node#member_info.status},
+             {"reachable",Reachable},
+             {"ring_pct",Node#member_info.ring_pct},
+             {"pending_pct",Node#member_info.pending_pct},
+             {"mem_total",MemTotal},
+             {"mem_used",MemUsed},
+             {"mem_erlang",Node#member_info.mem_erlang},
+             {"low_mem",LowMem},
+             {"me",Node#member_info.node == node()}]}.

@@ -1,0 +1,202 @@
+/* 
+Styles to be applied generally across the UI
+*/
+/* Variables */
+/* End Variables */
+/* Functions */
+/* End Functions */
+/* Extensible Classes */
+.rokkitt,
+.gui-headline,
+.gui-headline-bold,
+.gui-headline-bold {
+  font-family: 'rokkitt', arial, helvetica, sans-serif;
+}
+.sans,
+.gui-text,
+.gui-text-bold,
+.nav-li {
+  font-family: arial, helvetica, sans-serif;
+}
+.gui-text,
+.gui-text-bold,
+.nav-li {
+  text-shadow: 0 2px 0 #000;
+  color: #dfdfdf;
+  font-size: 14px;
+}
+.gui-text-bold,
+.nav-li {
+  font-weight: bold;
+}
+.gui-headline,
+.gui-headline-bold {
+  text-shadow: 0 2px 0 #000;
+  color: #dfdfdf;
+  text-shadow: 0 2px 0 #000;
+}
+.gui-headline-bold {
+  -webkit-text-stroke: 1.1px #fff;
+  -moz-text-stroke: 1.1px #fff;
+  text-stroke: 1.1px #fff;
+  font-weight: bold;
+}
+/* End Extensible Classes */
+/* Tags */
+html {
+  background: url("/admin/ui/images/gui-bg.jpg") left top repeat #2d2d2d;
+}
+body {
+  padding: 8px 0 0 0;
+}
+a {
+  text-decoration: none;
+}
+a:visited {
+  color: #dfdfdf;
+}
+h1,
+h2,
+h3 {
+  display: block;
+}
+h1 {
+  font-size: 48px;
+  letter-spacing: 2px;
+  padding-bottom: 5px;
+}
+h2 {
+  font-size: 38px;
+  letter-spacing: 2px;
+  padding-bottom: 12px;
+}
+h3 {
+  font-size: 24px;
+  letter-spacing: 1px;
+  padding-bottom: 8px;
+}
+/* End Tags */
+/* IDs & Classes */
+#header {
+  width: auto;
+  height: 67px;
+  background: url("/admin/ui/images/header-bg.png") left top repeat-x transparent;
+  margin: 0 0 22px 0;
+  position: relative;
+}
+#riak-control-logo {
+  width: 201px;
+  height: 56px;
+  display: block;
+  background: url("/admin/ui/images/riak-control-logo.gif") right bottom no-repeat transparent;
+  float: left;
+  padding: 5px 0 0 12px;
+}
+#basho-logo {
+  width: 43px;
+  height: 44px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: block;
+  background: url("/admin/ui/images/basho-logo.png") left top no-repeat transparent;
+}
+#wrapper {
+  width: auto;
+  height: auto;
+  background: transparent;
+  margin-bottom: 8px;
+}
+#split-bar {
+  background: url("/admin/ui/images/resizer-bg.png") left top repeat transparent;
+  width: 6px;
+  height: 98%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  border: 1px solid #fff;
+}
+nav {
+  width: 218px;
+  height: auto;
+  overflow: hidden;
+  background: transparent;
+  float: left;
+  position: relative;
+}
+#nav-ul {
+  width: 210px;
+  height: auto;
+}
+#active-nav {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 14px;
+  height: 180px;
+  background: url("/admin/ui/images/active-nav.png") left top no-repeat transparent;
+}
+.nav-li {
+  width: auto;
+  height: 48px;
+  background: url("/admin/ui/images/nav-icons.png") 12px 10px no-repeat transparent;
+  padding: 0 0 0 14px;
+}
+.nav-li:hover {
+  background-color: rgba(0,0,0,0.3);
+}
+.nav-li-disabled {
+  width: auto;
+  height: 48px;
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  background: url("/admin/ui/images/nav-icons.png") 12px 10px no-repeat transparent;
+  padding: 0 0 0 14px;
+}
+#nav-snapshot {
+  background-position: 14px -344px;
+}
+#nav-cluster {
+  background-position: 14px 10px;
+}
+#nav-ring {
+  background-position: 14px -39px;
+}
+#nav-objects {
+  background-position: 14px -90px;
+}
+#nav-mapreduce {
+  background-position: 14px -140px;
+}
+#nav-graphs {
+  background-position: 14px -192px;
+}
+#nav-logs {
+  background-position: 14px -248px;
+}
+#nav-support {
+  background-position: 14px -300px;
+}
+.nav-item {
+  width: auto;
+  height: 33px;
+  display: block;
+  font-size: 18px;
+  vertical-align: middle;
+  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
+  padding: 15px 0 0 40px;
+}
+.nav-li .nav-item:hover {
+  cursor: pointer;
+}
+#content-well {
+  overflow: hidden;
+  background: transparent;
+  padding: 5px 14px 0 25px;
+}
+/* Ende IDs & Classes */

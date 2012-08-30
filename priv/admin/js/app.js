@@ -1,93 +1,60 @@
 minispade.register('app', function() {
+
+  /**
+   * RiakControl Ember application.
+   */
   RiakControl = Ember.Application.create({
     ready: Ember.alias('initialize')
   });
 
+  /**
+   * How often to refresh/poll the server for changes in cluster
+   * and partition status
+   */
+  RiakControl.refreshInterval = 1000;
+
   RiakControl.ApplicationController = Ember.Controller.extend();
 
   RiakControl.ApplicationView = Ember.View.extend({
-    templateName: 'application'
+    templateName: 'application',
+
+    /**
+     * Ensure that the split bar is resized properly once the
+     * application view is initialized.
+     *
+     * @returns {void}
+     */
+    didInsertElement: function() {
+      $.riakControl.resizeSplitBar();
+    }
   });
 
-  RiakControl.Router = Ember.Router.extend({
-    root: Ember.Route.extend({
-      showSnapshot: Ember.Route.transitionTo('snapshot.index'),
-
-      showCluster: Ember.Route.transitionTo('cluster.index'),
-
-      showRing: Ember.Route.transitionTo('ring.index'),
-
-      index: Ember.Route.extend({
-        route: '/',
-        redirectsTo: 'snapshot.index'
-      }),
-
-      snapshot: Ember.Route.extend({
-        route: 'snapshot',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('snapshot');
-          $.riakControl.markNavActive('nav-snapshot');
-        },
-
-        enter: function(router) {
-          router.get('snapshotController').startInterval();
-        },
-
-        exit: function(router) {
-          router.get('snapshotController').cancelInterval();
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
-        })
-      }),
-
-      cluster: Ember.Route.extend({
-        route: 'cluster',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('cluster');
-          $.riakControl.markNavActive('nav-cluster');
-
-          $.riakControl.appendScript('#cluster-script', '/admin/ui/js/cluster-legacy.js');
-          $.riakControl.pub('templateSwitch', ['cluster']);
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
-        })
-      }),
-
-      ring: Ember.Route.extend({
-        route: 'ring',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('ring');
-          router.get('ringController').connectOutlet('partitionFilter', 'partitionFilter');
-          $.riakControl.markNavActive('nav-ring');
-        },
-
-        enter: function(router) {
-          router.get('ringController').startInterval();
-        },
-
-        exit: function(router) {
-          router.get('ringController').cancelInterval();
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
-        }),
-
-        filter: Ember.Route.extend({
-          route: '/:filter'
-        })
-      })
-    })
+  DS.Model.reopen({
+    reload: function() {
+        var store = this.get('store');
+        store.get('adapter').find(store, this.constructor, this.get('id'));
+      }
   });
 
+  DS.RecordArray.reopen({
+    reload: function() {
+        Ember.assert("Can only reload base RecordArrays", this.constructor === DS.RecordArray);
+        var store = this.get('store');
+        store.get('adapter').findAll(store, this.get('type'));
+      }
+  });
+
+  RiakControl.Store = DS.Store.extend({
+    revision: 4,
+    adapter: DS.RESTAdapter.create({ namespace: 'admin' })
+  });
+
+  RiakControl.store = RiakControl.Store.create();
+
+  minispade.require('core');
+  minispade.require('router');
   minispade.require('snapshot');
   minispade.require('cluster');
   minispade.require('ring');
+
 });

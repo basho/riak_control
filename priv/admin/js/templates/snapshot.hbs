@@ -21,7 +21,7 @@
           <h3 id="unreachable-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently unreachable:</h3>
           <ul id="unreachable-nodes-list" class="gui-text bulleted monospace">
             {{#each unreachableNodes}}
-              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{this}}</a></li>
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
             {{/each}}
           </ul>
         {{/if}}
@@ -31,7 +31,7 @@
           <h3 id="incompatible-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently incompatible with Riak Control:</h3>
           <ul id="incompatible-nodes-list" class="gui-text bulleted monospace">
             {{#each incompatibleNodes}}
-              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{this}}</a></li>
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
             {{/each}}
           </ul>
         {{/if}}
@@ -41,7 +41,7 @@
           <h3 id="down-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently marked down:</h3>
           <ul id="down-nodes-list" class="gui-text bulleted monospace">
             {{#each downNodes}}
-              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{this}}</a></li>
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
             {{/each}}
           </ul>
         {{/if}}
@@ -51,7 +51,7 @@
           <h3 id="low_mem-nodes-title" class="gui-headline vertical-padding-small">The following nodes are currently experiencing low memory:</h3>
           <ul id="low_mem-nodes-list" class="gui-text bulleted monospace">
             {{#each lowMemNodes}}
-              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{this}}</a></li>
+              <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
             {{/each}}
           </ul>
         {{/if}}

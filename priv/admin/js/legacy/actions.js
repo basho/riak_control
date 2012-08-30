@@ -1,5 +1,7 @@
 // This file handles all of the page transitions over pjax
-
+//
+// TODO: Remove once the cluster page has been deprecated.
+//
 $(function () {
 
     var mostRecentUrl = '';
@@ -52,7 +54,7 @@ $(function () {
                 }
             });
         }
-    }
+    };
 
     // Define a reusable function for appending scripts to pages
     $.riakControl.appendScript = $.riakControl.appendScript || function (scriptID, scriptSRC) {
@@ -64,6 +66,6 @@ $(function () {
             document.body.appendChild(newScript);
             appendedScripts[scriptID] = newScript;
         }
-    }
+    };
 
 });
