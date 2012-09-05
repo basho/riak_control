@@ -3,208 +3,185 @@
 Styles to be applied generally across the UI
 */
 
-/* Variables */
-darkened  = rgba(0, 0, 0, .3)
-darkGray  = #2d2d2d
-lightGray = #dfdfdf
-
-/* End Variables */
-
-/* Functions */
-vendor(prop, args)
-  -webkit-{prop}: args
-  -moz-{prop}:    args
-  {prop}:         args
-
-corners(curve = 4px)
-  vendor('border-radius', curve)
-
-textStroke(args = 1.1px #fff)
-  vendor('text-stroke', args)
-
-textShadow(args = 0 2px 0 #000)
-  text-shadow: args
-
-opaque(dec = 1)
-  opacity: dec
-  filter: unquote('alpha(opacity=' + (dec * 100) + ')')
-
-repeatingBg(path, bgcolor = transparent)
-  background: url(path) left top repeat bgcolor
-
-hSize(fs, ls, pb) // General stylings for h1, h2, h3, etc tags
-  font-size:      fs
-  letter-spacing: ls
-  padding-bottom: pb
-
-dimensions(wUnit = auto, hUnit = auto)
-  width:  wUnit
-  height: hUnit
-
-absoluteLeft(lUnit, tUnit)
-  position: absolute
-  left:     lUnit
-  top:      tUnit
-
-absoluteRight(rUnit, tUnit)
-  position: absolute
-  right:    rUnit
-  top:      tUnit
-
-/* End Functions */
-
-/* Extensible Classes */
-
-.rokkitt
-  font-family: 'rokkitt', arial, helvetica, sans-serif
-
-.sans
-  font-family: arial, helvetica, sans-serif
-
-.gui-text
-  @extend .sans
-  textShadow()
-  color:     lightGray
-  font-size: 14px
-
-.gui-text-bold
-  @extend .gui-text
-  font-weight: bold
-
-.gui-headline
-  @extend .rokkitt
-  textShadow()
-  color:      lightGray
-  text-shadow: 0 2px 0 #000
-
-.gui-headline-bold
-  @extend .rokkitt
-  @extend .gui-headline
-  textStroke()
-  font-weight: bold
-
-/* End Extensible Classes */
-
 /* Tags */
 
 html
   repeatingBg('/admin/ui/images/gui-bg.jpg', darkGray)
 
 body
-  padding: 8px 0 0 0
+  padding : 0
 
 a
-  text-decoration: none
+  text-decoration : none
 
   &:visited
-    color: lightGray
+    color : lightGray
 
 h1, h2, h3
-  display: block
+  display : block
 
 h1
-  hSize(48px, 2px, 5px)
+  hSize(48px, 0, 5px)
 
 h2
-  hSize(38px, 2px, 12px)
+  hSize(38px, 0, 12px)
 
 h3
-  hSize(24px, 1px, 8px)
+  @extend .copy-font
+  hSize(20px, 0, 8px)
+  color      : mediumGray
+  font-style : italic
+  
+nav
+  background : transparent
+  float      : right
+
+table
+  dimensions(100%, auto)
+  border-collapse : collapse
+
 
 /* End Tags */
 
 /* IDs & Classes */
 
 #header
-  dimensions(auto, 67px)
-  background: url('/admin/ui/images/header-bg.png') left top repeat-x transparent
-  margin:     0 0 22px 0
-  position:   relative
-
-#riak-control-logo
-  dimensions(201px, 56px)
-  display:    block
-  background: url('/admin/ui/images/riak-control-logo.gif') right bottom no-repeat transparent
-  float:      left
-  padding:    5px 0 0 12px
-
-#basho-logo
-  dimensions(43px, 44px)
-  absoluteRight(12px, 12px)
-  display:    block
-  background: url('/admin/ui/images/basho-logo.png') left top no-repeat transparent
-
-
-
-#wrapper
-  dimensions()
-  background:    transparent
-  margin-bottom: 8px
-
-#split-bar
-  repeatingBg('/admin/ui/images/resizer-bg.png')
-  dimensions(6px, 98%)
-  absoluteRight(0, 0)
-  opaque(.2)
-  corners(10px)
-  border: 1px solid #fff
-
-
-
-nav
-  dimensions(218px)
-  overflow:   hidden
-  background: transparent
-  float:      left
-  position:   relative
+  dimensions(100%, 53px)
+  border-bottom : 1px solid lightWhite
+  background    : #171717
+  margin        : 0 0 22px 0
+  position      : fixed
+  top           : 0
+  left          : 0
+  
+#navbar
+  dimensions(auto, 49px)
+  gradient(#606060, #383838)
+  vendor('box-shadow', inset 0 1px 2px lightWhite)
 
 #nav-ul
-  dimensions(210px)
-
-#active-nav
-  absoluteLeft(0, 0)
-  dimensions(14px, 180px)
-  background: url('/admin/ui/images/active-nav.png') left top no-repeat transparent
+  dimensions(auto, 49px)
 
 .nav-li
   @extend .gui-text-bold
-  dimensions(auto, 48px)
-  background: url('/admin/ui/images/nav-icons.png') 12px 10px no-repeat transparent
-  padding: 0 0 0 14px
+  dimensions(63px, 49px)
+  gradient(#606060, #3a3a3a)
+  vendor('box-shadow', inset 0 1px 2px lightWhite)
+  border-left : 1px solid #171717
+  float       : right
+  position    : relative
+  
+  &:hover
+    gradient(lighten(#606060, 7%), lighten(#3a3a3a, 7%))
+    
+    a
+      opaque(1)
+    
+  a
+    opaque(.6)
 
-.nav-li:hover
-  background-color: darkened
 
-.nav-li-disabled
-  dimensions(auto, 48px)
-  opaque(.3)
-  background: url('/admin/ui/images/nav-icons.png') 12px 10px no-repeat transparent
-  padding: 0 0 0 14px
-
-#nav-snapshot  { background-position: 14px -344px }
-#nav-cluster   { background-position: 14px 10px   }
-#nav-ring      { background-position: 14px -39px  }
-#nav-objects   { background-position: 14px -90px  }
-#nav-mapreduce { background-position: 14px -140px }
-#nav-graphs    { background-position: 14px -192px }
-#nav-logs      { background-position: 14px -248px }
-#nav-support   { background-position: 14px -300px }
+#nav-snapshot  a { background-position : 15px -343px }
+#nav-cluster   a { background-position : 16px 10px   }
+#nav-ring      a { background-position : 15px -39px  }
+#nav-objects   a { background-position : 14px -90px  }
+#nav-mapreduce a { background-position : 14px -140px }
+#nav-graphs    a { background-position : 14px -192px }
+#nav-logs      a { background-position : 14px -248px }
+#nav-support   a { background-position : 14px -300px }
 
 .nav-item
-  dimensions(auto, 33px)
-  display:        block
-  font-size:      18px;
-  vertical-align: middle
-  background:     url('/admin/ui/images/cut-bg.png') left bottom repeat-x transparent
-  padding:        15px 0 0 40px
+  dimensions(63px, 49px)
+  background  : url('/admin/ui/images/nav-icons.png') -100px 100px no-repeat transparent
+  display        : block
+  font-size      : 18px;
+  vertical-align : middle
+  
+.indicator
+  dimensions(63px, 4px)
+  vendor('box-shadow', inset 0 1px 2px rgba(255, 255, 255, .4))
+  display    : block
+  background : offlight
+  border-top : 1px solid #171717
+  position   : absolute
+  bottom     : 0
+  left       : 0
+    
+.nav-li.active
+  vendor('box-shadow', inset 0 0 18px rgba(0, 0, 0, .7))
+  background : #363636
+  
+  a
+    opaque(1)
+
+  span
+    vendor('box-shadow', 0 0 20px riakorange)
+    gradient(lighten(riakorange, 33%), riakorange)
 
 .nav-li .nav-item:hover
-  cursor: pointer
+  cursor : pointer
+
+#riak-control-logo
+  dimensions(224px, 42px)
+  display    : block
+  background : url('/admin/ui/images/riak-control-logo.png') right bottom no-repeat transparent
+  float      : left
+
+#wrapper
+  dimensions()
+  background : transparent
+  margin     : 75px 0 8px 0
 
 #content-well
-  overflow:   hidden
-  background: transparent
-  padding:    5px 14px 0 25px
+  overflow      : hidden
+  background    : transparent
+  padding       : 5px 25px 0
+  margin-bottom : 50px
 
+#title-container, footer
+  text-align : center
+
+.side-line, .title-box
+  vertical-align : top
+  float          : left
+
+.side-line
+  dimensions(26%, 30px)
+  border-bottom : 1px solid lightWhite
+  
+.title-box
+  dimensions(48%, auto)
+  padding       : 0 0 8px
+  border-bottom : 1px solid lightWhite
+  position      : relative
+
+.vert-border
+  dimensions(1px, 100%)
+  display    : block
+  background : lightWhite
+  position   : absolute
+  top        : 0
+
+.vert-border-left
+  @extend .vert-border
+  left : 0
+
+.vert-border-right
+  @extend .vert-border
+  right : 0
+
+footer
+  padding : 0 25px 0
+
+  .title-box
+    dimensions(16%, auto)
+    border-bottom : none
+    
+  .side-line
+    dimensions(42%, 25px)
+
+#basho-logo
+  display    : block
+  background : transparent
 
 /* Ende IDs & Classes */

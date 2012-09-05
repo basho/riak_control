@@ -1,0 +1,122 @@
+
+/* Variables */
+darkened   = rgba(0, 0, 0, .3)
+darkGray   = #2d2d2d
+mediumGray = #cccccc
+lightGray  = #efefef
+lightWhite = rgba(255, 255, 255, .18)
+offlight   = #767676
+riakorange = #f99d33
+
+/* End Variables */
+
+/* Functions */
+vendor(prop, args)
+  -webkit-{prop} : args
+  -moz-{prop}    : args
+  {prop}         : args
+  
+gradient(lightcolor, darkcolor)
+    background : darkcolor
+    background : -moz-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
+    background : -webkit-gradient(linear, left top, left bottom, color-stop(0%, lightcolor), color-stop(100%, darkcolor))
+    background : -webkit-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
+    background : -o-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
+    background : -ms-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
+    background : linear-gradient(to bottom,  lightcolor 0%, darkcolor 100%)
+
+corners(curve = 4px)
+  vendor('border-radius', curve)
+
+textStroke(args = 1px #fff)
+  vendor('text-stroke', args)
+
+textShadow(args = 0 2px 0 #000)
+  text-shadow : args
+
+opaque(dec = 1)
+  opacity : dec
+  filter  : unquote('alpha(opacity=' + (dec * 100) + ')')
+
+repeatingBg(path, bgcolor = transparent)
+  background : url(path) left top repeat bgcolor
+
+hSize(fs, ls, pb) // General stylings for h1, h2, h3, etc tags
+  font-size      : fs
+  letter-spacing : ls
+  padding-bottom : pb
+
+dimensions(wUnit = auto, hUnit = auto)
+  width  : wUnit
+  height : hUnit
+
+absoluteLeft(lUnit, tUnit)
+  position : absolute
+  left     : lUnit
+  top      : tUnit
+
+absoluteRight(rUnit, tUnit)
+  position : absolute
+  right    : rUnit
+  top      : tUnit
+
+transition(args)
+  -webkit-transition : args
+  -moz-transition    : args
+  -o-transition      : args
+  transition         : args
+
+/* End Functions */
+
+/* Extensible Classes */
+
+.headline-font
+  font-family : 'titillium', helvetica, arial, sans-serif
+  
+.copy-font
+  font-family : 'noticia', georgia, serif
+  
+.monospace
+  font-family : 'menlo', 'consolas', 'monaco', monospace
+
+.copy-bold
+  @extend .copy-font
+  font-weight : bold
+
+.headline-bold
+  @extend .headline-font
+  font-weight : bold
+
+.gui-text
+  @extend .copy-font
+  textShadow()
+  color     : mediumGray
+  font-size : 14px
+
+.gui-text-bold
+  @extend .gui-text
+  @extend .copy-bold
+  color : lightGray
+
+.gui-headline
+  @extend .headline-font
+  textShadow()
+  color       : mediumGray
+  text-shadow : 0 2px 0 #000
+
+.gui-headline-bold
+  @extend .gui-headline
+  @extend .headline-bold
+  color       : lightGray
+  font-weight : bold
+
+.has-cut
+  background : url('/admin/ui/images/cut-bg.png') left bottom repeat-x transparent
+    
+.bulleted
+  list-style-type : disc
+
+.clear
+  clear : both
+
+/* End Extensible Classes */

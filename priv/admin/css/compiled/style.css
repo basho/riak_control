@@ -2,6 +2,65 @@
 Main Stylus CSS File
 Imports and arranges all other stylus files.
 */
+.headline-font,
+.headline-bold,
+.gui-headline,
+.gui-headline-bold,
+.gui-headline-bold {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+}
+.copy-font,
+.copy-bold,
+.gui-text,
+.gui-text-bold,
+.gui-text-bold,
+h3,
+.nav-li,
+.nav-li {
+  font-family: 'noticia', georgia, serif;
+}
+.monospace {
+  font-family: 'menlo', 'consolas', 'monaco', monospace;
+}
+.copy-bold,
+.gui-text-bold,
+.nav-li {
+  font-weight: bold;
+}
+.headline-bold,
+.gui-headline-bold {
+  font-weight: bold;
+}
+.gui-text,
+.gui-text-bold,
+.nav-li {
+  text-shadow: 0 2px 0 #000;
+  color: #ccc;
+  font-size: 14px;
+}
+.gui-text-bold,
+.nav-li {
+  color: #efefef;
+}
+.gui-headline,
+.gui-headline-bold {
+  text-shadow: 0 2px 0 #000;
+  color: #ccc;
+  text-shadow: 0 2px 0 #000;
+}
+.gui-headline-bold {
+  color: #efefef;
+  font-weight: bold;
+}
+.has-cut {
+  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
+}
+.bulleted {
+  list-style-type: disc;
+}
+.clear {
+  clear: both;
+}
 html,
 body,
 div,
@@ -129,65 +188,44 @@ td {
   vertical-align: top;
 }
 @font-face {
-  font-family: 'rokkitt';
-  src: url("/admin/ui/fonts/rokkitt.eot");
-  src: url("/admin/ui/fonts/rokkitt.eot?#iefix") format('embedded-opentype'), url("/admin/ui/fonts/rokkitt.woff") format('woff'), url("/admin/ui/fonts/rokkitt.ttf") format('truetype'), url("/admin/ui/fonts/rokkitt.svg#rokkitt") format('svg');
+  font-family: 'noticia';
+  src: url("/admin/ui/fonts/noticiatext-italic-webfont.eot");
+  src: url("/admin/ui/fonts/noticiatext-italic-webfont.eot?#iefix") format('embedded-opentype'), url("/admin/ui/fonts/noticiatext-italic-webfont.woff") format('woff'), url("/admin/ui/fonts/noticiatext-italic-webfont.ttf") format('truetype'), url("/admin/ui/fonts/noticiatext-italic-webfont.svg#noticia_textitalic") format('svg');
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'noticia';
+  src: url("/admin/ui/fonts/noticiatext-regular-webfont.eot");
+  src: url("/admin/ui/fonts/noticiatext-regular-webfont.eot?#iefix") format('embedded-opentype'), url("/admin/ui/fonts/noticiatext-regular-webfont.woff") format('woff'), url("/admin/ui/fonts/noticiatext-regular-webfont.ttf") format('truetype'), url("/admin/ui/fonts/noticiatext-regular-webfont.svg#noticia_textregular") format('svg');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'rokkitt';
-  src: url("/admin/ui/fonts/rokkitt-bold.eot");
-  src: url("/admin/ui/fonts/rokkitt-bold.eot?#iefix") format('embedded-opentype'), url("/admin/ui/fonts/rokkitt-bold.woff") format('woff'), url("/admin/ui/fonts/rokkitt-bold.ttf") format('truetype'), url("/admin/ui/fonts/rokkitt-bold.svg#rokkittbold") format('svg');
+  font-family: 'titillium';
+  src: url("/admin/ui/fonts/titilliumtext25l002-webfont.eot");
+  src: url("/admin/ui/fonts/titilliumtext25l002-webfont.eot?#iefix") format('embedded-opentype'), url("/admin/ui/fonts/titilliumtext25l002-webfont.woff") format('woff'), url("/admin/ui/fonts/titilliumtext25l002-webfont.ttf") format('truetype'), url("/admin/ui/fonts/titilliumtext25l002-webfont.svg#titilliumtext25l600_wt") format('svg');
   font-weight: bold;
   font-style: normal;
 }
-.rokkitt,
-.gui-headline,
-.gui-headline-bold,
-.gui-headline-bold {
-  font-family: 'rokkitt', arial, helvetica, sans-serif;
-}
-.sans,
-.gui-text,
-.gui-text-bold,
-.nav-li {
-  font-family: arial, helvetica, sans-serif;
-}
-.gui-text,
-.gui-text-bold,
-.nav-li {
-  text-shadow: 0 2px 0 #000;
-  color: #dfdfdf;
-  font-size: 14px;
-}
-.gui-text-bold,
-.nav-li {
-  font-weight: bold;
-}
-.gui-headline,
-.gui-headline-bold {
-  text-shadow: 0 2px 0 #000;
-  color: #dfdfdf;
-  text-shadow: 0 2px 0 #000;
-}
-.gui-headline-bold {
-  -webkit-text-stroke: 1.1px #fff;
-  -moz-text-stroke: 1.1px #fff;
-  text-stroke: 1.1px #fff;
-  font-weight: bold;
+@font-face {
+  font-family: 'titillium';
+  src: url("/admin/ui/fonts/titilliumtext25l005-webfont.eot");
+  src: url("/admin/ui/fonts/titilliumtext25l005-webfont.eot?#iefix") format('embedded-opentype'), url("/admin/ui/fonts/titilliumtext25l005-webfont.woff") format('woff'), url("/admin/ui/fonts/titilliumtext25l005-webfont.ttf") format('truetype'), url("/admin/ui/fonts/titilliumtext25l005-webfont.svg#titilliumtext25l1_wt") format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 html {
   background: url("/admin/ui/images/gui-bg.jpg") left top repeat #2d2d2d;
 }
 body {
-  padding: 8px 0 0 0;
+  padding: 0;
 }
 a {
   text-decoration: none;
 }
 a:visited {
-  color: #dfdfdf;
+  color: #efefef;
 }
 h1,
 h2,
@@ -196,151 +234,231 @@ h3 {
 }
 h1 {
   font-size: 48px;
-  letter-spacing: 2px;
+  letter-spacing: 0;
   padding-bottom: 5px;
 }
 h2 {
   font-size: 38px;
-  letter-spacing: 2px;
+  letter-spacing: 0;
   padding-bottom: 12px;
 }
 h3 {
-  font-size: 24px;
-  letter-spacing: 1px;
+  font-size: 20px;
+  letter-spacing: 0;
   padding-bottom: 8px;
+  color: #ccc;
+  font-style: italic;
+}
+nav {
+  background: transparent;
+  float: right;
+}
+table {
+  width: 100%;
+  height: auto;
+  border-collapse: collapse;
 }
 #header {
-  width: auto;
-  height: 67px;
-  background: url("/admin/ui/images/header-bg.png") left top repeat-x transparent;
+  width: 100%;
+  height: 53px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+  background: #171717;
   margin: 0 0 22px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+#navbar {
+  width: auto;
+  height: 49px;
+  background: #383838;
+  background: -moz-linear-gradient(top, #606060 0%, #383838 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #606060), color-stop(100%, #383838));
+  background: -webkit-linear-gradient(top, #606060 0%, #383838 100%);
+  background: -o-linear-gradient(top, #606060 0%, #383838 100%);
+  background: -ms-linear-gradient(top, #606060 0%, #383838 100%);
+  background: linear-gradient(to bottom, #606060 0%, #383838 100%);
+  -webkit-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  -moz-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+}
+#nav-ul {
+  width: auto;
+  height: 49px;
+}
+.nav-li {
+  width: 63px;
+  height: 49px;
+  background: #3a3a3a;
+  background: -moz-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #606060), color-stop(100%, #3a3a3a));
+  background: -webkit-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: -o-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: -ms-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: linear-gradient(to bottom, #606060 0%, #3a3a3a 100%);
+  -webkit-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  -moz-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  border-left: 1px solid #171717;
+  float: right;
   position: relative;
 }
-#riak-control-logo {
-  width: 201px;
-  height: 56px;
-  display: block;
-  background: url("/admin/ui/images/riak-control-logo.gif") right bottom no-repeat transparent;
-  float: left;
-  padding: 5px 0 0 12px;
+.nav-li:hover {
+  background: #484848;
+  background: -moz-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #6b6b6b), color-stop(100%, #484848));
+  background: -webkit-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: -o-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: -ms-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: linear-gradient(to bottom, #6b6b6b 0%, #484848 100%);
 }
-#basho-logo {
-  width: 43px;
-  height: 44px;
-  position: absolute;
-  right: 12px;
-  top: 12px;
+.nav-li:hover a {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.nav-li a {
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+}
+#nav-snapshot  a {
+  background-position: 15px -343px;
+}
+#nav-cluster   a {
+  background-position: 16px 10px;
+}
+#nav-ring      a {
+  background-position: 15px -39px;
+}
+#nav-objects   a {
+  background-position: 14px -90px;
+}
+#nav-mapreduce a {
+  background-position: 14px -140px;
+}
+#nav-graphs    a {
+  background-position: 14px -192px;
+}
+#nav-logs      a {
+  background-position: 14px -248px;
+}
+#nav-support   a {
+  background-position: 14px -300px;
+}
+.nav-item {
+  width: 63px;
+  height: 49px;
+  background: url("/admin/ui/images/nav-icons.png") -100px 100px no-repeat transparent;
   display: block;
-  background: url("/admin/ui/images/basho-logo.png") left top no-repeat transparent;
+  font-size: 18px;
+  vertical-align: middle;
+}
+.indicator {
+  width: 63px;
+  height: 4px;
+  -webkit-box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  -moz-box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  display: block;
+  background: #767676;
+  border-top: 1px solid #171717;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.nav-li.active {
+  -webkit-box-shadow: inset 0 0 18px rgba(0,0,0,0.7);
+  -moz-box-shadow: inset 0 0 18px rgba(0,0,0,0.7);
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.7);
+  background: #363636;
+}
+.nav-li.active a {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.nav-li.active span {
+  -webkit-box-shadow: 0 0 20px #f99d33;
+  -moz-box-shadow: 0 0 20px #f99d33;
+  box-shadow: 0 0 20px #f99d33;
+  background: #f99d33;
+  background: -moz-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fbbd76), color-stop(100%, #f99d33));
+  background: -webkit-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: -o-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: -ms-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: linear-gradient(to bottom, #fbbd76 0%, #f99d33 100%);
+}
+.nav-li .nav-item:hover {
+  cursor: pointer;
+}
+#riak-control-logo {
+  width: 224px;
+  height: 42px;
+  display: block;
+  background: url("/admin/ui/images/riak-control-logo.png") right bottom no-repeat transparent;
+  float: left;
 }
 #wrapper {
   width: auto;
   height: auto;
   background: transparent;
-  margin-bottom: 8px;
-}
-#split-bar {
-  background: url("/admin/ui/images/resizer-bg.png") left top repeat transparent;
-  width: 6px;
-  height: 98%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  opacity: 0.2;
-  filter: alpha(opacity=20);
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  border: 1px solid #fff;
-}
-nav {
-  width: 218px;
-  height: auto;
-  overflow: hidden;
-  background: transparent;
-  float: left;
-  position: relative;
-}
-#nav-ul {
-  width: 210px;
-  height: auto;
-}
-#active-nav {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 14px;
-  height: 180px;
-  background: url("/admin/ui/images/active-nav.png") left top no-repeat transparent;
-}
-.nav-li {
-  width: auto;
-  height: 48px;
-  background: url("/admin/ui/images/nav-icons.png") 12px 10px no-repeat transparent;
-  padding: 0 0 0 14px;
-}
-.nav-li:hover {
-  background-color: rgba(0,0,0,0.3);
-}
-.nav-li-disabled {
-  width: auto;
-  height: 48px;
-  opacity: 0.3;
-  filter: alpha(opacity=30);
-  background: url("/admin/ui/images/nav-icons.png") 12px 10px no-repeat transparent;
-  padding: 0 0 0 14px;
-}
-#nav-snapshot {
-  background-position: 14px -344px;
-}
-#nav-cluster {
-  background-position: 14px 10px;
-}
-#nav-ring {
-  background-position: 14px -39px;
-}
-#nav-objects {
-  background-position: 14px -90px;
-}
-#nav-mapreduce {
-  background-position: 14px -140px;
-}
-#nav-graphs {
-  background-position: 14px -192px;
-}
-#nav-logs {
-  background-position: 14px -248px;
-}
-#nav-support {
-  background-position: 14px -300px;
-}
-.nav-item {
-  width: auto;
-  height: 33px;
-  display: block;
-  font-size: 18px;
-  vertical-align: middle;
-  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
-  padding: 15px 0 0 40px;
-}
-.nav-li .nav-item:hover {
-  cursor: pointer;
+  margin: 75px 0 8px 0;
 }
 #content-well {
   overflow: hidden;
   background: transparent;
-  padding: 5px 14px 0 25px;
+  padding: 5px 25px 0;
+  margin-bottom: 50px;
 }
-@media screen and (max-width: 768px) {
-  nav {
-    width: 62px;
-    height: auto;
-  }
-  #nav-ul {
-    width: 54px;
-    height: auto;
-  }
-  .nav-text {
-    display: none;
-  }
+#title-container,
+footer {
+  text-align: center;
+}
+.side-line,
+.title-box {
+  vertical-align: top;
+  float: left;
+}
+.side-line {
+  width: 26%;
+  height: 30px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+}
+.title-box {
+  width: 48%;
+  height: auto;
+  padding: 0 0 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+  position: relative;
+}
+.vert-border,
+.vert-border-left,
+.vert-border-right {
+  width: 1px;
+  height: 100%;
+  display: block;
+  background: rgba(255,255,255,0.18);
+  position: absolute;
+  top: 0;
+}
+.vert-border-left {
+  left: 0;
+}
+.vert-border-right {
+  right: 0;
+}
+footer {
+  padding: 0 25px 0;
+}
+footer .title-box {
+  width: 16%;
+  height: auto;
+  border-bottom: none;
+}
+footer .side-line {
+  width: 42%;
+  height: 25px;
+}
+#basho-logo {
+  display: block;
+  background: transparent;
 }

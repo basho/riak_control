@@ -22,12 +22,13 @@ $(document).ready(function() {
 
   /* ENABLE THE SPLIT BAR */
   $.riakControl.resizeSplitBar = $.riakControl.resizeSplitBar || function resizeSplitBar() {
-    var splitBar = $('#split-bar');
-    var splitBarParent = splitBar.parent();
-    splitBar.css('height', splitBarParent.css('height'));
+    //var splitBar = $('#split-bar');
+    //var splitBarParent = splitBar.parent();
+    //splitBar.css('height', splitBarParent.css('height'));
   };
 
   /* TURN ON TOGGLING FOR THE SPLIT BAR */
+  /*
   $(document).on('click', '#split-bar', function() {
       var nav = $('#navigation'), navwidth = nav.css('width');
       var navbox = $('#nav-box'), boxwidth = navbox.css('width');
@@ -39,11 +40,32 @@ $(document).ready(function() {
           navbox.animate({"width":"226px"},{queue:false,duration:200});
       }
   });
+  */
+  
+  $.riakControl.setStylesheet = $.riakControl.setStylesheet || function setStylesheet(pageName) {
+    var stylesheets = $('link[rel=stylesheet]');
+    stylesheets.each(function (index, item) {
+      var that      = $(this),
+          ref       = that.attr('href'),
+          parsedRef = ref.slice(ref.lastIndexOf('/'));
+      parsedRef = parsedRef.slice(1, parsedRef.indexOf('.css'));
+      if (parsedRef !== pageName && parsedRef !== 'style') {
+        $(this).remove();
+      }
+    });
+    $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/compiled/' + pageName + '.css" />')
+  }
 
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {
-      var me = $("#" + id), indicator = $('#active-nav');
-      indicator.animate({"top":me.position().top},{queue:false,duration:200});
+      var lis = $('nav li'), activeli = $("#" + id);
+      lis.each(function (index, item) {
+        if (item !== activeli[0]) {
+          $(item).removeClass('active');
+        } else {
+          $(item).addClass('active');
+        }
+      });
     });
   };
 

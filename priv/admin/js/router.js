@@ -32,6 +32,7 @@ minispade.register('router', function() {
 
         enter: function(router) {
           router.get('snapshotController').startInterval();
+          $.riakControl.setStylesheet('snapshot');
         },
 
         exit: function(router) {
@@ -52,6 +53,10 @@ minispade.register('router', function() {
 
           $.riakControl.appendScript('#cluster-script', '/admin/ui/js/legacy/cluster.js');
           $.riakControl.pub('templateSwitch', ['cluster']);
+        },
+        
+        enter: function(router) {
+          $.riakControl.setStylesheet('cluster');
         },
 
         index: Ember.Route.extend({
@@ -75,6 +80,7 @@ minispade.register('router', function() {
         enter: function(router) {
           router.get('ringController').startInterval();
           router.get('partitionFilterController').startInterval();
+          $.riakControl.setStylesheet('ring');
         },
 
         exit: function(router) {

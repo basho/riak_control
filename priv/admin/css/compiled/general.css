@@ -6,17 +6,30 @@ Styles to be applied generally across the UI
 /* Functions */
 /* End Functions */
 /* Extensible Classes */
-.rokkitt,
+.headline-font,
+.headline-bold,
 .gui-headline,
 .gui-headline-bold,
 .gui-headline-bold {
-  font-family: 'rokkitt', arial, helvetica, sans-serif;
+  font-family: 'titillium', helvetica, arial, sans-serif;
 }
-.sans,
+.copy-font,
+.copy-bold,
 .gui-text,
 .gui-text-bold,
+.gui-text-bold,
+.nav-li,
 .nav-li {
-  font-family: arial, helvetica, sans-serif;
+  font-family: 'noticia', georgia, serif;
+}
+.copy-bold,
+.gui-text-bold,
+.nav-li {
+  font-weight: bold;
+}
+.headline-bold,
+.gui-headline-bold {
+  font-weight: bold;
 }
 .gui-text,
 .gui-text-bold,
@@ -24,10 +37,6 @@ Styles to be applied generally across the UI
   text-shadow: 0 2px 0 #000;
   color: #dfdfdf;
   font-size: 14px;
-}
-.gui-text-bold,
-.nav-li {
-  font-weight: bold;
 }
 .gui-headline,
 .gui-headline-bold {
@@ -47,7 +56,7 @@ html {
   background: url("/admin/ui/images/gui-bg.jpg") left top repeat #2d2d2d;
 }
 body {
-  padding: 8px 0 0 0;
+  padding: 0;
 }
 a {
   text-decoration: none;
@@ -62,12 +71,12 @@ h3 {
 }
 h1 {
   font-size: 48px;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   padding-bottom: 5px;
 }
 h2 {
   font-size: 38px;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   padding-bottom: 12px;
 }
 h3 {
@@ -75,88 +84,43 @@ h3 {
   letter-spacing: 1px;
   padding-bottom: 8px;
 }
+nav {
+  background: transparent;
+  float: right;
+}
 /* End Tags */
 /* IDs & Classes */
 #header {
   width: auto;
-  height: 67px;
-  background: url("/admin/ui/images/header-bg.png") left top repeat-x transparent;
+  height: 53px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+  background: #171717;
   margin: 0 0 22px 0;
   position: relative;
 }
-#riak-control-logo {
-  width: 201px;
-  height: 56px;
-  display: block;
-  background: url("/admin/ui/images/riak-control-logo.gif") right bottom no-repeat transparent;
-  float: left;
-  padding: 5px 0 0 12px;
-}
-#basho-logo {
-  width: 43px;
-  height: 44px;
-  position: absolute;
-  right: 12px;
-  top: 12px;
-  display: block;
-  background: url("/admin/ui/images/basho-logo.png") left top no-repeat transparent;
-}
-#wrapper {
+#navbar {
   width: auto;
-  height: auto;
-  background: transparent;
-  margin-bottom: 8px;
-}
-#split-bar {
-  background: url("/admin/ui/images/resizer-bg.png") left top repeat transparent;
-  width: 6px;
-  height: 98%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  opacity: 0.2;
-  filter: alpha(opacity=20);
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  border: 1px solid #fff;
-}
-nav {
-  width: 218px;
-  height: auto;
-  overflow: hidden;
-  background: transparent;
-  float: left;
-  position: relative;
+  height: 49px;
+  background: #383838;
+  background: -moz-linear-gradient(top, #606060 0%, #383838 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #606060), color-stop(100%, #383838));
+  background: -webkit-linear-gradient(top, #606060 0%, #383838 100%);
+  background: -o-linear-gradient(top, #606060 0%, #383838 100%);
+  background: -ms-linear-gradient(top, #606060 0%, #383838 100%);
+  background: linear-gradient(to bottom, #606060 0%, #383838 100%);
+  -webkit-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  -moz-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
 }
 #nav-ul {
-  width: 210px;
-  height: auto;
-}
-#active-nav {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 14px;
-  height: 180px;
-  background: url("/admin/ui/images/active-nav.png") left top no-repeat transparent;
+  width: auto;
+  height: 49px;
 }
 .nav-li {
-  width: auto;
-  height: 48px;
-  background: url("/admin/ui/images/nav-icons.png") 12px 10px no-repeat transparent;
-  padding: 0 0 0 14px;
-}
-.nav-li:hover {
-  background-color: rgba(0,0,0,0.3);
-}
-.nav-li-disabled {
-  width: auto;
-  height: 48px;
-  opacity: 0.3;
-  filter: alpha(opacity=30);
-  background: url("/admin/ui/images/nav-icons.png") 12px 10px no-repeat transparent;
-  padding: 0 0 0 14px;
+  width: 63px;
+  height: 49px;
+  border-left: 1px solid #171717;
+  float: right;
 }
 #nav-snapshot {
   background-position: 14px -344px;
@@ -183,16 +147,87 @@ nav {
   background-position: 14px -300px;
 }
 .nav-item {
-  width: auto;
-  height: 33px;
+  width: 63px;
+  height: 49px;
+  background: #3a3a3a;
+  background: -moz-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #606060), color-stop(100%, #3a3a3a));
+  background: -webkit-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: -o-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: -ms-linear-gradient(top, #606060 0%, #3a3a3a 100%);
+  background: linear-gradient(to bottom, #606060 0%, #3a3a3a 100%);
+  -webkit-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  -moz-box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.18);
   display: block;
   font-size: 18px;
   vertical-align: middle;
-  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
-  padding: 15px 0 0 40px;
+  position: relative;
+}
+.nav-item:hover {
+  background: #484848;
+  background: -moz-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #6b6b6b), color-stop(100%, #484848));
+  background: -webkit-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: -o-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: -ms-linear-gradient(top, #6b6b6b 0%, #484848 100%);
+  background: linear-gradient(to bottom, #6b6b6b 0%, #484848 100%);
+}
+.nav-item .indicator {
+  width: 63px;
+  height: 4px;
+  -webkit-box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  -moz-box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  display: block;
+  background: #767676;
+  border-top: 1px solid #171717;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.nav-li.active a {
+  background: #363636;
+  -webkit-box-shadow: inset 0 0 18px rgba(0,0,0,0.7);
+  -moz-box-shadow: inset 0 0 18px rgba(0,0,0,0.7);
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.7);
+}
+.nav-li.active span {
+  -webkit-box-shadow: 0 0 20px #f99d33;
+  -moz-box-shadow: 0 0 20px #f99d33;
+  box-shadow: 0 0 20px #f99d33;
+  background: #f99d33;
+  background: -moz-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fbbd76), color-stop(100%, #f99d33));
+  background: -webkit-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: -o-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: -ms-linear-gradient(top, #fbbd76 0%, #f99d33 100%);
+  background: linear-gradient(to bottom, #fbbd76 0%, #f99d33 100%);
 }
 .nav-li .nav-item:hover {
   cursor: pointer;
+}
+#riak-control-logo {
+  width: 224px;
+  height: 42px;
+  display: block;
+  background: url("/admin/ui/images/riak-control-logo.png") right bottom no-repeat transparent;
+  float: left;
+}
+#basho-logo {
+  width: 43px;
+  height: 44px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: block;
+  background: url("/admin/ui/images/basho-logo.png") left top no-repeat transparent;
+}
+#wrapper {
+  width: auto;
+  height: auto;
+  background: transparent;
+  margin-bottom: 8px;
 }
 #content-well {
   overflow: hidden;

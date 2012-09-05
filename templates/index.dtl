@@ -4,7 +4,7 @@
     <link rel="icon" type="image/vnd.microsoft.icon" href="/admin/ui/favicon.ico" />
     <meta charset="UTF-8" />
     <title>Riak Control</title>
-    <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/style.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/compiled/style.css" />
     <meta name="csrf_token" content="{{csrf_token}}">
 </head>
 

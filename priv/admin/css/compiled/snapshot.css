@@ -1,0 +1,90 @@
+/*
+CSS to be applied ONLY on the snapshot page
+*/
+.headline-font,
+.headline-bold,
+.gui-headline,
+.gui-headline-bold,
+.gui-headline-bold {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+}
+.copy-font,
+.copy-bold,
+.gui-text,
+.gui-text-bold,
+.gui-text-bold {
+  font-family: 'noticia', georgia, serif;
+}
+.monospace {
+  font-family: 'menlo', 'consolas', 'monaco', monospace;
+}
+.copy-bold,
+.gui-text-bold {
+  font-weight: bold;
+}
+.headline-bold,
+.gui-headline-bold {
+  font-weight: bold;
+}
+.gui-text,
+.gui-text-bold {
+  text-shadow: 0 2px 0 #000;
+  color: #ccc;
+  font-size: 14px;
+}
+.gui-text-bold {
+  color: #efefef;
+}
+.gui-headline,
+.gui-headline-bold {
+  text-shadow: 0 2px 0 #000;
+  color: #ccc;
+  text-shadow: 0 2px 0 #000;
+}
+.gui-headline-bold {
+  color: #efefef;
+  font-weight: bold;
+}
+.has-cut {
+  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
+}
+.bulleted {
+  list-style-type: disc;
+}
+.clear {
+  clear: both;
+}
+#healthy-cluster,
+#unhealthy-cluster {
+  margin-top: 25px;
+}
+#healthy-cluster section,
+#unhealthy-cluster section {
+  padding-left: 336px;
+}
+#healthy-cluster h2,
+#unhealthy-cluster h2 {
+  padding-top: 20px;
+}
+#healthy-cluster h3,
+#unhealthy-cluster h3 {
+  margin-top: 30px;
+}
+#healthy-cluster ul,
+#unhealthy-cluster ul {
+  margin: 10px 0 0 20px;
+}
+#healthy-cluster li,
+#unhealthy-cluster li {
+  line-height: 1.5;
+}
+#healthy-cluster li a,
+#unhealthy-cluster li a {
+  color: #ccc;
+}
+#health-indicator {
+  width: 311px;
+  height: 309px;
+  float: left;
+  margin-right: 25px;
+}
