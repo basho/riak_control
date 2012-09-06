@@ -18,12 +18,12 @@ vendor(prop, args)
   
 gradient(lightcolor, darkcolor)
     background : darkcolor
-    background : -moz-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
+    background : -moz-linear-gradient(    top,                   lightcolor 0%, darkcolor 100%)
     background : -webkit-gradient(linear, left top, left bottom, color-stop(0%, lightcolor), color-stop(100%, darkcolor))
-    background : -webkit-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
-    background : -o-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
-    background : -ms-linear-gradient(top,  lightcolor 0%, darkcolor 100%)
-    background : linear-gradient(to bottom,  lightcolor 0%, darkcolor 100%)
+    background : -webkit-linear-gradient( top,                   lightcolor 0%, darkcolor 100%)
+    background : -o-linear-gradient(      top,                   lightcolor 0%, darkcolor 100%)
+    background : -ms-linear-gradient(     top,                   lightcolor 0%, darkcolor 100%)
+    background : linear-gradient(         top bottom,            lightcolor 0%, darkcolor 100%)
 
 corners(curve = 4px)
   vendor('border-radius', curve)

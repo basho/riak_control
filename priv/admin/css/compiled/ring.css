@@ -1,0 +1,67 @@
+/*
+CSS to be applied ONLY on the snapshot page
+*/
+.headline-font,
+.headline-bold,
+.gui-headline,
+.gui-headline-bold,
+.gui-headline-bold {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+}
+.copy-font,
+.copy-bold,
+.gui-text,
+.gui-text-bold,
+.gui-text-bold {
+  font-family: 'noticia', georgia, serif;
+}
+.monospace {
+  font-family: 'menlo', 'consolas', 'monaco', monospace;
+}
+.copy-bold,
+.gui-text-bold {
+  font-weight: bold;
+}
+.headline-bold,
+.gui-headline-bold {
+  font-weight: bold;
+}
+.gui-text,
+.gui-text-bold {
+  text-shadow: 0 2px 0 #000;
+  color: #ccc;
+  font-size: 14px;
+}
+.gui-text-bold {
+  color: #efefef;
+}
+.gui-headline,
+.gui-headline-bold {
+  text-shadow: 0 2px 0 #000;
+  color: #ccc;
+  text-shadow: 0 2px 0 #000;
+}
+.gui-headline-bold {
+  color: #efefef;
+  font-weight: bold;
+}
+.has-cut {
+  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
+}
+.bulleted {
+  list-style-type: disc;
+}
+.clear {
+  clear: both;
+}
+#ring-filter {
+  text-align: left;
+  padding-left: 25px;
+}
+#ring-filter .gui-dropdown-wrapper {
+  width: 100%;
+  height: 30px;
+}
+h3 {
+  color: #efefef;
+}

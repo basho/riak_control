@@ -32,6 +32,9 @@ h3
   color      : mediumGray
   font-style : italic
   
+h4
+  hSize(16px, 0, 3px)
+
 nav
   background : transparent
   float      : right
@@ -53,6 +56,7 @@ table
   position      : fixed
   top           : 0
   left          : 0
+  z-index       : 10
   
 #navbar
   dimensions(auto, 49px)
@@ -131,6 +135,7 @@ table
   dimensions()
   background : transparent
   margin     : 75px 0 8px 0
+  z-index    : 1
 
 #content-well
   overflow      : hidden
@@ -176,6 +181,7 @@ footer
   .title-box
     dimensions(16%, auto)
     border-bottom : none
+    margin-bottom : 25px
     
   .side-line
     dimensions(42%, 25px)
@@ -185,3 +191,93 @@ footer
   background : transparent
 
 /* Ende IDs & Classes */
+
+/* CODE FOR DROPDOWNS */
+
+.gui-dropdown-wrapper
+  dimensions(auto, 30px)
+  background : url('/admin/ui/images/dropdown-left.png') left top no-repeat transparent
+  position   : relative
+  max-width  : 250px
+
+.gui-dropdown-wrapper.long
+  dimensions(292px, auto)
+  max-width : 1000px
+
+.gui-dropdown-bg
+  dimensions(auto, 22px)
+  padding    : 8px 0 0 5px
+  font-size  : 14px
+  background : url('/admin/ui/images/dropdown-bg.png') left top repeat-x transparent
+  margin     : 0 28px 0 10px
+
+.gui-dropdown-cap
+  dimensions(30px, 30px)
+  absoluteRight(0, 0)
+  background : url('/admin/ui/images/dropdown-right.png') right top no-repeat transparent
+
+.gui-dropdown
+  dimensions(100%, 30px)
+  opaque(0)
+  border     : 0
+  outline    : none
+  float      : left
+  margin-top : -30px
+
+/* END CODE FOR DROPDOWNS */
+
+/* CODE FOR PAGINATION */
+.pagination
+  text-align : center
+  font-size  : 12px
+  cursor     : pointer
+  margin-top : 25px
+  
+  li
+    corners()
+    display       : inline-block;
+    background    : #1d1d1d
+    padding       : 2px
+    margin        : 0 1px 10px
+    border-bottom : 1px solid lightWhite
+    
+  li.dots
+    background     : none
+    border         : 0
+    letter-spacing : 1px
+    padding        : 2px 4px
+
+.pagination-bottom
+  margin-bottom : 36px
+  margin-top    : 25px
+
+.paginator
+  @extend .headline-font
+  corners(3px)
+  gradient(#616161, #434343)
+  color      : #fff
+  display    : block;
+  border-top : 1px solid #777
+  cursor     : pointer
+  padding    : 3px 8px 4px
+
+  &:hover
+    gradient(#777, #434343)
+
+  &:active
+    background : #535353
+    cursor     : pointer
+
+.paginator.pageNumber
+  opaque(.4)
+
+.paginator.pageNumber:hover, .paginator.pageNumber:active, .pageNumber.active
+  opaque(1)
+
+.pagination li.disabled .paginator:hover, .pagination li.disapled .paginator:active, .pageNumber.active:hover, .pageNumber.active:active
+  gradient(#616161, #434343)
+  cursor : default
+
+/* END CODE FOR PAGINATION*/
+
+
