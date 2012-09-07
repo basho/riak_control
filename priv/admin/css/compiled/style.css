@@ -2,66 +2,6 @@
 Main Stylus CSS File
 Imports and arranges all other stylus files.
 */
-.headline-font,
-.headline-bold,
-.gui-headline,
-.gui-headline-bold,
-.gui-headline-bold,
-.paginator {
-  font-family: 'titillium', helvetica, arial, sans-serif;
-}
-.copy-font,
-.copy-bold,
-.gui-text,
-.gui-text-bold,
-.gui-text-bold,
-h3,
-.nav-li,
-.nav-li {
-  font-family: 'noticia', georgia, serif;
-}
-.monospace {
-  font-family: 'menlo', 'consolas', 'monaco', monospace;
-}
-.copy-bold,
-.gui-text-bold,
-.nav-li {
-  font-weight: bold;
-}
-.headline-bold,
-.gui-headline-bold {
-  font-weight: bold;
-}
-.gui-text,
-.gui-text-bold,
-.nav-li {
-  text-shadow: 0 2px 0 #000;
-  color: #ccc;
-  font-size: 14px;
-}
-.gui-text-bold,
-.nav-li {
-  color: #efefef;
-}
-.gui-headline,
-.gui-headline-bold {
-  text-shadow: 0 2px 0 #000;
-  color: #ccc;
-  text-shadow: 0 2px 0 #000;
-}
-.gui-headline-bold {
-  color: #efefef;
-  font-weight: bold;
-}
-.has-cut {
-  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
-}
-.bulleted {
-  list-style-type: disc;
-}
-.clear {
-  clear: both;
-}
 html,
 body,
 div,
@@ -242,8 +182,10 @@ h2 {
   font-size: 38px;
   letter-spacing: 0;
   padding-bottom: 12px;
+  color: #efefef;
 }
 h3 {
+  font-family: 'noticia', georgia, serif;
   font-size: 20px;
   letter-spacing: 0;
   padding-bottom: 8px;
@@ -263,6 +205,25 @@ table {
   width: 100%;
   height: auto;
   border-collapse: collapse;
+}
+tr:hover {
+  background-color: rgba(255,255,255,0.08);
+}
+thead tr:hover,
+tr.no-highlight:hover {
+  background-color: transparent;
+}
+td {
+  font-family: 'menlo', 'consolas', 'monaco', monospace;
+  padding: 6px 5px 6px;
+  vertical-align: middle;
+}
+tr:first-child td {
+  padding-top: 8px;
+}
+th {
+  text-align: left;
+  padding: 0 5px 5px;
 }
 #header {
   width: 100%;
@@ -471,6 +432,23 @@ footer .side-line {
   display: block;
   background: transparent;
 }
+#tooltips {
+  font-family: 'noticia', georgia, serif;
+  width: 100%;
+  height: auto;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  border-top: 2px solid #777;
+}
+#display-tips {
+  background: rgba(0,0,0,0.85);
+  line-height: 1.5;
+  font-style: italic;
+  font-size: 15px;
+  color: #aaa;
+  padding: 25px 25px 25px;
+}
 .gui-dropdown-wrapper {
   width: auto;
   height: 30px;
@@ -486,6 +464,7 @@ footer .side-line {
 .gui-dropdown-bg {
   width: auto;
   height: 22px;
+  font-family: 'titillium', helvetica, arial, sans-serif;
   padding: 8px 0 0 5px;
   font-size: 14px;
   background: url("/admin/ui/images/dropdown-bg.png") left top repeat-x transparent;
@@ -509,11 +488,62 @@ footer .side-line {
   float: left;
   margin-top: -30px;
 }
+.gui-point-button,
+.gui-rect-button {
+  width: 137px;
+  height: 40px;
+  display: inline-block;
+  cursor: pointer;
+  border: 0;
+  margin-top: 3px;
+}
+.gui-point-button {
+  background: url("/admin/ui/images/pointbutton-sprite.png") left top no-repeat transparent;
+}
+.gui-rect-button {
+  background: url("/admin/ui/images/rectbutton-sprite.png") left top no-repeat transparent;
+}
+.gui-button-msg {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+  display: block;
+  padding-top: 7px;
+  text-align: center;
+}
+.gui-point-button:hover,
+.gui-rect-button:hover {
+  background-position: left -40px;
+}
+.gui-point-button:active,
+.gui-point-button.pressed,
+.gui-rect-button:active,
+.gui-rect-button.pressed {
+  background-position: left -80px !important;
+}
+.gui-point-button:active  .gui-button-msg,
+.gui-point-button.pressed .gui-button-msg,
+.gui-rect-button:active   .gui-button-msg,
+.gui-rect-button.pressed  .gui-button-msg {
+  padding-top: 9px;
+}
+input.gui-point-button,
+input.gui-rect-button {
+  padding-bottom: 12px;
+}
+input.gui-point-button:active,
+input.gui-rect-button:active {
+  padding-bottom: 9px;
+}
+.button-column {
+  width: 150px;
+  height: auto;
+}
 .pagination {
   text-align: center;
   font-size: 12px;
   cursor: pointer;
-  margin-top: 25px;
+  padding-top: 25px;
 }
 .pagination li {
   -webkit-border-radius: 4px;
@@ -536,6 +566,7 @@ footer .side-line {
   margin-top: 25px;
 }
 .paginator {
+  font-family: 'titillium', helvetica, arial, sans-serif;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -587,4 +618,98 @@ footer .side-line {
   background: -ms-linear-gradient(top, #616161 0%, #434343 100%);
   background: linear-gradient(top bottom, #616161 0%, #434343 100%);
   cursor: default;
+}
+.gui-text-flat,
+.gui-text,
+.gui-text-bold {
+  text-shadow: none;
+  color: #ccc;
+  font-size: 14px;
+}
+.gui-text,
+.gui-text-bold {
+  text-shadow: 0 2px 0 #000;
+}
+.gui-text-bold {
+  font-family: 'noticia', georgia, serif;
+  font-weight: bold;
+  color: #efefef;
+}
+.gui-headline,
+.gui-headline-bold {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  text-shadow: 0 2px 0 #000;
+  text-shadow: 0 2px 0 #000;
+}
+.gui-headline-bold {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  font-weight: bold;
+  color: #efefef;
+  font-weight: bold;
+}
+.gui-field,
+.gui-input {
+  font-family: 'menlo', 'consolas', 'monaco', monospace;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+  -moz-box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.3);
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+  margin-right: 2em;
+}
+.gui-input {
+  width: 100%;
+  height: auto;
+  padding: 6px 8px;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+.gui-input:focus {
+  outline: none;
+}
+.gui-light {
+  background: url("/admin/ui/images/light-sprite.png") left top no-repeat transparent;
+  padding: 9px 0 9px 33px;
+}
+.gui-light.gray {
+  background-position: -4px -145px;
+}
+.gui-light.green {
+  background-position: -4px 0;
+}
+.gui-light.red {
+  background-position: -4px -36px;
+}
+.gui-light.blue {
+  background-position: -4px -109px;
+}
+.gui-light.orange {
+  background-position: -4px -73px;
+}
+.has-cut,
+.cut {
+  background: url("/admin/ui/images/cut-bg.png") left bottom repeat-x transparent;
+}
+.cut {
+  width: 100%;
+  height: 2px;
+  margin-top: 15px;
+}
+.bulleted {
+  list-style-type: disc;
+}
+.clear {
+  clear: both;
+}
+.hide {
+  display: none;
+}
+.italic {
+  font-family: 'noticia', georgia, serif;
+  font-style: italic;
 }

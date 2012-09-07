@@ -25,9 +25,10 @@ h1
 
 h2
   hSize(38px, 0, 12px)
+  color : lightGray
 
 h3
-  @extend .copy-font
+  copy-font()
   hSize(20px, 0, 8px)
   color      : mediumGray
   font-style : italic
@@ -43,6 +44,23 @@ table
   dimensions(100%, auto)
   border-collapse : collapse
 
+tr:hover
+  background-color : highlight
+  
+thead tr:hover, tr.no-highlight:hover
+  background-color : transparent
+
+td
+  monospace()
+  padding        : 6px 5px 6px
+  vertical-align : middle
+
+tr:first-child td
+  padding-top : 8px
+  
+th
+  text-align : left
+  padding    : 0 5px 5px
 
 /* End Tags */
 
@@ -67,7 +85,7 @@ table
   dimensions(auto, 49px)
 
 .nav-li
-  @extend .gui-text-bold
+  gui-text-bold()
   dimensions(63px, 49px)
   gradient(#606060, #3a3a3a)
   vendor('box-shadow', inset 0 1px 2px lightWhite)
@@ -190,6 +208,22 @@ footer
   display    : block
   background : transparent
 
+#tooltips
+  copy-font()
+  dimensions(100%, auto)
+  position   : fixed
+  bottom     : 0
+  left       : 0
+  border-top : 2px solid #777
+
+#display-tips
+  background  : coverup
+  line-height : 1.5
+  font-style  : italic
+  font-size   : 15px
+  color       : #aaa
+  padding     : 25px 25px 25px
+
 /* Ende IDs & Classes */
 
 /* CODE FOR DROPDOWNS */
@@ -206,6 +240,7 @@ footer
 
 .gui-dropdown-bg
   dimensions(auto, 22px)
+  headline-font()
   padding    : 8px 0 0 5px
   font-size  : 14px
   background : url('/admin/ui/images/dropdown-bg.png') left top repeat-x transparent
@@ -226,12 +261,53 @@ footer
 
 /* END CODE FOR DROPDOWNS */
 
+/* CODE FOR POINT BUTTONS */
+
+.gui-point-button, .gui-rect-button
+    dimensions(137px, 40px)
+    display    : inline-block
+    cursor     : pointer
+    border     : 0
+    margin-top : 3px
+
+.gui-point-button { background: url('/admin/ui/images/pointbutton-sprite.png') left top no-repeat transparent; }
+.gui-rect-button  { background: url('/admin/ui/images/rectbutton-sprite.png')  left top no-repeat transparent; }
+
+.gui-button-msg
+  headline-bold()
+  font-size   : 15px
+  display     : block
+  padding-top : 7px
+  text-align  : center
+
+.gui-point-button:hover,  .gui-rect-button:hover
+  background-position : left -40px
+
+.gui-point-button:active, .gui-point-button.pressed, .gui-rect-button:active,  .gui-rect-button.pressed
+  background-position : left -80px !important
+
+.gui-point-button:active  .gui-button-msg, 
+.gui-point-button.pressed .gui-button-msg,
+.gui-rect-button:active   .gui-button-msg, 
+.gui-rect-button.pressed  .gui-button-msg { padding-top : 9px; }
+
+input.gui-point-button, input.gui-rect-button
+  padding-bottom : 12px
+  
+input.gui-point-button:active, input.gui-rect-button:active
+  padding-bottom : 9px
+
+.button-column
+  dimensions(150px, auto)
+
+/* END CODE FOR POINT BUTTONS */
+
 /* CODE FOR PAGINATION */
 .pagination
-  text-align : center
-  font-size  : 12px
-  cursor     : pointer
-  margin-top : 25px
+  text-align  : center
+  font-size   : 12px
+  cursor      : pointer
+  padding-top : 25px
   
   li
     corners()
@@ -252,7 +328,7 @@ footer
   margin-top    : 25px
 
 .paginator
-  @extend .headline-font
+  headline-font()
   corners(3px)
   gradient(#616161, #434343)
   color      : #fff
@@ -280,4 +356,92 @@ footer
 
 /* END CODE FOR PAGINATION*/
 
+/* CODE FOR GENERAL GUI ELEMENTS */
 
+.gui-text-flat
+  textShadow(none)
+  color     : mediumGray
+  font-size : 14px
+
+.gui-text
+  @extend .gui-text-flat
+  textShadow()
+
+.gui-text-bold
+  @extend .gui-text
+  copy-bold()
+  color : lightGray
+
+.gui-headline
+  headline-font()
+  textShadow()
+  text-shadow : 0 2px 0 #000
+
+.gui-headline-bold
+  @extend .gui-headline
+  headline-bold()
+  color       : lightGray
+  font-weight : bold
+
+.gui-field
+  monospace()
+  corners()
+  vendor('box-shadow', inset 0 1px 3px darkened)
+  background    : darkened
+  padding       : 8px
+  border-bottom : 1px solid lightWhite
+  margin-right  : 2em
+
+.gui-input
+  @extend .gui-field
+  dimensions(100%, auto)
+  padding      : 6px 8px
+  border-left  : 0
+  border-right : 0
+  border-top   : 0
+  
+  &:focus
+    outline : none
+  
+
+.gui-light
+  background : url('/admin/ui/images/light-sprite.png') left top no-repeat transparent
+  padding    : 9px 0 9px 33px
+  
+  &.gray
+    background-position : -4px -145px
+  
+  &.green
+    background-position : -4px 0
+  
+  &.red
+    background-position : -4px -36px
+    
+  &.blue
+    background-position : -4px -109px
+  
+  &.orange
+    background-position : -4px -73px
+  
+/* END CODE FOR GENERAL GUI ELEMENTS */
+
+.has-cut
+  background : url('/admin/ui/images/cut-bg.png') left bottom repeat-x transparent
+  
+.cut
+  @extend .has-cut
+  dimensions(100%, 2px)
+  margin-top : 15px
+    
+.bulleted
+  list-style-type : disc
+
+.clear
+  clear : both
+
+.hide
+  display : none
+  
+.italic
+  copy-font()
+  font-style : italic

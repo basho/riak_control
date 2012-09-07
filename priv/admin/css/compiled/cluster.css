@@ -1,0 +1,18 @@
+/*
+CSS to be applied ONLY on the cluster page
+*/
+h3 {
+  font-family: 'noticia', georgia, serif;
+}
+#add-node {
+  padding-top: 40px;
+}
+.add-node-table tr td {
+  padding-top: 25px;
+}
+.more-node-actions {
+  display: none;
+}
+.button-column {
+  text-align: right;
+}

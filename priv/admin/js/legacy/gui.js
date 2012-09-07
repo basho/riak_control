@@ -10,14 +10,14 @@ $(document).ready(function() {
 
   /* ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM */
   $(document).on('keyup', '#node-to-add', function (event) {
-      if(event.keyCode === 13){
-          $('#add-node-button').trigger('click');
-      }
+    if(event.keyCode === 13){
+      $('#add-node-button').trigger('click');
+    }
   });
 
   /* MAKE ALL CLOSE ERROR BUTTONS WORK */
   $(document).on('click', '.close-error', function () {
-      $(this).parent().hide();
+    $(this).parent().hide();
   });
 
   /* ENABLE THE SPLIT BAR */
@@ -27,21 +27,7 @@ $(document).ready(function() {
     //splitBar.css('height', splitBarParent.css('height'));
   };
 
-  /* TURN ON TOGGLING FOR THE SPLIT BAR */
-  /*
-  $(document).on('click', '#split-bar', function() {
-      var nav = $('#navigation'), navwidth = nav.css('width');
-      var navbox = $('#nav-box'), boxwidth = navbox.css('width');
-      if (navwidth === '218px') {
-          nav.animate({"width":"54px"},{queue:false,duration:200});
-          navbox.animate({"width":"62px"},{queue:false,duration:200});
-      } else {
-          nav.animate({"width":"218px"},{queue:false,duration:200});
-          navbox.animate({"width":"226px"},{queue:false,duration:200});
-      }
-  });
-  */
-  
+  /* SWITCH STYLESHEETS WHEN WE SWITCH PAGES */  
   $.riakControl.setStylesheet = $.riakControl.setStylesheet || function setStylesheet(pageName) {
     var stylesheets = $('link[rel=stylesheet]');
     stylesheets.each(function (index, item) {
@@ -56,6 +42,7 @@ $(document).ready(function() {
     $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/compiled/' + pageName + '.css" />')
   }
 
+  /* MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS */
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {
       var lis = $('nav li'), activeli = $("#" + id);
@@ -69,6 +56,7 @@ $(document).ready(function() {
     });
   };
 
+  /* UPDATE DROPDOWN MENUS */
   $.riakControl.updateDropdown = $.riakControl.updateDropdown || function updateDropdown (me, val) {
     Ember.run.next(function() {
       var textSpot = me.prev().prev(); textSpot.text(val);
