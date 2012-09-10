@@ -206,13 +206,6 @@ table {
   height: auto;
   border-collapse: collapse;
 }
-tr:hover {
-  background-color: rgba(255,255,255,0.08);
-}
-thead tr:hover,
-tr.no-highlight:hover {
-  background-color: transparent;
-}
 td {
   font-family: 'menlo', 'consolas', 'monaco', monospace;
   padding: 6px 5px 6px;
@@ -508,7 +501,7 @@ footer .side-line {
   font-weight: bold;
   font-size: 15px;
   display: block;
-  padding-top: 7px;
+  padding-top: 8px;
   text-align: center;
 }
 .gui-point-button:hover,
@@ -538,6 +531,19 @@ input.gui-rect-button:active {
 .button-column {
   width: 150px;
   height: auto;
+}
+.gui-switch {
+  width: 78px;
+  height: 37px;
+  background: url("/admin/ui/images/hide-show-toggle.png") no-repeat transparent;
+  display: inline-block;
+  vertical-align: middle;
+}
+.gui-switch.on {
+  background-position: left top;
+}
+.gui-switch.off {
+  background-position: left bottom;
 }
 .pagination {
   text-align: center;

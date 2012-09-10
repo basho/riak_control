@@ -29,6 +29,11 @@ gradient(lightcolor, darkcolor)
 
 corners(curve = 4px)
   vendor('border-radius', curve)
+  
+singleCorner(vert, horiz, args)
+  -webkit-border-{vert}-{horiz}-radius : args
+  -moz-border-radius-{vert}{horiz}     : args
+  border-{vert}-{horiz}-radius         : args
 
 textStroke(args = 1px #fff)
   vendor('text-stroke', args)

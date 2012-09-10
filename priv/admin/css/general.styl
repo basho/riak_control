@@ -44,12 +44,6 @@ table
   dimensions(100%, auto)
   border-collapse : collapse
 
-tr:hover
-  background-color : highlight
-  
-thead tr:hover, tr.no-highlight:hover
-  background-color : transparent
-
 td
   monospace()
   padding        : 6px 5px 6px
@@ -277,7 +271,7 @@ footer
   headline-bold()
   font-size   : 15px
   display     : block
-  padding-top : 7px
+  padding-top : 8px
   text-align  : center
 
 .gui-point-button:hover,  .gui-rect-button:hover
@@ -301,6 +295,23 @@ input.gui-point-button:active, input.gui-rect-button:active
   dimensions(150px, auto)
 
 /* END CODE FOR POINT BUTTONS */
+
+/* CODE FOR TOGGLE SWITCHES */
+
+.gui-switch
+  dimensions(78px, 37px)
+  background     : url('/admin/ui/images/hide-show-toggle.png') no-repeat transparent
+  display        : inline-block
+  vertical-align : middle
+  
+  &.on
+    background-position : left top
+    
+  &.off
+    background-position : left bottom
+
+
+/* END CODE FOR TOGGLE SWITCHES */
 
 /* CODE FOR PAGINATION */
 .pagination

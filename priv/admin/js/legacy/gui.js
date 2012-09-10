@@ -63,39 +63,24 @@ $(document).ready(function() {
     });
   };
 
-  /*
-  MAKE ON/OFF SWITCHES WORK
-  To set up: each div.gui-switch should contain two radio buttons.  One with an
-  'off' value and one with an 'on' value.  Whichever is checked should be controlled
-  by whether the node is actually on or off.
-  */
-  // Define a re-usable function to use any time a new node is created.
-  // If the node is on or off, set switch class accordingly.
-  $.riakControl.setGuiSwitch = $.riakControl.setGuiSwitch || function setGuiSwitch (i, e) {
-      var me = $(e),
-          isOn = (me.find('input[checked=checked]').attr('value').toLowerCase() === 'on');
-      if (isOn) {
-          me.removeClass('off').addClass('on');
-      } else {
-          me.removeClass('on').addClass('off');
-      }
-  };
-
-  // When the document is ready, run setGuiSwitch on all on/off switches
-  $('.gui-switch').each($.riakControl.setGuiSwitch);
-  // When a switch changes, alter its class accordingly.
-  $('.gui-switch input').on('change', function(e) {
-      var that = $(this),
-          theValue = that.attr('value').toLowerCase(),
-          isChecked = (that.attr('checked') === 'checked'),
-          theParent = that.closest('.gui-switch');
-      if (theValue === 'on') {
-          theParent.removeClass('off').addClass('on');
-      } else if (theValue === 'off') {
-          theParent.removeClass('on').addClass('off');
-      }
+  /* MAKE HIDE/SHOW SWITCHES WORK */
+  $(document).on('click', '.gui-switch', function (e) {
+    var that = $(this),
+        parent = that.parent().parent(),
+        corresponder = that.closest('tr').next(),
+        box = corresponder.find('.actions-box');
+    if (that.hasClass('off')) {
+      corresponder.show();
+      box.slideDown('fast');
+    } else {
+      box.slideUp('fast', function () {
+        corresponder.hide();
+      });
+    }
+    parent.toggleClass('on off');
+    that.toggleClass('on off');
   });
-  // END CODE FOR ON/OFF SWITCHES
+
 
   /* MAKE CHECKBOXES WORK WHEN YOU CLICK THEM */
   $(document).on('change', '.gui-checkbox', function(e) {
