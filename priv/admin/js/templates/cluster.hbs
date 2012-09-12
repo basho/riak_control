@@ -75,7 +75,6 @@
         <td class="switch-box off">
             <div>
                 <div class="gui-switch off"></div>
-                <span>Actions</span>
             </div>
         </td>
         <td class="gui-text ring_pct-box">
@@ -94,38 +93,66 @@
         <td class="gui-text memory-box">
             <div class="membar-bg">
                 <div class="mem-colors">
-                    <div class="erlang-mem mem-color left" name=""></div>
-                    <div class="non-erlang-mem mem-color left" name=""></div>
+                    <div class="erlang-mem mem-color" name=""></div>
+                    <div class="non-erlang-mem mem-color" name=""></div>
                     <div class="unknown-mem"></div>
                 </div>
                 <div class="membar-fg"></div>
             </div>
-            <span class="free-memory left"></span>
+            <span class="free-memory"></span>
         </td>
     </tr>
     <tr class="more-node-actions more-actions-template">
         <td>&nbsp;</td>
-        <td colspan="3" class="more-actions-td">
+        <td colspan="2" class="more-actions-td">
             <div class="actions-box gui-text">
+                <div class="markdown-box left">
+                    <a class="markdown-button action-button pressed disabled">
+                        <span class="action-icon"></span>
+                    </a>
+                    <span class="markdown-label block disabled">Down</span>
+                    <div class="clear"></div>
+                </div>
                 <div class="shutdown-box left">
-                    <a class="shutdown-button left"></a>
-                    <span class="shutdown-label gui-text block left">Stop Node</span>
+                    <a class="shutdown-button action-button">
+                        <span class="action-icon"></span>
+                    </a>
+                    <span class="shutdown-label block">Stop</span>
                     <div class="clear"></div>
                 </div>
                 <div class="leave-cluster-box left">
-                    <a class="leave-cluster-button left"></a>
-                    <span class="leave-cluster-label gui-text block left">Leave Cluster</span>
+                    <a class="leave-cluster-button action-button">
+                        <span class="action-icon"></span>
+                    </a>
+                    <span class="leave-cluster-label block">Leave</span>
                     <div class="clear"></div>
                 </div>
-                <div class="markdown-box left">
-                    <a class="markdown-button left pressed disabled"></a>
-                    <span class="markdown-label gui-text block left disabled">Mark Down</span>
+                
+                <div class="replacement-controls">
+                    <div class="gui-dropdown-wrapper replacement-node-dropdown">
+                        <div class="gui-dropdown-bg gui-text">Replacement Node</div>
+                        <div class="gui-dropdown-cap left"></div>
+                        <select class="gui-dropdown">
+                            <option value="">All</option>
+                        </select>
+                    </div>
                     <div class="clear"></div>
+                    <div class="gui-checkbox-wrapper">
+                        <input class="gui-checkbox" type="checkbox" value="forceleave" />
+                        <span>Force Leave</span>
+                    </div>
+                    
+                    <div class="gui-checkbox-wrapper">
+                        <input class="gui-checkbox" type="checkbox" value="forcereplace" />
+                        <span>Force Replace</span>
+                    </div>
                 </div>
+                
                 <div class="clear"></div>
             </div>
             <div class="clear"></div>
         </td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
     </tr>
 </table>

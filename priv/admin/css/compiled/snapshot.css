@@ -36,3 +36,31 @@ CSS to be applied ONLY on the snapshot page
   float: left;
   margin-right: 25px;
 }
+/* RESPONSIVE MEDIA QUERIES */
+@media screen and (max-width : 899px) {
+  #health-indicator {
+    width: 250px;
+    height: 249px;
+  }
+  #healthy-cluster section,
+  #unhealthy-cluster section {
+    padding-left: 275px;
+  }
+}
+@media screen and (max-width : 499px) {
+  .health-info {
+    text-align: center;
+  }
+  #health-indicator {
+    margin: 0 auto;
+    float: none;
+    display: block;
+  }
+  #healthy-cluster section,
+  #unhealthy-cluster section {
+    padding-left: 0;
+    margin: 0 auto;
+    text-align: left;
+  }
+}
+/* END RESPONSIVE MEDIA QUERIES */

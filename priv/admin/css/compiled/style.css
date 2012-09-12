@@ -177,6 +177,8 @@ h1 {
   font-size: 48px;
   letter-spacing: 0;
   padding-bottom: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 h2 {
   font-size: 38px;
@@ -362,7 +364,7 @@ th {
   width: auto;
   height: auto;
   background: transparent;
-  margin: 75px 0 8px 0;
+  margin: 75px auto 8px;
   z-index: 1;
 }
 #content-well {
@@ -545,6 +547,38 @@ input.gui-rect-button:active {
 .gui-switch.off {
   background-position: left bottom;
 }
+.gui-checkbox-wrapper {
+  width: auto;
+  height: 24px;
+  background: url("/admin/ui/images/checkbox-sprite.png") left top no-repeat transparent;
+  vertical-align: middle;
+  margin-top: 5px;
+}
+.gui-checkbox-wrapper span {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  font-weight: bold;
+  display: inline-block;
+  margin: 5px 0 0 8px;
+  color: #efefef;
+}
+.gui-checkbox {
+  width: 25px;
+  height: 24px;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  display: inline-block;
+  float: left;
+  margin: 0;
+}
+.gui-checkbox[checked=checked],
+.gui-checkbox-wrapper .gui-text {
+  width: auto;
+  height: 24px;
+  display: block;
+  float: left;
+  padding-left: 5px;
+  font-size: 15px;
+}
 .pagination {
   text-align: center;
   font-size: 12px;
@@ -613,7 +647,7 @@ input.gui-rect-button:active {
   filter: alpha(opacity=100);
 }
 .pagination li.disabled .paginator:hover,
-.pagination li.disapled .paginator:active,
+.pagination li.disabled .paginator:active,
 .pageNumber.active:hover,
 .pageNumber.active:active {
   background: #434343;
@@ -681,6 +715,9 @@ input.gui-rect-button:active {
 .gui-light {
   background: url("/admin/ui/images/light-sprite.png") left top no-repeat transparent;
   padding: 9px 0 9px 33px;
+  min-height: 14px;
+  min-width: 14px;
+  display: inline-block;
 }
 .gui-light.gray {
   background-position: -4px -145px;
@@ -718,4 +755,67 @@ input.gui-rect-button:active {
 .italic {
   font-family: 'noticia', georgia, serif;
   font-style: italic;
+}
+.left {
+  float: left;
+}
+.disabled {
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+}
+.unreachable {
+  color: #f05f5f;
+}
+@media screen and (min-width : 1100px) {
+  #wrapper {
+    width: 1100px;
+  }
+}
+@media screen and (max-width : 699px) {
+  h1 {
+    font-size: 36px;
+    letter-spacing: 0;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  h2 {
+    font-size: 26px;
+    letter-spacing: 0;
+    padding-bottom: 12px;
+    color: #efefef;
+  }
+  h3 {
+    font-family: 'noticia', georgia, serif;
+    font-size: 16px;
+    letter-spacing: 0;
+    padding-bottom: 8px;
+    color: #ccc;
+    font-style: italic;
+  }
+  .gui-field,
+  .gui-input {
+    margin-right: 0;
+  }
+  .side-line {
+    width: 18%;
+  }
+  .title-box {
+    width: 64%;
+  }
+}
+@media screen and (max-width : 699px) {
+  #content-well {
+    padding: 5px 15px 0;
+  }
+  #riak-control-logo {
+    width: 212px;
+  }
+}
+@media screen and (max-width : 499px) {
+  h1 {
+    font-size: 30px;
+    letter-spacing: 0;
+    padding-bottom: 5px;
+  }
 }

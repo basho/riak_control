@@ -86,9 +86,9 @@ $(document).ready(function() {
   $(document).on('change', '.gui-checkbox', function(e) {
       var me = $(this), parent = me.parent(); checked = me.attr('checked');
       if (checked) {
-          parent.css('background-position', 'left top');
-      } else {
           parent.css('background-position', 'left bottom');
+      } else {
+          parent.css('background-position', 'left top');
       }
   });
 

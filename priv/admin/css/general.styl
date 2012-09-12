@@ -22,6 +22,8 @@ h1, h2, h3
 
 h1
   hSize(48px, 0, 5px)
+  padding-left  : 15px
+  padding-right : 15px
 
 h2
   hSize(38px, 0, 12px)
@@ -146,7 +148,7 @@ th
 #wrapper
   dimensions()
   background : transparent
-  margin     : 75px 0 8px 0
+  margin     : 75px auto 8px
   z-index    : 1
 
 #content-well
@@ -310,8 +312,41 @@ input.gui-point-button:active, input.gui-rect-button:active
   &.off
     background-position : left bottom
 
-
 /* END CODE FOR TOGGLE SWITCHES */
+
+/* CODE FOR CHECKBOXES */
+
+.gui-checkbox-wrapper
+  dimensions(auto, 24px)
+  background     : url('/admin/ui/images/checkbox-sprite.png') left top no-repeat transparent
+  vertical-align : middle
+  margin-top     : 5px
+  
+  span
+    headline-bold()
+    display    : inline-block
+    margin     : 5px 0 0 8px
+    color      : lightGray
+
+.gui-checkbox
+  dimensions(25px, 24px)
+  opaque(0)
+  display : inline-block
+  float   : left
+  margin  : 0
+  
+.gui-checkbox[checked=checked]
+  
+  
+
+.gui-checkbox-wrapper .gui-text
+  dimensions(auto, 24px)
+  display      : block
+  float        : left
+  padding-left : 5px
+  font-size    : 15px
+
+/* END CODE FOR CHECKBOXES */
 
 /* CODE FOR PAGINATION */
 .pagination
@@ -361,7 +396,7 @@ input.gui-point-button:active, input.gui-rect-button:active
 .paginator.pageNumber:hover, .paginator.pageNumber:active, .pageNumber.active
   opaque(1)
 
-.pagination li.disabled .paginator:hover, .pagination li.disapled .paginator:active, .pageNumber.active:hover, .pageNumber.active:active
+.pagination li.disabled .paginator:hover, .pagination li.disabled .paginator:active, .pageNumber.active:hover, .pageNumber.active:active
   gradient(#616161, #434343)
   cursor : default
 
@@ -418,6 +453,9 @@ input.gui-point-button:active, input.gui-rect-button:active
 .gui-light
   background : url('/admin/ui/images/light-sprite.png') left top no-repeat transparent
   padding    : 9px 0 9px 33px
+  min-height : 14px
+  min-width  : 14px
+  display    : inline-block
   
   &.gray
     background-position : -4px -145px
@@ -456,3 +494,61 @@ input.gui-point-button:active, input.gui-rect-button:active
 .italic
   copy-font()
   font-style : italic
+
+.left
+  float : left
+  
+.disabled
+  opaque(.4)
+  
+.unreachable
+  color : riakred
+
+
+/* RESPONSIVE MEDIA QUERIES */
+
+@media screen and (min-width : 1100px)
+
+  #wrapper
+    width : 1100px
+
+@media screen and (max-width : 699px)
+
+  h1
+    hSize(36px, 0, 5px)
+    padding-left  : 15px
+    padding-right : 15px
+
+  h2
+    hSize(26px, 0, 12px)
+    color : lightGray
+
+  h3
+    copy-font()
+    hSize(16px, 0, 8px)
+    color      : mediumGray
+    font-style : italic
+    
+  .gui-field, .gui-input
+    margin-right : 0
+    
+  .side-line
+    width : 18%
+    
+  .title-box
+    width : 64%
+    
+@media screen and (max-width : 699px)
+
+  #content-well
+    padding : 5px 15px 0
+    
+  #riak-control-logo
+    width : 212px
+    
+@media screen and (max-width : 499px)
+  
+    h1
+      hSize(30px, 0, 5px)
+    
+/* END RESPONSIVE MEDIA QUERIES */
