@@ -20,21 +20,6 @@ $(document).ready(function() {
     $(this).parent().hide();
   });
 
-  /* SWITCH STYLESHEETS WHEN WE SWITCH PAGES */  
-  $.riakControl.setStylesheet = $.riakControl.setStylesheet || function setStylesheet(pageName) {
-    var stylesheets = $('link[rel=stylesheet]');
-    stylesheets.each(function (index, item) {
-      var that      = $(this),
-          ref       = that.attr('href'),
-          parsedRef = ref.slice(ref.lastIndexOf('/'));
-      parsedRef = parsedRef.slice(1, parsedRef.indexOf('.css'));
-      if (parsedRef !== pageName && parsedRef !== 'style') {
-        $(this).remove();
-      }
-    });
-    $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/compiled/' + pageName + '.css" />')
-  }
-
   /* MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS */
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {

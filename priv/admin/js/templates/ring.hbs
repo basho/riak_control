@@ -1,71 +1,76 @@
-<section id="title-container">
-  <div class="side-line"></div>
-  <div class="title-box">
-    <span class="vert-border-left"></span>
-    <h1 id="ring-headline" class="gui-headline-bold page-title">Current Ring</h1>
-    <span class="vert-border-right"></span>
-  </div>
-  <div class="side-line">
-    {{outlet partitionFilter}}
-  </div>
-  <div class="clear"></div>
-</section>
 
-<ul class="pagination gui-text">
-  <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
-  {{#each pages}}
-    {{view RiakControl.PaginationItemView contentBinding="this"}}
-  {{/each}}
-  <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
-</ul>
-<div class="cut"></div>
-<div id="partition-list">
-    <table class="list-table" id="ring-table">
-        <thead>
-            <tr class="table-head has-cut">
-                <th><h3>#</h3></th>
-                <th><h3>Owner Node</h3></th>
-                <th><h3>KV</h3></th>
-                <th><h3>Pipe</h3></th>
-                <th><h3>Search</h3></th>
-            </tr>
-        </thead>
-        {{#collection RiakControl.PartitionView contentBinding="controller.paginatedContent"}}
-          {{#with view.content}}
-          <td class="partition-number gui-text">{{i}}</td>
-          <td class="owner-box gui-text">
-              <div class="owner gui-field">{{node}}</div>
-              <div class="partition-index hide">{{index}}</div>
-          </td>
-          {{/with}}
-          {{#with view}}
-          <td class="kv-box gui-text">
-              <a {{bindAttr class="kvIndicator lightClasses"}}>
-                  <span class="kv-status">{{kvStatus}}</span>
-                  <span class="hide fallback-to"></span>
-              </a>
-          </td>
-          <td class="pipe-box gui-text">
-              <a {{bindAttr class="pipeIndicator lightClasses"}}>
-                  <span class="pipe-status">{{pipeStatus}}</span>
-                  <span class="hide fallback-to"></span>
-              </a>
-          </td>
-          <td class="search-box gui-text">
-              <a {{bindAttr class="searchIndicator lightClasses"}}>
-                  <span class="search-status">{{searchStatus}}</span>
-                  <span class="hide fallback-to"></span>
-              </a>
-          </td>
-          {{/with}}
-        {{/collection}}
-    </table>
+<div id="ring-page">
+
+  <section id="title-container">
+    <div class="side-line"></div>
+    <div class="title-box">
+      <span class="vert-border-left"></span>
+      <h1 id="ring-headline" class="gui-headline-bold page-title">Current Ring</h1>
+      <span class="vert-border-right"></span>
+    </div>
+    <div class="side-line">
+      {{outlet partitionFilter}}
+    </div>
+    <div class="clear"></div>
+  </section>
+
+  <ul class="pagination gui-text">
+    <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
+    {{#each pages}}
+      {{view RiakControl.PaginationItemView contentBinding="this"}}
+    {{/each}}
+    <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
+  </ul>
+  <div class="cut"></div>
+  <div id="partition-list">
+      <table class="list-table" id="ring-table">
+          <thead>
+              <tr class="table-head has-cut">
+                  <th><h3>#</h3></th>
+                  <th><h3>Owner Node</h3></th>
+                  <th><h3>KV</h3></th>
+                  <th><h3>Pipe</h3></th>
+                  <th><h3>Search</h3></th>
+              </tr>
+          </thead>
+          {{#collection RiakControl.PartitionView contentBinding="controller.paginatedContent"}}
+            {{#with view.content}}
+            <td class="partition-number gui-text">{{i}}</td>
+            <td class="owner-box gui-text">
+                <div class="owner gui-field">{{node}}</div>
+                <div class="partition-index hide">{{index}}</div>
+            </td>
+            {{/with}}
+            {{#with view}}
+            <td class="kv-box gui-text">
+                <a {{bindAttr class="kvIndicator lightClasses"}}>
+                    <span class="kv-status">{{kvStatus}}</span>
+                    <span class="hide fallback-to"></span>
+                </a>
+            </td>
+            <td class="pipe-box gui-text">
+                <a {{bindAttr class="pipeIndicator lightClasses"}}>
+                    <span class="pipe-status">{{pipeStatus}}</span>
+                    <span class="hide fallback-to"></span>
+                </a>
+            </td>
+            <td class="search-box gui-text">
+                <a {{bindAttr class="searchIndicator lightClasses"}}>
+                    <span class="search-status">{{searchStatus}}</span>
+                    <span class="hide fallback-to"></span>
+                </a>
+            </td>
+            {{/with}}
+          {{/collection}}
+      </table>
+  </div>
+  <div class="cut"></div>
+  <ul class="pagination gui-text">
+    <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
+    {{#each pages}}
+      {{view RiakControl.PaginationItemView contentBinding="this"}}
+    {{/each}}
+    <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
+  </ul>
+  
 </div>
-<div class="cut"></div>
-<ul class="pagination gui-text">
-  <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
-  {{#each pages}}
-    {{view RiakControl.PaginationItemView contentBinding="this"}}
-  {{/each}}
-  <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
-</ul>
