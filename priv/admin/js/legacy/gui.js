@@ -20,13 +20,6 @@ $(document).ready(function() {
     $(this).parent().hide();
   });
 
-  /* ENABLE THE SPLIT BAR */
-  $.riakControl.resizeSplitBar = $.riakControl.resizeSplitBar || function resizeSplitBar() {
-    //var splitBar = $('#split-bar');
-    //var splitBarParent = splitBar.parent();
-    //splitBar.css('height', splitBarParent.css('height'));
-  };
-
   /* SWITCH STYLESHEETS WHEN WE SWITCH PAGES */  
   $.riakControl.setStylesheet = $.riakControl.setStylesheet || function setStylesheet(pageName) {
     var stylesheets = $('link[rel=stylesheet]');
