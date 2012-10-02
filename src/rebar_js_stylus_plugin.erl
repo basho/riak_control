@@ -40,11 +40,15 @@
 %%  out_dir: where to put preprocessed css files
 %%           "priv/www/stylesheets" by default
 %%
+%%  stylesheets: stylus files to compile
+%%           [] by default
+%%
 %% The default settings are the equivalent of:
 %%   {js_stylus, [
-%%               {stylus,   "/usr/local/bin/stylus"},
-%%               {doc_root, "priv/assets/stylesheets"},
-%%               {out_dir,  "priv/www/stylesheets"}
+%%               {stylus,       "/usr/local/bin/stylus"},
+%%               {doc_root,     "priv/assets/stylesheets"},
+%%               {out_dir,      "priv/www/stylesheets"}
+%%               {stylesheets,  []}
 %%              ]}.
 %%
 
@@ -61,14 +65,25 @@
 %% Public API
 %% ===================================================================
 
+
 compile(Config, _AppFile) ->
     Options = options(Config),
+    DocRoot = option(doc_root, Options),
+    Stylesheets = option(stylesheets, Options),
+    Targets = [normalize_path(Stylesheet, DocRoot)
+                || Stylesheet <- Stylesheets],
+    process(Targets, Options).
+
+process([], _Options) ->
+    ok;
+process(Targets, Options) ->
     OutDir = option(out_dir, Options),
     DocRoot = option(doc_root, Options),
     Stylus = option(stylus_path, Options),
     case stylus_is_present(Stylus) of
         true ->
-            Cmd = lists:flatten([Stylus, " -o ", OutDir, " ", DocRoot]),
+            Cmd = lists:flatten([Stylus, " -o ", OutDir, " ",
+                                 string:join(Targets, " ")]),
             ShOpts = [{use_stdout, false}, return_on_error],
             case rebar_utils:sh(Cmd, ShOpts) of
                 {ok, _} ->
@@ -78,7 +93,8 @@ compile(Config, _AppFile) ->
                     rebar_log:log(error, "Stylus asset processing failed failed:~n  ~p~n",
                            [Reason]),
                     rebar_utils:abort()
-            end;
+            end,
+            ok;
         false ->
             rebar_log:log(error,
                 "Bypassing stylesheet processing of ~s: stylus missing.~n", [DocRoot]),
@@ -107,7 +123,8 @@ option(Option, Options) ->
 
 default(doc_root)     -> "priv/assets/stylesheets";
 default(out_dir)      -> "priv/www/stylesheets";
-default(stylus_path)  -> "/usr/local/bin/stylus".
+default(stylus_path)  -> "/usr/local/bin/stylus";
+default(stylesheets)  -> [].
 
 delete_each([]) ->
     ok;
@@ -121,5 +138,7 @@ delete_each([First | Rest]) ->
             rebar_log:log(error, "Failed to delete ~s: ~p\n", [First, Reason])
     end,
     delete_each(Rest).
+
+normalize_path(Path, Basedir) -> filename:join([Basedir, Path]).
 
 stylus_is_present(Stylus) -> filelib:is_file(Stylus).
