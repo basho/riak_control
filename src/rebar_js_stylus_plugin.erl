@@ -96,9 +96,9 @@ process(Targets, Options) ->
             end,
             ok;
         false ->
-            rebar_log:log(error,
+            rebar_log:log(warn,
                 "Bypassing stylesheet processing of ~s: stylus missing.~n", [DocRoot]),
-            {error, missing_stylus}
+            ok
     end.
 
 clean(Config, _AppFile) ->
