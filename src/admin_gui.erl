@@ -94,7 +94,7 @@ get_file(Req) ->
 to_resource(Req,Ctx=index) ->
     Token = riak_control_security:csrf_token(Req, Ctx),
     {ok, Content} = index_dtl:render([{csrf_token, Token}]),
-    {Content, wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; secure; httponly", Req), Ctx};
+    {Content, wrq:set_resp_header("Set-Cookie", "csrf_token="++Token++"; httponly", Req), Ctx};
 
 %% respond to a file request
 to_resource(Req,Ctx) ->
