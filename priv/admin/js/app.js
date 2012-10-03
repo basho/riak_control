@@ -16,17 +16,7 @@ minispade.register('app', function() {
   RiakControl.ApplicationController = Ember.Controller.extend();
 
   RiakControl.ApplicationView = Ember.View.extend({
-    templateName: 'application',
-
-    /**
-     * Ensure that the split bar is resized properly once the
-     * application view is initialized.
-     *
-     * @returns {void}
-     */
-    didInsertElement: function() {
-      $.riakControl.resizeSplitBar();
-    }
+    templateName: 'application'
   });
 
   DS.Model.reopen({
