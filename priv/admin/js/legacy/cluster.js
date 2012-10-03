@@ -154,7 +154,6 @@ $(document).ready(function () {
                     // actual useful messages in.
                     err = "An error occurred";
                     $('#node-error .error-text').html(err);
-                    $('#node-error .error-link').html('View in Logs &raquo;');
                     $('#node-error').show();
                 }
                 enable_adding((y.toLowerCase() === 'success') ? true : false);
