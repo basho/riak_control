@@ -154,7 +154,6 @@ $(document).ready(function () {
                     // actual useful messages in.
                     err = "An error occurred";
                     $('#node-error .error-text').html(err);
-                    $('#node-error .error-link').html('View in Logs &raquo;');
                     $('#node-error').show();
                 }
                 enable_adding((y.toLowerCase() === 'success') ? true : false);
@@ -485,16 +484,18 @@ $(document).ready(function () {
     function cluster_node_row(node) {
         //var id = node.name.split('@')[0];
         var nodename = node.name;
+        var me = node.me;
         var rows = $('#cluster-table [name="' + nodename + '"]') || null;
         var row, extraRow;
-
-        //console.log(node);
 
         // create a new row
         if (rows.length === 0) {
             row = $('.row-template').clone();
             extraRow = $('.more-actions-template').clone();
 
+            if(me) {
+              $(row).find('.gui-switch-container').hide();
+            }
 
             // set the id for this row and display it
             row.attr('name', nodename);

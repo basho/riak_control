@@ -10,90 +10,63 @@ $(document).ready(function() {
 
   /* ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM */
   $(document).on('keyup', '#node-to-add', function (event) {
-      if(event.keyCode === 13){
-          $('#add-node-button').trigger('click');
-      }
+    if(event.keyCode === 13){
+      $('#add-node-button').trigger('click');
+    }
   });
 
   /* MAKE ALL CLOSE ERROR BUTTONS WORK */
   $(document).on('click', '.close-error', function () {
-      $(this).parent().hide();
+    $(this).parent().hide();
   });
 
-  /* ENABLE THE SPLIT BAR */
-  $.riakControl.resizeSplitBar = $.riakControl.resizeSplitBar || function resizeSplitBar() {
-    var splitBar = $('#split-bar');
-    var splitBarParent = splitBar.parent();
-    splitBar.css('height', splitBarParent.css('height'));
-  };
-
-  /* TURN ON TOGGLING FOR THE SPLIT BAR */
-  $(document).on('click', '#split-bar', function() {
-      var nav = $('#navigation'), navwidth = nav.css('width');
-      var navbox = $('#nav-box'), boxwidth = navbox.css('width');
-      if (navwidth === '218px') {
-          nav.animate({"width":"54px"},{queue:false,duration:200});
-          navbox.animate({"width":"62px"},{queue:false,duration:200});
-      } else {
-          nav.animate({"width":"218px"},{queue:false,duration:200});
-          navbox.animate({"width":"226px"},{queue:false,duration:200});
-      }
-  });
-
+  /* MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS */
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {
-      var me = $("#" + id), indicator = $('#active-nav');
-      indicator.animate({"top":me.position().top},{queue:false,duration:200});
+      var lis = $('nav li'), activeli = $("#" + id);
+      lis.each(function (index, item) {
+        if (item !== activeli[0]) {
+          $(item).removeClass('active');
+        } else {
+          $(item).addClass('active');
+        }
+      });
     });
   };
 
+  /* UPDATE DROPDOWN MENUS */
   $.riakControl.updateDropdown = $.riakControl.updateDropdown || function updateDropdown (me, val) {
     Ember.run.next(function() {
       var textSpot = me.prev().prev(); textSpot.text(val);
     });
   };
 
-  /*
-  MAKE ON/OFF SWITCHES WORK
-  To set up: each div.gui-switch should contain two radio buttons.  One with an
-  'off' value and one with an 'on' value.  Whichever is checked should be controlled
-  by whether the node is actually on or off.
-  */
-  // Define a re-usable function to use any time a new node is created.
-  // If the node is on or off, set switch class accordingly.
-  $.riakControl.setGuiSwitch = $.riakControl.setGuiSwitch || function setGuiSwitch (i, e) {
-      var me = $(e),
-          isOn = (me.find('input[checked=checked]').attr('value').toLowerCase() === 'on');
-      if (isOn) {
-          me.removeClass('off').addClass('on');
-      } else {
-          me.removeClass('on').addClass('off');
-      }
-  };
-
-  // When the document is ready, run setGuiSwitch on all on/off switches
-  $('.gui-switch').each($.riakControl.setGuiSwitch);
-  // When a switch changes, alter its class accordingly.
-  $('.gui-switch input').on('change', function(e) {
-      var that = $(this),
-          theValue = that.attr('value').toLowerCase(),
-          isChecked = (that.attr('checked') === 'checked'),
-          theParent = that.closest('.gui-switch');
-      if (theValue === 'on') {
-          theParent.removeClass('off').addClass('on');
-      } else if (theValue === 'off') {
-          theParent.removeClass('on').addClass('off');
-      }
+  /* MAKE HIDE/SHOW SWITCHES WORK */
+  $(document).on('click', '.gui-switch', function (e) {
+    var that = $(this),
+        parent = that.parent().parent(),
+        corresponder = that.closest('tr').next(),
+        box = corresponder.find('.actions-box');
+    if (that.hasClass('off')) {
+      corresponder.show();
+      box.slideDown('fast');
+    } else {
+      box.slideUp('fast', function () {
+        corresponder.hide();
+      });
+    }
+    parent.toggleClass('on off');
+    that.toggleClass('on off');
   });
-  // END CODE FOR ON/OFF SWITCHES
+
 
   /* MAKE CHECKBOXES WORK WHEN YOU CLICK THEM */
   $(document).on('change', '.gui-checkbox', function(e) {
       var me = $(this), parent = me.parent(); checked = me.attr('checked');
       if (checked) {
-          parent.css('background-position', 'left top');
-      } else {
           parent.css('background-position', 'left bottom');
+      } else {
+          parent.css('background-position', 'left top');
       }
   });
 

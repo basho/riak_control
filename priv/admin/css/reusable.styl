@@ -1,0 +1,95 @@
+
+/* Variables */
+coverup     = rgba(0, 0, 0, .85)
+darkened    = rgba(0, 0, 0, .3)
+darkGray    = #2d2d2d
+mediumGray  = #cccccc
+lightGray   = #efefef
+lightWhite  = rgba(255, 255, 255, .18)
+highlight   = rgba(255, 255, 255, .08)
+offlight    = #767676
+riakorange  = #f99d33
+lightorange = lighten(riakorange, 33%)
+riakred     = #f05f5f
+
+/* End Variables */
+
+/* Functions */
+vendor(prop, args)
+  -webkit-{prop} : args
+  -moz-{prop}    : args
+  {prop}         : args
+  
+gradient(lightcolor, darkcolor)
+  background : darkcolor
+  background : -moz-linear-gradient(    top,                   lightcolor 0%, darkcolor 100%)
+  background : -webkit-gradient(linear, left top, left bottom, color-stop(0%, lightcolor), color-stop(100%, darkcolor))
+  background : -webkit-linear-gradient( top,                   lightcolor 0%, darkcolor 100%)
+  background : -o-linear-gradient(      top,                   lightcolor 0%, darkcolor 100%)
+  background : -ms-linear-gradient(     top,                   lightcolor 0%, darkcolor 100%)
+  background : linear-gradient(         top bottom,            lightcolor 0%, darkcolor 100%)
+
+corners(curve = 4px)
+  vendor('border-radius', curve)
+  
+singleCorner(vert, horiz, args)
+  -webkit-border-{vert}-{horiz}-radius : args
+  -moz-border-radius-{vert}{horiz}     : args
+  border-{vert}-{horiz}-radius         : args
+
+textStroke(args = 1px #fff)
+  vendor('text-stroke', args)
+
+textShadow(args = 0 2px 0 #000)
+  text-shadow : args
+
+opaque(dec = 1)
+  opacity : dec
+  filter  : unquote('alpha(opacity=' + (dec * 100) + ')')
+
+repeatingBg(path, bgcolor = transparent)
+  background : url(path) left top repeat bgcolor
+
+hSize(fs, ls, pb) // General stylings for h1, h2, h3, etc tags
+  font-size      : fs
+  letter-spacing : ls
+  padding-bottom : pb
+
+dimensions(wUnit = auto, hUnit = auto)
+  width  : wUnit
+  height : hUnit
+
+absoluteLeft(lUnit, tUnit)
+  position : absolute
+  left     : lUnit
+  top      : tUnit
+
+absoluteRight(rUnit, tUnit)
+  position : absolute
+  right    : rUnit
+  top      : tUnit
+
+transition(args)
+  -webkit-transition : args
+  -moz-transition    : args
+  -o-transition      : args
+  transition         : args
+
+headline-font()
+  font-family : 'titillium', helvetica, arial, sans-serif
+  
+copy-font()
+  font-family : 'noticia', georgia, serif
+  
+monospace()
+  font-family : 'menlo', 'consolas', 'monaco', monospace
+
+copy-bold()
+  copy-font()
+  font-weight : bold
+
+headline-bold()
+  headline-font()
+  font-weight : bold
+
+/* End Functions */
