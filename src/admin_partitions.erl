@@ -66,33 +66,5 @@ content_types_provided (Req,C) ->
 %% valid | invalid | joining | leaving | exiting
 to_json (Req,C=Partitions) ->
     {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Details=[{struct,node_ring_details(P,Nodes)} || P <- Partitions],
+    Details=[{struct,riak_control_formatting:node_ring_details(P,Nodes)} || P <- Partitions],
     {mochijson2:encode({struct,[{partitions,Details}]}), Req,C}.
-
-%% return a proplist of details for a given index
-node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
-    case lists:keyfind(P#partition_info.owner,2,Nodes) of
-        #member_info{node=Node,status=Status,reachable=Reachable} ->
-            Handoffs = P#partition_info.handoffs,
-            VnodeStatuses = [{atom_to_list(VnodeName) ++
-                              "_vnode_status", vnode_status(VnodeName, VnodeStatus, Handoffs)}
-                             || {VnodeName, VnodeStatus} <- Vnodes],
-            NodeDetails = [{index,list_to_binary(integer_to_list(Index))},
-                       {i,P#partition_info.partition},
-                       {node,Node},
-                       {status,Status},
-                       {reachable,Reachable}
-            ],
-            NodeDetails ++ VnodeStatuses;
-        false -> []
-    end.
-
-vnode_status(Service, Status, Handoffs) ->
-    Vnodes = riak_core:vnode_modules(),
-    Worker = proplists:get_value(Service, Vnodes),
-    case proplists:get_value(Worker, Handoffs) of
-        undefined ->
-            Status;
-        _ ->
-            handoff
-    end.
