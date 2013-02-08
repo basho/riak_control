@@ -101,15 +101,8 @@ process(Targets, Options) ->
             ok
     end.
 
-clean(Config, _AppFile) ->
-    Options = options(Config),
-    OutDir = option(out_dir, Options),
-    case rebar_utils:find_files(OutDir, ".*\\.css$") of
-        [] ->
-            ok;
-        Targets ->
-            delete_each(Targets)
-    end.
+clean(_Config, _AppFile) ->
+    ok.
 
 %% ===================================================================
 %% Internal functions
@@ -125,19 +118,6 @@ default(doc_root)     -> "priv/assets/stylesheets";
 default(out_dir)      -> "priv/www/stylesheets";
 default(stylus_path)  -> "/usr/local/bin/stylus";
 default(stylesheets)  -> [].
-
-delete_each([]) ->
-    ok;
-delete_each([First | Rest]) ->
-    case file:delete(First) of
-        ok ->
-            ok;
-        {error, enoent} ->
-            ok;
-        {error, Reason} ->
-            rebar_log:log(error, "Failed to delete ~s: ~p\n", [First, Reason])
-    end,
-    delete_each(Rest).
 
 normalize_path(Path, Basedir) -> filename:join([Basedir, Path]).
 
