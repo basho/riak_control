@@ -330,8 +330,11 @@ minispade.register('ring', function() {
      * @returns {void}
      */
     updateDisplay: function() {
-      var val = this.get('controller.selectedPartitionFilter.name');
-      $.riakControl.updateDropdown(this.$(), val);
+      var val  = this.get('controller.selectedPartitionFilter.name'),
+          item = this.$();
+      Ember.run.next(function() {
+        item.prev().prev().text(val);
+      });
     }.observes('controller.selectedPartitionFilter'),
 
     /**
