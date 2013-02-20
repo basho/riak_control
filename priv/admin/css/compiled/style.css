@@ -714,7 +714,7 @@ input.gui-rect-button:active {
 }
 .gui-light {
   background: url("/admin/ui/images/light-sprite.png") left top no-repeat transparent;
-  padding: 9px 0 9px 33px;
+  padding: 11px 0 9px 33px;
   min-height: 14px;
   min-width: 14px;
   display: inline-block;
@@ -766,9 +766,12 @@ input.gui-rect-button:active {
 .unreachable {
   color: #f05f5f;
 }
+.inline-block {
+  display: inline-block;
+}
 @media screen and (min-width : 1100px) {
   #wrapper {
-    width: 1100px;
+    max-width: 1500px;
   }
 }
 @media screen and (max-width : 699px) {
@@ -849,14 +852,14 @@ input.gui-rect-button:active {
   color: #efefef;
 }
 #snapshot-page #health-indicator {
-  width: 311px;
-  height: 309px;
+  width: 337px;
+  height: 310px;
   float: left;
   margin-right: 25px;
 }
 @media screen and (max-width : 899px) {
   #snapshot-page #health-indicator {
-    width: 250px;
+    width: 279px;
     height: 249px;
   }
   #snapshot-page #healthy-cluster section,
@@ -880,6 +883,14 @@ input.gui-rect-button:active {
     text-align: left;
   }
 }
+#cluster-page #current-area,
+#cluster-page #planned-area {
+  float: left;
+  width: 49%;
+}
+#cluster-page #current-area {
+  margin: 0 2% 45px 0;
+}
 #cluster-page h3 {
   font-family: 'noticia', georgia, serif;
 }
@@ -889,6 +900,9 @@ input.gui-rect-button:active {
 }
 #cluster-page .add-node-table tr td {
   padding-top: 25px;
+}
+#cluster-page #node-list {
+  margin-top: 20px;
 }
 #cluster-page .more-node-actions {
   display: none;
@@ -923,12 +937,30 @@ input.gui-rect-button:active {
   border-top-right-radius: 4px;
   background: rgba(0,0,0,0.3);
 }
-#cluster-page .status-box {
-  width: 170px;
-  height: auto;
+#cluster-page .switch-box .gui-switch-container {
+  margin-top: 1px;
+}
+#cluster-page .name-box .field-container {
+  min-width: 75%;
+  margin-left: 4%;
 }
 #cluster-page .actions-header {
   padding-left: 6px;
+}
+#cluster-page .stage-button {
+  display: block;
+  background: url("/admin/ui/images/stagebutton-sprite.png") center 4px no-repeat transparent;
+  width: 58px;
+  height: 38px;
+}
+#cluster-page .stage-button:hover {
+  background-position: center -36px;
+}
+#cluster-page .stage-button:active {
+  background-position: center -78px;
+}
+#cluster-page .staged .stage-button {
+  background-position: center -78px;
 }
 #cluster-page .pct-box {
   margin-top: 8px;
@@ -1178,9 +1210,49 @@ input.gui-rect-button:active {
   float: left;
   margin-bottom: 5px;
 }
+@media screen and (min-width : 1300px) {
+  #cluster-page .gui-light {
+    vertical-align: middle;
+    padding: 9px 0 9px 14px;
+  }
+  #cluster-page .gui-light span {
+    display: none;
+  }
+  #cluster-page .name-box .field-container {
+    vertical-align: middle;
+    padding-top: 5px;
+  }
+  #cluster-page .ring_pct-box,
+  #cluster-page .memory-box {
+    width: auto;
+  }
+  #cluster-page .free-memory {
+    display: none;
+  }
+}
+@media screen and (min-width : 1500px) {
+  #cluster-page .gui-light {
+    padding-left: 33px;
+  }
+}
+@media screen and (max-width : 1300px) {
+  #cluster-page #current-area,
+  #cluster-page #planned-area {
+    float: none;
+    width: auto;
+  }
+  #cluster-page #current-area {
+    margin-right: 0;
+  }
+}
 @media screen and (min-width : 1100px) {
   #cluster-page .replacement-controls {
     width: 250px;
+  }
+}
+@media screen and (max-width : 1050px) {
+  #cluster-page .name-box .field-container {
+    min-width: 68%;
   }
 }
 @media screen and (max-width : 959px) {
@@ -1207,18 +1279,24 @@ input.gui-rect-button:active {
     text-align: center;
   }
 }
-@media screen and (max-width : 699px) {
-  #cluster-page .status-box,
-  #cluster-page .ring_pct-box,
-  #cluster-page .memory-box {
-    width: auto;
-  }
-  #cluster-page .status-box {
-    text-align: center;
+@media screen and (max-width : 890px) {
+  #cluster-page .gui-light {
+    vertical-align: middle;
+    padding: 9px 0 9px 14px;
   }
   #cluster-page .gui-light span {
     display: none;
   }
+  #cluster-page .name-box .field-container {
+    vertical-align: middle;
+    padding-top: 5px;
+  }
+  #cluster-page .ring_pct-box,
+  #cluster-page .memory-box {
+    width: auto;
+  }
+}
+@media screen and (max-width : 699px) {
   #cluster-page .markdown-box,
   #cluster-page .shutdown-box,
   #cluster-page .leave-cluster-box {
