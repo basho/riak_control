@@ -1,4 +1,4 @@
-/* 
+/*
 Main Stylus CSS File
 Imports and arranges all other stylus files.
 */
@@ -928,6 +928,8 @@ input.gui-point-button-right:active {
   color: #efefef;
 }
 #snapshot-page #health-indicator {
+  width: 337px;
+  height: 310px;
   float: left;
   margin-right: 25px;
 }
@@ -940,12 +942,8 @@ input.gui-point-button-right:active {
   height: 309px;
 }
 @media screen and (max-width : 899px) {
-  #snapshot-page #healthy-cluster #health-indicator {
+  #snapshot-page #health-indicator {
     width: 279px;
-    height: 249px;
-  }
-  #snapshot-page #unhealthy-cluster #health-indicator {
-    width: 250px;
     height: 249px;
   }
   #snapshot-page #healthy-cluster section,
@@ -969,33 +967,13 @@ input.gui-point-button-right:active {
     text-align: left;
   }
 }
-#cluster-page .warning {
-  display: block;
-  padding: 10px 0 0;
-  color: #f05f5f;
-}
 #cluster-page #current-area,
 #cluster-page #planned-area {
   float: left;
-  width: 47%;
+  width: 49%;
 }
 #cluster-page #current-area {
-  margin: 0 0 45px 0;
-}
-#cluster-page #area-separator {
-  width: 6%;
-  height: 450px;
-  float: left;
-  text-align: center;
-}
-#cluster-page #area-separator div {
-  margin: 0 auto;
-  width: 1px;
-  height: 100%;
-  background: rgba(255,255,255,0.18);
-}
-#cluster-page span.gui-text-flat {
-  line-height: 1.5;
+  margin: 0 2% 45px 0;
 }
 #cluster-page h3 {
   font-family: 'noticia', georgia, serif;
@@ -1064,8 +1042,14 @@ input.gui-point-button-right:active {
 #cluster-page .add-node-table tr td {
   padding-top: 25px;
 }
-#cluster-page .list-header {
-  min-height: 18px;
+#cluster-page #node-list {
+  margin-top: 20px;
+}
+#cluster-page .more-node-actions {
+  display: none;
+  -webkit-box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
 }
 #cluster-page .list-header li {
   float: left;
@@ -1078,121 +1062,28 @@ input.gui-point-button-right:active {
 #cluster-page #planned-list {
   margin-top: 20px;
 }
-#cluster-page #node-list .item1 {
-  width: 18%;
+#cluster-page .switch-box div {
+  width: 88px;
+  padding-left: 4px;
 }
-#cluster-page #node-list .item2 {
-  width: 42%;
+#cluster-page .switch-box.on > div {
+  -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+  -moz-box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+  -webkit-border-top-left-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+  border-top-left-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  border-top-right-radius: 4px;
+  background: rgba(0,0,0,0.3);
 }
-#cluster-page #node-list .item3 {
-  width: 18%;
+#cluster-page .switch-box .gui-switch-container {
+  margin-top: 1px;
 }
-#cluster-page #node-list .item4 {
-  width: 22%;
-}
-#cluster-page .node {
-  margin-bottom: 10px;
-  position: relative;
-}
-#cluster-page .node > div {
-  float: left;
-}
-#cluster-page .node > div.clear {
-  float: none;
-}
-#cluster-page .toggle-container {
-  overflow: visible;
-  padding: 0;
-}
-#cluster-page .toggle-container .actions-toggle {
-  width: 82px;
-  height: 30px;
-  position: relative;
-  overflow: visible;
-  padding: 0;
-  background: url("/admin/ui/images/actions-toggle-text.png") -5px top no-repeat rgba(0,0,0,0.3);
-  margin-top: 3px;
-}
-#cluster-page .toggle-container .actions-toggle a {
-  width: 48px;
-  height: 34px;
-  -webkit-transition: left 0.2s ease;
-  -moz-transition: left 0.2s ease;
-  -ms-transition: left 0.2s ease;
-  -webkit-transition: left 0.2s ease;
-  -moz-transition: left 0.2s ease;
-  -o-transition: left 0.2s ease;
-  transition: left 0.2s ease;
-  position: absolute;
-  display: inline-block;
-  background: url("/admin/ui/images/actions-toggle-slider.png") left top no-repeat transparent;
-  top: 0;
-  left: -5px;
-}
-#cluster-page .open .actions-toggle a {
-  -webkit-transition: left 0.2s ease;
-  -moz-transition: left 0.2s ease;
-  -ms-transition: left 0.2s ease;
-  -webkit-transition: left 0.2s ease;
-  -moz-transition: left 0.2s ease;
-  -o-transition: left 0.2s ease;
-  transition: left 0.2s ease;
-  left: 38px;
-}
-#cluster-page .name-box {
-  overflow: visible;
-}
-#cluster-page .ring-pct,
-#cluster-page .used-memory,
-#cluster-page .action-name {
-  font-family: 'menlo', 'consolas', 'monaco', monospace;
-}
-#cluster-page .used-memory {
-  display: inline-block;
-  padding: 0 0 0 5px;
-  vertical-align: middle;
-}
-#cluster-page .action-name {
-  display: inline-block;
-  padding-top: 8px;
-}
-#cluster-page .replacing-box .field-container {
-  width: 100%;
-}
-#cluster-page #planned-list .item1 {
-  width: 40%;
-}
-#cluster-page #planned-list .item2 {
-  width: 17%;
-}
-#cluster-page #planned-list .item3 {
-  width: 17%;
-}
-#cluster-page #planned-list .item4 {
-  width: 26%;
-}
-#cluster-page .plan-details-header {
-  margin-top: 30px;
-  padding: 10px 0;
-}
-#cluster-page .accept-plan {
-  position: relative;
-  padding: 15px 0;
-  margin-top: 15px;
-}
-#cluster-page .clear-plan-box {
-  border-top: 1px solid rgba(255,255,255,0.18);
-  margin-top: 25px;
-  padding-top: 25px;
-}
-#cluster-page .clear-plan-box a {
-  display: block;
-  margin-top: 15px;
-  margin-left: -5px;
-}
-#cluster-page .plan-details {
-  font-family: 'noticia', georgia, serif;
-  line-height: 1.5;
+#cluster-page .name-box .field-container {
+  min-width: 75%;
+  margin-left: 4%;
 }
 #cluster-page #commit-button {
   position: absolute;
@@ -1201,6 +1092,21 @@ input.gui-point-button-right:active {
 }
 #cluster-page .button-column {
   text-align: right;
+}
+#cluster-page .stage-button {
+  display: block;
+  background: url("/admin/ui/images/stagebutton-sprite.png") center 4px no-repeat transparent;
+  width: 58px;
+  height: 38px;
+}
+#cluster-page .stage-button:hover {
+  background-position: center -36px;
+}
+#cluster-page .stage-button:active {
+  background-position: center -78px;
+}
+#cluster-page .staged .stage-button {
+  background-position: center -78px;
 }
 #cluster-page .pct-box {
   margin-top: 8px;
@@ -1428,18 +1334,53 @@ input.gui-point-button-right:active {
   display: block;
   width: 50%;
 }
-#cluster-page .no-joining-nodes {
-  padding-top: 6px;
+@media screen and (min-width : 1300px) {
+  #cluster-page .gui-light {
+    vertical-align: middle;
+    padding: 9px 0 9px 14px;
+  }
+  #cluster-page .gui-light span {
+    display: none;
+  }
+  #cluster-page .name-box .field-container {
+    vertical-align: middle;
+    padding-top: 5px;
+  }
+  #cluster-page .ring_pct-box,
+  #cluster-page .memory-box {
+    width: auto;
+  }
+  #cluster-page .free-memory {
+    display: none;
+  }
 }
-#cluster-page .slide-up {
-  margin-top: -35px;
+@media screen and (min-width : 1500px) {
+  #cluster-page .gui-light {
+    padding-left: 33px;
+  }
 }
-#cluster-page .semi-transparent {
-  opacity: 0.32;
-  filter: alpha(opacity=32);
+@media screen and (max-width : 1300px) {
+  #cluster-page #current-area,
+  #cluster-page #planned-area {
+    float: none;
+    width: auto;
+  }
+  #cluster-page #current-area {
+    margin-right: 0;
+  }
 }
-@media screen and (max-width : 1200px) {
-  #cluster-page #area-separator {
+@media screen and (min-width : 1100px) {
+  #cluster-page .replacement-controls {
+    width: 250px;
+  }
+}
+@media screen and (max-width : 1050px) {
+  #cluster-page .name-box .field-container {
+    min-width: 68%;
+  }
+}
+@media screen and (max-width : 959px) {
+  #cluster-page .free-memory {
     display: none;
   }
   #cluster-page #current-area,
@@ -1479,35 +1420,10 @@ input.gui-point-button-right:active {
     width: 350px;
   }
 }
-@media screen and (max-width : 950px) {
-  #cluster-page #node-list .item1 {
-    width: 100px;
-  }
-  #cluster-page #node-list .item2 {
-    width: 400px;
-  }
-  #cluster-page #node-list .item3 {
-    width: 100px;
-  }
-  #cluster-page #node-list .item4 {
-    width: 150px;
-  }
-  #cluster-page #planned-list .item1 {
-    width: 275px;
-  }
-  #cluster-page #planned-list .item2 {
-    width: 100px;
-  }
-  #cluster-page #planned-list .item3 {
-    width: 100px;
-  }
-  #cluster-page #planned-list .item4 {
-    width: 225px;
-  }
-}
-@media screen and (max-width : 850px) {
-  #cluster-page #node-list .item1 {
-    width: 100px;
+@media screen and (max-width : 890px) {
+  #cluster-page .gui-light {
+    vertical-align: middle;
+    padding: 9px 0 9px 14px;
   }
   #cluster-page #node-list .item2 {
     width: 300px;
@@ -1524,8 +1440,20 @@ input.gui-point-button-right:active {
   #cluster-page #planned-list .item3 {
     display: none;
   }
-  #cluster-page .used-memory {
-    display: none;
+  #cluster-page .name-box .field-container {
+    vertical-align: middle;
+    padding-top: 5px;
+  }
+  #cluster-page .ring_pct-box,
+  #cluster-page .memory-box {
+    width: auto;
+  }
+}
+@media screen and (max-width : 699px) {
+  #cluster-page .markdown-box,
+  #cluster-page .shutdown-box,
+  #cluster-page .leave-cluster-box {
+    margin-right: 10px;
   }
 }
 @media screen and (max-width : 700px) {

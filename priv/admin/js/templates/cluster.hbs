@@ -34,17 +34,62 @@
         {{/if}}
     </div><!-- #add-node -->
 
-
     <div id="current-area">
         <h2 class="gui-headline">
             Current Cluster
-            <span id="total-number" class="gui-text-flat italic"></span><br/>
+            <span id="total-number" class="gui-text"></span><br/>
         </h2>
-        <section id="node-list">
-            {{#if controller.isLoading}}
-                <div class="spinner-box">
-                    <img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif">
-                    <h4 class="gui-headline-bold">Loading...</h4>
+        <span class="gui-text-flat italic">Click the "Stage" button next to all nodes you wish to change.</span>
+        <div id="node-list" class="hide">
+            <table class="list-table" id="cluster-table">
+                <tr class="table-head has-cut">
+                    <td><h4 class="gui-headline-bold">Stage</h4></td>
+                    <td><h4 class="gui-headline-bold">Name &amp; Status</h4></td>
+                    <td><h4 class="gui-headline-bold actions-header">Actions</h4></td>
+                    <td><h4 class="gui-headline-bold">Partitions</h4></td>
+                    <td><h4 class="gui-headline-bold">RAM Use</h4></td>
+                </tr>
+            </table>
+        </div>
+        <div class="spinner-box">
+            <img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif">
+        </div>
+    </div>
+
+    <div id="planned-area">
+        <h2 class="gui-headline">
+            Planned Cluster
+        </h2>
+        <span class="gui-text-flat italic">This is how your cluster will look after convergence.</span>
+    </div>
+
+    <div class="clear"></div>
+
+    <!-- node template -->
+    <table class="hide">
+        <tr class="node row-template">
+            <td class="gui-text">
+                <a class="stage-button"></a>
+            </td>
+            <td class="name-box gui-text">
+                <a class="gui-light status-light inline-block">
+                    <span class="status">Joining...</span>
+                </a><div class="gui-text field-container inline-block">
+                    <div class="name gui-field"></div>
+                </div>
+            </td>
+            <!-- New switch template -->
+            <td class="switch-box off">
+                <div class="gui-switch-container">
+                    <div class="gui-switch off"></div>
+                </div>
+            </td>
+            <td class="gui-text ring_pct-box">
+                <div class="left pct-arrows pct-static">
+                    <div class="green-pct-arrow"></div>
+                </div>
+                <div class="left gui-text pct-box">
+                    <div class="i-block ring_pct"></div>
                 </div>
             {{else}}
                 <ul class="list-header">
@@ -54,31 +99,67 @@
                     <li class="item4"><h4 class="gui-headline-bold">RAM Usage</h4></li>
                 </ul>
                 <div class="clear"></div>
-                {{collection RiakControl.CurrentClusterView contentBinding="activeCurrentCluster"}}
-            {{/if}}
-        </section>
-    </div>
+            </td>
+            <td class="gui-text memory-box">
+                <div class="membar-bg">
+                    <div class="mem-colors">
+                        <div class="erlang-mem mem-color" name=""></div>
+                        <div class="non-erlang-mem mem-color" name=""></div>
+                        <div class="unknown-mem"></div>
+                    </div>
+                    <div class="membar-fg"></div>
+                </div>
+                <span class="free-memory"></span>
+            </td>
+        </tr>
+        <tr class="more-node-actions more-actions-template">
+            <td>&nbsp;</td>
+            <td colspan="2" class="more-actions-td">
+                <div class="actions-box gui-text">
+                    <div class="markdown-box left">
+                        <a class="markdown-button action-button pressed disabled">
+                            <span class="action-icon"></span>
+                        </a>
+                        <span class="markdown-label block disabled">Down</span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="shutdown-box left">
+                        <a class="shutdown-button action-button">
+                            <span class="action-icon"></span>
+                        </a>
+                        <span class="shutdown-label block">Stop</span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="leave-cluster-box left">
+                        <a class="leave-cluster-button action-button">
+                            <span class="action-icon"></span>
+                        </a>
+                        <span class="leave-cluster-label block">Leave</span>
+                        <div class="clear"></div>
+                    </div>
+                    <!-- These are the dropdown and checkboxes for the new management protocol -->
+                    <div class="replacement-controls">
+                        <div class="gui-dropdown-wrapper replacement-node-dropdown">
+                            <div class="gui-dropdown-bg gui-text">Replacement Node</div>
+                            <div class="gui-dropdown-cap left"></div>
+                            <select class="gui-dropdown">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="gui-checkbox-wrapper">
+                            <input class="gui-checkbox" type="checkbox" value="forceleave" />
+                            <span>Force Leave</span>
+                        </div>
 
+                        <div class="gui-checkbox-wrapper">
+                            <input class="gui-checkbox" type="checkbox" value="forcereplace" />
+                            <span>Force Replace</span>
+                        </div>
+                    </div>
 
-    <div id="area-separator">
-        <div class="vert-line"></div>
-    </div>
-
-
-    <div id="planned-area">
-        <h2 class="gui-headline">
-            Staged Changes
-            <span class="gui-text-flat italic">(Your new cluster after convergence.)</span>
-        </h2>
-
-        {{#if controller.displayPlan}}
-            <section id="planned-list" class="">
-                <ul class="list-header">
-                    <li class="item1"><h4 class="gui-headline-bold">Name &amp; Status</h4></li>
-                    <li class="item2"><h4 class="gui-headline-bold">Partitions</h4></li>
-                    <li class="item3"><h4 class="gui-headline-bold">Action</h4></li>
-                    <li class="item4"><h4 class="gui-headline-bold">Replacement</h4></li>
-                </ul>
+                    <div class="clear"></div>
+                </div>
                 <div class="clear"></div>
                 {{collection RiakControl.StagedClusterView contentBinding="activeStagedCluster"}}
             </section>
@@ -126,5 +207,5 @@
     </div>
 
     <div class="clear"></div>
-    
+
 </div>
