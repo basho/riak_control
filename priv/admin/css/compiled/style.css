@@ -484,7 +484,8 @@ footer .side-line {
   margin-top: -30px;
 }
 .gui-point-button,
-.gui-rect-button {
+.gui-rect-button,
+.gui-point-button-right {
   width: 137px;
   height: 40px;
   display: inline-block;
@@ -494,6 +495,9 @@ footer .side-line {
 }
 .gui-point-button {
   background: url("/admin/ui/images/pointbutton-sprite.png") left top no-repeat transparent;
+}
+.gui-point-button-right {
+  background: url("/admin/ui/images/pointbutton-right-sprite.png") left top no-repeat transparent;
 }
 .gui-rect-button {
   background: url("/admin/ui/images/rectbutton-sprite.png") left top no-repeat transparent;
@@ -506,28 +510,38 @@ footer .side-line {
   padding-top: 8px;
   text-align: center;
 }
+.gui-point-button-right .gui-button-msg {
+  padding-right: 11px;
+}
 .gui-point-button:hover,
-.gui-rect-button:hover {
+.gui-rect-button:hover,
+.gui-point-button-right:hover {
   background-position: left -40px;
 }
 .gui-point-button:active,
 .gui-point-button.pressed,
 .gui-rect-button:active,
-.gui-rect-button.pressed {
+.gui-rect-button.pressed,
+.gui-point-button-right:active,
+.gui-point-button-right.pressed {
   background-position: left -80px !important;
 }
-.gui-point-button:active  .gui-button-msg,
-.gui-point-button.pressed .gui-button-msg,
-.gui-rect-button:active   .gui-button-msg,
-.gui-rect-button.pressed  .gui-button-msg {
+.gui-point-button:active        .gui-button-msg,
+.gui-point-button.pressed       .gui-button-msg,
+.gui-rect-button:active         .gui-button-msg,
+.gui-rect-button.pressed        .gui-button-msg,
+.gui-point-button-right:active  .gui-button-msg,
+.gui-point-button-right.pressed .gui-button-msg {
   padding-top: 9px;
 }
 input.gui-point-button,
-input.gui-rect-button {
+input.gui-rect-button,
+input.gui-point-button-right {
   padding-bottom: 12px;
 }
 input.gui-point-button:active,
-input.gui-rect-button:active {
+input.gui-rect-button:active,
+input.gui-point-button-right:active {
   padding-bottom: 9px;
 }
 .button-column {
@@ -661,7 +675,8 @@ input.gui-rect-button:active {
 }
 .gui-text-flat,
 .gui-text,
-.gui-text-bold {
+.gui-text-bold,
+#cluster-page .plan-details {
   text-shadow: none;
   color: #ccc;
   font-size: 14px;
@@ -852,14 +867,24 @@ input.gui-rect-button:active {
   color: #efefef;
 }
 #snapshot-page #health-indicator {
-  width: 337px;
-  height: 310px;
   float: left;
   margin-right: 25px;
 }
+#snapshot-page #healthy-cluster #health-indicator {
+  width: 337px;
+  height: 310px;
+}
+#snapshot-page #unhealthy-cluster #health-indicator {
+  width: 311px;
+  height: 309px;
+}
 @media screen and (max-width : 899px) {
-  #snapshot-page #health-indicator {
+  #snapshot-page #healthy-cluster #health-indicator {
     width: 279px;
+    height: 249px;
+  }
+  #snapshot-page #unhealthy-cluster #health-indicator {
+    width: 250px;
     height: 249px;
   }
   #snapshot-page #healthy-cluster section,
@@ -886,10 +911,13 @@ input.gui-rect-button:active {
 #cluster-page #current-area,
 #cluster-page #planned-area {
   float: left;
-  width: 49%;
+  width: 48%;
 }
 #cluster-page #current-area {
-  margin: 0 2% 45px 0;
+  margin: 0 4% 45px 0;
+}
+#cluster-page span.gui-text-flat {
+  line-height: 1.5;
 }
 #cluster-page h3 {
   font-family: 'noticia', georgia, serif;
@@ -901,8 +929,12 @@ input.gui-rect-button:active {
 #cluster-page .add-node-table tr td {
   padding-top: 25px;
 }
-#cluster-page #node-list {
+#cluster-page #node-list,
+#cluster-page #planned-list {
   margin-top: 20px;
+}
+#cluster-page .table-head td {
+  padding-bottom: 10px;
 }
 #cluster-page .more-node-actions {
   display: none;
@@ -941,7 +973,7 @@ input.gui-rect-button:active {
   margin-top: 1px;
 }
 #cluster-page .name-box .field-container {
-  min-width: 75%;
+  min-width: 82%;
   margin-left: 4%;
 }
 #cluster-page .actions-header {
@@ -961,6 +993,13 @@ input.gui-rect-button:active {
 }
 #cluster-page .staged .stage-button {
   background-position: center -78px;
+}
+#cluster-page .gui-light {
+  vertical-align: middle;
+  padding: 9px 0 9px 14px;
+}
+#cluster-page .stage-box {
+  width: 66px;
 }
 #cluster-page .pct-box {
   margin-top: 8px;
@@ -1210,14 +1249,34 @@ input.gui-rect-button:active {
   float: left;
   margin-bottom: 5px;
 }
+#cluster-page #planned-table {
+  margin-bottom: 30px;
+}
+#cluster-page #cluster-table,
+#cluster-page #planned-table {
+  margin-top: 30px;
+}
+#cluster-page .replacing-box .field-container {
+  width: 100%;
+}
+#cluster-page .accept-plan {
+  position: relative;
+  padding: 15px 0;
+  margin-top: 15px;
+}
+#cluster-page .plan-details-header {
+  padding: 10px 0;
+}
+#cluster-page .plan-details {
+  font-family: 'noticia', georgia, serif;
+  line-height: 1.5;
+}
+#cluster-page #commit-button {
+  position: absolute;
+  right: 0;
+  top: 12px;
+}
 @media screen and (min-width : 1300px) {
-  #cluster-page .gui-light {
-    vertical-align: middle;
-    padding: 9px 0 9px 14px;
-  }
-  #cluster-page .gui-light span {
-    display: none;
-  }
   #cluster-page .name-box .field-container {
     vertical-align: middle;
     padding-top: 5px;
@@ -1228,11 +1287,6 @@ input.gui-rect-button:active {
   }
   #cluster-page .free-memory {
     display: none;
-  }
-}
-@media screen and (min-width : 1500px) {
-  #cluster-page .gui-light {
-    padding-left: 33px;
   }
 }
 @media screen and (max-width : 1300px) {
@@ -1252,7 +1306,7 @@ input.gui-rect-button:active {
 }
 @media screen and (max-width : 1050px) {
   #cluster-page .name-box .field-container {
-    min-width: 68%;
+    min-width: 82%;
   }
 }
 @media screen and (max-width : 959px) {
@@ -1280,13 +1334,6 @@ input.gui-rect-button:active {
   }
 }
 @media screen and (max-width : 890px) {
-  #cluster-page .gui-light {
-    vertical-align: middle;
-    padding: 9px 0 9px 14px;
-  }
-  #cluster-page .gui-light span {
-    display: none;
-  }
   #cluster-page .name-box .field-container {
     vertical-align: middle;
     padding-top: 5px;
@@ -1304,6 +1351,17 @@ input.gui-rect-button:active {
   }
   #cluster-page .replacement-controls {
     margin-right: 0;
+  }
+  #cluster-page .gui-light {
+    display: none;
+  }
+}
+@media screen and (max-width : 550px) {
+  #cluster-page #cluster-table tr td:nth-child(4),
+  #cluster-page #planned-table tr td:nth-child(4),
+  #cluster-page #cluster-table tr td:nth-child(5),
+  #cluster-page #planned-table tr td:nth-child(5) {
+    display: none;
   }
 }
 @media screen and (max-width : 499px) {

@@ -259,15 +259,16 @@ footer
 
 /* CODE FOR POINT BUTTONS */
 
-.gui-point-button, .gui-rect-button
+.gui-point-button, .gui-rect-button, .gui-point-button-right
     dimensions(137px, 40px)
     display    : inline-block
     cursor     : pointer
     border     : 0
     margin-top : 3px
 
-.gui-point-button { background: url('/admin/ui/images/pointbutton-sprite.png') left top no-repeat transparent; }
-.gui-rect-button  { background: url('/admin/ui/images/rectbutton-sprite.png')  left top no-repeat transparent; }
+.gui-point-button       { background: url('/admin/ui/images/pointbutton-sprite.png') left top no-repeat transparent; }
+.gui-point-button-right { background: url('/admin/ui/images/pointbutton-right-sprite.png') left top no-repeat transparent; }
+.gui-rect-button        { background: url('/admin/ui/images/rectbutton-sprite.png')  left top no-repeat transparent; }
 
 .gui-button-msg
   headline-bold()
@@ -276,21 +277,28 @@ footer
   padding-top : 8px
   text-align  : center
 
-.gui-point-button:hover,  .gui-rect-button:hover
+.gui-point-button-right .gui-button-msg
+  padding-right : 11px
+
+.gui-point-button:hover,  .gui-rect-button:hover, .gui-point-button-right:hover
   background-position : left -40px
 
-.gui-point-button:active, .gui-point-button.pressed, .gui-rect-button:active,  .gui-rect-button.pressed
+.gui-point-button:active,       .gui-point-button.pressed,
+.gui-rect-button:active,        .gui-rect-button.pressed,
+.gui-point-button-right:active, .gui-point-button-right.pressed
   background-position : left -80px !important
 
-.gui-point-button:active  .gui-button-msg, 
-.gui-point-button.pressed .gui-button-msg,
-.gui-rect-button:active   .gui-button-msg, 
-.gui-rect-button.pressed  .gui-button-msg { padding-top : 9px; }
+.gui-point-button:active        .gui-button-msg, 
+.gui-point-button.pressed       .gui-button-msg,
+.gui-rect-button:active         .gui-button-msg, 
+.gui-rect-button.pressed        .gui-button-msg,
+.gui-point-button-right:active  .gui-button-msg,
+.gui-point-button-right.pressed .gui-button-msg { padding-top : 9px; }
 
-input.gui-point-button, input.gui-rect-button
+input.gui-point-button, input.gui-rect-button, input.gui-point-button-right
   padding-bottom : 12px
   
-input.gui-point-button:active, input.gui-rect-button:active
+input.gui-point-button:active, input.gui-rect-button:active, input.gui-point-button-right:active
   padding-bottom : 9px
 
 .button-column

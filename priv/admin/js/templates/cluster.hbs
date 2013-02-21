@@ -60,6 +60,52 @@
             Planned Cluster
         </h2>
         <span class="gui-text-flat italic">This is how your cluster will look after convergence.</span>
+        <div id="planned-list" class="">
+            <table id="planned-table">
+                <tr class="table-head has-cut">
+                    <td><h4 class="gui-headline-bold">Name &amp; Status</h4></td>
+                    <td><h4 class="gui-headline-bold">Partitions</h4></td>
+                    <td><h4 class="gui-headline-bold">Replacing</h4></td>
+                </tr>
+                <tr>
+                    <td class="name-box gui-text">
+                        <a class="gui-light status-light inline-block">
+                        </a><div class="gui-text field-container inline-block">
+                            <div class="name gui-field">dev1@127.0.0.1</div>
+                        </div>
+                    </td>
+                    <td class="gui-text ring_pct-box">
+                        <div class="left pct-arrows pct-static">
+                            <div class="green-pct-arrow"></div>
+                        </div>
+                        <div class="left gui-text pct-box">
+                            <div class="i-block ring_pct">19%</div>
+                        </div>
+                        <div class="clear"></div>
+                    </td>
+                    <td class="replacing-box">
+                        <div class="gui-text field-container inline-block">
+                            <div class="name gui-field">dev1@127.0.0.1</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <h4 class="plan-details-header gui-headline-bold">Plan Details</h4>
+        <p class="plan-details">
+            More details about the convergence plan will go here.
+            Lorem ipsum dolor sit amet consecteteur adipiscing
+            elit.  Caronius mun liltium norvis.
+        </p>
+        <div class="accept-plan">
+            <div class="gui-checkbox-wrapper">
+                <span>This plan is correct.</span>
+                <input class="gui-checkbox" type="checkbox" name="cluster-plan" value="accept"/>
+            </div>
+            <a id="commit-button" class="gui-point-button-right gui-text-bold right">
+                <span class="gui-button-msg">COMMIT</span>
+            </a>
+        </div>
     </div>
 
     <div class="clear"></div>
@@ -67,12 +113,11 @@
     <!-- node template -->
     <table class="hide">
         <tr class="node row-template">
-            <td class="gui-text">
+            <td class="stage-box gui-text">
                 <a class="stage-button"></a>
             </td>
             <td class="name-box gui-text">
                 <a class="gui-light status-light inline-block">
-                    <span class="status">Joining...</span>
                 </a><div class="gui-text field-container inline-block">
                     <div class="name gui-field"></div>
                 </div>
