@@ -10,10 +10,13 @@ CSS to be applied ONLY on the cluster page
 
   #current-area, #planned-area
     float : left
-    width : 49%
+    width : 48%
 
   #current-area
-    margin : 0 2% 45px 0
+    margin : 0 4% 45px 0
+
+  span.gui-text-flat
+    line-height : 1.5
 
   h3
     copy-font()
@@ -66,8 +69,11 @@ CSS to be applied ONLY on the cluster page
   .add-node-table tr td
     padding-top : 25px
 
-  #node-list
+  #node-list, #planned-list
     margin-top : 20px
+
+  .table-head td
+    padding-bottom : 10px
 
   .more-node-actions
     display : none
@@ -85,7 +91,7 @@ CSS to be applied ONLY on the cluster page
 
 
   .name-box .field-container
-    min-width   : 75%
+    min-width   : 82%
     margin-left : 4%
 
 
@@ -107,35 +113,12 @@ CSS to be applied ONLY on the cluster page
   .staged .stage-button
     background-position : center -78px
 
-  .plan-details-header
-    margin-top : 30px
-    padding    : 10px 0
+  .gui-light
+    vertical-align : middle
+    padding        : 9px 0 9px 14px
 
-  .accept-plan
-    position   : relative
-    padding    : 15px 0
-    margin-top : 15px
-
-  .clear-plan-box
-    border-top  : 1px solid lightWhite
-    margin-top  : 25px
-    padding-top : 25px
-
-    a
-      display : block
-      margin-top  : 15px
-      margin-left : -5px
-
-  .plan-details
-    @extend .gui-text-flat
-    copy-font()
-    line-height : 1.5
-
-  #commit-button
-    absoluteRight(0, 12px)
-
-  .button-column
-    text-align : right
+  .stage-box
+    width : 66px
 
   .pct-box
     margin-top     : 8px
@@ -304,46 +287,35 @@ CSS to be applied ONLY on the cluster page
   .replacement-node-dropdown
     margin-bottom : 5px
 
-  .right-angle-arrow
-    dimensions(15px, 18px)
-    background : url('/admin/ui/images/right-angle-arrow.png') left top no-repeat transparent
-    margin     : 0 10px 0 10px
+  #planned-table
+    margin-bottom : 30px
 
-  .disabler
-    background : red
-    opaque(.2)
-    absoluteLeft(0, 0)
-    dimensions(100%, 100%)
-    background : transparent
+  #cluster-table, #planned-table
+    margin-top : 30px
 
-  .stage-button
-    float : right
+  .replacing-box .field-container
+    width : 100%
 
-  .stage-instructions
-    float   : left
-    display : block
-    width   : 50%
+  .accept-plan
+    position   : relative
+    padding    : 15px 0
+    margin-top : 15px
 
-  .no-joining-nodes
-    padding-top : 6px
+  .plan-details-header
+    padding : 10px 0
 
-  .slide-up
-    margin-top : -35px
+  .plan-details
+    @extend .gui-text-flat
+    copy-font()
+    line-height : 1.5
 
-  .semi-transparent
-    opaque(.32)
-
+  #commit-button
+    absoluteRight(0, 12px)
 
   /* RESPONSIVE MEDIA QUERIES */
 
+
   @media screen and (min-width : 1300px)
-
-    .gui-light
-      vertical-align : middle
-      padding        : 9px 0 9px 14px
-
-    .gui-light span
-      display : none
 
     .name-box .field-container
       vertical-align : middle
@@ -355,10 +327,6 @@ CSS to be applied ONLY on the cluster page
     .free-memory
       display : none
 
-  @media screen and (min-width : 1500px)
-
-    .gui-light
-      padding-left : 33px
 
   @media screen and (max-width : 1300px)
 
@@ -379,7 +347,7 @@ CSS to be applied ONLY on the cluster page
   @media screen and (max-width : 1050px)
 
     .name-box .field-container
-      min-width : 68%;
+      min-width : 82%;
 
   @media screen and (max-width : 959px)
 
@@ -387,13 +355,6 @@ CSS to be applied ONLY on the cluster page
       display : none
 
   @media screen and (max-width : 890px)
-
-    .gui-light
-      vertical-align : middle
-      padding        : 9px 0 9px 14px
-
-    .gui-light span
-      display : none
 
     .name-box .field-container
       vertical-align : middle
@@ -406,5 +367,23 @@ CSS to be applied ONLY on the cluster page
 
     .markdown-box, .shutdown-box, .leave-cluster-box
       margin-right : 10px
+
+    .replacement-controls
+      margin-right : 0
+
+    .gui-light
+      display : none
+
+  @media screen and (max-width : 550px)
+
+    #cluster-table, #planned-table
+      tr td:nth-child(4), tr td:nth-child(5)
+        display : none
+
+  @media screen and (max-width : 499px)
+
+    .switch-box div
+      padding: 0 7px 0 0
+      margin : 0 0 0 5px
 
   /* END RESPONSIVE MEDIA QUERIES */

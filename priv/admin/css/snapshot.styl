@@ -31,7 +31,6 @@ CSS to be applied ONLY on the snapshot page
         color : lightGray
 
   #health-indicator
-    dimensions(337px, 310px)
     float        : left
     margin-right : 25px
 
@@ -45,8 +44,11 @@ CSS to be applied ONLY on the snapshot page
 
   @media screen and (max-width : 899px)
 
-    #health-indicator
+    #healthy-cluster #health-indicator
       dimensions(279px, 249px)
+
+    #unhealthy-cluster #health-indicator
+      dimensions(250px, 249px)
 
     #healthy-cluster section, #unhealthy-cluster section
       padding-left : 275px
