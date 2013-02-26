@@ -31,10 +31,12 @@ APPS = kernel stdlib sasl erts ssl tools os_mon runtime_tools crypto inets \
 PLT = $(HOME)/.riak_control_dialyzer_plt
 
 check_plt: compile
-	dialyzer --check_plt --plt $(PLT) --apps $(APPS)
+	dialyzer --check_plt --plt $(PLT) --apps $(APPS) \
+		deps/*/ebin
 
 build_plt: compile
-	dialyzer --build_plt --output_plt $(PLT) --apps $(APPS)
+	dialyzer --build_plt --output_plt $(PLT) --apps $(APPS) \
+		deps/*/ebin
 
 dialyzer: compile
 	@echo
@@ -42,7 +44,7 @@ dialyzer: compile
 	@echo Use "'make build_plt'" to build PLT prior to using this target.
 	@echo
 	@sleep 1
-	dialyzer -Wno_return -Wunmatched_returns --plt $(PLT) deps/*/ebin ebin
+	dialyzer -Wno_return -Wunmatched_returns --plt $(PLT) ebin
 
 cleanplt:
 	@echo
