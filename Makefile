@@ -2,7 +2,7 @@
 
 all: deps compile
 
-compile:
+compile: deps
 	@./rebar compile
 
 app:
@@ -42,7 +42,7 @@ dialyzer: compile
 	@echo Use "'make build_plt'" to build PLT prior to using this target.
 	@echo
 	@sleep 1
-	dialyzer -Wno_return -Wunmatched_returns --plt $(PLT) ebin
+	dialyzer -Wno_return -Wunmatched_returns --plt $(PLT) deps/*/ebin ebin
 
 cleanplt:
 	@echo
