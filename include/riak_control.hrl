@@ -19,31 +19,33 @@
 %% -------------------------------------------------------------------
 
 -type version()       :: integer().
--type index()         :: binary().
+-type index()         :: integer().
 -type status()        :: valid | invalid | down | leaving | incompatible.
 -type home()          :: primary | fallback | undefined.
--type service()       :: atom().
--type services()      :: [{service(),home()}].
+-type service()       :: {atom(), home()}.
+-type services()      :: [service()].
 -type owner()         :: atom().
--type vnode()         :: {{atom(),atom()},atom()}. % {{Idx,Node},Status}
--type handoff()       :: {{atom(),atom()},atom()}. % {{Mod,Idx},TargetNode}
+-type vnode()         :: {{atom(),atom()},atom()}.
+-type handoff()       :: {atom(),integer(),atom()}.
 -type online()        :: boolean().
 -type ring()          :: riak_core_ring:riak_core_ring().
+-type handoffs()      :: [handoff()].
+-type vnodes()        :: [vnode()].
 
 -record(partition_info,
         { index       :: index(),
           partition   :: integer(),
           owner       :: owner(),
           vnodes      :: services(),
-          handoffs    :: [handoff()]
+          handoffs    :: handoffs()
         }).
 
 -record(member_info,
         { node        :: atom(),
           status      :: status(),
           reachable   :: boolean(),
-          vnodes      :: [vnode()],
-          handoffs    :: [handoff()],
+          vnodes      :: vnodes(),
+          handoffs    :: handoffs(),
           ring_pct    :: float(),
           pending_pct :: float(),
           mem_total   :: integer(),
@@ -63,4 +65,4 @@
 -define(ADMIN_AUTH_HEAD, "Basic realm=riak").
 
 %% Names of HTTP header fields
--define(HEAD_CTYPE,           "Content-Type").
+-define(HEAD_CTYPE, "Content-Type").
