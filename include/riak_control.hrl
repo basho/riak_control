@@ -28,6 +28,7 @@
 -type vnode()         :: {{atom(),atom()},atom()}. % {{Idx,Node},Status}
 -type handoff()       :: {{atom(),atom()},atom()}. % {{Mod,Idx},TargetNode}
 -type online()        :: boolean().
+-type ring()          :: riak_core_ring:riak_core_ring().
 
 -record(partition_info,
         { index       :: index(),
@@ -49,6 +50,9 @@
           mem_used    :: integer(),
           mem_erlang  :: integer()
         }).
+
+-type partitions()    :: [#partition_info{}].
+-type members()       :: [#member_info{}].
 
 %% These two should always match, in terms of webmachine dispatcher
 %% logic, and ADMIN_BASE_PATH should always end with a /
