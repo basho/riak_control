@@ -43,12 +43,12 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Riak_control_session={riak_control_session,
-                          {riak_control_session, start_link, []},
-                          permanent,
-                          5000,
-                          worker,
-                          [riak_control_session]},
+    RiakControlSession={riak_control_session,
+                         {riak_control_session, start_link, []},
+                         permanent,
+                         5000,
+                         worker,
+                         [riak_control_session]},
 
     %% determine if riak_control is enabled or not
     case app_helper:get_env(riak_control,enabled,false) of
@@ -63,10 +63,10 @@ init([]) ->
                          {admin, admin_partitions}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
-            [webmachine_router:add_route(R) || R <- Routes],
+            _ = [webmachine_router:add_route(R) || R <- Routes],
 
             %% start riak control
-            {ok, { {one_for_one, 5, 10}, [Riak_control_session] } };
+            {ok, { {one_for_one, 5, 10}, [RiakControlSession] } };
         _ ->
             {ok, { {one_for_one, 5, 10}, [] } }
     end.
