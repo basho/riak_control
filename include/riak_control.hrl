@@ -31,7 +31,7 @@
 -type ring()          :: riak_core_ring:riak_core_ring().
 -type handoffs()      :: [handoff()].
 -type vnodes()        :: [vnode()].
--type plan()          :: [].
+-type plan()          :: [] | legacy | ring_not_ready | unavailable.
 
 -record(partition_info,
         { index       :: index(),

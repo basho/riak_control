@@ -32,7 +32,6 @@
 
 %% API
 -export([start_link/0,
-         get_plan/0,
          get_version/0,
          get_ring/0,
          get_nodes/0,
@@ -77,11 +76,6 @@ start_link() ->
 -spec get_version() -> version().
 get_version() ->
     gen_server:call(?MODULE, get_version, infinity).
-
-%% @doc Return cluster plan.
--spec get_plan() -> {ok, plan()}.
-get_plan() ->
-    gen_server:call(?MODULE, get_plan, infinity).
 
 %% @doc Return ring.
 -spec get_ring() -> {ok, version(), ring()}.

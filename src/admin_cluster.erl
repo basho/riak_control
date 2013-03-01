@@ -72,10 +72,32 @@ content_types_provided(ReqData, Context) ->
     {binary(), #wm_reqdata{}, undefined}.
 to_json(ReqData, Context) ->
     {ok, _V, RawNodes} = riak_control_session:get_nodes(),
+
+    Plan = try riak_core_claimant:plan() of
+        {error, Error} ->
+            Error;
+        {ok, Changes, NextRings} ->
+            _FinalRing = lists:last(NextRings),
+            [jsonify_change(Change) || Change <- Changes]
+    catch
+        _:_ ->
+            unknown
+    end,
+
     Cluster = [jsonify_node(Node) || Node=#member_info{} <- RawNodes],
-    Plan = riak_control_session:get_plan(),
     ClusterInformation = [{cluster, Cluster}, {plan, Plan}],
     {mochijson2:encode({struct, ClusterInformation}), ReqData, Context}.
+
+%% @doc Turn a list of changes into a proper structure for serialization.
+-spec jsonify_change(list()) -> list().
+jsonify_change(Change) ->
+    FormattedChange = case Change of
+        {Node, Operation, Argument} ->
+            [{"name", Node}, {"operation", Operation}, {"argument", Argument}];
+        {Node, Operation} ->
+            [{"name", Node}, {"operation", Operation}]
+    end,
+    {struct, FormattedChange}.
 
 %% @doc Turn a node into a proper struct for serialization.
 -spec jsonify_node(#member_info{}) -> {struct, list()}.
