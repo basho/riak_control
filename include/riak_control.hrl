@@ -31,6 +31,7 @@
 -type ring()          :: riak_core_ring:riak_core_ring().
 -type handoffs()      :: [handoff()].
 -type vnodes()        :: [vnode()].
+-type plan()          :: [].
 
 -record(partition_info,
         { index       :: index(),
