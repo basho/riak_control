@@ -20,17 +20,17 @@
 
 -module(admin_routes).
 
--export([admin_route/1,
-         ring_route/0,
-         ring_route/1,
-         vnode_route/0,
-         vnode_route/1,
-         nodes_route/0,
-         partitions_route/0,
-         cluster_route/0]).
+-compile([export_all]).
 
 %% helper, ensures all routes begin with /admin
 admin_route(Rest) -> ["admin"|Rest].
+
+%% routes that query/act on a single node in the cluster
+node_route(Route) -> admin_route(["node",node|Route]).
+node_route() -> admin_route(["node",node]).
+
+%% routes that query/act on the cluster
+cluster_route(Route) -> admin_route(["cluster"|Route]).
 
 %% routes that query/act on partitions
 ring_route(Route) -> admin_route(["ring"|Route]).

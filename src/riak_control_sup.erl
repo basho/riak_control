@@ -55,6 +55,9 @@ init([]) ->
         true ->
             Resources = [{admin, admin_gui},
                          {admin, admin_cluster},
+                         {admin, admin_cluster_join},
+                         {admin, admin_cluster_down},
+                         {admin, admin_node},
                          {admin, admin_nodes},
                          {admin, admin_partitions}
                         ],
