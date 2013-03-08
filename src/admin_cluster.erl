@@ -27,6 +27,7 @@
          to_json/2,
          forbidden/2,
          is_authorized/2,
+         delete_resource/2,
          service_available/2,
          content_types_provided/2]).
 
@@ -66,6 +67,19 @@ is_authorized(ReqData, Context) ->
     {list(), #wm_reqdata{}, undefined}.
 content_types_provided(ReqData, Context) ->
     {[{"application/json", to_json}], ReqData, Context}.
+
+%% @doc Remove the staged plan.
+-spec delete_resource(#wm_reqdata{}, undefined) ->
+    {true, #wm_reqdata{}, undefined}.
+delete_resource(ReqData, Context) ->
+    Result = try riak_core_claimant:clear() of
+        ok ->
+            true
+    catch
+        _:_ ->
+            false
+    end,
+    {Result, ReqData, Context}.
 
 %% @doc Return the current cluster, along with a plan if it's available.
 -spec to_json(#wm_reqdata{}, undefined) ->
