@@ -119,7 +119,6 @@ init([]) ->
     %% setup a callback that will see the ring changing as it happens
     %% so we can see block and wait for a change instead of just
     %% grabbing it every time
-    add_ring_watcher(),
     add_node_watcher(),
 
     %% get the current ring so we have a baseline to work from
@@ -194,13 +193,6 @@ code_change (_Old,State,_Extra) ->
 -spec rev_state(#state{}) -> #state{}.
 rev_state(State=#state{vsn=V}) ->
     State#state{vsn=V+1}.
-
-%% @doc Register a watcher for ring changes.
--spec add_ring_watcher() -> ok.
-add_ring_watcher() ->
-    Self = self(),
-    Fn = fun (Ring) -> gen_server:cast(Self,{update_ring,Ring}) end,
-    riak_core_ring_events:add_sup_callback(Fn).
 
 %% @doc Register a watcher for membership changes.
 -spec add_node_watcher() -> ok.
