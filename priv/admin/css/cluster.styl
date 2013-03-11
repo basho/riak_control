@@ -10,43 +10,29 @@ CSS to be applied ONLY on the cluster page
 
   #current-area, #planned-area
     float : left
-    width : 48%
+    width : 47%
 
   #current-area
-    margin : 0 4% 45px 0
+    margin : 0 0 45px 0
+
+
+  #area-separator
+    width      : 6%
+    height     : 450px
+    float      : left
+    text-align : center
+
+    div
+      margin     : 0 auto
+      width      : 1px
+      height     : 100%
+      background : lightWhite
 
   span.gui-text-flat
     line-height : 1.5
 
   h3
     copy-font()
-
-  .spinner-box
-    corners()
-    text-align : center
-    background : rgba(255, 255, 255, .05)
-    padding    : 25px
-
-    img, h4
-      vertical-align : middle
-
-    h4
-      opaque(.8)
-      display      : inline-block
-      padding-top  : 6px
-      padding-left : 10px
-      line-height  : 1.2
-
-  .actions-container
-    css-transition(height .4s ease, margin-bottom .4s ease)
-    overflow      : hidden
-    height        : 0
-    margin-bottom : 0
-
-  .open .actions-container
-    css-transition(height .4s ease, margin-bottom .4s ease)
-    height        : 375px
-    margin-bottom : 25px
 
   .gui-light
     vertical-align : middle
@@ -55,8 +41,7 @@ CSS to be applied ONLY on the cluster page
     margin-top     : -7px
 
   .field-container
-    width          : 75%
-    vertical-align : middle
+    width : 75%
 
   .gui-field
     margin-right : 0
@@ -69,16 +54,6 @@ CSS to be applied ONLY on the cluster page
   .add-node-table tr td
     padding-top : 25px
 
-  #node-list, #planned-list
-    margin-top : 20px
-
-  .table-head td
-    padding-bottom : 10px
-
-  .more-node-actions
-    display : none
-    vendor('box-shadow', 0 3px 5px darkened)
-
   .list-header
     min-height : 18px
 
@@ -86,39 +61,101 @@ CSS to be applied ONLY on the cluster page
       float : left
       margin-bottom : 30px
 
-    .gui-switch-container
-      margin-top : 1px
+      h4
+        display : inline-block
 
+  #node-list, #planned-list
+    margin-top : 20px
 
-  .name-box .field-container
-    min-width   : 82%
-    margin-left : 4%
+  #node-list
+    .item1
+      width : 18%
+    .item2
+      width : 42%
+    .item3
+      width : 18%
+    .item4
+      width : 22%
 
+  .node > div
+    float : left
 
-  .actions-header
-    padding-left : 6px
+  .node > div.clear
+    float : none
 
-  .stage-button
-    display    : block
-    background : url('/admin/ui/images/stagebutton-sprite.png') center 4px no-repeat transparent
-    width      : 58px
-    height     : 38px
+  .toggle-container
+    overflow : visible
+    padding  : 0
 
-    &:hover
-      background-position : center -36px
+    .actions-toggle
+      dimensions(82px, 30px)
+      position   : relative
+      overflow   : visible
+      padding    : 0
+      background : url('/admin/ui/images/actions-toggle-text.png') -5px top no-repeat rgba(0, 0, 0, .3)
+      margin-top : 3px
 
-    &:active
-      background-position : center -78px
+      a
+        dimensions(48px, 34px)
+        css-transition(left .2s ease)
+        position   : absolute
+        display    : inline-block
+        background : url('/admin/ui/images/actions-toggle-slider.png') left top no-repeat transparent
+        top        : 0
+        left       : -5px
 
-  .staged .stage-button
-    background-position : center -78px
+      a.open
+        css-transition(left .2s ease)
+        left : 38px
 
-  .gui-light
+  .name-box
+    overflow : visible
+
+  .ring-pct, .used-memory, .action-name
+    monospace();
+
+  .used-memory
+    display : inline-block
+    padding : 0 0 0 5px
     vertical-align : middle
-    padding        : 9px 0 9px 14px
 
-  .stage-box
-    width : 66px
+  .action-name
+    display     : inline-block
+    padding-top : 8px
+
+  .replacing-box .field-container
+    width : 100%
+
+  #planned-list
+    .item1
+      width : 40%
+    .item2
+      width : 17%
+    .item3
+      width : 17%
+    .item4
+      width : 26%
+
+
+  .plan-details-header
+    margin-top : 30px
+    padding    : 10px 0
+
+  .accept-plan
+    position   : relative
+    padding    : 15px 0
+    margin-top : 15px
+
+  .plan-details
+    @extend .gui-text-flat
+    copy-font()
+    line-height : 1.5
+
+  #commit-button
+    absoluteRight(0, 12px)
+
+  .button-column
+    text-align : right
 
   .pct-box
     margin-top     : 8px
@@ -176,7 +213,6 @@ CSS to be applied ONLY on the cluster page
 
       &:hover
         opaque(1)
-
 
   .memory-box
     width : 175px
@@ -246,10 +282,10 @@ CSS to be applied ONLY on the cluster page
     margin-right  : 33px
     position      : relative
 
-    & > h4
+    & > span
       display       : block
       border-bottom : 1px solid lightWhite
-      padding       : 0 0 12px
+      padding       : 0 0 10px
 
 
   .actions-box > div > span
@@ -257,72 +293,175 @@ CSS to be applied ONLY on the cluster page
     color        : lightGray
     padding-left : 3px
 
-  .extra-actions
-    opaque(.32)
-    padding-bottom : 25px
-    height         : 35px
-    position       : relative
-
-    & > div
-      float : left
-
-    .gui-checkbox-wrapper
-      margin-left : 15px
-
-    &.active
-      opaque(1)
-
   .replacement-controls
-    width         : auto
-    margin-top    : 18px
-    border-bottom : 1px solid lightWhite
-    margin-bottom : 10px
+    width    : auto
+    margin-top : 18px
 
     div
       margin-bottom : 8px
 
     select
       margin-top : -38px
+      min-width  : 300px
 
   .replacement-node-dropdown
     margin-bottom : 5px
 
-  #planned-table
-    margin-bottom : 30px
+  .stage-button
+    position : absolute
+    bottom   : 18px
+    right    : 18px
 
-  #cluster-table, #planned-table
-    margin-top : 30px
-
-  .replacing-box .field-container
-    width : 100%
-
-  .accept-plan
-    position   : relative
-    padding    : 15px 0
-    margin-top : 15px
-
-  .plan-details-header
-    padding : 10px 0
-
-  .plan-details
-    @extend .gui-text-flat
-    copy-font()
-    line-height : 1.5
-
-  #commit-button
-    absoluteRight(0, 12px)
 
   /* RESPONSIVE MEDIA QUERIES */
 
+  @media screen and (max-width : 1200px)
 
+    #area-separator
+      display : none
+
+    #current-area, #planned-area
+      width : 100%
+
+    #planned-area
+      padding-top : 30px
+      border-top  : 1px solid lightWhite
+
+    .actions-box
+      width : 96%
+
+    .field-container
+      width : 90%
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 500px
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item1
+        width : 300px
+      .item2
+        width       : 100px
+        margin-left : 25px
+      .item3
+        width : 100px
+      .item4
+        width : 350px
+
+  @media screen and (max-width : 950px)
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 400px
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item1
+        width : 275px
+      .item2
+        width : 100px
+      .item3
+        width : 100px
+      .item4
+        width : 225px
+
+  @media screen and (max-width : 850px)
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 300px
+
+        .field-container
+          width : 75%
+
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item3
+        display : none
+
+    .used-memory
+      display : none
+
+  @media screen and (max-width : 700px)
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 200px
+
+        .field-container
+          width : 75%
+
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item1
+        width : 200px
+      .item2
+        width       : 100px
+        margin-left : 0
+      .item4
+        width : 200px
+
+    .gui-light
+      display : none
+
+  @media screen and (max-width : 600px)
+
+    #node-list
+      .item1
+        display : none
+      .item2
+        width : 40%
+        .field-container
+          width : 95%
+      .item4
+        width : 100px
+
+    #planned-list
+      .item1
+        width : 40%
+        .field-container
+          width : 95%
+      .item2
+        width : 20%
+        margin-right : 2%
+      .item4
+        width : 38%
+        .field-container
+          width : 95%
+
+    .actions-container
+      display : none
+
+
+  /*
   @media screen and (min-width : 1300px)
 
     .name-box .field-container
       vertical-align : middle
       padding-top    : 5px
-
-    .ring_pct-box, .memory-box
-      width : auto
 
     .free-memory
       display : none
@@ -360,9 +499,6 @@ CSS to be applied ONLY on the cluster page
       vertical-align : middle
       padding-top    : 5px
 
-    .ring_pct-box, .memory-box
-      width : auto
-
   @media screen and (max-width : 699px)
 
     .markdown-box, .shutdown-box, .leave-cluster-box
@@ -385,5 +521,6 @@ CSS to be applied ONLY on the cluster page
     .switch-box div
       padding: 0 7px 0 0
       margin : 0 0 0 5px
+  */
 
   /* END RESPONSIVE MEDIA QUERIES */
