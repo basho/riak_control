@@ -37,6 +37,7 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
+         clear_plan/0,
          force_update/0]).
 
 %% gen_server callbacks
@@ -97,6 +98,11 @@ get_services() ->
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
+%% @doc Clear the staged cluster plan.
+-spec clear_plan() -> {ok, boolean()}.
+clear_plan() ->
+    gen_server:call(?MODULE, clear_plan, infinity).
+
 %% @doc Force ring/membership update.
 -spec force_update() -> ok.
 force_update() ->
@@ -137,6 +143,15 @@ init([]) ->
     %% start the server
     {ok, update_ring(State, Ring)}.
 
+handle_call(clear_plan, _From, State) ->
+    Result = try riak_core_claimant:clear() of
+        ok ->
+            true
+    catch
+        _:_ ->
+            false
+    end,
+    {reply, {ok, Result}, State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
