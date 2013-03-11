@@ -1,7 +1,7 @@
 
 /* Variables */
 coverup     = rgba(0, 0, 0, .85)
-darkened    = rgba(0, 0, 0, .3)
+darkened    = rgba(0, 0, 0, .35)
 darkGray    = #2d2d2d
 mediumGray  = #cccccc
 lightGray   = #efefef
@@ -91,5 +91,21 @@ copy-bold()
 headline-bold()
   headline-font()
   font-weight : bold
+
+// Applies a css transition
+css-transition(args) {
+  -webkit-transition : args
+  -moz-transition    : args
+  -ms-transition     : args
+  transition         : args
+}
+
+// Applies a css transform
+css-transform(args) {
+  -webkit-transform : rotate(args)
+  -moz-transform    : rotate(args)
+  -o-transform      : rotate(args)
+  transform         : rotate(args)
+}
 
 /* End Functions */

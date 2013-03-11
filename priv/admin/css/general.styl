@@ -442,14 +442,14 @@ input.gui-point-button:active, input.gui-rect-button:active, input.gui-point-but
   corners()
   vendor('box-shadow', inset 0 1px 3px darkened)
   background    : darkened
-  padding       : 8px
+  padding       : 10px
   border-bottom : 1px solid lightWhite
   margin-right  : 2em
 
 .gui-input
   @extend .gui-field
   dimensions(100%, auto)
-  padding      : 6px 8px
+  padding      : 8px
   border-left  : 0
   border-right : 0
   border-top   : 0
@@ -502,6 +502,9 @@ input.gui-point-button:active, input.gui-rect-button:active, input.gui-point-but
 .italic
   copy-font()
   font-style : italic
+
+.serif
+  copy-font()
 
 .left
   float : left
