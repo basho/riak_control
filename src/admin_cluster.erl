@@ -72,13 +72,7 @@ content_types_provided(ReqData, Context) ->
 -spec delete_resource(#wm_reqdata{}, undefined) ->
     {true, #wm_reqdata{}, undefined}.
 delete_resource(ReqData, Context) ->
-    Result = try riak_core_claimant:clear() of
-        ok ->
-            true
-    catch
-        _:_ ->
-            false
-    end,
+    {ok, Result} = riak_control_session:clear_plan(),
     {Result, ReqData, Context}.
 
 %% @doc Return the current cluster, along with a plan if it's available.
@@ -103,13 +97,14 @@ to_json(ReqData, Context) ->
     {mochijson2:encode({struct, ClusterInformation}), ReqData, Context}.
 
 %% @doc Turn a list of changes into a proper structure for serialization.
--spec jsonify_change(list()) -> list().
+-spec jsonify_change({atom(), atom()} | {atom(), atom(), atom()}) ->
+        {struct, list()}.
 jsonify_change(Change) ->
     FormattedChange = case Change of
-        {Node, Operation, Argument} ->
-            [{"name", Node}, {"operation", Operation}, {"argument", Argument}];
         {Node, Operation} ->
-            [{"name", Node}, {"operation", Operation}]
+            [{"name", Node}, {"operation", Operation}];
+        {Node, Operation, Argument} ->
+            [{"name", Node}, {"operation", Operation}, {"argument", Argument}]
     end,
     {struct, FormattedChange}.
 

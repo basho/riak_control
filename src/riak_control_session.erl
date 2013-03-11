@@ -37,10 +37,7 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
-         get_plan/0,
          clear_plan/0,
-         stage_change/3,
-         commit_plan/0,
          force_update/0]).
 
 %% gen_server callbacks
@@ -103,25 +100,8 @@ get_services() ->
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
-%% @doc Get the staged cluster plan.
--spec get_plan() -> {ok, list(), list()} | {error, atom()}.
-get_plan() ->
-    gen_server:call(?MODULE, get_plan, infinity).
-
-%% @doc Stage a change to the cluster.
--spec stage_change(node(), normalized_action(), node()) ->
-    ok | {error, stage_error()} | {badrpc, nodedown}.
-stage_change(Node, Action, Replacement) ->
-    gen_server:call(?MODULE,
-                    {stage_change, Node, Action, Replacement}, infinity).
-
-%% @doc Commit a staged cluster plan.
--spec commit_plan() -> ok | error.
-commit_plan() ->
-    gen_server:call(?MODULE, commit_plan, infinity).
-
 %% @doc Clear the staged cluster plan.
--spec clear_plan() -> {ok, ok | error}.
+-spec clear_plan() -> {ok, boolean()}.
 clear_plan() ->
     gen_server:call(?MODULE, clear_plan, infinity).
 
@@ -165,14 +145,15 @@ init([]) ->
     %% start the server
     {ok, update_ring(State, Ring)}.
 
-handle_call(commit_plan, _From, State) ->
-    {reply, maybe_commit_plan(), State};
-handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
-    {reply, maybe_stage_change(Node, Action, Replacement), State};
 handle_call(clear_plan, _From, State) ->
-    {reply, {ok, maybe_clear_plan()}, State};
-handle_call(get_plan, _From, State) ->
-    {reply, retrieve_plan(), State};
+    Result = try riak_core_claimant:clear() of
+        ok ->
+            true
+    catch
+        _:_ ->
+            false
+    end,
+    {reply, {ok, Result}, State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
