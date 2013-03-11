@@ -80,18 +80,12 @@ delete_resource(ReqData, Context) ->
     {binary(), #wm_reqdata{}, undefined}.
 to_json(ReqData, Context) ->
     {ok, _V, RawNodes} = riak_control_session:get_nodes(),
-
-    Plan = try riak_core_claimant:plan() of
+    Plan = case riak_control_session:get_plan() of
         {error, Error} ->
             Error;
-        {ok, Changes, NextRings} ->
-            _FinalRing = lists:last(NextRings),
+        {ok, Changes, _FinalRing} ->
             [jsonify_change(Change) || Change <- Changes]
-    catch
-        _:_ ->
-            unknown
     end,
-
     Cluster = [jsonify_node(Node) || Node=#member_info{} <- RawNodes],
     ClusterInformation = [{cluster, Cluster}, {plan, Plan}],
     {mochijson2:encode({struct, ClusterInformation}), ReqData, Context}.

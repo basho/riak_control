@@ -37,6 +37,7 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
+         get_plan/0,
          clear_plan/0,
          force_update/0]).
 
@@ -100,6 +101,11 @@ get_services() ->
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
+%% @doc Get the staged cluster plan.
+-spec get_plan() -> {ok, changes(), ring()} | {error, atom()}.
+get_plan() ->
+    gen_server:call(?MODULE, get_plan, infinity).
+
 %% @doc Clear the staged cluster plan.
 -spec clear_plan() -> {ok, boolean()}.
 clear_plan() ->
@@ -154,6 +160,18 @@ handle_call(clear_plan, _From, State) ->
             false
     end,
     {reply, {ok, Result}, State};
+handle_call(get_plan, _From, State) ->
+    Plan = try riak_core_claimant:plan() of
+        {error, Error} ->
+            {error, Error};
+        {ok, Changes, NextRings} ->
+            FinalRing = lists:last(NextRings),
+            {ok, Changes, FinalRing}
+    catch
+        _:_ ->
+            {error, unkown}
+    end,
+    {reply, Plan, State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
