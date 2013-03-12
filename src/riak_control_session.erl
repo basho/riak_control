@@ -167,7 +167,7 @@ handle_call(get_plan, _From, State) ->
             {ok, Changes, FinalRing}
     catch
         _:_ ->
-            {error, unkown}
+            {error, unknown}
     end,
     {reply, Plan, State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
