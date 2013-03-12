@@ -34,6 +34,15 @@ CSS to be applied ONLY on the cluster page
   h3
     copy-font()
 
+  .actions-container
+    css-transition(height .5s ease)
+    overflow : hidden
+    height   : 0
+
+  .open .actions-container
+    css-transition(height .5s ease)
+    height : 250px
+
   .gui-light
     vertical-align : middle
     padding        : 9px 5px 9px 14px
@@ -77,6 +86,9 @@ CSS to be applied ONLY on the cluster page
     .item4
       width : 22%
 
+  .node
+    margin-bottom : 10px
+
   .node > div
     float : left
 
@@ -104,9 +116,9 @@ CSS to be applied ONLY on the cluster page
         top        : 0
         left       : -5px
 
-      a.open
-        css-transition(left .2s ease)
-        left : 38px
+  .open .actions-toggle a
+    css-transition(left .2s ease)
+    left : 38px
 
   .name-box
     overflow : visible

@@ -50,8 +50,8 @@ minispade.register('router', function() {
           router.get('applicationController').connectOutlet('cluster');
           $.riakControl.markNavActive('nav-cluster');
 
-          $.riakControl.appendScript('#cluster-script', '/admin/ui/js/legacy/cluster.js');
-          $.riakControl.pub('templateSwitch', ['cluster']);
+          //$.riakControl.appendScript('#cluster-script', '/admin/ui/js/legacy/cluster.js');
+          //$.riakControl.pub('templateSwitch', ['cluster']);
         },
 
         index: Ember.Route.extend({

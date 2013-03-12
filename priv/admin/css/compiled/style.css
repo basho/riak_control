@@ -937,6 +937,27 @@ input.gui-point-button-right:active {
 #cluster-page h3 {
   font-family: 'noticia', georgia, serif;
 }
+#cluster-page .actions-container {
+  -webkit-transition: height 0.5s ease;
+  -moz-transition: height 0.5s ease;
+  -ms-transition: height 0.5s ease;
+  -webkit-transition: height 0.5s ease;
+  -moz-transition: height 0.5s ease;
+  -o-transition: height 0.5s ease;
+  transition: height 0.5s ease;
+  overflow: hidden;
+  height: 0;
+}
+#cluster-page .open .actions-container {
+  -webkit-transition: height 0.5s ease;
+  -moz-transition: height 0.5s ease;
+  -ms-transition: height 0.5s ease;
+  -webkit-transition: height 0.5s ease;
+  -moz-transition: height 0.5s ease;
+  -o-transition: height 0.5s ease;
+  transition: height 0.5s ease;
+  height: 250px;
+}
 #cluster-page .gui-light {
   vertical-align: middle;
   padding: 9px 5px 9px 14px;
@@ -983,6 +1004,9 @@ input.gui-point-button-right:active {
 #cluster-page #node-list .item4 {
   width: 22%;
 }
+#cluster-page .node {
+  margin-bottom: 10px;
+}
 #cluster-page .node > div {
   float: left;
 }
@@ -1018,7 +1042,7 @@ input.gui-point-button-right:active {
   top: 0;
   left: -5px;
 }
-#cluster-page .toggle-container .actions-toggle a.open {
+#cluster-page .open .actions-toggle a {
   -webkit-transition: left 0.2s ease;
   -moz-transition: left 0.2s ease;
   -ms-transition: left 0.2s ease;
