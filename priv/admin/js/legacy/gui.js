@@ -8,19 +8,21 @@
 $(document).ready(function() {
   $.riakControl = $.riakControl || {};
 
-  /* ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM */
+  /*
+  // ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM
   $(document).on('keyup', '#node-to-add', function (event) {
     if(event.keyCode === 13){
       $('#add-node-button').trigger('click');
     }
   });
 
-  /* MAKE ALL CLOSE ERROR BUTTONS WORK */
+  // MAKE ALL CLOSE ERROR BUTTONS WORK
   $(document).on('click', '.close-error', function () {
     $(this).parent().hide();
   });
+  */ 
 
-  /* MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS */
+  // MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {
       var lis = $('nav li'), activeli = $("#" + id);
@@ -34,14 +36,16 @@ $(document).ready(function() {
     });
   };
 
-  /* UPDATE DROPDOWN MENUS */
+  
+  // UPDATE DROPDOWN MENUS
   $.riakControl.updateDropdown = $.riakControl.updateDropdown || function updateDropdown (me, val) {
     Ember.run.next(function() {
       var textSpot = me.prev().prev(); textSpot.text(val);
     });
   };
 
-  /* MAKE HIDE/SHOW SWITCHES WORK */
+  /*
+  // MAKE HIDE/SHOW SWITCHES WORK
   $(document).on('click', '.gui-switch', function (e) {
     var that = $(this),
         parent = that.parent().parent(),
@@ -58,9 +62,9 @@ $(document).ready(function() {
     parent.toggleClass('on off');
     that.toggleClass('on off');
   });
+  */
 
-
-  /* MAKE CHECKBOXES WORK WHEN YOU CLICK THEM */
+  // MAKE CHECKBOXES WORK WHEN YOU CLICK THEM
   $(document).on('change', '.gui-checkbox', function(e) {
       var me = $(this), parent = me.parent(); checked = me.attr('checked');
       if (checked) {
@@ -70,7 +74,8 @@ $(document).ready(function() {
       }
   });
 
-  /* CODE FOR ALL THE TOOLTIPS */
+  /*
+  // CODE FOR ALL THE TOOLTIPS
   var wait;
   function emptyTips () {
       wait = setTimeout(function () {
@@ -87,6 +92,7 @@ $(document).ready(function() {
       $('#display-tips').html(str);
       clearTimeout(wait);
   }
+
 
   // Navigation
 
@@ -218,4 +224,6 @@ $(document).ready(function() {
           displayTips(texts.msg + 'This node worker is currently in the process of handing off its data to other nodes.');
       }
   }).on('mouseout', '.kv-light, .pipe-light, .search-light', emptyTips);
+
+*/
 });
