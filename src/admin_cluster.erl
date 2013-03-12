@@ -105,13 +105,22 @@ jsonify_change(Change) ->
 %% @doc Turn a node into a proper struct for serialization.
 -spec jsonify_node(#member_info{}) -> {struct, list()}.
 jsonify_node(Node) ->
+    LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
     MemUsed = Node#member_info.mem_used,
     MemTotal = Node#member_info.mem_total,
     Reachable = Node#member_info.reachable,
+    LowMem = case Reachable of
+        false ->
+            false;
+        true ->
+            1.0 - (MemUsed/MemTotal) < LWM
+    end,
     {struct,[{"name",Node#member_info.node},
              {"status",Node#member_info.status},
              {"reachable",Reachable},
              {"ring_pct",Node#member_info.ring_pct},
              {"mem_total",MemTotal},
              {"mem_used",MemUsed},
+             {"mem_erlang",Node#member_info.mem_erlang},
+             {"low_mem",LowMem},
              {"me",Node#member_info.node == node()}]}.
