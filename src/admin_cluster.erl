@@ -83,7 +83,7 @@ to_json(ReqData, Context) ->
     Plan = case riak_control_session:get_plan() of
         {error, Error} ->
             Error;
-        {ok, Changes, _FinalRing} ->
+        {ok, Changes} ->
             [jsonify_change(Change) || Change <- Changes]
     end,
     Cluster = [jsonify_node(Node) || Node=#member_info{} <- RawNodes],
@@ -91,16 +91,14 @@ to_json(ReqData, Context) ->
     {mochijson2:encode({struct, ClusterInformation}), ReqData, Context}.
 
 %% @doc Turn a list of changes into a proper structure for serialization.
--spec jsonify_change({atom(), atom()} | {atom(), atom(), atom()}) ->
-        {struct, list()}.
-jsonify_change(Change) ->
-    FormattedChange = case Change of
-        {Node, Operation} ->
-            [{"name", Node}, {"operation", Operation}];
-        {Node, Operation, Argument} ->
-            [{"name", Node}, {"operation", Operation}, {"argument", Argument}]
-    end,
-    {struct, FormattedChange}.
+-spec jsonify_change(change()) -> {struct, list()}.
+jsonify_change({Node, Operation, Argument, Current, Future}) ->
+    Change = [{"name", Node},
+              {"operation", Operation},
+              {"argument", Argument},
+              {"current", Current},
+              {"future", Future}],
+    {struct, Change}.
 
 %% @doc Turn a node into a proper struct for serialization.
 -spec jsonify_node(#member_info{}) -> {struct, list()}.

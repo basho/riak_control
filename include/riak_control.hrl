@@ -33,7 +33,7 @@
 -type vnodes()        :: [vnode()].
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
 -type changes()       :: [change()].
--type change()        :: {atom(), atom(), atom()} | {atom(), atom()}.
+-type change()        :: {atom(), atom(), atom(), atom(), atom()}.
 
 -record(partition_info,
         { index       :: index(),
