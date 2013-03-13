@@ -165,8 +165,10 @@ handle_call(get_plan, _From, State) ->
         {error, Error} ->
             {error, Error};
         {ok, Changes, NextRings} ->
-            FinalRing = lists:last(NextRings),
-            {ok, Changes, FinalRing}
+            {_, FinalRing} = lists:last(NextRings),
+            FutureClaim =
+                riak_core_console:pending_nodes_and_claim_percentages(FinalTransition2),
+            {ok, [normalize_plan(Change, FutureClaim) || Change <- Changes]}
     catch
         _:_ ->
             {error, unknown}
@@ -391,73 +393,17 @@ get_vnode_status(Service, Ring, Index) ->
             {Service, undefined}
     end.
 
-%% @doc Attempt to clear the cluster plan.
--spec maybe_clear_plan() -> ok | error.
-maybe_clear_plan() ->
-    try riak_core_claimant:clear() of
-        ok ->
-            ok
-    catch
-        _:_ ->
-            error
-    end.
-
-%% @doc Return list of nodes, current and future claim.
--spec nodes_and_claim_percentages(ring()) -> list().
-nodes_and_claim_percentages(Ring) ->
-    Nodes = lists:keysort(2, riak_core_ring:all_member_status(Ring)),
-    [{Name, riak_core_console:pending_claim_percentage(Ring, Name)} ||
-        {Name, _} <- Nodes].
-
-%% @doc Compute from a series of ring transitions, the final ring.
--spec compute_final_ring_claim(list({ring(), ring()})) ->
-    [{node(),{number(),number()}}].
-compute_final_ring_claim(Rings) ->
-    {_, FinalRing} = lists:last(Rings),
-    nodes_and_claim_percentages(FinalRing).
-
-%% @doc Attempt to retrieve the claim plan.
--spec retrieve_plan() -> {ok, list(), list(ring())} | {error, atom()}.
-retrieve_plan() ->
-    try riak_core_claimant:plan() of
-        {error, Error} ->
-            {error, Error};
-        {ok, Changes, NextRings} ->
-            case Changes of
-                [] ->
-                    {ok, [], []};
-                _ ->
-                    {ok, Changes, compute_final_ring_claim(NextRings)}
-            end
-    catch
-        _:_ ->
-            {error, unknown}
-    end.
-
-%% @doc Attempt to commit the plan.
--spec maybe_commit_plan() -> ok | {error, term()}.
-maybe_commit_plan() ->
-    riak_core_claimant:commit().
-
-%% @doc Stage a change for one particular node.
--spec maybe_stage_change(node(), normalized_action(), node()) ->
-    ok | {error, stage_error()} | {badrpc, nodedown}.
-maybe_stage_change(Node, Action, Replacement) ->
-    case Action of
-        join ->
-            {ok, Ring} = riak_core_ring_manager:get_my_ring(),
-            case riak_core_ring:all_members(Ring) of
-                [_Me] ->
-                    riak_core:staged_join(Node);
-                _ ->
-                    rpc:call(Node, riak_core, staged_join, [node()])
-            end;
-        leave ->
-            riak_core_claimant:leave_member(Node);
-        remove ->
-            riak_core_claimant:remove_member(Node);
-        replace ->
-            riak_core_claimant:replace(Node, Replacement);
-        force_replace ->
-            riak_core_claimant:force_replace(Node, Replacement)
+%% @doc Given computed claim for a future ring, merge the planned
+%% changes with that claim and standardize format.
+-spec normalize_plan({atom(), atom(), atom()} | {atom(), atom()},
+                     list({atom(), atom()})) ->
+    {atom(), atom(), atom(), atom(), atom()}.
+normalize_plan(Change, Claim) ->
+    case Change of
+        {Node, {Operation, Argument}} ->
+            {Current, Future} = proplists:get_value(Node, Claim),
+            {Node, Operation, Argument, Current, Future};
+        {Node, Operation} ->
+            {Current, Future} = proplists:get_value(Node, Claim),
+            {Node, Operation, undefined, Current, Future}
     end.
