@@ -37,6 +37,8 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
+         get_plan/0,
+         clear_plan/0,
          force_update/0]).
 
 %% gen_server callbacks
@@ -97,6 +99,16 @@ get_services() ->
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
+%% @doc Get the staged cluster plan.
+-spec get_plan() -> {ok, [claim_change()]} | {error, atom()}.
+get_plan() ->
+    gen_server:call(?MODULE, get_plan, infinity).
+
+%% @doc Clear the staged cluster plan.
+-spec clear_plan() -> ok | error.
+clear_plan() ->
+    gen_server:call(?MODULE, clear_plan, infinity).
+
 %% @doc Force ring/membership update.
 -spec force_update() -> ok.
 force_update() ->
@@ -119,7 +131,6 @@ init([]) ->
     %% setup a callback that will see the ring changing as it happens
     %% so we can see block and wait for a change instead of just
     %% grabbing it every time
-    add_ring_watcher(),
     add_node_watcher(),
 
     %% get the current ring so we have a baseline to work from
@@ -138,6 +149,10 @@ init([]) ->
     %% start the server
     {ok, update_ring(State, Ring)}.
 
+handle_call(clear_plan, _From, State) ->
+    {reply, {ok, maybe_clear_plan()}, State};
+handle_call(get_plan, _From, State) ->
+    {reply, {ok, retrieve_plan()}, State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
@@ -194,13 +209,6 @@ code_change (_Old,State,_Extra) ->
 -spec rev_state(#state{}) -> #state{}.
 rev_state(State=#state{vsn=V}) ->
     State#state{vsn=V+1}.
-
-%% @doc Register a watcher for ring changes.
--spec add_ring_watcher() -> ok.
-add_ring_watcher() ->
-    Self = self(),
-    Fn = fun (Ring) -> gen_server:cast(Self,{update_ring,Ring}) end,
-    riak_core_ring_events:add_sup_callback(Fn).
 
 %% @doc Register a watcher for membership changes.
 -spec add_node_watcher() -> ok.
@@ -362,4 +370,38 @@ get_vnode_status(Service, Ring, Index) ->
             {Service, Status};
         [] ->
             {Service, undefined}
+    end.
+
+%% @doc Given computed claim for a future ring, merge the planned
+%% changes with that claim and standardize format.
+-spec normalize_change(change(), [{atom(), atom()}]) -> claim_change().
+normalize_change({Node, Action}, Claim) ->
+    {Current, Future} = proplists:get_value(Node, Claim),
+    {Node, Action, Current, Future}.
+
+%% @doc Attempt to clear the cluster plan.
+-spec maybe_clear_plan() -> ok | error.
+maybe_clear_plan() ->
+    try riak_core_claimant:clear() of
+        ok ->
+            ok
+    catch
+        _:_ ->
+            error
+    end.
+
+%% @doc Attempt to retrieve the claim plan.
+-spec retrieve_plan() -> {ok, list()} | {error, atom()}.
+retrieve_plan() ->
+    try riak_core_claimant:plan() of
+        {error, Error} ->
+            {error, Error};
+        {ok, Changes, NextRings} ->
+            {_, FinalRing} = lists:last(NextRings),
+            FutureClaim =
+                riak_core_console:pending_nodes_and_claim_percentages(FinalRing),
+            {ok, [normalize_change(Change, FutureClaim) || Change <- Changes]}
+    catch
+        _:_ ->
+            {error, unknown}
     end.

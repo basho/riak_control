@@ -31,6 +31,21 @@
 -type ring()          :: riak_core_ring:riak_core_ring().
 -type handoffs()      :: [handoff()].
 -type vnodes()        :: [vnode()].
+-type plan()          :: [] | legacy | ring_not_ready | unavailable.
+
+-type action() :: leave
+                | remove
+                | {replace, node()}
+                | {force_replace, node()}.
+
+-type claim_percentage() :: number().
+
+-type change() :: {node(), action()}.
+
+-type claim_change() :: {node(),
+                         action(),
+                         claim_percentage(),
+                         claim_percentage()}.
 
 -record(partition_info,
         { index       :: index(),
