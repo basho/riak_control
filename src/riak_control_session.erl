@@ -102,7 +102,7 @@ get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
 %% @doc Get the staged cluster plan.
--spec get_plan() -> {ok, changes(), ring()} | {error, atom()}.
+-spec get_plan() -> {ok, changes()} | {error, atom()}.
 get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
@@ -167,7 +167,7 @@ handle_call(get_plan, _From, State) ->
         {ok, Changes, NextRings} ->
             {_, FinalRing} = lists:last(NextRings),
             FutureClaim =
-                riak_core_console:pending_nodes_and_claim_percentages(FinalTransition2),
+                riak_core_console:pending_nodes_and_claim_percentages(FinalRing),
             {ok, [normalize_plan(Change, FutureClaim) || Change <- Changes]}
     catch
         _:_ ->
@@ -395,7 +395,7 @@ get_vnode_status(Service, Ring, Index) ->
 
 %% @doc Given computed claim for a future ring, merge the planned
 %% changes with that claim and standardize format.
--spec normalize_plan({atom(), atom(), atom()} | {atom(), atom()},
+-spec normalize_plan({atom(), {atom(), atom()}} | {atom(), atom()},
                      list({atom(), atom()})) ->
     {atom(), atom(), atom(), atom(), atom()}.
 normalize_plan(Change, Claim) ->
