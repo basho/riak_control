@@ -390,8 +390,6 @@ maybe_clear_plan() ->
             error
     end.
 
-    end.
-
 %% @doc Attempt to retrieve the claim plan.
 -spec retrieve_plan() -> {ok, list()} | {error, atom()}.
 retrieve_plan() ->
