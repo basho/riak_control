@@ -72,7 +72,12 @@ content_types_provided(ReqData, Context) ->
 -spec delete_resource(#wm_reqdata{}, undefined) ->
     {true, #wm_reqdata{}, undefined}.
 delete_resource(ReqData, Context) ->
-    {ok, Result} = riak_control_session:clear_plan(),
+    Result = case riak_control_session:clear_plan() of
+        ok ->
+            true;
+        error ->
+            false
+    end,
     {Result, ReqData, Context}.
 
 %% @doc Return the current cluster, along with a plan if it's available.
