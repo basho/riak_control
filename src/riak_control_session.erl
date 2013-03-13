@@ -163,8 +163,10 @@ handle_call(get_plan, _From, State) ->
         {error, Error} ->
             {error, Error};
         {ok, Changes, NextRings} ->
-            FinalRing = lists:last(NextRings),
-            {ok, Changes, FinalRing}
+            {_, FinalRing} = lists:last(NextRings),
+            FutureClaim =
+                riak_core_console:pending_nodes_and_claim_percentages(FinalTransition2),
+            {ok, [normalize_plan(Change, FutureClaim) || Change <- Changes]}
     catch
         _:_ ->
             {error, unknown}
@@ -387,4 +389,19 @@ get_vnode_status(Service, Ring, Index) ->
             {Service, Status};
         [] ->
             {Service, undefined}
+    end.
+
+%% @doc Given computed claim for a future ring, merge the planned
+%% changes with that claim and standardize format.
+-spec normalize_plan({atom(), atom(), atom()} | {atom(), atom()},
+                     list({atom(), atom()})) ->
+    {atom(), atom(), atom(), atom(), atom()}.
+normalize_plan(Change, Claim) ->
+    case Change of
+        {Node, {Operation, Argument}} ->
+            {Current, Future} = proplists:get_value(Node, Claim),
+            {Node, Operation, Argument, Current, Future};
+        {Node, Operation} ->
+            {Current, Future} = proplists:get_value(Node, Claim),
+            {Node, Operation, undefined, Current, Future}
     end.
