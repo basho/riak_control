@@ -107,7 +107,7 @@ get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
 %% @doc Clear the staged cluster plan.
--spec clear_plan() -> {ok, boolean()}.
+-spec clear_plan() -> ok | error.
 clear_plan() ->
     gen_server:call(?MODULE, clear_plan, infinity).
 
@@ -382,14 +382,16 @@ normalize_change({Node, Action}, Claim) ->
     {Node, Action, Current, Future}.
 
 %% @doc Attempt to clear the cluster plan.
--spec maybe_clear_plan() -> boolean().
+-spec maybe_clear_plan() -> ok | error.
 maybe_clear_plan() ->
     try riak_core_claimant:clear() of
         ok ->
-            true
+            ok
     catch
         _:_ ->
-            false
+            error
+    end.
+
     end.
 
 %% @doc Attempt to retrieve the claim plan.
