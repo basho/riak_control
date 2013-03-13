@@ -32,8 +32,20 @@
 -type handoffs()      :: [handoff()].
 -type vnodes()        :: [vnode()].
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
--type changes()       :: [change()].
--type change()        :: {atom(), atom(), atom(), atom(), atom()}.
+
+-type action() :: leave
+                | remove
+                | {replace, node()}
+                | {force_replace, node()}.
+
+-type claim_percentage() :: number().
+
+-type change() :: {node(), action()}.
+
+-type claim_change() :: {node(),
+                         action(),
+                         claim_percentage(),
+                         claim_percentage()}.
 
 -record(partition_info,
         { index       :: index(),
