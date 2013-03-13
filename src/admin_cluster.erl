@@ -91,11 +91,17 @@ to_json(ReqData, Context) ->
     {mochijson2:encode({struct, ClusterInformation}), ReqData, Context}.
 
 %% @doc Turn a list of changes into a proper structure for serialization.
--spec jsonify_change(change()) -> {struct, list()}.
-jsonify_change({Node, Operation, Argument, Current, Future}) ->
+-spec jsonify_change(claim_change()) -> {struct, list()}.
+jsonify_change({Node, {Action, Argument}, Current, Future}) ->
     Change = [{"name", Node},
-              {"operation", Operation},
+              {"action", Action},
               {"argument", Argument},
+              {"current", Current},
+              {"future", Future}],
+    {struct, Change};
+jsonify_change({Node, Action, Current, Future}) ->
+    Change = [{"name", Node},
+              {"action", Action},
               {"current", Current},
               {"future", Future}],
     {struct, Change}.

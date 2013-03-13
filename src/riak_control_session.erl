@@ -100,7 +100,7 @@ get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
 %% @doc Get the staged cluster plan.
--spec get_plan() -> {ok, changes()} | {error, atom()}.
+-spec get_plan() -> {ok, [claim_change()]} | {error, atom()}.
 get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
@@ -150,28 +150,9 @@ init([]) ->
     {ok, update_ring(State, Ring)}.
 
 handle_call(clear_plan, _From, State) ->
-    Result = try riak_core_claimant:clear() of
-        ok ->
-            true
-    catch
-        _:_ ->
-            false
-    end,
-    {reply, {ok, Result}, State};
+    {reply, {ok, maybe_clear_plan()}, State};
 handle_call(get_plan, _From, State) ->
-    Plan = try riak_core_claimant:plan() of
-        {error, Error} ->
-            {error, Error};
-        {ok, Changes, NextRings} ->
-            {_, FinalRing} = lists:last(NextRings),
-            FutureClaim =
-                riak_core_console:pending_nodes_and_claim_percentages(FinalRing),
-            {ok, [normalize_plan(Change, FutureClaim) || Change <- Changes]}
-    catch
-        _:_ ->
-            {error, unknown}
-    end,
-    {reply, Plan, State};
+    {reply, {ok, retrieve_plan()}, State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
@@ -393,15 +374,34 @@ get_vnode_status(Service, Ring, Index) ->
 
 %% @doc Given computed claim for a future ring, merge the planned
 %% changes with that claim and standardize format.
--spec normalize_plan({atom(), {atom(), atom()}} | {atom(), atom()},
-                     list({atom(), atom()})) ->
-    {atom(), atom(), atom(), atom(), atom()}.
-normalize_plan(Change, Claim) ->
-    case Change of
-        {Node, {Operation, Argument}} ->
-            {Current, Future} = proplists:get_value(Node, Claim),
-            {Node, Operation, Argument, Current, Future};
-        {Node, Operation} ->
-            {Current, Future} = proplists:get_value(Node, Claim),
-            {Node, Operation, undefined, Current, Future}
+-spec normalize_change(change(), [{atom(), atom()}]) -> claim_change().
+normalize_change({Node, Action}, Claim) ->
+    {Current, Future} = proplists:get_value(Node, Claim),
+    {Node, Action, Current, Future}.
+
+%% @doc Attempt to clear the cluster plan.
+-spec maybe_clear_plan() -> boolean().
+maybe_clear_plan() ->
+    try riak_core_claimant:clear() of
+        ok ->
+            true
+    catch
+        _:_ ->
+            false
+    end.
+
+%% @doc Attempt to retrieve the claim plan.
+-spec retrieve_plan() -> {ok, list()} | {error, atom()}.
+retrieve_plan() ->
+    try riak_core_claimant:plan() of
+        {error, Error} ->
+            {error, Error};
+        {ok, Changes, NextRings} ->
+            {_, FinalRing} = lists:last(NextRings),
+            FutureClaim =
+                riak_core_console:pending_nodes_and_claim_percentages(FinalRing),
+            {ok, [normalize_change(Change, FutureClaim) || Change <- Changes]}
+    catch
+        _:_ ->
+            {error, unknown}
     end.
