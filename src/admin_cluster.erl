@@ -104,7 +104,8 @@ to_json(ReqData, Context) ->
     {mochijson2:encode({struct,[{cluster,Clusters}]}), ReqData, Context}.
 
 %% @doc Generate a new "planned" cluster which outlines transitions.
--spec merge_transitions(#member_info{}, list(), list()) -> #member_info{}.
+-spec merge_transitions(list(#member_info{}), list(), list()) ->
+    [{struct, list()}].
 merge_transitions(Nodes, Changes, Claim) ->
     [jsonify_node(apply_changes(Node, Changes, Claim)) || Node <- Nodes].
 
