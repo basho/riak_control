@@ -42,11 +42,6 @@
 
 -type change() :: {node(), action()}.
 
--type claim_change() :: {node(),
-                         action(),
-                         claim_percentage(),
-                         claim_percentage()}.
-
 -record(partition_info,
         { index       :: index(),
           partition   :: integer(),

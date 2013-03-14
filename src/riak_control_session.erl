@@ -102,7 +102,7 @@ get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
 %% @doc Get the staged cluster plan.
--spec get_plan() -> {ok, [claim_change()]} | {error, atom()}.
+-spec get_plan() -> {ok, list(), list(ring())} | {error, atom()}.
 get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
@@ -374,13 +374,6 @@ get_vnode_status(Service, Ring, Index) ->
             {Service, undefined}
     end.
 
-%% @doc Given computed claim for a future ring, merge the planned
-%% changes with that claim and standardize format.
--spec normalize_change(change(), [{atom(), atom()}]) -> claim_change().
-normalize_change({Node, Action}, Claim) ->
-    {Current, Future} = proplists:get_value(Node, Claim, {nochange, nochange}),
-    {Node, Action, Current, Future}.
-
 %% @doc Attempt to clear the cluster plan.
 -spec maybe_clear_plan() -> ok | error.
 maybe_clear_plan() ->
@@ -392,23 +385,33 @@ maybe_clear_plan() ->
             error
     end.
 
+%% @doc Return list of nodes, current and future claim.
+-spec nodes_and_claim_percentages(ring()) -> list().
+nodes_and_claim_percentages(Ring) ->
+    Nodes = lists:keysort(2, riak_core_ring:all_member_status(Ring)),
+    [{Name, riak_core_console:pending_claim_percentage(Ring, Name)} ||
+        {Name, _} <- Nodes].
+
+%% @doc Compute from a series of ring transitions, the final ring.
+-spec compute_final_ring_claim(list({ring(), ring()})) ->
+    [{node(),{number(),number()}}].
+compute_final_ring_claim(Rings) ->
+    {_, FinalRing} = lists:last(Rings),
+    nodes_and_claim_percentages(FinalRing).
+
 %% @doc Attempt to retrieve the claim plan.
--spec retrieve_plan() -> {ok, list()} | {error, atom()}.
+-spec retrieve_plan() -> {ok, list(), list(ring())} | {error, atom()}.
 retrieve_plan() ->
     try riak_core_claimant:plan() of
         {error, Error} ->
             {error, Error};
         {ok, Changes, NextRings} ->
-            Plan = case Changes of
+            case Changes of
                 [] ->
-                    [];
+                    {ok, [], []};
                 _ ->
-                    {_, FinalRing} = lists:last(NextRings),
-                    FutureClaim =
-                        riak_core_console:pending_nodes_and_claim_percentages(FinalRing),
-                    [normalize_change(Change, FutureClaim) || Change <- Changes]
-            end,
-            {ok, Plan}
+                    {ok, Changes, compute_final_ring_claim(NextRings)}
+            end
     catch
         _:_ ->
             {error, unknown}

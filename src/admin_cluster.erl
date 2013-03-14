@@ -84,32 +84,60 @@ delete_resource(ReqData, Context) ->
 -spec to_json(#wm_reqdata{}, undefined) ->
     {binary(), #wm_reqdata{}, undefined}.
 to_json(ReqData, Context) ->
-    {ok, _V, RawNodes} = riak_control_session:get_nodes(),
-    Plan = case riak_control_session:get_plan() of
+
+    %% Get the current node list.
+    {ok, _V, Nodes} = riak_control_session:get_nodes(),
+    Current = [jsonify_node(Node) || Node=#member_info{} <- Nodes],
+
+    %% Get the current list of planned changes and updated claim.
+    Planned = case riak_control_session:get_plan() of
         {error, Error} ->
             Error;
-        {ok, Changes} ->
-            [jsonify_change(Change) || Change <- Changes]
+        {ok, Changes, Claim} ->
+            merge_transitions(Nodes, Changes, Claim)
     end,
-    Cluster = [jsonify_node(Node) || Node=#member_info{} <- RawNodes],
-    ClusterInformation = [{cluster, Cluster}, {plan, Plan}],
-    {mochijson2:encode({struct, ClusterInformation}), ReqData, Context}.
 
-%% @doc Turn a list of changes into a proper structure for serialization.
--spec jsonify_change(claim_change()) -> {struct, list()}.
-jsonify_change({Node, {Action, Argument}, Current, Future}) ->
-    Change = [{"name", Node},
-              {"action", Action},
-              {"argument", Argument},
-              {"current", Current},
-              {"future", Future}],
-    {struct, Change};
-jsonify_change({Node, Action, Current, Future}) ->
-    Change = [{"name", Node},
-              {"action", Action},
-              {"current", Current},
-              {"future", Future}],
-    {struct, Change}.
+    %% Generate a list of two clusters, current, and future with
+    %% annotated upates.
+    Clusters = [{current, Current}, {staged, Planned}],
+
+    {mochijson2:encode({struct,[{cluster,Clusters}]}), ReqData, Context}.
+
+%% @doc Generate a new "planned" cluster which outlines transitions.
+-spec merge_transitions(#member_info{}, list(), list()) -> #member_info{}.
+merge_transitions(Nodes, Changes, Claim) ->
+    [jsonify_node(apply_changes(Node, Changes, Claim)) || Node <- Nodes].
+
+%% @doc Merge change into member info record.
+-spec apply_changes(#member_info{}, list(), list()) -> #member_info{}.
+apply_changes(Node, Changes, Claim) ->
+    apply_status_change(apply_claim_change(Node, Claim), Changes).
+
+%% @doc Merge change into member info record.
+-spec apply_status_change(#member_info{}, list()) -> #member_info{}.
+apply_status_change(Node, Changes) ->
+    Name = Node#member_info.node,
+
+    case lists:keyfind(Name, 1, Changes) of
+        false ->
+            Node;
+        {_, {Action, Replacement}} ->
+            Node#member_info{action=Action, replacement=Replacement};
+        {_, Action} ->
+            Node#member_info{action=Action}
+    end.
+
+%% @doc Merge change into member info record.
+-spec apply_claim_change(#member_info{}, list()) -> #member_info{}.
+apply_claim_change(Node, Claim) ->
+    Name = Node#member_info.node,
+
+    case lists:keyfind(Name, 1, Claim) of
+        false ->
+            Node;
+        {_, {_, Future}} ->
+            Node#member_info{ring_pct=Future}
+    end.
 
 %% @doc Turn a node into a proper struct for serialization.
 -spec jsonify_node(#member_info{}) -> {struct, list()}.
@@ -132,4 +160,6 @@ jsonify_node(Node) ->
              {"mem_used",MemUsed},
              {"mem_erlang",Node#member_info.mem_erlang},
              {"low_mem",LowMem},
-             {"me",Node#member_info.node == node()}]}.
+             {"me",Node#member_info.node == node()},
+             {"action",Node#member_info.action},
+             {"replacement",Node#member_info.replacement}]}.
