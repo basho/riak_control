@@ -19,52 +19,55 @@
 %% -------------------------------------------------------------------
 
 -module(admin_partitions).
+
+-author('Christopher Meiklejohn <cmeiklejohn@basho.com>').
+
 -export([routes/0,
          init/1,
          content_types_provided/2,
          to_json/2,
          is_authorized/2,
          service_available/2,
-         forbidden/2
-        ]).
+         forbidden/2]).
 
-%% riak_control and webmachine dependencies
 -include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
-%% mappings to the various content types supported for this resource
--define(CONTENT_TYPES,[{"application/json",to_json}]).
+-define(CONTENT_TYPES, [{"application/json",to_json}]).
 
-%% the different vnode types we care about
--define(VNODE_TYPES,[riak_kv,riak_pipe,riak_search]).
+-define(VNODE_TYPES, [riak_kv,riak_pipe,riak_search]).
 
-%% defines the webmachine routes this module handles
-routes () ->
-    [{admin_routes:partitions_route(),?MODULE,[]}].
+-record(context, {partitions}).
 
-%% entry-point for the resource from webmachine
-init ([]) ->
-    {ok,_V,Partitions}=riak_control_session:get_partitions(),
-    {ok,Partitions}.
+%% @doc Route handling.
+routes() ->
+    [{admin_routes:partitions_route(), ?MODULE, []}].
 
-%% validate origin
-forbidden(RD, C) ->
-    {riak_control_security:is_null_origin(RD), RD, C}.
+%% @doc Get partition list at the start of the request.
+init([]) ->
+    {ok, _, Partitions} = riak_control_session:get_partitions(),
+    {ok, #context{partitions=Partitions}}.
 
-%% redirect to SSL port if using HTTP
-service_available (RD,C) ->
-    riak_control_security:scheme_is_available(RD,C).
+%% @doc Validate origin.
+forbidden(ReqData, Context) ->
+    {riak_control_security:is_null_origin(ReqData), ReqData, Context}.
 
-%% validate username and password
-is_authorized (RD,C) ->
-    riak_control_security:enforce_auth(RD,C).
+%% @doc Determine if it's available.
+service_available(ReqData, Context) ->
+    riak_control_security:scheme_is_available(ReqData, Context).
 
-%% return the list of available content types for webmachine
-content_types_provided (Req,C) ->
-    {?CONTENT_TYPES,Req,C}.
+%% @doc Handle authorization.
+is_authorized(ReqData, Context) ->
+    riak_control_security:enforce_auth(ReqData, Context).
 
-%% valid | invalid | joining | leaving | exiting
-to_json (Req,C=Partitions) ->
-    {ok,_V,Nodes}=riak_control_session:get_nodes(),
-    Details=[{struct,riak_control_formatting:node_ring_details(P,Nodes)} || P <- Partitions],
-    {mochijson2:encode({struct,[{partitions,Details}]}), Req,C}.
+%% @doc Return available content types.
+content_types_provided(ReqData, Context) ->
+    {?CONTENT_TYPES, ReqData, Context}.
+
+%% @doc Return a list of partitions.
+to_json(ReqData, Context) ->
+    {ok, _, Nodes} = riak_control_session:get_nodes(),
+    Details = [{struct,
+                riak_control_formatting:node_ring_details(P, Nodes)} ||
+                P <- Context#context.partitions],
+    {mochijson2:encode({struct,[{partitions,Details}]}), ReqData, Context}.

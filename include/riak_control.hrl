@@ -19,36 +19,57 @@
 %% -------------------------------------------------------------------
 
 -type version()       :: integer().
--type index()         :: binary().
+-type index()         :: integer().
 -type status()        :: valid | invalid | down | leaving | incompatible.
 -type home()          :: primary | fallback | undefined.
--type service()       :: atom().
--type services()      :: [{service(),home()}].
+-type service()       :: {atom(), home()}.
+-type services()      :: [service()].
 -type owner()         :: atom().
--type vnode()         :: {{atom(),atom()},atom()}. % {{Idx,Node},Status}
--type handoff()       :: {{atom(),atom()},atom()}. % {{Mod,Idx},TargetNode}
+-type vnode()         :: {{atom(),atom()},atom()}.
+-type handoff()       :: {atom(),integer(),atom()}.
 -type online()        :: boolean().
+-type ring()          :: riak_core_ring:riak_core_ring().
+-type handoffs()      :: [handoff()].
+-type vnodes()        :: [vnode()].
+-type plan()          :: [] | legacy | ring_not_ready | unavailable.
+
+-type action() :: leave
+                | remove
+                | {replace, node()}
+                | {force_replace, node()}.
+
+-type claim_percentage() :: number().
+
+-type change() :: {node(), action()}.
+
+-type claim_change() :: {node(),
+                         action(),
+                         claim_percentage(),
+                         claim_percentage()}.
 
 -record(partition_info,
         { index       :: index(),
           partition   :: integer(),
           owner       :: owner(),
           vnodes      :: services(),
-          handoffs    :: [handoff()]
+          handoffs    :: handoffs()
         }).
 
 -record(member_info,
         { node        :: atom(),
           status      :: status(),
           reachable   :: boolean(),
-          vnodes      :: [vnode()],
-          handoffs    :: [handoff()],
+          vnodes      :: vnodes(),
+          handoffs    :: handoffs(),
           ring_pct    :: float(),
           pending_pct :: float(),
           mem_total   :: integer(),
           mem_used    :: integer(),
           mem_erlang  :: integer()
         }).
+
+-type partitions()    :: [#partition_info{}].
+-type members()       :: [#member_info{}].
 
 %% These two should always match, in terms of webmachine dispatcher
 %% logic, and ADMIN_BASE_PATH should always end with a /
@@ -59,4 +80,4 @@
 -define(ADMIN_AUTH_HEAD, "Basic realm=riak").
 
 %% Names of HTTP header fields
--define(HEAD_CTYPE,           "Content-Type").
+-define(HEAD_CTYPE, "Content-Type").
