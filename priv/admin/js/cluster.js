@@ -45,13 +45,17 @@ minispade.register('cluster', function() {
             return RiakControl.CurrentClusterNode.create(d);
           });
 
-          var staged = cluster.staged.map(function(d) {
-            return RiakControl.StagedClusterNode.create(d);
-          });
+          var staged;
 
-          self.set('content', {
-              current: current, staged: staged
-          });
+          if($.isArray(cluster.staged)) {
+            staged = cluster.staged.map(function(d) {
+              return RiakControl.StagedClusterNode.create(d);
+            });
+          } else {
+            staged = [];
+          }
+
+          self.set('content', { current: current, staged: staged });
         }
       });
     },
