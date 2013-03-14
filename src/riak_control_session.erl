@@ -102,7 +102,7 @@ get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
 %% @doc Get the staged cluster plan.
--spec get_plan() -> {ok, list(), list(ring())} | {error, atom()}.
+-spec get_plan() -> {ok, list(), list()} | {error, atom()}.
 get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
