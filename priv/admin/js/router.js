@@ -54,8 +54,12 @@ minispade.register('router', function() {
           $.riakControl.markNavActive('nav-cluster');
         },
 
-          //$.riakControl.appendScript('#cluster-script', '/admin/ui/js/legacy/cluster.js');
-          //$.riakControl.pub('templateSwitch', ['cluster']);
+        enter: function(router) {
+          router.get('clusterController').startInterval();
+        },
+
+        exit: function(router) {
+          router.get('clusterController').cancelInterval();
         },
 
         index: Ember.Route.extend({
