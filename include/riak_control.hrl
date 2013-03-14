@@ -42,11 +42,6 @@
 
 -type change() :: {node(), action()}.
 
--type claim_change() :: {node(),
-                         action(),
-                         claim_percentage(),
-                         claim_percentage()}.
-
 -record(partition_info,
         { index       :: index(),
           partition   :: integer(),
@@ -65,7 +60,9 @@
           pending_pct :: float(),
           mem_total   :: integer(),
           mem_used    :: integer(),
-          mem_erlang  :: integer()
+          mem_erlang  :: integer(),
+          action      :: action(),
+          replacement :: node()
         }).
 
 -type partitions()    :: [#partition_info{}].
