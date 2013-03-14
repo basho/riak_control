@@ -15,10 +15,12 @@
             </div>
             <div class="clear"></div>
         </div>
-        <div class="item3 action-taken gui-text">
-            <span class="action-name">{{action}}</span>
-        </div>
-        {{#if isReplacement}}
+        {{#if isAction}}
+          <div class="item3 action-taken gui-text">
+              <span class="action-name">{{node_action}}</span>
+          </div>
+        {{/if}}
+        {{#if isReplaced}}
             <div class="item4 replacing-box">
                 <div class="gui-text field-container inline-block">
                     <div class="name gui-field">{{replacement}}</div>

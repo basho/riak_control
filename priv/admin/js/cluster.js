@@ -299,17 +299,27 @@ minispade.register('cluster', function() {
     nameBinding:        'content.name',
     statusBinding:      'content.status',
     ring_pctBinding:    'content.ring_pct',
-    actionBinding:      'content.action',
 
-    isReplacement: function() {
-        var replacement = this.get('content.replacement');
+    /* Necessary rename to avoid collision */
+    node_actionBinding: 'content.action',
 
-        if(replacement != undefined) {
-            return false;
-        } else {
-            return true;
-        }
-    }.property('content.replcaement'),
+    /**
+     * Does the node have a replacement?
+     *
+     * @returns {boolean}
+     */
+    isReplaced: function() {
+      return this.get('content.replacement') !== "undefined" ? true : false;
+    }.property('content.replacement'),
+
+    /**
+     * Is the node taking an action?
+     *
+     * @returns {boolean}
+     */
+    isAction: function() {
+        return this.get('content.action') !== "undefined" ? true : false;
+    }.property('content.action'),
 
     /**
      * Color the lights appropriately based on the node status.
