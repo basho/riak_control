@@ -1,0 +1,30 @@
+{{#with view}}
+    <div class="node">
+        <div class="item1 name-box gui-text">
+            <div {{bindAttr class="indicatorLights"}}>
+            </div><div class="gui-text field-container inline-block">
+                <div class="name gui-field">{{name}}</div>
+            </div>
+        </div>
+        <div class="item2 gui-text ring-pct-box">
+            <div class="left pct-arrows pct-static">
+                <div class="green-pct-arrow"></div>
+            </div>
+            <div class="left gui-text pct-box">
+                <span class="ring-pct">{{ring_pct_readable}}%</span>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="item3 action-taken gui-text">
+            <span class="action-name">{{action}}</span>
+        </div>
+        {{#if isReplacement}}
+            <div class="item4 replacing-box">
+                <div class="gui-text field-container inline-block">
+                    <div class="name gui-field">{{replacement}}</div>
+                </div>
+            </div>
+        {{/if}}
+        <div class="clear"></div>
+    </div>
+{{/with}}
