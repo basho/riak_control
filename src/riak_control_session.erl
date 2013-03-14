@@ -154,7 +154,7 @@ init([]) ->
 handle_call(clear_plan, _From, State) ->
     {reply, {ok, maybe_clear_plan()}, State};
 handle_call(get_plan, _From, State) ->
-    {reply, {ok, retrieve_plan()}, State};
+    {reply, retrieve_plan(), State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
@@ -378,7 +378,7 @@ get_vnode_status(Service, Ring, Index) ->
 %% changes with that claim and standardize format.
 -spec normalize_change(change(), [{atom(), atom()}]) -> claim_change().
 normalize_change({Node, Action}, Claim) ->
-    {Current, Future} = proplists:get_value(Node, Claim),
+    {Current, Future} = proplists:get_value(Node, Claim, {nochange, nochange}),
     {Node, Action, Current, Future}.
 
 %% @doc Attempt to clear the cluster plan.
@@ -399,10 +399,16 @@ retrieve_plan() ->
         {error, Error} ->
             {error, Error};
         {ok, Changes, NextRings} ->
-            {_, FinalRing} = lists:last(NextRings),
-            FutureClaim =
-                riak_core_console:pending_nodes_and_claim_percentages(FinalRing),
-            {ok, [normalize_change(Change, FutureClaim) || Change <- Changes]}
+            Plan = case Changes of
+                [] ->
+                    [];
+                _ ->
+                    {_, FinalRing} = lists:last(NextRings),
+                    FutureClaim =
+                        riak_core_console:pending_nodes_and_claim_percentages(FinalRing),
+                    [normalize_change(Change, FutureClaim) || Change <- Changes]
+            end,
+            {ok, Plan}
     catch
         _:_ ->
             {error, unknown}
