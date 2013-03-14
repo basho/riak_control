@@ -137,7 +137,14 @@ apply_claim_change(Node, Claim) ->
         false ->
             Node;
         {_, {_, Future}} ->
-            Node#member_info{ring_pct=Future}
+            %% @doc Hack until core returns normalized values.
+            Normalized = if
+                Future > 0 ->
+                    Future / 100;
+                true ->
+                    Future
+            end,
+            Node#member_info{ring_pct=Normalized}
     end.
 
 %% @doc Turn a node into a proper struct for serialization.
