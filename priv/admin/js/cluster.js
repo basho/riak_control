@@ -13,44 +13,8 @@ minispade.register('cluster', function() {
    *
    * Responsible for modeling one specific cluster node.
    */
-  RiakControl.CurrentClusterNode = Ember.Object.extend(
-    /** @scope RiakControl.CurrentClusterNode.prototype */ {});
-
-  /**
-   * @class
-   *
-   * Responsible for modeling one specific cluster node.
-   */
   RiakControl.StagedClusterNode = Ember.Object.extend(
-    /** @scope RiakControl.StagedClusterNode.prototype */ {
-
-    /**
-     * Does the node have a replacement?
-     *
-     * @returns {boolean}
-     */
-    isReplaced: function() {
-      return this.get('replacement') !== "undefined" ? true : false;
-    }.property('replacement'),
-
-    /**
-     * Is the node taking an action?
-     *
-     * @returns {boolean}
-     */
-    isAction: function() {
-        return this.get('action') !== "undefined" ? true : false;
-    }.property('action')
-
-  });
-
-  /**
-   * @class
-   *
-   * Responsible for modeling the current and staged cluster.
-   */
-  RiakControl.CurrentAndPlannedCluster = Ember.Object.extend(
-    /** @scope RiakControl.CurrentAndPlannedCluster.prototype */ {});
+    /** @scope RiakControl.StagedClusterNode.prototype */ {});
 
   /**
    * @class
@@ -67,7 +31,7 @@ minispade.register('cluster', function() {
      *
      * @returns {void}
      */
-    load: function() {
+    init: function() {
       var self = this;
 
       $.ajax({
@@ -75,13 +39,19 @@ minispade.register('cluster', function() {
         url:      '/admin/cluster',
         dataType: 'json',
         success: function(d) {
-          var cluster = d.cluster.map(function(d) {
+          var cluster = d.cluster;
+
+          var current = cluster.current.map(function(d) {
             return RiakControl.CurrentClusterNode.create(d);
           });
 
-          var plan = [];
+          var staged = cluster.staged.map(function(d) {
+            return RiakControl.StagedClusterNode.create(d);
+          });
 
-          self.set('content', { cluster: cluster, plan: plan });
+          self.set('content', {
+              current: current, staged: staged
+          });
         }
       });
     },
@@ -92,7 +62,7 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     reload: function() {
-      this.load();
+      // no-op for now
     },
 
     /**
@@ -101,7 +71,8 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
+      this._intervalId = setInterval($.proxy(this.reload, this),
+              RiakControl.refreshInterval);
     },
 
     /**
@@ -303,11 +274,81 @@ minispade.register('cluster', function() {
   /**
    * @class
    *
-   * Collection view for showing the entire cluster.
+   * Collection view for showing the current cluster.
    */
   RiakControl.CurrentClusterView = Ember.CollectionView.extend(
     /** @scope RiakControl.CurrentClusterView.prototype */ {
     itemViewClass: RiakControl.CurrentClusterItemView
+  });
+
+  /**
+   * @class
+   *
+   * One item in the collection of current cluster views.
+   */
+  RiakControl.StagedClusterItemView = Ember.View.extend(
+    /** @scope RiakControl.StagedClusterItemView.prototype */ {
+
+    /* Bindings from the model */
+
+    templateName:       'staged_cluster_item',
+    nameBinding:        'content.name',
+    statusBinding:      'content.status',
+    ring_pctBinding:    'content.ring_pct',
+    actionBinding:      'content.action',
+
+    isReplacement: function() {
+        var replacement = this.get('content.replacement');
+
+        if(replacement != undefined) {
+            return false;
+        } else {
+            return true;
+        }
+    }.property('content.replcaement'),
+
+    /**
+     * Color the lights appropriately based on the node status.
+     *
+     * @returns {string}
+     */
+     indicatorLights: function() {
+       var status = this.get('status');
+       var reachable = this.get('reachable');
+       var color;
+
+       if(reachable === false) {
+         color = "red";
+       } else if(status === 'leaving' || status === 'joining') {
+         color = "orange";
+       } else if (status === 'valid') {
+         color = "green";
+       } else {
+         color = "grey";
+       }
+
+       return "gui-light status-light inline-block " + color;
+     }.property('reachable', 'status'),
+
+    /**
+     * Formatted ring percentage.
+     *
+     * @returns {string}
+     */
+    ring_pct_readable: function () {
+      return this.get('ring_pct') * 100;
+    }.property('ring_pct')
+
+  });
+
+  /**
+   * @class
+   *
+   * Collection view for showing the staged cluster.
+   */
+  RiakControl.StagedClusterView = Ember.CollectionView.extend(
+    /** @scope RiakControl.StagedClusterView.prototype */ {
+    itemViewClass: RiakControl.StagedClusterItemView
   });
 
 });

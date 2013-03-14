@@ -53,7 +53,7 @@
                     <li class="item4"><h4 class="gui-headline-bold">RAM Usage</h4></li>
                 </ul>
                 <div class="clear"></div>
-                {{collection RiakControl.CurrentClusterView contentBinding="content.cluster"}}
+                {{collection RiakControl.CurrentClusterView contentBinding="content.current"}}
             {{/if}}
         </section>
     </div>
@@ -66,43 +66,24 @@
 
     <div id="planned-area">
         <h2 class="gui-headline">
-            Cluster Plan
+            Staged Changes
             <span class="gui-text-flat italic">(Your new cluster after convergence.)</span>
         </h2>
         <section id="planned-list" class="">
-            <ul class="list-header">
-                <li class="item1"><h4 class="gui-headline-bold">Name &amp; Status</h4></li>
-                <li class="item2"><h4 class="gui-headline-bold">Partitions</h4></li>
-                <li class="item3"><h4 class="gui-headline-bold">Action</h4></li>
-                <li class="item4"><h4 class="gui-headline-bold">Replacing</h4></li>
-            </ul>
-            <div class="clear"></div>
-            <div class="node">
-                <div class="item1 name-box gui-text">
-                    <a class="gui-light status-light inline-block">
-                    </a><div class="gui-text field-container inline-block">
-                        <div class="name gui-field">dev1@127.0.0.1</div>
-                    </div>
+            {{#if controller.isLoading}}
+                <div class="spinner-box">
+                    <img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif">
                 </div>
-                <div class="item2 gui-text ring-pct-box">
-                    <div class="left pct-arrows pct-static">
-                        <div class="green-pct-arrow"></div>
-                    </div>
-                    <div class="left gui-text pct-box">
-                        <span class="ring-pct">25%</span>
-                    </div>
-                    <div class="clear"></div>
-                </div>
-                <div class="item3 action-taken gui-text">
-                    <span class="action-name">Join</span>
-                </div>
-                <div class="item4 replacing-box">
-                    <div class="gui-text field-container inline-block">
-                        <div class="name gui-field">dev1@127.0.0.1</div>
-                    </div>
-                </div>
+            {{else}}
+                <ul class="list-header">
+                    <li class="item1"><h4 class="gui-headline-bold">Name &amp; Status</h4></li>
+                    <li class="item2"><h4 class="gui-headline-bold">Partitions</h4></li>
+                    <li class="item3"><h4 class="gui-headline-bold">Action</h4></li>
+                    <li class="item4"><h4 class="gui-headline-bold">Replacing</h4></li>
+                </ul>
                 <div class="clear"></div>
-            </div>
+                {{collection RiakControl.StagedClusterView contentBinding="content.staged"}}
+            {{/if}}
         </section>
 
 
