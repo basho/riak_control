@@ -75,11 +75,13 @@ minispade.register('cluster', function() {
         url:      '/admin/cluster',
         dataType: 'json',
         success: function(d) {
-          var content = d.map(function(d) {
+          var cluster = d.cluster.map(function(d) {
             return RiakControl.CurrentClusterNode.create(d);
           });
 
-          self.set('content', this);
+          var plan = [];
+
+          self.set('content', { cluster: cluster, plan: plan });
         }
       });
     },
