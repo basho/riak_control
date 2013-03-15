@@ -44,6 +44,7 @@
             {{#if controller.isLoading}}
                 <div class="spinner-box">
                     <img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif">
+                    <h4 class="gui-headline-bold">Loading...</h4>
                 </div>
             {{else}}
                 <ul class="list-header">
@@ -69,12 +70,9 @@
             Staged Changes
             <span class="gui-text-flat italic">(Your new cluster after convergence.)</span>
         </h2>
-        <section id="planned-list" class="">
-            {{#if controller.isLoading}}
-                <div class="spinner-box">
-                    <img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif">
-                </div>
-            {{else}}
+
+        {{#if controller.displayPlan}}
+            <section id="planned-list" class="">
                 <ul class="list-header">
                     <li class="item1"><h4 class="gui-headline-bold">Name &amp; Status</h4></li>
                     <li class="item2"><h4 class="gui-headline-bold">Partitions</h4></li>
@@ -83,25 +81,44 @@
                 </ul>
                 <div class="clear"></div>
                 {{collection RiakControl.StagedClusterView contentBinding="content.staged"}}
-            {{/if}}
-        </section>
-
-
-        <h4 class="plan-details-header gui-headline-bold">Plan Details</h4>
-        <p class="plan-details">
-            More details about the convergence plan will go here.
-            Lorem ipsum dolor sit amet consecteteur adipiscing
-            elit.  Caronius mun liltium norvis.
-        </p>
-        <div class="accept-plan">
-            <div class="gui-checkbox-wrapper">
-                <span>This plan is correct.</span>
-                <input class="gui-checkbox" type="checkbox" name="cluster-plan" value="accept"/>
+            </section>
+            <h4 class="plan-details-header gui-headline-bold">Plan Details</h4>
+            <p class="plan-details">
+                More details about the convergence plan will go here.
+                Lorem ipsum dolor sit amet consecteteur adipiscing
+                elit.  Caronius mun liltium norvis.
+            </p>
+            <div class="accept-plan">
+                <div class="gui-checkbox-wrapper">
+                    <span>This plan is correct.</span>
+                    <input class="gui-checkbox" type="checkbox" name="cluster-plan" value="accept"/>
+                </div>
+                <a id="commit-button" class="gui-point-button-right gui-text-bold right">
+                    <span class="gui-button-msg">COMMIT</span>
+                </a>
             </div>
-            <a id="commit-button" class="gui-point-button-right gui-text-bold right">
-                <span class="gui-button-msg">COMMIT</span>
-            </a>
-        </div>
+            <div class="clear-plan-box">
+                <span class="gui-text-flat serif">
+                    Changed your mind? Click this button to remove all staged changes.
+                </span>
+                <a id="clear-plan-button" class="gui-rect-button gui-text-bold">
+                    <span class="gui-button-msg">CLEAR PLAN</span>
+                </a>
+            </div>
+        {{else}}
+            <section id="planned-list">
+                <div class="spinner-box">
+                    {{#if controller.ring_not_ready}}
+                        <h4 class="gui-headline-bold">The plan is currently unavailable because Riak is still starting.</h4>
+                    {{else}}
+                        {{#if controller.isLoading}}
+                            <img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif">
+                            <h4 class="gui-headline-bold">Loading...</h4>
+                        {{/if}}
+                    {{/if}}
+                </div>
+            </section>
+        {{/if}}
     </div>
 
     <div class="clear"></div>
