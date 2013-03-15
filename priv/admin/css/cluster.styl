@@ -34,13 +34,28 @@ CSS to be applied ONLY on the cluster page
   h3
     copy-font()
 
+  .spinner-box
+    corners()
+    text-align : center
+    background : rgba(255, 255, 255, .05)
+    padding    : 25px
+
+    img, h4
+      vertical-align : middle
+
+    h4
+      opaque(.8)
+      display      : inline-block
+      padding-top  : 6px
+      padding-left : 10px
+
   .actions-container
-    css-transition(height .5s ease)
+    css-transition(height .4s ease)
     overflow : hidden
     height   : 0
 
   .open .actions-container
-    css-transition(height .5s ease)
+    css-transition(height .4s ease)
     height : 250px
 
   .gui-light
@@ -157,6 +172,16 @@ CSS to be applied ONLY on the cluster page
     position   : relative
     padding    : 15px 0
     margin-top : 15px
+
+  .clear-plan-box
+    border-top  : 1px solid lightWhite
+    margin-top  : 25px
+    padding-top : 25px
+
+    a
+      display : block
+      margin-top  : 15px
+      margin-left : -5px
 
   .plan-details
     @extend .gui-text-flat
@@ -469,89 +494,5 @@ CSS to be applied ONLY on the cluster page
       display : none
 
 
-  /*
-  @media screen and (min-width : 1300px)
 
-    .name-box .field-container
-      vertical-align : middle
-      padding-top    : 5px
-
-    .free-memory
-      display : none
-
-
-  @media screen and (max-width : 1300px)
-
-    #current-area, #planned-area
-      float : none
-      width : auto
-
-    #current-area
-      margin-right : 0
-
-  @media screen and (min-width : 1100px)
-
-    .replacement-controls
-      width : 250px
-
-  @media screen and (max-width : 1050px)
-
-    .name-box .field-container
-      min-width : 82%;
-
-  @media screen and (max-width : 959px)
-
-    .free-memory
-      display : none
-      
-    .actions-box
-      margin-right : 0
-      
-    .switch-box
-      width : 100px
-      
-    .switch-box div
-      width        : 78px
-      padding-left : 0
-      
-    .switch-box > div
-      width      : auto
-      padding    : 0
-      text-align : center
-      
-    .actions-header
-      padding-left : 0
-      text-align   : center
-
-  @media screen and (max-width : 890px)
-
-    .name-box .field-container
-      vertical-align : middle
-      padding-top    : 5px
-
-  @media screen and (max-width : 699px)
-      
-    .markdown-box, .shutdown-box, .leave-cluster-box
-      margin-right : 10px
-
-    .replacement-controls
-      margin-right : 0
-
-    .gui-light
-      display : none
-
-  @media screen and (max-width : 550px)
-
-    #cluster-table, #planned-table
-      tr td:nth-child(4), tr td:nth-child(5)
-        display : none
-      
-  @media screen and (max-width : 499px)
-
-    .switch-box div
-      padding: 0 7px 0 0
-      margin : 0 0 0 5px
-  */
-
-  /* END RESPONSIVE MEDIA QUERIES */
 

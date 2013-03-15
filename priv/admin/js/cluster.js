@@ -52,6 +52,7 @@ minispade.register('cluster', function() {
               return RiakControl.StagedClusterNode.create(d);
             });
           } else {
+            (cluster.staged === 'ring_not_ready') && self.set('ring_not_ready', true);
             staged = [];
           }
 
@@ -98,7 +99,27 @@ minispade.register('cluster', function() {
      */
     isLoading: function () {
       return false;
-    }.property()
+    }.property(),
+
+    /*
+     * If we get back some value other than an array of nodes for
+     * the staged portion of the cluster plan we'll put it here.
+     */
+    ring_not_ready: false,
+
+    /**
+     * There are various reasons we wouldn't want to display
+     * the planned cluster.  If none of those reasons are present,
+     * go ahead and show the whole planned cluster view.
+     *
+     * @returns {boolean}
+     */
+    displayPlan: function () {
+      var content = this.get('content'),
+          stages  = content ? content.staged : [];
+
+      return !this.get('isLoading') && !this.get('ring_not_ready') && stages.length > 0;
+    }.property('isLoading', 'content', 'ring_not_ready')
   });
 
   /**

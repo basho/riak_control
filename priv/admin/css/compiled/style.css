@@ -937,25 +937,44 @@ input.gui-point-button-right:active {
 #cluster-page h3 {
   font-family: 'noticia', georgia, serif;
 }
+#cluster-page .spinner-box {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  padding: 25px;
+}
+#cluster-page .spinner-box img,
+#cluster-page .spinner-box h4 {
+  vertical-align: middle;
+}
+#cluster-page .spinner-box h4 {
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+  display: inline-block;
+  padding-top: 6px;
+  padding-left: 10px;
+}
 #cluster-page .actions-container {
-  -webkit-transition: height 0.5s ease;
-  -moz-transition: height 0.5s ease;
-  -ms-transition: height 0.5s ease;
-  -webkit-transition: height 0.5s ease;
-  -moz-transition: height 0.5s ease;
-  -o-transition: height 0.5s ease;
-  transition: height 0.5s ease;
+  -webkit-transition: height 0.4s ease;
+  -moz-transition: height 0.4s ease;
+  -ms-transition: height 0.4s ease;
+  -webkit-transition: height 0.4s ease;
+  -moz-transition: height 0.4s ease;
+  -o-transition: height 0.4s ease;
+  transition: height 0.4s ease;
   overflow: hidden;
   height: 0;
 }
 #cluster-page .open .actions-container {
-  -webkit-transition: height 0.5s ease;
-  -moz-transition: height 0.5s ease;
-  -ms-transition: height 0.5s ease;
-  -webkit-transition: height 0.5s ease;
-  -moz-transition: height 0.5s ease;
-  -o-transition: height 0.5s ease;
-  transition: height 0.5s ease;
+  -webkit-transition: height 0.4s ease;
+  -moz-transition: height 0.4s ease;
+  -ms-transition: height 0.4s ease;
+  -webkit-transition: height 0.4s ease;
+  -moz-transition: height 0.4s ease;
+  -o-transition: height 0.4s ease;
+  transition: height 0.4s ease;
   height: 250px;
 }
 #cluster-page .gui-light {
@@ -1092,6 +1111,16 @@ input.gui-point-button-right:active {
   position: relative;
   padding: 15px 0;
   margin-top: 15px;
+}
+#cluster-page .clear-plan-box {
+  border-top: 1px solid rgba(255,255,255,0.18);
+  margin-top: 25px;
+  padding-top: 25px;
+}
+#cluster-page .clear-plan-box a {
+  display: block;
+  margin-top: 15px;
+  margin-left: -5px;
 }
 #cluster-page .plan-details {
   font-family: 'noticia', georgia, serif;
