@@ -38,6 +38,7 @@ minispade.register('cluster', function() {
         method:   'GET',
         url:      '/admin/cluster',
         dataType: 'json',
+
         success: function(d) {
           var cluster = d.cluster;
 
@@ -52,7 +53,14 @@ minispade.register('cluster', function() {
               return RiakControl.StagedClusterNode.create(d);
             });
           } else {
-            (cluster.staged === 'ring_not_ready') && self.set('ring_not_ready', true);
+            if(cluster.staged === 'ring_not_ready') {
+              self.set('ring_not_ready', true);
+            }
+
+            if(cluster.staged === 'legacy') {
+              self.set('legacy', true);
+            }
+
             staged = [];
           }
 
@@ -71,7 +79,8 @@ minispade.register('cluster', function() {
     },
 
     /**
-     * Called by the router to start the polling interval when the page is selected.
+     * Called by the router to start the polling interval when the page
+     * is selected.
      *
      * @returns {void}
      */
@@ -81,8 +90,8 @@ minispade.register('cluster', function() {
     },
 
     /**
-     * Called by the router to stop the polling interval when the page is navigated
-     * away from.
+     * Called by the router to stop the polling interval when the page
+     * is navigated away from.
      *
      * @returns {void}
      */
@@ -102,8 +111,12 @@ minispade.register('cluster', function() {
     }.property(),
 
     /*
-     * If we get back some value other than an array of nodes for
-     * the staged portion of the cluster plan we'll put it here.
+     * Holds a boolean tracking if the ring is legacy.
+     */
+    legacy: false,
+
+    /*
+     * Holds a boolean tracking if the ring is not yet ready.
      */
     ring_not_ready: false,
 
@@ -118,8 +131,11 @@ minispade.register('cluster', function() {
       var content = this.get('content'),
           stages  = content ? content.staged : [];
 
-      return !this.get('isLoading') && !this.get('ring_not_ready') && stages.length > 0;
-    }.property('isLoading', 'content', 'ring_not_ready')
+      return !this.get('isLoading') &&
+             !this.get('ring_not_ready') &&
+             !this.get('legacy') &&
+             stages.length > 0;
+    }.property('isLoading', 'content', 'ring_not_ready', 'legacy')
   });
 
   /**
