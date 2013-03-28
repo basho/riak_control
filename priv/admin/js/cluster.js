@@ -242,8 +242,8 @@ minispade.register('cluster', function() {
      * @returns {number}
      */
     mem_non_erlang: function () {
-      return Math.round((this.get('mem_used') / this.get('mem_divider'))
-          - this.get('mem_erlang_ceil'));
+      return Math.round(
+          (this.get('mem_used') / this.get('mem_divider')) - this.get('mem_erlang_ceil'));
     }.property('mem_used', 'mem_divider', 'mem_erlang_ceil'),
 
     /**
