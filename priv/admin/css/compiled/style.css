@@ -955,6 +955,7 @@ input.gui-point-button-right:active {
   display: inline-block;
   padding-top: 6px;
   padding-left: 10px;
+  line-height: 1.2;
 }
 #cluster-page .actions-container {
   -webkit-transition: height 0.4s ease;
