@@ -35,44 +35,31 @@ minispade.register('cluster', function() {
     /** @scope RiakControl.ClusterController.prototype */ {
 
     /**
-     * Load data from server.
+     * Initialize.
      *
      * @returns {void}
      */
     init: function() {
-      var self = this;
+      this.set('content',
+        RiakControl.CurrentAndPlannedCluster.create({
+          stagedCluster: [], currentCluster: []
+        }));
+    },
 
+    /**
+     * Load data from server.
+     *
+     * @returns {void}
+     */
+    load: function() {
       $.ajax({
         method:   'GET',
         url:      '/admin/cluster',
+        context:  this,
         dataType: 'json',
 
         success: function(d) {
-          var cluster = d.cluster;
-
-          var current = cluster.current.map(function(d) {
-            return RiakControl.CurrentClusterNode.create(d);
-          });
-
-          var staged;
-
-          if($.isArray(cluster.staged)) {
-            staged = cluster.staged.map(function(d) {
-              return RiakControl.StagedClusterNode.create(d);
-            });
-          } else {
-            if(cluster.staged === 'ring_not_ready') {
-              self.set('ring_not_ready', true);
-            }
-
-            if(cluster.staged === 'legacy') {
-              self.set('legacy', true);
-            }
-
-            staged = [];
-          }
-
-          self.set('content', { current: current, staged: staged });
+          console.log(d);
         }
       });
     },
@@ -83,7 +70,7 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     reload: function() {
-      // no-op for now
+      this.load();
     },
 
     /**
@@ -137,7 +124,7 @@ minispade.register('cluster', function() {
      */
     displayPlan: function () {
       var content = this.get('content'),
-          stages  = content ? content.staged : [];
+          stages  = content ? content.stagedCluster : [];
 
       return !this.get('isLoading') &&
              !this.get('ring_not_ready') &&
