@@ -19,6 +19,14 @@ minispade.register('cluster', function() {
   /**
    * @class
    *
+   * Responsible for modeling the current and staged cluster.
+   */
+  RiakControl.CurrentAndPlannedCluster = Ember.Object.extend(
+    /** @scope RiakControl.CurrentAndPlannedCluster.prototype */ {});
+
+  /**
+   * @class
+   *
    * ClusterController is responsible for display the list of nodes
    * in the cluster.  This controller is basically a placeholder and
    * wrapper around the legacy cluster page until we rewrite it.
