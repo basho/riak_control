@@ -53,7 +53,7 @@
                     <li class="item4"><h4 class="gui-headline-bold">RAM Usage</h4></li>
                 </ul>
                 <div class="clear"></div>
-                {{collection RiakControl.CurrentClusterView contentBinding="content.current"}}
+                {{collection RiakControl.CurrentClusterView contentBinding="content.currentCluster"}}
             {{/if}}
         </section>
     </div>
@@ -79,7 +79,7 @@
                     <li class="item4"><h4 class="gui-headline-bold">Replacement</h4></li>
                 </ul>
                 <div class="clear"></div>
-                {{collection RiakControl.StagedClusterView contentBinding="content.staged"}}
+                {{collection RiakControl.StagedClusterView contentBinding="content.stagedCluster"}}
             </section>
             <div class="accept-plan">
                 <div class="gui-checkbox-wrapper">
