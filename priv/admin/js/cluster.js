@@ -101,10 +101,17 @@ minispade.register('cluster', function() {
             currentCurrentCluster, RiakControl.CurrentClusterNode);
 
           var updatedStagedCluster = d.cluster.staged;
-          var currentStagedCluster = self.get('content.stagedCluster');
 
-          self.refresh(updatedStagedCluster,
-            currentStagedCluster, RiakControl.StagedClusterNode);
+          if(updatedStagedCluster === 'ring_not_ready') {
+            self.set('ring_not_ready', true);
+          } else if (updatedStagedCluster === 'legacy') {
+            self.set('legacy', true);
+          } else {
+            var currentStagedCluster = self.get('content.stagedCluster');
+
+            self.refresh(updatedStagedCluster,
+              currentStagedCluster, RiakControl.StagedClusterNode);
+          }
         }
       });
     },
