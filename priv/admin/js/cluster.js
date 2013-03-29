@@ -47,19 +47,58 @@ minispade.register('cluster', function() {
     },
 
     /**
+     * Refresh a particular cluster, giving a cluster returned as JSON,
+     * and a cluster modeled in Ember.
+     *
+     * Not computationally efficient at all, but explicit for debugging
+     * the Ember bindings and propagation.
+     *
+     * @returns {void}
+     */
+    refresh: function(newCluster, existingCluster, nodeFactory) {
+      newCluster.forEach(function(node) {
+        var exists = existingCluster.findProperty('name', node.name);
+
+        // If it doesn't exist yet, add it.  If it does, update it.
+        if(exists !== undefined) {
+          exists.setProperties(node);
+        } else {
+          existingCluster.pushObject(nodeFactory.create(node));
+        }
+      });
+
+      // Iterate the cluster removing nodes that shouldn't
+      // be there.
+      existingCluster.forEach(function(node) {
+        var exists = newCluster.findProperty('name', node.name);
+
+        if(exists === undefined) {
+          node.destroy();
+        }
+      });
+
+      /** Done loading the current cluster. */
+    },
+
+    /**
      * Load data from server.
      *
      * @returns {void}
      */
     load: function() {
+      var self = this;
+
       $.ajax({
         method:   'GET',
         url:      '/admin/cluster',
-        context:  this,
         dataType: 'json',
 
         success: function(d) {
-          console.log(d);
+          var updatedCurrentCluster = d.cluster.current;
+          var currentCurrentCluster = self.get('content.currentCluster');
+
+          self.refresh(updatedCurrentCluster,
+            currentCurrentCluster, RiakControl.CurrentClusterNode);
         }
       });
     },
