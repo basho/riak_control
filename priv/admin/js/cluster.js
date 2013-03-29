@@ -99,6 +99,12 @@ minispade.register('cluster', function() {
 
           self.refresh(updatedCurrentCluster,
             currentCurrentCluster, RiakControl.CurrentClusterNode);
+
+          var updatedStagedCluster = d.cluster.staged;
+          var currentStagedCluster = self.get('content.stagedCluster');
+
+          self.refresh(updatedStagedCluster,
+            currentStagedCluster, RiakControl.StagedClusterNode);
         }
       });
     },
@@ -169,7 +175,8 @@ minispade.register('cluster', function() {
              !this.get('ring_not_ready') &&
              !this.get('legacy') &&
              stages.length > 0;
-    }.property('isLoading', 'content', 'ring_not_ready', 'legacy')
+    }.property('isLoading', 'ring_not_ready', 'legacy',
+               'content.stagedCluster.@each', 'content.currentCluster.@each')
   });
 
   /**
