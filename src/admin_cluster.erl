@@ -93,6 +93,8 @@ to_json(ReqData, Context) ->
     Planned = case riak_control_session:get_plan() of
         {error, Error} ->
             Error;
+        {ok, [], _Claim} ->
+            [];
         {ok, Changes, Claim} ->
             merge_transitions(Nodes, Changes, Claim)
     end,
