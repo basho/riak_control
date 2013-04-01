@@ -47,7 +47,10 @@ minispade.register('router', function() {
         route: 'cluster',
 
         connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('cluster');
+          router.get('applicationController').connectOutlet('cluster',
+            RiakControl.CurrentAndPlannedCluster.create({
+              stagedCluster: [], currentCluster: []
+            }));
           $.riakControl.markNavActive('nav-cluster');
         },
 
