@@ -201,6 +201,33 @@ minispade.register('cluster', function() {
   /**
    * @class
    *
+   * ClearPlanButton is responsible for clearing the staged plan.
+   */
+  RiakControl.ClearPlanButtonView = Ember.View.extend(
+    /** @scope RiakControl.ClearPlanButtonView.prototype */ {
+    tagName:    'a',
+    classNames: ['gui-rect-button', 'gui-text-bold'],
+
+    click: function(ev) {
+      ev.preventDefault();
+
+      var self = this;
+
+      $.ajax({
+        method:   'DELETE',
+        url:      '/admin/cluster',
+        dataType: 'json',
+
+        success: function(d) {
+          self.get('controller').reload();
+        }
+      });
+    }
+  });
+
+  /**
+   * @class
+   *
    * Toggle button for a current cluster node to expand actions.
    */
   RiakControl.CurrentClusterToggleView = Ember.View.extend(
