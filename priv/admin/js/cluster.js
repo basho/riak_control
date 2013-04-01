@@ -35,18 +35,6 @@ minispade.register('cluster', function() {
     /** @scope RiakControl.ClusterController.prototype */ {
 
     /**
-     * Initialize.
-     *
-     * @returns {void}
-     */
-    init: function() {
-      this.set('content',
-        RiakControl.CurrentAndPlannedCluster.create({
-          stagedCluster: [], currentCluster: []
-        }));
-    },
-
-    /**
      * Refresh a particular cluster, giving a cluster returned as JSON,
      * and a cluster modeled in Ember.
      *
