@@ -86,8 +86,6 @@ minispade.register('cluster', function() {
       if(changesOccurred) {
         existingCluster.set('[]', replacementCluster.get('[]'));
       }
-
-      /** Done loading the current cluster. */
     },
 
     /**
