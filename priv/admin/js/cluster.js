@@ -69,13 +69,23 @@ minispade.register('cluster', function() {
 
       // Iterate the cluster removing nodes that shouldn't
       // be there.
-      existingCluster.forEach(function(node) {
+      var changesOccurred    = false;
+      var replacementCluster = [];
+
+      existingCluster.forEach(function(node, i) {
         var exists = newCluster.findProperty('name', node.name);
 
         if(exists === undefined) {
           node.destroy();
+          changesOccurred = true;
+        } else {
+          replacementCluster.pushObject(node);
         }
       });
+
+      if(changesOccurred) {
+        existingCluster.set('[]', replacementCluster.get('[]'));
+      }
 
       /** Done loading the current cluster. */
     },
@@ -157,15 +167,33 @@ minispade.register('cluster', function() {
       return false;
     }.property(),
 
-    /*
+    /**
      * Holds a boolean tracking if the ring is legacy.
      */
     legacy: false,
 
-    /*
+    /**
      * Holds a boolean tracking if the ring is not yet ready.
      */
     ring_not_ready: false,
+
+    /**
+     * Return nodes from the current cluster which have not been deleted.
+     *
+     * @returns {Ember.Array}
+     */
+    activeCurrentCluster: function() {
+      return this.get('content.currentCluster').filterProperty('isDestroyed', false);
+    }.property('content.currentCluster', 'content.currentCluster.@each'),
+
+    /**
+     * Return nodes from the staged cluster which have not been deleted.
+     *
+     * @returns {Ember.Array}
+     */
+    activeStagedCluster: function() {
+      return this.get('content.stagedCluster').filterProperty('isDestroyed', false);
+    }.property('content.stagedCluster', 'content.stagedCluster.@each'),
 
     /**
      * There are various reasons we wouldn't want to display
@@ -175,15 +203,16 @@ minispade.register('cluster', function() {
      * @returns {boolean}
      */
     displayPlan: function () {
-      var content = this.get('content'),
-          stages  = content ? content.stagedCluster : [];
+      var numStages = this.get('activeStagedCluster.length');
 
       return !this.get('isLoading') &&
              !this.get('ring_not_ready') &&
              !this.get('legacy') &&
-             stages.length > 0;
-    }.property('isLoading', 'ring_not_ready', 'legacy',
-               'content.stagedCluster.@each', 'content.currentCluster.@each')
+             numStages > 0;
+    }.property('isLoading',
+               'ring_not_ready',
+               'legacy',
+               'activeStagedCluster.length')
   });
 
   /**
