@@ -27,6 +27,7 @@
          to_json/2,
          forbidden/2,
          is_authorized/2,
+         allowed_methods/2,
          delete_resource/2,
          service_available/2,
          content_types_provided/2]).
@@ -43,6 +44,12 @@ routes() ->
 -spec init([]) -> {ok, undefined}.
 init([]) ->
     {ok, undefined}.
+
+%% @doc Allowed methods.
+-spec allowed_methods(#wm_reqdata{}, undefined) ->
+    {list(atom()), #wm_reqdata{}, undefined}.
+allowed_methods(ReqData, Context) ->
+    {['GET', 'DELETE'], ReqData, Context}.
 
 %% @doc Prevent requests coming from an invalid origin.
 -spec forbidden(#wm_reqdata{}, undefined) ->
@@ -73,9 +80,9 @@ content_types_provided(ReqData, Context) ->
     {true, #wm_reqdata{}, undefined}.
 delete_resource(ReqData, Context) ->
     Result = case riak_control_session:clear_plan() of
-        ok ->
+        {ok, ok} ->
             true;
-        error ->
+        {ok, error} ->
             false
     end,
     {Result, ReqData, Context}.
