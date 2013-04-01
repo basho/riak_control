@@ -89,7 +89,7 @@ minispade.register('cluster', function() {
       var self = this;
 
       $.ajax({
-        method:   'GET',
+        type:     'GET',
         url:      '/admin/cluster',
         dataType: 'json',
 
@@ -214,7 +214,7 @@ minispade.register('cluster', function() {
       var self = this;
 
       $.ajax({
-        method:   'DELETE',
+        type:     'DELETE',
         url:      '/admin/cluster',
         dataType: 'json',
 
