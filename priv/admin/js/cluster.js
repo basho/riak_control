@@ -14,7 +14,27 @@ minispade.register('cluster', function() {
    * Responsible for modeling one specific cluster node.
    */
   RiakControl.StagedClusterNode = Ember.Object.extend(
-    /** @scope RiakControl.StagedClusterNode.prototype */ {});
+    /** @scope RiakControl.StagedClusterNode.prototype */ {
+
+      /**
+       * Does the node have a replacement?
+       *
+       * @returns {boolean}
+       */
+      isReplaced: function() {
+        return this.get('replacement') !== "undefined" ? true : false;
+      }.property('replacement'),
+
+      /**
+       * Is the node taking an action?
+       *
+       * @returns {boolean}
+       */
+      isAction: function() {
+          return this.get('action') !== "undefined" ? true : false;
+      }.property('action')
+
+    });
 
   /**
    * @class
@@ -426,27 +446,11 @@ minispade.register('cluster', function() {
     nameBinding:        'content.name',
     statusBinding:      'content.status',
     ring_pctBinding:    'content.ring_pct',
+    isReplacedBinding:  'content.isReplaced',
+    isActionBinding:    'content.isAction',
 
     /* Necessary rename to avoid collision */
     node_actionBinding: 'content.action',
-
-    /**
-     * Does the node have a replacement?
-     *
-     * @returns {boolean}
-     */
-    isReplaced: function() {
-      return this.get('content.replacement') !== "undefined" ? true : false;
-    }.property('content.replacement'),
-
-    /**
-     * Is the node taking an action?
-     *
-     * @returns {boolean}
-     */
-    isAction: function() {
-        return this.get('content.action') !== "undefined" ? true : false;
-    }.property('content.action'),
 
     /**
      * Color the lights appropriately based on the node status.
