@@ -25,12 +25,14 @@
 -export([routes/0,
          init/1,
          to_json/2,
+         from_json/2,
          forbidden/2,
          is_authorized/2,
          allowed_methods/2,
          delete_resource/2,
          service_available/2,
-         content_types_provided/2]).
+         content_types_provided/2,
+         content_types_accepted/2]).
 
 -include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
@@ -46,38 +48,86 @@ init([]) ->
     {ok, undefined}.
 
 %% @doc Allowed methods.
--spec allowed_methods(#wm_reqdata{}, undefined) ->
-    {list(atom()), #wm_reqdata{}, undefined}.
+-spec allowed_methods(wrq:reqdata(), undefined) ->
+    {list(atom()), wrq:reqdata(), undefined}.
 allowed_methods(ReqData, Context) ->
-    {['GET', 'DELETE'], ReqData, Context}.
+    {['GET', 'PUT', 'DELETE'], ReqData, Context}.
 
 %% @doc Prevent requests coming from an invalid origin.
--spec forbidden(#wm_reqdata{}, undefined) ->
-    {boolean(), #wm_reqdata{}, undefined}.
+-spec forbidden(wrq:reqdata(), undefined) ->
+    {boolean(), wrq:reqdata(), undefined}.
 forbidden(ReqData, Context) ->
     {riak_control_security:is_null_origin(ReqData), ReqData, Context}.
 
 %% @doc Handle SSL requests.
--spec service_available(#wm_reqdata{}, undefined) ->
-    {boolean(), #wm_reqdata{}, undefined}.
+-spec service_available(wrq:reqdata(), undefined) ->
+    {boolean(), wrq:reqdata(), undefined}.
 service_available(ReqData, Context) ->
     riak_control_security:scheme_is_available(ReqData, Context).
 
 %% @doc Ensure user has access.
--spec is_authorized(#wm_reqdata{}, undefined) ->
-    {boolean(), #wm_reqdata{}, undefined}.
+-spec is_authorized(wrq:reqdata(), undefined) ->
+    {boolean(), wrq:reqdata(), undefined}.
 is_authorized(ReqData, Context) ->
     riak_control_security:enforce_auth(ReqData, Context).
 
 %% @doc Return the available contents.
--spec content_types_provided(#wm_reqdata{}, undefined) ->
-    {list(), #wm_reqdata{}, undefined}.
+-spec content_types_provided(wrq:reqdata(), undefined) ->
+    {list(), wrq:reqdata(), undefined}.
 content_types_provided(ReqData, Context) ->
     {[{"application/json", to_json}], ReqData, Context}.
 
+%% @doc Return the available contents.
+-spec content_types_accepted(wrq:reqdata(), undefined) ->
+    {list(), wrq:reqdata(), undefined}.
+content_types_accepted(ReqData, Context) ->
+    {[{"application/json", from_json}], ReqData, Context}.
+
+%% @doc Accept a plan and commit it.
+-spec from_json(wrq:reqdata(), undefined) ->
+    {boolean(), wrq:reqdata(), undefined}.
+from_json(ReqData, Context) ->
+    Change = extract_change(ReqData, Context),
+
+    Node = atomized_get_value(node, Change),
+    Action = atomized_get_value(action, Change),
+    Replacement = atomized_get_value(replacement, Change, undefined),
+
+    Response = stage_change(Node, Action, Replacement),
+
+    {Response, ReqData, Context}.
+
+%% @doc Extract change. TODO WRITE SPEC
+extract_change(ReqData, _Context) ->
+    Decoded = mochijson2:decode(wrq:req_body(ReqData)),
+    Atomized = atomize(Decoded),
+    {struct, [{change, {struct, Change}}]} = Atomized,
+    Change.
+
+%% @doc Stage a change.
+-spec stage_change(node(), normalized_action(), node()) -> boolean().
+stage_change(Node, Action, Replacement) ->
+    Result = case Action of
+        leave ->
+            riak_core_claimant:leave_member(Node);
+        remove ->
+            riak_core_claimant:remove_member(Node);
+        replace ->
+            riak_core_claimant:replace(Node, Replacement);
+        force_replace ->
+            riak_core_claimant:force_replace(Node, Replacement)
+    end,
+
+    case Result of
+        {ok, _} ->
+            true;
+        _ ->
+            false
+    end.
+
 %% @doc Remove the staged plan.
--spec delete_resource(#wm_reqdata{}, undefined) ->
-    {true, #wm_reqdata{}, undefined}.
+-spec delete_resource(wrq:reqdata(), undefined) ->
+    {true, wrq:reqdata(), undefined}.
 delete_resource(ReqData, Context) ->
     Result = case riak_control_session:clear_plan() of
         {ok, ok} ->
@@ -88,8 +138,7 @@ delete_resource(ReqData, Context) ->
     {Result, ReqData, Context}.
 
 %% @doc Return the current cluster, along with a plan if it's available.
--spec to_json(#wm_reqdata{}, undefined) ->
-    {binary(), #wm_reqdata{}, undefined}.
+-spec to_json(wrq:reqdata(), undefined) -> {binary(), wrq:reqdata(), undefined}.
 to_json(ReqData, Context) ->
 
     %% Get the current node list.
@@ -180,3 +229,32 @@ jsonify_node(Node) ->
              {"me",Node#member_info.node == node()},
              {"action",Node#member_info.action},
              {"replacement",Node#member_info.replacement}]}.
+
+%% @doc Given a struct/proplist that we've received via JSON,
+%% recursively turn the keys into atoms from binaries.
+atomize({struct, L}) ->
+    {struct, [{binary_to_atom(I, utf8), atomize(J)} || {I, J} <- L]};
+atomize(L) when is_list(L) ->
+    [atomize(I) || I <- L];
+atomize(X) ->
+    X.
+
+%% @doc Return a value from a proplist, and ensure it's an atom.
+atomized_get_value(Key, List) ->
+    Result = proplists:get_value(Key, List),
+    case is_binary(Result) of
+        true ->
+            binary_to_atom(Result, utf8);
+        false ->
+            Result
+    end.
+
+%% @doc Return a value from a proplist, and ensure it's an atom.
+atomized_get_value(Key, List, Default) when is_atom(Default) ->
+    Result = proplists:get_value(Key, List, Default),
+    case is_binary(Result) of
+        true ->
+            binary_to_atom(Result, utf8);
+        false ->
+            Result
+    end.

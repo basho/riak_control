@@ -105,7 +105,7 @@ get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
 %% @doc Clear the staged cluster plan.
--spec clear_plan() -> ok | error.
+-spec clear_plan() -> {ok, ok | error}.
 clear_plan() ->
     gen_server:call(?MODULE, clear_plan, infinity).
 
