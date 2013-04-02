@@ -106,8 +106,14 @@ process_post(ReqData, Context) ->
 -spec from_json(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 from_json(ReqData, Context) ->
-    Response = stage_changes(ReqData, Context),
-    {Response, ReqData, Context}.
+    StageResponse = stage_changes(ReqData, Context),
+    FinalResponse = case StageResponse of
+        false ->
+            {halt, 409};
+        true ->
+            true
+    end,
+    {FinalResponse, ReqData, Context}.
 
 %% @doc Stage changes; called by both the PUT and POST methods.
 -spec stage_changes(wrq:reqdata(), undefined) -> boolean().
