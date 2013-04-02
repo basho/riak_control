@@ -66,11 +66,55 @@ $(document).ready(function() {
 
   // MAKE CHECKBOXES WORK WHEN YOU CLICK THEM
   $(document).on('change', '.gui-checkbox', function(e) {
-      var me = $(this), parent = me.parent(); checked = me.attr('checked');
+      var me      = $(this),
+          parent  = me.parent(),
+          checked = me.attr('checked');
+
       if (checked) {
-          parent.css('background-position', 'left bottom');
+        parent.css('background-position', 'left bottom');
       } else {
-          parent.css('background-position', 'left top');
+        parent.css('background-position', 'left top');
+      }
+  });
+
+  // MAKE RADIO BUTTONS WORK WHEN YOU CLICK THEM
+  $(document).on('change', '.gui-radio', function(e) {
+      var me      = $(this),
+          parent  = me.parent(),
+          checked = me.attr('checked'),
+          group   = $('input[type="radio"][name="' + me.attr('name') + '"]');
+      /*
+       * If the radio button is checked...
+       */
+      if (checked) {
+        /*
+         * Change the position of the background image sprite.
+         */
+        parent.css('background-position', 'left bottom');
+        /*
+         * Loop over all other radio buttons in the group and set their
+         * background positions to reflect the unchecked state.
+         */
+        group.each(function (index, item) {
+          var $item = $(item);
+          if ($item[0] !== me[0]) {
+            $item.parent().css('background-position', 'left top');
+          }
+        });
+        /*
+         * If the checked radio button is the 'replace' radio button...
+         */
+        if (me.attr('value') === 'replace') {
+          /*
+           * Enable the extra replacement actions.
+           */
+          parent.parent().find('.extra-actions').addClass('active').find('.disabler').hide();
+        /*
+         * Otherwise disable the replacement actions.
+         */
+        } else {
+          parent.parent().find('.extra-actions').removeClass('active').find('.disabler').show();
+        }
       }
   });
 

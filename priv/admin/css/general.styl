@@ -322,13 +322,16 @@ input.gui-point-button:active, input.gui-rect-button:active, input.gui-point-but
 
 /* END CODE FOR TOGGLE SWITCHES */
 
-/* CODE FOR CHECKBOXES */
+/* CODE FOR CHECKBOXES AND RADIO BUTTONS */
 
-.gui-checkbox-wrapper
+.gui-checkbox-wrapper, .gui-radio-wrapper
   dimensions(auto, 24px)
   background     : url('/admin/ui/images/checkbox-sprite.png') left top no-repeat transparent
   vertical-align : middle
   margin-top     : 5px
+
+  &.default
+    background-position : left bottom
   
   span
     headline-bold()
@@ -336,25 +339,30 @@ input.gui-point-button:active, input.gui-rect-button:active, input.gui-point-but
     margin     : 5px 0 0 8px
     color      : lightGray
 
-.gui-checkbox
+    &.serif
+      copy-font()
+      font-weight : normal
+      color       : mediumGray
+      font-style  : italic
+
+.gui-radio-wrapper
+  background : url('/admin/ui/images/radio-sprite.png') left top no-repeat transparent
+
+.gui-checkbox, .gui-radio
   dimensions(25px, 24px)
   opaque(0)
   display : inline-block
   float   : left
-  margin  : 0
-  
-.gui-checkbox[checked=checked]
-  
-  
+  margin  : 0  
 
-.gui-checkbox-wrapper .gui-text
+.gui-checkbox-wrapper .gui-text, .gui-radio-wrapper .gui-text
   dimensions(auto, 24px)
   display      : block
   float        : left
   padding-left : 5px
   font-size    : 15px
 
-/* END CODE FOR CHECKBOXES */
+/* END CODE FOR CHECKBOXES AND RADIO BUTTONS */
 
 /* CODE FOR PAGINATION */
 .pagination
