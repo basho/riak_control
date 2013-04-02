@@ -236,8 +236,6 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     stageChange: function(node, action, replacement) {
-      ev.preventDefault();
-
       var self = this;
 
       $.ajax({
