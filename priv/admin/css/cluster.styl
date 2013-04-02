@@ -51,13 +51,15 @@ CSS to be applied ONLY on the cluster page
       line-height  : 1.2
 
   .actions-container
-    css-transition(height .4s ease)
-    overflow : hidden
-    height   : 0
+    css-transition(height .4s ease, margin-bottom .4s ease)
+    overflow      : hidden
+    height        : 0
+    margin-bottom : 0
 
   .open .actions-container
-    css-transition(height .4s ease)
-    height : 250px
+    css-transition(height .4s ease, margin-bottom .4s ease)
+    height        : 310px
+    margin-bottom : 25px
 
   .gui-light
     vertical-align : middle
@@ -320,10 +322,10 @@ CSS to be applied ONLY on the cluster page
     margin-right  : 33px
     position      : relative
 
-    & > span
+    & > h4
       display       : block
       border-bottom : 1px solid lightWhite
-      padding       : 0 0 10px
+      padding       : 0 0 12px
 
 
   .actions-box > div > span
@@ -331,25 +333,54 @@ CSS to be applied ONLY on the cluster page
     color        : lightGray
     padding-left : 3px
 
+  .extra-actions
+    opaque(.32)
+    padding-bottom : 25px
+    height         : 35px
+    position       : relative
+
+    & > div
+      float : left
+
+    .gui-checkbox-wrapper
+      margin-left : 15px
+
+    &.active
+      opaque(1)
+
   .replacement-controls
-    width    : auto
-    margin-top : 18px
+    width         : auto
+    margin-top    : 18px
+    border-bottom : 1px solid lightWhite
+    margin-bottom : 10px
 
     div
       margin-bottom : 8px
 
     select
       margin-top : -38px
-      min-width  : 300px
 
   .replacement-node-dropdown
     margin-bottom : 5px
 
-  .stage-button
-    position : absolute
-    bottom   : 18px
-    right    : 18px
+  .right-angle-arrow
+    dimensions(15px, 18px)
+    background : url('/admin/ui/images/right-angle-arrow.png') left top no-repeat transparent
+    margin     : 0 10px 0 10px
 
+  .disabler
+    opaque(0)
+    absoluteLeft(0, 0)
+    dimensions(100%, 100%)
+    background : transparent
+
+  .stage-button
+    float : right
+
+  .stage-instructions
+    float   : left
+    display : block
+    width   : 50%
 
   /* RESPONSIVE MEDIA QUERIES */
 
@@ -364,9 +395,6 @@ CSS to be applied ONLY on the cluster page
     #planned-area
       padding-top : 30px
       border-top  : 1px solid lightWhite
-
-    .actions-box
-      width : 96%
 
     .field-container
       width : 90%

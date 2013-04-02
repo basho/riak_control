@@ -49,30 +49,44 @@
         <div class="actions-container">
             <div class="actions-pointer"></div>
             <div class="actions-box">
-                <span class="gui-text-flat serif">Use these actions to prepare this node to leave the cluster.</span>
+                <h4 class="gui-headline-bold">Use these actions to prepare this node to leave the cluster.</h4>
                 <div class="replacement-controls">
-                    <div class="gui-dropdown-wrapper replacement-node-dropdown">
-                        <div class="gui-dropdown-bg gui-text">Replacement Node</div>
-                        <div class="gui-dropdown-cap left"></div>
-                        <select class="gui-dropdown">
-                            <option value="">All</option>
-                        </select>
+                    <div class="gui-radio-wrapper default">
+                        <input class="gui-radio" type="radio" value="leavenormal" name="farts" checked="checked"/>
+                        <span class="serif">Allow this node to leave normally.</span>
+                    </div>
+                    <div class="gui-radio-wrapper">
+                        <input class="gui-radio" type="radio" value="forceleave" name="farts"/>
+                        <span class="serif">Force this node to leave.</span>
+                    </div>
+                    <div class="gui-radio-wrapper">
+                        <input class="gui-radio" type="radio" value="replace" name="farts"/>
+                        <span class="serif">Choose a new node to replace this one.</span>
+                    </div>
+                    <div class="extra-actions">
+                        <div class="right-angle-arrow"></div>
+                        <div class="gui-dropdown-wrapper replacement-node-dropdown">
+                            <div class="gui-dropdown-bg gui-text">Select Replacement Node</div>
+                            <div class="gui-dropdown-cap left"></div>
+                            <select class="gui-dropdown">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="gui-checkbox-wrapper">
+                            <input class="gui-checkbox" type="checkbox" value="forcereplace" />
+                            <span class="serif">Force this replacement?</span>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="disabler"></div>
                     </div>
                     <div class="clear"></div>
-                    <div class="gui-checkbox-wrapper">
-                        <input class="gui-checkbox" type="checkbox" value="forceleave" />
-                        <span>Force Leave</span>
-                    </div>
-
-                    <div class="gui-checkbox-wrapper">
-                        <input class="gui-checkbox" type="checkbox" value="forcereplace" />
-                        <span>Force Replace</span>
-                    </div>
                 </div>
                 <div class="clear"></div>
+                <span class="gui-text-flat serif italic stage-instructions">Click "STAGE" when you are ready to stage this action.</span>
                 <a class="stage-button gui-point-button-right gui-text-bold right">
-                    <span class="gui-button-msg">STAGE LEAVE</span>
+                    <span class="gui-button-msg">STAGE</span>
                 </a>
+                <div class="clear"></div>
             </div>
             <div class="clear"></div>
         </div><!-- .actions-box -->
