@@ -201,6 +201,11 @@ minispade.register('cluster', function() {
       return this.get('content.stagedCluster').filterProperty('isDestroyed', false);
     }.property('content.stagedCluster', 'content.stagedCluster.@each'),
 
+    /**
+     * Clear the currently staged cluster plan.
+     *
+     * @returns {void}
+     */
     clearPlan: function(ev) {
       ev.preventDefault();
 
