@@ -38,8 +38,6 @@
                 | {replace, node()}
                 | {force_replace, node()}.
 
--type normalized_action() :: leave | remove | replace | force_replace.
-
 -type claim_percentage() :: number().
 
 -type change() :: {node(), action()}.
