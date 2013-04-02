@@ -16,25 +16,25 @@ minispade.register('cluster', function() {
   RiakControl.StagedClusterNode = Ember.Object.extend(
     /** @scope RiakControl.StagedClusterNode.prototype */ {
 
-      /**
-       * Does the node have a replacement?
-       *
-       * @returns {boolean}
-       */
-      isReplaced: function() {
-        return this.get('replacement') !== "undefined" ? true : false;
-      }.property('replacement'),
+    /**
+     * Does the node have a replacement?
+     *
+     * @returns {boolean}
+     */
+    isReplaced: function() {
+      return this.get('replacement') !== "undefined" ? true : false;
+    }.property('replacement'),
 
-      /**
-       * Is the node taking an action?
-       *
-       * @returns {boolean}
-       */
-      isAction: function() {
-          return this.get('action') !== "undefined" ? true : false;
-      }.property('action')
+    /**
+     * Is the node taking an action?
+     *
+     * @returns {boolean}
+     */
+    isAction: function() {
+        return this.get('action') !== "undefined" ? true : false;
+    }.property('action')
 
-    });
+  });
 
   /**
    * @class
@@ -201,6 +201,20 @@ minispade.register('cluster', function() {
       return this.get('content.stagedCluster').filterProperty('isDestroyed', false);
     }.property('content.stagedCluster', 'content.stagedCluster.@each'),
 
+    clearPlan: function(ev) {
+      ev.preventDefault();
+
+      var self = this;
+
+      $.ajax({
+        type:     'DELETE',
+        url:      '/admin/cluster',
+        dataType: 'json',
+
+        success: function(d) { self.reload(); }
+      });
+    },
+
     /**
      * There are various reasons we wouldn't want to display
      * the planned cluster.  If none of those reasons are present,
@@ -231,33 +245,6 @@ minispade.register('cluster', function() {
   RiakControl.ClusterView = Ember.View.extend(
     /** @scope RiakControl.ClusterView.prototype */ {
     templateName: 'cluster'
-  });
-
-  /**
-   * @class
-   *
-   * ClearPlanButton is responsible for clearing the staged plan.
-   */
-  RiakControl.ClearPlanButtonView = Ember.View.extend(
-    /** @scope RiakControl.ClearPlanButtonView.prototype */ {
-    tagName:    'a',
-    classNames: ['gui-rect-button', 'gui-text-bold'],
-
-    click: function(ev) {
-      ev.preventDefault();
-
-      var self = this;
-
-      $.ajax({
-        type:     'DELETE',
-        url:      '/admin/cluster',
-        dataType: 'json',
-
-        success: function(d) {
-          self.get('controller').reload();
-        }
-      });
-    }
   });
 
   /**

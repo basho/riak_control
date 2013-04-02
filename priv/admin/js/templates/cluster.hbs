@@ -95,9 +95,9 @@
                 <span class="gui-text-flat serif">
                     Changed your mind? Click this button to remove all staged changes.
                 </span>
-                {{#view RiakControl.ClearPlanButtonView}}
+                <a class="gui-rect-button gui-text-bold" {{action clearPlan target="controller"}}>
                     <span class="gui-button-msg">CLEAR PLAN</span>
-                {{/view}}
+                </a>
             </div>
         {{else}}
             <section id="planned-list">
