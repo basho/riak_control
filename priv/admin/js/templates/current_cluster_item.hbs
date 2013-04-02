@@ -52,15 +52,15 @@
                 <h4 class="gui-headline-bold">Use these actions to prepare this node to leave the cluster.</h4>
                 <div class="replacement-controls">
                     <div class="gui-radio-wrapper default">
-                        <input class="gui-radio" type="radio" value="leavenormal" name="farts" checked="checked"/>
+                        <input class="gui-radio" type="radio" value="leavenormal" {{bindAttr name="name"}} checked="checked"/>
                         <span class="serif">Allow this node to leave normally.</span>
                     </div>
                     <div class="gui-radio-wrapper">
-                        <input class="gui-radio" type="radio" value="forceleave" name="farts"/>
+                        <input class="gui-radio" type="radio" value="forceleave" {{bindAttr name="name"}} />
                         <span class="serif">Force this node to leave.</span>
                     </div>
                     <div class="gui-radio-wrapper">
-                        <input class="gui-radio" type="radio" value="replace" name="farts"/>
+                        <input class="gui-radio" type="radio" value="replace" {{bindAttr name="name"}} />
                         <span class="serif">Choose a new node to replace this one.</span>
                     </div>
                     <div class="extra-actions">
