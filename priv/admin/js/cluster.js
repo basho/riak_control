@@ -221,6 +221,42 @@ minispade.register('cluster', function() {
     },
 
     /**
+     * Add a new node.
+     *
+     * @returns {void}
+     */
+    addNode: function(ev) {
+      ev.preventDefault();
+      console.log('Add node clicked.');
+    },
+
+    /**
+     * Stage a change.
+     *
+     * @returns {void}
+     */
+    stageChange: function(node, action, replacement) {
+      ev.preventDefault();
+
+      var self = this;
+
+      $.ajax({
+        type:     'PUT',
+        url:      '/admin/cluster',
+        dataType: 'json',
+        data:     { changes:
+                    [{
+                      node:        node,
+                      action:      action,
+                      replacement: replacement
+                    }]
+                  },
+
+        success: function(d) { self.reload(); }
+      });
+    },
+
+    /**
      * There are various reasons we wouldn't want to display
      * the planned cluster.  If none of those reasons are present,
      * go ahead and show the whole planned cluster view.
