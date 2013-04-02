@@ -27,6 +27,7 @@
          to_json/2,
          from_json/2,
          forbidden/2,
+         process_post/2,
          is_authorized/2,
          allowed_methods/2,
          delete_resource/2,
@@ -36,6 +37,8 @@
 
 -include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
+
+-type normalized_action() :: leave | remove | replace | force_replace.
 
 %% @doc Return routes this resource should respond to.
 -spec routes() -> list().
@@ -51,7 +54,7 @@ init([]) ->
 -spec allowed_methods(wrq:reqdata(), undefined) ->
     {list(atom()), wrq:reqdata(), undefined}.
 allowed_methods(ReqData, Context) ->
-    {['GET', 'PUT', 'DELETE'], ReqData, Context}.
+    {['GET', 'POST', 'PUT', 'DELETE'], ReqData, Context}.
 
 %% @doc Prevent requests coming from an invalid origin.
 -spec forbidden(wrq:reqdata(), undefined) ->
@@ -71,40 +74,51 @@ service_available(ReqData, Context) ->
 is_authorized(ReqData, Context) ->
     riak_control_security:enforce_auth(ReqData, Context).
 
-%% @doc Return the available contents.
+%% @doc Return content-types which are provided.
 -spec content_types_provided(wrq:reqdata(), undefined) ->
     {list(), wrq:reqdata(), undefined}.
 content_types_provided(ReqData, Context) ->
     {[{"application/json", to_json}], ReqData, Context}.
 
-%% @doc Return the available contents.
+%% @doc Return content-types which are acceptable.
 -spec content_types_accepted(wrq:reqdata(), undefined) ->
     {list(), wrq:reqdata(), undefined}.
 content_types_accepted(ReqData, Context) ->
     {[{"application/json", from_json}], ReqData, Context}.
 
-%% @doc Accept a plan and commit it.
+%% @doc Stage a series of changes, and commit the plan immediately.
+-spec process_post(wrq:reqdata(), undefined) ->
+    {boolean(), wrq:reqdata(), undefined}.
+process_post(ReqData, Context) ->
+    Response = stage_changes(ReqData, Context),
+    {Response, ReqData, Context}.
+
+%% @doc Stage a series of changes.
 -spec from_json(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 from_json(ReqData, Context) ->
-    Change = extract_change(ReqData, Context),
-
-    Node = atomized_get_value(node, Change),
-    Action = atomized_get_value(action, Change),
-    Replacement = atomized_get_value(replacement, Change, undefined),
-
-    Response = stage_change(Node, Action, Replacement),
-
+    Response = stage_changes(ReqData, Context),
     {Response, ReqData, Context}.
 
-%% @doc Extract change. TODO WRITE SPEC
-extract_change(ReqData, _Context) ->
+%% @doc Stage changes; called by both the PUT and POST methods.
+stage_changes(ReqData, Context) ->
+    Changes = extract_changes(ReqData, Context),
+    lists:foldl(fun({struct, Change}, Exit) ->
+                Node = atomized_get_value(node, Change),
+                Action = atomized_get_value(action, Change),
+                Replacement = atomized_get_value(replacement, Change, undefined),
+                Exit andalso stage_change(Node, Action, Replacement)
+        end, true, Changes).
+
+%% @doc Extract changes out of a request object.
+-spec extract_changes(wrq:reqdata(), undefined) -> list().
+extract_changes(ReqData, _Context) ->
     Decoded = mochijson2:decode(wrq:req_body(ReqData)),
     Atomized = atomize(Decoded),
-    {struct, [{change, {struct, Change}}]} = Atomized,
-    Change.
+    {struct, [{changes, Changes}]} = Atomized,
+    Changes.
 
-%% @doc Stage a change.
+%% @doc Stage a change for one particular node.
 -spec stage_change(node(), normalized_action(), node()) -> boolean().
 stage_change(Node, Action, Replacement) ->
     Result = case Action of
@@ -119,7 +133,7 @@ stage_change(Node, Action, Replacement) ->
     end,
 
     case Result of
-        {ok, _} ->
+        ok ->
             true;
         _ ->
             false
