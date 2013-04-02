@@ -39,6 +39,8 @@
          get_partitions/0,
          get_plan/0,
          clear_plan/0,
+         stage_change/3,
+         commit_plan/0,
          force_update/0]).
 
 %% gen_server callbacks
@@ -106,6 +108,17 @@ get_partitions() ->
 get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
+%% @doc Stage a change to the cluster.
+-spec stage_change(node(), normalized_action(), node()) -> ok | error.
+stage_change(Node, Action, Replacement) ->
+    gen_server:call(?MODULE,
+                    {stage_change, Node, Action, Replacement}, infinity).
+
+%% @doc Commit a staged cluster plan.
+-spec commit_plan() -> ok | error.
+commit_plan() ->
+    gen_server:call(?MODULE, commit_plan, infinity).
+
 %% @doc Clear the staged cluster plan.
 -spec clear_plan() -> {ok, ok | error}.
 clear_plan() ->
@@ -151,6 +164,10 @@ init([]) ->
     %% start the server
     {ok, update_ring(State, Ring)}.
 
+handle_call(commit_plan, _From, State) ->
+    {reply, maybe_commit_plan(), State};
+handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
+    {reply, maybe_stage_change(Node, Action, Replacement), State};
 handle_call(clear_plan, _From, State) ->
     {reply, {ok, maybe_clear_plan()}, State};
 handle_call(get_plan, _From, State) ->
@@ -415,4 +432,32 @@ retrieve_plan() ->
     catch
         _:_ ->
             {error, unknown}
+    end.
+
+%% @doc Attempt to commit the plan.
+-spec maybe_commit_plan() -> ok | error.
+maybe_commit_plan() ->
+    riak_core_claimant:commit().
+
+%% @doc Stage a change for one particular node.
+-spec maybe_stage_change(node(), normalized_action(), node()) -> ok | error.
+maybe_stage_change(Node, Action, Replacement) ->
+    Result = case Action of
+        join ->
+            riak_core:staged_join(Node);
+        leave ->
+            riak_core_claimant:leave_member(Node);
+        remove ->
+            riak_core_claimant:remove_member(Node);
+        replace ->
+            riak_core_claimant:replace(Node, Replacement);
+        force_replace ->
+            riak_core_claimant:force_replace(Node, Replacement)
+    end,
+
+    case Result of
+        ok ->
+            ok;
+        _ ->
+            error
     end.

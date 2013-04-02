@@ -38,8 +38,6 @@
 -include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
--type normalized_action() :: leave | remove | replace | force_replace.
-
 %% @doc Return routes this resource should respond to.
 -spec routes() -> list().
 routes() ->
@@ -93,7 +91,7 @@ process_post(ReqData, Context) ->
     StageResponse = stage_changes(ReqData, Context),
     CommitResponse = case StageResponse of
         true ->
-            case riak_core_claimant:commit() of
+            case riak_control_session:commit_plan() of
                 ok ->
                     true;
                 _ ->
@@ -112,14 +110,24 @@ from_json(ReqData, Context) ->
     {Response, ReqData, Context}.
 
 %% @doc Stage changes; called by both the PUT and POST methods.
+-spec stage_changes(wrq:reqdata(), undefined) -> boolean().
 stage_changes(ReqData, Context) ->
     Changes = extract_changes(ReqData, Context),
-    lists:foldl(fun({struct, Change}, Exit) ->
-                Node = atomized_get_value(node, Change),
-                Action = atomized_get_value(action, Change),
-                Replacement = atomized_get_value(replacement, Change, undefined),
-                Exit andalso stage_change(Node, Action, Replacement)
-        end, true, Changes).
+    lists:foldl(fun stage_individual_change/2, true, Changes).
+
+%% @doc Stage individual change, used in fold.
+-spec stage_individual_change({struct, term()}, boolean()) -> boolean().
+stage_individual_change({struct, Change}, Exit) ->
+    Node = atomized_get_value(node, Change),
+    Action = atomized_get_value(action, Change),
+    Replacement = atomized_get_value(replacement, Change, undefined),
+    Result = case riak_control_session:stage_change(Node, Action, Replacement) of
+        ok ->
+            true;
+        _ ->
+            false
+    end,
+    Exit andalso Result.
 
 %% @doc Extract changes out of a request object.
 -spec extract_changes(wrq:reqdata(), undefined) -> list().
@@ -128,29 +136,6 @@ extract_changes(ReqData, _Context) ->
     Atomized = atomize(Decoded),
     {struct, [{changes, Changes}]} = Atomized,
     Changes.
-
-%% @doc Stage a change for one particular node.
--spec stage_change(node(), normalized_action(), node()) -> boolean().
-stage_change(Node, Action, Replacement) ->
-    Result = case Action of
-        join ->
-            riak_core:staged_join(Node);
-        leave ->
-            riak_core_claimant:leave_member(Node);
-        remove ->
-            riak_core_claimant:remove_member(Node);
-        replace ->
-            riak_core_claimant:replace(Node, Replacement);
-        force_replace ->
-            riak_core_claimant:force_replace(Node, Replacement)
-    end,
-
-    case Result of
-        ok ->
-            true;
-        _ ->
-            false
-    end.
 
 %% @doc Remove the staged plan.
 -spec delete_resource(wrq:reqdata(), undefined) ->
