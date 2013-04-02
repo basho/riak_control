@@ -277,6 +277,18 @@ minispade.register('cluster', function() {
   /**
    * @class
    *
+   * Add Node text field.
+   *
+   */
+  RiakControl.AddNodeView = Ember.TextField.extend(
+    /** @scope RiakControl.AddNodeView.prototype */ {
+    valueBinding: 'controller.addNodeField',
+    classNames: ['gui-input', 'gui-text']
+  });
+
+  /**
+   * @class
+   *
    * ClusterView is responsible for display the list of nodes
    * in the cluster.  This controller is basically a placeholder and
    * wrapper around the legacy cluster page until we rewrite it.

@@ -17,7 +17,7 @@
         <table class="add-node-table">
             <tr class="no-highlight">
                 <td id="add-node-box">
-                    <input id="node-to-add" class="gui-input gui-text" type="text" name="nodeName" />
+                    {{view RiakControl.AddNodeView id="node-to-add"}}
                 </td>
                 <td class="button-column">
                     <a class="gui-point-button gui-text-bold right" {{action addNode target="controller"}}>
