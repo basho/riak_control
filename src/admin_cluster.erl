@@ -133,6 +133,8 @@ extract_changes(ReqData, _Context) ->
 -spec stage_change(node(), normalized_action(), node()) -> boolean().
 stage_change(Node, Action, Replacement) ->
     Result = case Action of
+        join ->
+            riak_core:staged_join(Node);
         leave ->
             riak_core_claimant:leave_member(Node);
         remove ->
