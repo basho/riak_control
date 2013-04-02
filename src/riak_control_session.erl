@@ -444,7 +444,13 @@ maybe_commit_plan() ->
 maybe_stage_change(Node, Action, Replacement) ->
     Result = case Action of
         join ->
-            riak_core:staged_join(Node);
+            {ok, Ring} = riak_core_ring_manager:get_my_ring(),
+            case riak_core_ring:all_members(Ring) of
+                [_Me] ->
+                    riak_core:staged_join(Node);
+                _ ->
+                    rpc:call(Node, riak_core, staged_join, [node()])
+            end;
         leave ->
             riak_core_claimant:leave_member(Node);
         remove ->

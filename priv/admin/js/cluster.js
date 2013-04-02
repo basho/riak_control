@@ -234,7 +234,11 @@ minispade.register('cluster', function() {
      */
     addNode: function(ev) {
       ev.preventDefault();
-      console.log('Add node clicked.');
+
+      var self = this;
+      var node = this.get('addNodeField');
+
+      this.stageChange(node, "join", "");
     },
 
     /**
