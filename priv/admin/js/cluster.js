@@ -122,6 +122,8 @@ minispade.register('cluster', function() {
             self.set('ring_not_ready', true);
           } else if (updatedStagedCluster === 'legacy') {
             self.set('legacy', true);
+          } else if ($.isArray(updatedStagedCluster) && !updatedStagedCluster.length) {
+            self.set('plan_is_empty', true);
           } else {
             var currentStagedCluster = self.get('content.stagedCluster');
 
@@ -182,6 +184,11 @@ minispade.register('cluster', function() {
      * Holds a boolean tracking if the ring is not yet ready.
      */
     ring_not_ready: false,
+
+    /**
+     * Holds a boolean tracking whether or not there are any stages in our plan.
+     */
+    plan_is_empty: false,
 
     /**
      * Return nodes from the current cluster which have not been deleted.
@@ -268,10 +275,12 @@ minispade.register('cluster', function() {
 
       return !this.get('isLoading') &&
              !this.get('ring_not_ready') &&
+             !this.get('plan_is_empty') &&
              !this.get('legacy') &&
              numStages > 0;
     }.property('isLoading',
                'ring_not_ready',
+               'plan_is_empty',
                'legacy',
                'activeStagedCluster.length')
   });
