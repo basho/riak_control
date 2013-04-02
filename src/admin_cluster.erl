@@ -58,7 +58,7 @@ allowed_methods(ReqData, Context) ->
 -spec forbidden(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 forbidden(ReqData, Context) ->
-    {riak_control_security:is_null_origin(ReqData), ReqData, Context}.
+    {riak_control_security:is_protected(ReqData, Context), ReqData, Context}.
 
 %% @doc Handle SSL requests.
 -spec service_available(wrq:reqdata(), undefined) ->
