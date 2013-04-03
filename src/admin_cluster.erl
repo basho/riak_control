@@ -183,7 +183,10 @@ to_json(ReqData, Context) ->
 -spec merge_transitions(list(#member_info{}), list(), list()) ->
     [{struct, list()}].
 merge_transitions(Nodes, Changes, Claim) ->
-    [jsonify_node(apply_changes(Node, Changes, Claim)) || Node <- Nodes].
+    lists:foldl(fun(Node, TransitionedNodes) ->
+                ChangedNode = apply_changes(Node, Changes, Claim),
+                TransitionedNodes ++ [jsonify_node(ChangedNode)]
+        end, [], Nodes).
 
 %% @doc Merge change into member info record.
 -spec apply_changes(#member_info{}, list(), list()) -> #member_info{}.
@@ -211,7 +214,7 @@ apply_claim_change(Node, Claim) ->
 
     case lists:keyfind(Name, 1, Claim) of
         false ->
-            Node;
+            Node#member_info{ring_pct=0};
         {_, {_, Future}} ->
             %% @doc Hack until core returns normalized values.
             Normalized = if
