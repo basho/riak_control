@@ -104,6 +104,8 @@ minispade.register('cluster', function() {
     load: function() {
       var self = this;
 
+      self.setProperties({ ringNotReady: false, legacyRing: false });
+
       $.ajax({
         type:     'GET',
         url:      '/admin/cluster',
@@ -119,11 +121,9 @@ minispade.register('cluster', function() {
           var updatedStagedCluster = d.cluster.staged;
 
           if(updatedStagedCluster === 'ring_not_ready') {
-            self.set('ring_not_ready', true);
+            self.set('ringNotReady', true);
           } else if (updatedStagedCluster === 'legacy') {
-            self.set('legacy', true);
-          } else if ($.isArray(updatedStagedCluster) && !updatedStagedCluster.length) {
-            self.set('plan_is_empty', true);
+            self.set('legacyRing', true);
           } else {
             var currentStagedCluster = self.get('content.stagedCluster');
 
@@ -173,24 +173,17 @@ minispade.register('cluster', function() {
      *
      * @returns {boolean}
      */
-    isLoading: function () {
-      return false;
-    }.property(),
+    isLoading: false,
 
     /**
      * Holds a boolean tracking if the ring is legacy.
      */
-    legacy: false,
+    legacyRing: false,
 
     /**
      * Holds a boolean tracking if the ring is not yet ready.
      */
-    ring_not_ready: false,
-
-    /**
-     * Holds a boolean tracking whether or not there are any stages in our plan.
-     */
-    plan_is_empty: false,
+    ringNotReady: false,
 
     /**
      * Return nodes from the current cluster which have not been deleted.
@@ -209,6 +202,13 @@ minispade.register('cluster', function() {
     joiningNodes: function() {
       return this.get('activeCurrentCluster').filterProperty('status', 'joining');
     }.property('activeCurrentCluster', 'activeCurrentCluster.@each'),
+
+    /**
+     * Holds a boolean tracking whether or not there are any stages in our plan.
+     */
+    emptyPlan: function() {
+      return !this.get('activeStagedCluster.length') > 0;
+    }.property('activeStagedCluster', 'activeStagedCluster.length'),
 
     /**
      * Return nodes from the staged cluster which have not been deleted.
@@ -288,18 +288,9 @@ minispade.register('cluster', function() {
      * @returns {boolean}
      */
     displayPlan: function () {
-      var numStages = this.get('activeStagedCluster.length');
-
-      return !this.get('isLoading') &&
-             !this.get('ring_not_ready') &&
-             !this.get('plan_is_empty') &&
-             !this.get('legacy') &&
-             numStages > 0;
-    }.property('isLoading',
-               'ring_not_ready',
-               'plan_is_empty',
-               'legacy',
-               'activeStagedCluster.length'),
+      return !this.get('isLoading') && !this.get('ringNotReady') &&
+             !this.get('emptyPlan') && !this.get('legacyRing');
+    }.property('isLoading', 'ringNotReady', 'emptyPlan', 'legacyRing'),
 
     /**
      * Whenever an ajax call returns an error, we display
