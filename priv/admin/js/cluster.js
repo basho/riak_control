@@ -393,7 +393,30 @@ minispade.register('cluster', function() {
     stageChange: function(ev) {
       ev.preventDefault();
 
-      console.log('clicked');
+      var self = this;
+      var controller = this.get('controller');
+
+      var name = this.get('name');
+
+      var action = this.$().
+        find("input[type='radio']:checked").val();
+      var forced = this.$().
+        find("input[type='checkbox']:checked").val();
+      var replacement = this.$().
+        find("input[type='select']:selected").val();
+
+      // Make sure we handle the force replace correctly.
+      //
+      if(action === 'replace' && forced === 'true') {
+        action = 'force_replace';
+      }
+
+      // Empty string instead of undefined for null.
+      if(replacement === undefined) {
+        replacement = '';
+      }
+
+      controller.stageChange(name, action, replacement);
     },
 
     /**
