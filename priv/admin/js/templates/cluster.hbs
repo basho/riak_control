@@ -101,15 +101,15 @@
         {{else}}
             <section id="planned-list">
                 <div class="spinner-box">
-                    {{#if controller.ring_not_ready}}
+                    {{#if controller.ringNotReady}}
                         <h4 class="gui-headline-bold">
                             Cannot plan until cluster state has converged. Check "Ring Ready" in "riak-admin ring_status".
                         </h4>
                     {{else}}
-                        {{#if controller.legacy}}
+                        {{#if controller.legacyRing}}
                             <h4 class="gui-headline-bold">You are currently running a legacy version of Riak that does not support staged changes.</h4>
                         {{else}}
-                            {{#if controller.plan_is_empty}}
+                            {{#if controller.emptyPlan}}
                                 <h4 class="gui-headline-bold">Currently no staged changes to display.</h4>
                             {{else}}
                                 {{#if controller.isLoading}}
