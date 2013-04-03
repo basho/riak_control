@@ -8,6 +8,7 @@ CSS to be applied ONLY on the cluster page
 
 #cluster-page
 
+
   #current-area, #planned-area
     float : left
     width : 47%
@@ -224,11 +225,14 @@ CSS to be applied ONLY on the cluster page
     margin     : 0 5px 0 0
     display    : none
 
-  #node-error
-    headline-font()
+  .error-message
+    copy-font()
     vendor('box-shadow', 0 2px 3px darkened)
     corners()
-    padding    : 8px 10px 8px 12px
+    font-size  : 14px
+    font-style : italic
+    color      : mediumGray
+    padding    : 8px 10px 9px 12px
     background : rgba(232, 78, 78, .5)
     border     : 1px solid lighten(rgba(232, 78, 78, .5), 15%)
     

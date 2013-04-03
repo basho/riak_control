@@ -1183,27 +1183,30 @@ input.gui-point-button-right:active {
   margin: 0 5px 0 0;
   display: none;
 }
-#cluster-page #node-error {
-  font-family: 'titillium', helvetica, arial, sans-serif;
+#cluster-page .error-message {
+  font-family: 'noticia', georgia, serif;
   -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
   -moz-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
   box-shadow: 0 2px 3px rgba(0,0,0,0.35);
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
-  padding: 8px 10px 8px 12px;
+  font-size: 14px;
+  font-style: italic;
+  color: #ccc;
+  padding: 8px 10px 9px 12px;
   background: rgba(232,78,78,0.5);
   border: 1px solid rgba(235,105,105,0.5);
 }
-#cluster-page #node-error .error-link {
+#cluster-page .error-message .error-link {
   font-family: 'titillium', helvetica, arial, sans-serif;
   font-weight: bold;
   padding-left: 5px;
 }
-#cluster-page #node-error .error-link:hover {
+#cluster-page .error-message .error-link:hover {
   text-decoration: underline;
 }
-#cluster-page #node-error .close-error {
+#cluster-page .error-message .close-error {
   width: 16px;
   height: 16px;
   opacity: 0.6;
@@ -1214,7 +1217,7 @@ input.gui-point-button-right:active {
   vertical-align: middle;
   background: url("/admin/ui/images/close-error.png") left top no-repeat transparent;
 }
-#cluster-page #node-error .close-error:hover {
+#cluster-page .error-message .close-error:hover {
   opacity: 1;
   filter: alpha(opacity=100);
 }
