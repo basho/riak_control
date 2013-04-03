@@ -219,6 +219,20 @@ minispade.register('cluster', function() {
       return this.get('content.stagedCluster').filterProperty('isDestroyed', false);
     }.property('content.stagedCluster', 'content.stagedCluster.@each'),
 
+    commitPlan: function(ev) {
+      ev.preventDefault();
+
+      var self = this;
+
+      $.ajax({
+        type:     'POST',
+        url:      '/admin/cluster',
+        dataType: 'json',
+        success:  function(d) { self.reload(); },
+        error:    self.get('displayError')
+      });
+    },
+
     /**
      * Clear the currently staged cluster plan.
      *
@@ -233,10 +247,8 @@ minispade.register('cluster', function() {
         type:     'DELETE',
         url:      '/admin/cluster',
         dataType: 'json',
-
-        success: function(d) { self.reload(); },
-
-        error: self.get('displayError')
+        success:  function(d) { self.reload(); },
+        error:    self.get('displayError')
       });
     },
 
@@ -266,6 +278,7 @@ minispade.register('cluster', function() {
         type:     'PUT',
         url:      '/admin/cluster',
         dataType: 'json',
+
         data:     { changes:
                     [{
                       node:        node,
@@ -275,8 +288,7 @@ minispade.register('cluster', function() {
                   },
 
         success: function(d) { self.reload(); },
-
-        error: self.get('displayError')
+        error:   self.get('displayError')
       });
     },
 
