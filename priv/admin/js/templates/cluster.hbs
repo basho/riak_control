@@ -26,12 +26,11 @@
                 </td>
             </tr>
         </table>
-        {{#if errorMessage}}
-            <div class="error-message">
-                <a class="close-error gui-text" {{action hideError target="controller"}}></a>
-                <a class="error-text offline gui-text-flat">{{errorMessage}}</a>
-            </div>
-        {{/if}}
+        <div class="error-message hide">
+            <a class="close-error gui-text"></a>
+            <a class="error-text offline gui-text-flat"></a>
+            <a class="error-link gui-text underline" href="#"></a>
+        </div>
     </div><!-- #add-node -->
 
 

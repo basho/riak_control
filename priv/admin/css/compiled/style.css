@@ -1220,8 +1220,8 @@ input.gui-point-button-right:active {
   margin: 0 5px 0 0;
   display: none;
 }
-#cluster-page #node-error {
-  font-family: 'titillium', helvetica, arial, sans-serif;
+#cluster-page .error-message {
+  font-family: 'noticia', georgia, serif;
   -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
   -moz-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
   box-shadow: 0 2px 3px rgba(0,0,0,0.35);
