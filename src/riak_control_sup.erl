@@ -55,10 +55,7 @@ init([]) ->
         true ->
             Resources = [{admin, admin_gui},
                          {admin, admin_cluster},
-                         {admin, admin_node},
                          {admin, admin_nodes},
-                         {admin, admin_node_stop},
-                         {admin, admin_node_leave},
                          {admin, admin_partitions}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
