@@ -68,9 +68,7 @@
                         <div class="gui-dropdown-wrapper replacement-node-dropdown">
                             <div class="gui-dropdown-bg gui-text">Select Replacement Node</div>
                             <div class="gui-dropdown-cap left"></div>
-                            <select class="gui-dropdown">
-                                <option value="">All</option>
-                            </select>
+                            {{view Ember.Select classNames="gui-dropdown" contentBinding="controller.joiningNodes"}}
                         </div>
                         <div class="gui-checkbox-wrapper">
                             <input class="gui-checkbox" type="checkbox" value="forcereplace" />

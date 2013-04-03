@@ -202,6 +202,15 @@ minispade.register('cluster', function() {
     }.property('content.currentCluster', 'content.currentCluster.@each'),
 
     /**
+     * Return list of nodes joining the cluster.
+     *
+     * @returns {Ember.Array}
+     */
+    joiningNodes: function() {
+      return this.get('activeCurrentCluster').filterProperty('status', 'joining');
+    }.property('activeCurrentCluster', 'activeCurrentCluster.@each'),
+
+    /**
      * Return nodes from the staged cluster which have not been deleted.
      *
      * @returns {Ember.Array}
