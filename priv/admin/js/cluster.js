@@ -312,7 +312,7 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     displayError: function (jqXHR, textStatus, errorThrown) {
-      $('.error-message').removeClass('hide').find('.error-text').html('Sorry, ajax says "' + errorThrown + '"');
+      $('.error-message').removeClass('hide').find('.error-text').html('Sorry, your request could not be completed at this time.');
     }
   });
 
