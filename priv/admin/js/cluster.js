@@ -376,11 +376,22 @@ minispade.register('cluster', function() {
 
     classNameBindings:  ['expanded:open'],
 
-   /**
-    * Color the lights appropriately based on the node status.
-    *
-    * @returns {string}
-    */
+    /**
+     * Stage a change for a given node.
+     *
+     * @returns {void}
+     */
+    stageChange: function(ev) {
+      ev.preventDefault();
+
+      console.log('clicked');
+    },
+
+    /**
+     * Color the lights appropriately based on the node status.
+     *
+     * @returns {string}
+     */
     indicatorLights: function() {
       var status = this.get('status');
       var reachable = this.get('reachable');
