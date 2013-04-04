@@ -88,45 +88,51 @@ content_types_accepted(ReqData, Context) ->
 -spec process_post(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 process_post(ReqData, Context) ->
-    StageResponse = case wrq:req_body(ReqData) of
-        <<"">> ->
-            true;
-        _ ->
-            stage_changes(ReqData, Context)
-    end,
+    {Status, Errors} = stage_changes(ReqData, Context),
 
-    CommitResponse = case StageResponse of
+    case Status of
         true ->
             case riak_control_session:commit_plan() of
                 ok ->
-                    true;
+                    {true, ReqData, Context};
                 _ ->
-                    false
+                    {false, ReqData, Context}
             end;
         false ->
-            false
-    end,
-
-    {CommitResponse, ReqData, Context}.
+            Response = error_response(ReqData, Errors),
+            {{halt, 500}, Response, Context}
+    end.
 
 %% @doc Stage a series of changes.
 -spec from_json(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 from_json(ReqData, Context) ->
-    StageResponse = stage_changes(ReqData, Context),
-    FinalResponse = case StageResponse of
+    {Status, Errors} = stage_changes(ReqData, Context),
+
+    case Status of
         false ->
-            {halt, 409};
+            Response = error_response(ReqData, Errors),
+            {{halt, 500}, Response, Context};
         true ->
-            true
-    end,
-    {FinalResponse, ReqData, Context}.
+            {true, ReqData, Context}
+    end.
+
+%% @doc Encode and return error response.
+-spec error_response(wrq:reqdata(), list()) -> wrq:reqdata().
+error_response(ReqData, Errors) ->
+    EncodedErrors = mochijson2:encode({struct, [{errors, Errors}]}),
+    wrq:set_resp_body(EncodedErrors, ReqData).
 
 %% @doc Stage changes; called by both the PUT and POST methods.
--spec stage_changes(wrq:reqdata(), undefined) -> boolean().
+-spec stage_changes(wrq:reqdata(), undefined) -> {boolean(), list()}.
 stage_changes(ReqData, Context) ->
-    Changes = extract_changes(ReqData, Context),
-    lists:foldl(fun stage_individual_change/2, true, Changes).
+    case wrq:req_body(ReqData) of
+        <<"">> ->
+            {true, []};
+        _ ->
+            Changes = extract_changes(ReqData, Context),
+            lists:foldl(fun stage_individual_change/2, {true, []}, Changes)
+    end.
 
 %% @doc Stage individual change, used in fold.
 -spec stage_individual_change({struct, term()}, boolean()) -> boolean().
@@ -134,13 +140,13 @@ stage_individual_change({struct, Change}, Exit) ->
     Node = atomized_get_value(node, Change),
     Action = atomized_get_value(action, Change),
     Replacement = atomized_get_value(replacement, Change, undefined),
-    Result = case riak_control_session:stage_change(Node, Action, Replacement) of
+    {Status, Errors} = Exit,
+    case riak_control_session:stage_change(Node, Action, Replacement) of
         ok ->
-            true;
-        _ ->
-            false
-    end,
-    Exit andalso Result.
+            {Status andalso true, Errors};
+        {error, Error} ->
+            {Status andalso false, Errors ++ [format_error(Error)]}
+    end.
 
 %% @doc Extract changes out of a request object.
 -spec extract_changes(wrq:reqdata(), undefined) -> list().
@@ -286,3 +292,28 @@ atomized_get_value(Key, List, Default) when is_atom(Default) ->
         false ->
             Result
     end.
+
+%% @doc Format error messages.
+-spec format_error(stage_error()) -> iolist().
+format_error(Error) ->
+    ErrorMessage = case Error of
+        already_leaving ->
+            "Node is already leaving the cluster.";
+        not_member ->
+            "Node is not a member of this cluster.";
+        only_member ->
+            "Node is the only member of this cluster.";
+        is_claimant ->
+            "Node is currently the cluster claimant.";
+        invalid_replacement ->
+            "Node is an invalid replacement.";
+        already_replacement ->
+            "Node is already replacing another node.";
+        not_reachable ->
+            "Node is not reachable.";
+        not_single_node ->
+            "Node is already in another cluster.";
+        self_join ->
+            "Node can not be joined to itself."
+    end,
+    list_to_binary(ErrorMessage).

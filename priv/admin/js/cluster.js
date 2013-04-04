@@ -320,7 +320,17 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     displayError: function (jqXHR, textStatus, errorThrown) {
-      $('.error-message').removeClass('hide').find('.error-text').html('Sorry, your request could not be completed at this time: ' + errorThrown);
+      var parsed, errors;
+
+      if(jqXHR !== undefined) {
+        parsed = JSON.parse(jqXHR.responseText);
+        errors = parsed.errors.join(', ');
+      } else {
+        errors = errorThrown;
+      }
+
+      $('.error-message').removeClass('hide').find('.error-text').
+          html('Request failed: ' + errors);
     }
   });
 
