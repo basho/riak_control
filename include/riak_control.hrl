@@ -33,6 +33,16 @@
 -type vnodes()        :: [vnode()].
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
 
+-type stage_error() :: already_leaving
+                     | not_member
+                     | only_member
+                     | is_claimant
+                     | invalid_replacement
+                     | already_replacement
+                     | not_reachable
+                     | not_single_node
+                     | self_join.
+
 -type action() :: leave
                 | remove
                 | {replace, node()}

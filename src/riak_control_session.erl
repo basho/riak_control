@@ -109,7 +109,8 @@ get_plan() ->
     gen_server:call(?MODULE, get_plan, infinity).
 
 %% @doc Stage a change to the cluster.
--spec stage_change(node(), normalized_action(), node()) -> ok | error.
+-spec stage_change(node(), normalized_action(), node()) ->
+    ok | {error, stage_error()}.
 stage_change(Node, Action, Replacement) ->
     gen_server:call(?MODULE,
                     {stage_change, Node, Action, Replacement}, infinity).
@@ -440,9 +441,10 @@ maybe_commit_plan() ->
     riak_core_claimant:commit().
 
 %% @doc Stage a change for one particular node.
--spec maybe_stage_change(node(), normalized_action(), node()) -> ok | error.
+-spec maybe_stage_change(node(), normalized_action(), node()) ->
+    ok | {error, stage_error()}.
 maybe_stage_change(Node, Action, Replacement) ->
-    Result = case Action of
+    case Action of
         join ->
             {ok, Ring} = riak_core_ring_manager:get_my_ring(),
             case riak_core_ring:all_members(Ring) of
@@ -459,11 +461,4 @@ maybe_stage_change(Node, Action, Replacement) ->
             riak_core_claimant:replace(Node, Replacement);
         force_replace ->
             riak_core_claimant:force_replace(Node, Replacement)
-    end,
-
-    case Result of
-        ok ->
-            ok;
-        _ ->
-            error
     end.
