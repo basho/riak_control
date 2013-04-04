@@ -88,7 +88,13 @@ content_types_accepted(ReqData, Context) ->
 -spec process_post(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 process_post(ReqData, Context) ->
-    StageResponse = stage_changes(ReqData, Context),
+    StageResponse = case wrq:req_body(ReqData) of
+        <<"">> ->
+            true;
+        _ ->
+            stage_changes(ReqData, Context)
+    end,
+
     CommitResponse = case StageResponse of
         true ->
             case riak_control_session:commit_plan() of
@@ -100,6 +106,7 @@ process_post(ReqData, Context) ->
         false ->
             false
     end,
+
     {CommitResponse, ReqData, Context}.
 
 %% @doc Stage a series of changes.
