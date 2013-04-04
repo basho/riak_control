@@ -574,7 +574,9 @@ input.gui-point-button-right:active {
   background-position: left bottom;
 }
 .gui-checkbox-wrapper span,
-.gui-radio-wrapper span {
+.gui-radio-wrapper span,
+.gui-checkbox-wrapper label,
+.gui-radio-wrapper label {
   font-family: 'titillium', helvetica, arial, sans-serif;
   font-weight: bold;
   display: inline-block;
@@ -582,7 +584,9 @@ input.gui-point-button-right:active {
   color: #efefef;
 }
 .gui-checkbox-wrapper span.serif,
-.gui-radio-wrapper span.serif {
+.gui-radio-wrapper span.serif,
+.gui-checkbox-wrapper label.serif,
+.gui-radio-wrapper label.serif {
   font-family: 'noticia', georgia, serif;
   font-weight: normal;
   color: #ccc;
@@ -879,8 +883,9 @@ input.gui-point-button-right:active {
 }
 #snapshot-page #healthy-cluster li,
 #snapshot-page #unhealthy-cluster li {
-  font-family: 'menlo', 'consolas', 'monaco', monospace;
+  font-family: 'titillium', helvetica, arial, sans-serif;
   line-height: 1.5;
+  font-size: 15px;
 }
 #snapshot-page #healthy-cluster li a,
 #snapshot-page #unhealthy-cluster li a {
@@ -1005,6 +1010,7 @@ input.gui-point-button-right:active {
 }
 #cluster-page .field-container {
   width: 75%;
+  vertical-align: middle;
 }
 #cluster-page .gui-field {
   margin-right: 0;
@@ -1362,8 +1368,9 @@ input.gui-point-button-right:active {
   margin: 0 10px 0 10px;
 }
 #cluster-page .disabler {
-  opacity: 0;
-  filter: alpha(opacity=0);
+  background: #f00;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
   position: absolute;
   left: 0;
   top: 0;
@@ -1378,6 +1385,16 @@ input.gui-point-button-right:active {
   float: left;
   display: block;
   width: 50%;
+}
+#cluster-page .no-joining-nodes {
+  padding-top: 6px;
+}
+#cluster-page .slide-up {
+  margin-top: -35px;
+}
+#cluster-page .semi-transparent {
+  opacity: 0.32;
+  filter: alpha(opacity=32);
 }
 @media screen and (max-width : 1200px) {
   #cluster-page #area-separator {

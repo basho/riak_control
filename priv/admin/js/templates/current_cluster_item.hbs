@@ -52,30 +52,37 @@
                 <h4 class="gui-headline-bold">Use these actions to prepare this node to leave the cluster.</h4>
                 <div class="replacement-controls">
                     <div class="gui-radio-wrapper default">
-                        <input class="gui-radio" type="radio" value="leave" {{bindAttr name="name"}} checked="checked"/>
-                        <span class="serif">Allow this node to leave normally.</span>
+                        <input class="gui-radio" type="radio" value="leave" {{bindAttr name="name" id="normal_leave_radio"}} checked="checked"/>
+                        <label class="serif" {{bindAttr for="normal_leave_radio"}}>Allow this node to leave normally.</label>
                     </div>
                     <div class="gui-radio-wrapper">
-                        <input class="gui-radio" type="radio" value="remove" {{bindAttr name="name"}} />
-                        <span class="serif">Force this node to leave.</span>
+                        <input class="gui-radio" type="radio" value="remove" {{bindAttr name="name" id="force_leave_radio"}} />
+                        <label class="serif" {{bindAttr for="force_leave_radio"}}>Force this node to leave.</label>
                     </div>
-                    <div class="gui-radio-wrapper">
-                        <input class="gui-radio" type="radio" value="replace" {{bindAttr name="name"}} />
-                        <span class="serif">Choose a new node to replace this one.</span>
+                    <div {{bindAttr class="replace_radio_classes"}}>
+                        <input class="gui-radio" type="radio" value="replace" {{bindAttr name="name" id="replace_radio"}} />
+                        <label class="serif" {{bindAttr for="replace_radio"}}>Choose a new node to replace this one.</label>
                     </div>
                     <div class="extra-actions">
                         <div class="right-angle-arrow"></div>
-                        <div class="gui-dropdown-wrapper replacement-node-dropdown">
-                            <div class="gui-dropdown-bg gui-text">Select Replacement Node</div>
-                            <div class="gui-dropdown-cap left"></div>
-                            {{view Ember.Select classNames="gui-dropdown" contentBinding="controller.joiningNodes"}}
-                        </div>
-                        <div class="gui-checkbox-wrapper">
-                            <input class="gui-checkbox" type="checkbox" {{bindAttr name="name"}} value="true" />
-                            <span class="serif">Force this replacement?</span>
-                        </div>
-                        <div class="clear"></div>
-                        <div class="disabler"></div>
+                        {{#if controller.joiningNodesExist}}
+                            <div class="gui-dropdown-wrapper replacement-node-dropdown">
+                                <div class="gui-dropdown-bg gui-text">Select Replacement Node</div>
+                                <div class="gui-dropdown-cap left"></div>
+                                {{view Ember.Select classNames="gui-dropdown" contentBinding="controller.joiningNodes"}}
+                            </div>
+                            <div class="gui-checkbox-wrapper">
+                                <input class="gui-checkbox" type="checkbox" {{bindAttr name="name" id="force_replace_check"}} value="true" />
+                                <label class="serif" {{bindAttr for="force_replace_check"}}>Force this replacement?</label>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="disabler"></div>
+                        {{else}}
+                            <div class="no-joining-nodes gui-text-flat serif italic">
+                                No new nodes are currently staged to join.
+                            </div>
+                            <div class="disabler show slide-up"></div>
+                        {{/if}}
                     </div>
                     <div class="clear"></div>
                 </div>

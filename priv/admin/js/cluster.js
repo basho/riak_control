@@ -204,6 +204,15 @@ minispade.register('cluster', function() {
     }.property('activeCurrentCluster', 'activeCurrentCluster.@each'),
 
     /**
+     * Determines whether or not we have any joining nodes.
+     *
+     * @returns {Boolean}
+     */
+    joiningNodesExist: function () {
+      return this.get('joiningNodes').length ? true : false;
+    }.property('joiningNodes'),
+
+    /**
      * Holds a boolean tracking whether or not there are any stages in our plan.
      */
     emptyPlan: function() {
@@ -459,6 +468,56 @@ minispade.register('cluster', function() {
 
       return "gui-light status-light inline-block " + color;
     }.property('reachable', 'status'),
+
+    /**
+     * In order for labels to be clickable, they need to be bound to checks/radios
+     * by ID.  However, since these nodes are cloned by Ember, we need a way to make
+     * sure all of those elements get id's that don't override each other. This
+     * function gives us an ID string we can use as a prefix for id's on these other
+     * elements.
+     *
+     * @returns {String}
+     */
+    node_id: function() {
+      return Ember.generateGuid();
+    }.property(),
+
+    /**
+     * An ID value for the leave normally radio button and corresponding label.
+     */
+    normal_leave_radio: function () {
+      return this.get('node_id') + '_normal_leave';
+    }.property('node_id'),
+
+    /**
+     * An ID value for the force leave radio button and corresponding label.
+     */
+    force_leave_radio: function () {
+      return this.get('node_id') + '_force_leave';
+    }.property('node_id'),
+
+    /**
+     * An ID value for the replace node radio button and corresponding label.
+     */
+    replace_radio: function () {
+      return this.get('node_id') + '_replace';
+    }.property('node_id'),
+
+    /**
+     * An ID value for the force replace check box and corresponding label.
+     */
+    force_replace_check: function () {
+      return this.get('node_id') + '_force_replace';
+    }.property('node_id'),
+
+    /**
+     * When there are no joining nodes, the radio button for selecting
+     * a node should be grayed out.  This will put the proper classes
+     * on that radio button to gray it out when there are no joining nodes.
+     */
+    replace_radio_classes: function () {
+      return 'gui-radio-wrapper' + (this.get('controller.joiningNodesExist') ? '' : ' semi-transparent');
+    }.property('controller.joiningNodesExist'),
 
     /**
      * Normalizer.

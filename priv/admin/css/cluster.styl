@@ -69,7 +69,8 @@ CSS to be applied ONLY on the cluster page
     margin-top     : -7px
 
   .field-container
-    width : 75%
+    width          : 75%
+    vertical-align : middle
 
   .gui-field
     margin-right : 0
@@ -371,7 +372,8 @@ CSS to be applied ONLY on the cluster page
     margin     : 0 10px 0 10px
 
   .disabler
-    opaque(0)
+    background : red
+    opaque(.2)
     absoluteLeft(0, 0)
     dimensions(100%, 100%)
     background : transparent
@@ -383,6 +385,15 @@ CSS to be applied ONLY on the cluster page
     float   : left
     display : block
     width   : 50%
+
+  .no-joining-nodes
+    padding-top : 6px
+
+  .slide-up
+    margin-top : -35px
+
+  .semi-transparent
+    opaque(.32)
 
 
   /* RESPONSIVE MEDIA QUERIES */
