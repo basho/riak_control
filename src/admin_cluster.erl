@@ -294,7 +294,7 @@ atomized_get_value(Key, List, Default) when is_atom(Default) ->
     end.
 
 %% @doc Format error messages.
--spec format_error(stage_error()) -> iolist().
+-spec format_error(stage_error()) -> binary().
 format_error(Error) ->
     ErrorMessage = case Error of
         already_leaving ->
