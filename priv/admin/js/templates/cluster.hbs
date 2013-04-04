@@ -83,8 +83,8 @@
             </section>
             <div class="accept-plan">
                 <div class="gui-checkbox-wrapper">
-                    <span>This plan is correct.</span>
-                    <input class="gui-checkbox" type="checkbox" name="confirmed" value="accept"/>
+                    <label for="confirmed-check">This plan is correct.</label>
+                    <input class="gui-checkbox" type="checkbox" name="confirmed" id="confirmed-check" value="accept"/>
                   </div>
                 <a id="commit-button" class="gui-point-button-right gui-text-bold right" {{action commitPlan target="controller"}}>
                     <span class="gui-button-msg">COMMIT</span>
