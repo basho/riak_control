@@ -223,14 +223,19 @@ minispade.register('cluster', function() {
       ev.preventDefault();
 
       var self = this;
+      var confirmed = $(document).find("[name='confirmed']:checked").val();
 
-      $.ajax({
-        type:     'POST',
-        url:      '/admin/cluster',
-        dataType: 'json',
-        success:  function(d) { self.reload(); },
-        error:    self.get('displayError')
-      });
+      if(confirmed) {
+        $.ajax({
+          type:     'POST',
+          url:      '/admin/cluster',
+          dataType: 'json',
+          success:  function(d) { self.reload(); },
+          error:    self.get('displayError')
+        });
+      } else {
+        self.get('displayError')(undefined, undefined, "Please confirm the plan.");
+      }
     },
 
     /**
@@ -315,7 +320,7 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     displayError: function (jqXHR, textStatus, errorThrown) {
-      $('.error-message').removeClass('hide').find('.error-text').html('Sorry, your request could not be completed at this time.');
+      $('.error-message').removeClass('hide').find('.error-text').html('Sorry, your request could not be completed at this time: ' + errorThrown);
     }
   });
 
