@@ -144,6 +144,8 @@ stage_individual_change({struct, Change}, Exit) ->
     case riak_control_session:stage_change(Node, Action, Replacement) of
         ok ->
             {Status andalso true, Errors};
+        {badrpc, nodedown} ->
+            {Status andalso false, Errors ++ [format_error(nodedown)]};
         {error, Error} ->
             {Status andalso false, Errors ++ [format_error(Error)]}
     end.
@@ -313,6 +315,8 @@ format_error(Error) ->
             "Node is not reachable.";
         not_single_node ->
             "Node is already in another cluster.";
+        nodedown ->
+            "Node is not online.";
         self_join ->
             "Node can not be joined to itself."
     end,
