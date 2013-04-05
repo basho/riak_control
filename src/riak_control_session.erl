@@ -436,7 +436,7 @@ retrieve_plan() ->
     end.
 
 %% @doc Attempt to commit the plan.
--spec maybe_commit_plan() -> ok | error.
+-spec maybe_commit_plan() -> ok | {error, term()}.
 maybe_commit_plan() ->
     riak_core_claimant:commit().
 
