@@ -229,7 +229,7 @@ apply_claim_change(Node, Claim) ->
 
     case lists:keyfind(Name, 1, Claim) of
         false ->
-            Node#member_info{ring_pct=0};
+            Node#member_info{ring_pct=0, pending_pct=0};
         {_, {_, Future}} ->
             %% @doc Hack until core returns normalized values.
             Normalized = if
@@ -238,7 +238,7 @@ apply_claim_change(Node, Claim) ->
                 true ->
                     Future
             end,
-            Node#member_info{ring_pct=Normalized}
+            Node#member_info{ring_pct=Normalized, pending_pct=Normalized}
     end.
 
 %% @doc Turn a node into a proper struct for serialization.
@@ -297,9 +297,9 @@ atomized_get_value(Key, List, Default) when is_atom(Default) ->
     end.
 
 %% @doc Format error messages.
--spec format_error(stage_error()) -> binary().
+-spec format_error(stage_error()) -> iolist().
 format_error(Error) ->
-    ErrorMessage = case Error of
+    case Error of
         already_leaving ->
             "Node is already leaving the cluster.";
         not_member ->
@@ -320,5 +320,4 @@ format_error(Error) ->
             "Node is not online.";
         self_join ->
             "Node can not be joined to itself."
-    end,
-    list_to_binary(ErrorMessage).
+    end.
