@@ -17,6 +17,17 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc
+%%
+%% Responsible for viewing, staging and committing changes to the
+%% cluster.
+%%
+%% GET  /cluster returns the current and staged clusters.
+%% PUT  /cluster updates the plan.
+%% POST /cluster updates and commits the plan.
+%%
+%% @end
 
 -module(admin_cluster).
 
