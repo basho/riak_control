@@ -316,7 +316,7 @@ atomized_get_value(Key, List, Default) when is_atom(Default) ->
 %% @doc Format error messages.
 -spec format_error(stage_error()) -> iolist().
 format_error(Error) ->
-    case Error of
+    ErrorMessage = case Error of
         already_leaving ->
             "Node is already leaving the cluster.";
         not_member ->
@@ -337,4 +337,6 @@ format_error(Error) ->
             "Node is not online.";
         self_join ->
             "Node can not be joined to itself."
+    end,
+    list_to_binary(ErrorMessage).
     end.
