@@ -110,7 +110,7 @@ get_plan() ->
 
 %% @doc Stage a change to the cluster.
 -spec stage_change(node(), normalized_action(), node()) ->
-    ok | {error, stage_error()}.
+    ok | {error, stage_error()} | {badrpc, nodedown}.
 stage_change(Node, Action, Replacement) ->
     gen_server:call(?MODULE,
                     {stage_change, Node, Action, Replacement}, infinity).
@@ -442,7 +442,7 @@ maybe_commit_plan() ->
 
 %% @doc Stage a change for one particular node.
 -spec maybe_stage_change(node(), normalized_action(), node()) ->
-    ok | {error, stage_error()}.
+    ok | {error, stage_error()} | {badrpc, nodedown}.
 maybe_stage_change(Node, Action, Replacement) ->
     case Action of
         join ->
