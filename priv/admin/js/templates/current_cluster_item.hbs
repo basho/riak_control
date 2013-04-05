@@ -49,7 +49,15 @@
         <div class="actions-container">
             <div class="actions-pointer"></div>
             <div class="actions-box">
-                <h4 class="gui-headline-bold">Use these actions to prepare this node to leave the cluster.</h4>
+                <h4 class="gui-headline-bold">
+                    Use these actions to prepare this node to leave the cluster.
+                </h4>
+                {{#if me}}
+                    <span class="warning gui-text-flat italic">
+                        Warning: This node is hosting Riak Control.  If it leaves the
+                        cluster, Riak Control will will be shut down.
+                    </span>
+                {{/if}}
                 <div class="replacement-controls">
                     <div class="gui-radio-wrapper default">
                         <input class="gui-radio" type="radio" value="leave" {{bindAttr name="name" id="normal_leave_radio"}} checked="checked"/>

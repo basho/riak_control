@@ -112,6 +112,7 @@ minispade.register('cluster', function() {
         dataType: 'json',
 
         success: function(d) {
+          //console.log(d)
           var updatedCurrentCluster = d.cluster.current;
           var currentCurrentCluster = self.get('content.currentCluster');
 
@@ -409,6 +410,7 @@ minispade.register('cluster', function() {
     mem_totalBinding:   'content.mem_total',
     mem_usedBinding:    'content.mem_used',
     mem_erlangBinding:  'content.mem_erlang',
+    meBinding:          'content.me',
 
     classNameBindings:  ['expanded:open'],
 

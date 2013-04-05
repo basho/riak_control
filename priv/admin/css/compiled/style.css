@@ -933,6 +933,11 @@ input.gui-point-button-right:active {
     text-align: left;
   }
 }
+#cluster-page .warning {
+  display: block;
+  padding: 10px 0 0;
+  color: #f05f5f;
+}
 #cluster-page #current-area,
 #cluster-page #planned-area {
   float: left;
@@ -999,7 +1004,7 @@ input.gui-point-button-right:active {
   -moz-transition: height 0.4s ease;
   -o-transition: height 0.4s ease;
   transition: height 0.4s ease;
-  height: 310px;
+  height: 375px;
   margin-bottom: 25px;
 }
 #cluster-page .gui-light {
