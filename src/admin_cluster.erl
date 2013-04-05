@@ -258,6 +258,7 @@ jsonify_node(Node) ->
              {"status",Node#member_info.status},
              {"reachable",Reachable},
              {"ring_pct",Node#member_info.ring_pct},
+             {"pending_pct",Node#member_info.pending_pct},
              {"mem_total",MemTotal},
              {"mem_used",MemUsed},
              {"mem_erlang",Node#member_info.mem_erlang},
