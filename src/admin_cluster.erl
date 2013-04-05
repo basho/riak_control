@@ -99,17 +99,15 @@ content_types_accepted(ReqData, Context) ->
 -spec process_post(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 process_post(ReqData, Context) ->
-    {Status, Errors} = stage_changes(ReqData, Context),
-
-    case Status of
-        true ->
+    case stage_changes(ReqData, Context) of
+        ok ->
             case riak_control_session:commit_plan() of
                 ok ->
                     {true, ReqData, Context};
                 _ ->
                     {false, ReqData, Context}
             end;
-        false ->
+        {error, Errors} ->
             Response = error_response(ReqData, Errors),
             {{halt, 500}, Response, Context}
     end.
@@ -118,13 +116,11 @@ process_post(ReqData, Context) ->
 -spec from_json(wrq:reqdata(), undefined) ->
     {boolean(), wrq:reqdata(), undefined}.
 from_json(ReqData, Context) ->
-    {Status, Errors} = stage_changes(ReqData, Context),
-
-    case Status of
-        false ->
+    case stage_changes(ReqData, Context) of
+        {error, Errors} ->
             Response = error_response(ReqData, Errors),
             {{halt, 500}, Response, Context};
-        true ->
+        ok ->
             {true, ReqData, Context}
     end.
 
@@ -135,30 +131,40 @@ error_response(ReqData, Errors) ->
     wrq:set_resp_body(EncodedErrors, ReqData).
 
 %% @doc Stage changes; called by both the PUT and POST methods.
--spec stage_changes(wrq:reqdata(), undefined) -> {boolean(), list()}.
+-spec stage_changes(wrq:reqdata(), undefined) -> ok | {error, list()}.
 stage_changes(ReqData, Context) ->
     case wrq:req_body(ReqData) of
         <<"">> ->
             {true, []};
         _ ->
             Changes = extract_changes(ReqData, Context),
-            lists:foldl(fun stage_individual_change/2, {true, []}, Changes)
+            Result = lists:foldl(fun({struct, Change}, {Status, Errors}) ->
+                        case stage_individual_change(Change) of
+                            ok ->
+                                {Status, Errors};
+                            {error, Error} ->
+                                {error, Errors ++ [format_error(Error)]}
+                        end
+                end, {ok, []}, Changes),
+            case Result of
+                {ok, _} ->
+                    ok;
+                {error, Errors} ->
+                    {error, Errors}
+            end
     end.
 
 %% @doc Stage individual change, used in fold.
--spec stage_individual_change({struct, term()}, boolean()) -> boolean().
-stage_individual_change({struct, Change}, Exit) ->
+-spec stage_individual_change(term())-> ok | {error, term()}.
+stage_individual_change(Change) ->
     Node = atomized_get_value(node, Change),
     Action = atomized_get_value(action, Change),
     Replacement = atomized_get_value(replacement, Change, undefined),
-    {Status, Errors} = Exit,
     case riak_control_session:stage_change(Node, Action, Replacement) of
-        ok ->
-            {Status andalso true, Errors};
         {badrpc, nodedown} ->
-            {Status andalso false, Errors ++ [format_error(nodedown)]};
-        {error, Error} ->
-            {Status andalso false, Errors ++ [format_error(Error)]}
+            {error, nodedown};
+        Result ->
+            Result
     end.
 
 %% @doc Extract changes out of a request object.
