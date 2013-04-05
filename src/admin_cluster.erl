@@ -157,14 +157,19 @@ stage_changes(ReqData, Context) ->
 %% @doc Stage individual change, used in fold.
 -spec stage_individual_change(term())-> ok | {error, term()}.
 stage_individual_change(Change) ->
-    Node = atomized_get_value(node, Change),
-    Action = atomized_get_value(action, Change),
-    Replacement = atomized_get_value(replacement, Change, undefined),
-    case riak_control_session:stage_change(Node, Action, Replacement) of
-        {badrpc, nodedown} ->
-            {error, nodedown};
-        Result ->
-            Result
+    try
+        Node = nodename_to_atom(proplists:get_value(node, Change)),
+        Action = atomized_get_value(action, Change),
+        Replacement = atomized_get_value(replacement, Change, undefined),
+        case riak_control_session:stage_change(Node, Action, Replacement) of
+            {badrpc, nodedown} ->
+                {error, nodedown};
+            Result ->
+                Result
+        end
+    catch
+        error:badarg ->
+            {error, nodedown}
     end.
 
 %% @doc Extract changes out of a request object.
@@ -339,4 +344,38 @@ format_error(Error) ->
             "Node can not be joined to itself."
     end,
     list_to_binary(ErrorMessage).
+
+%% @doc Determine is a given node is valid, and if so, return an atom.
+-spec find_node(binary()) -> atom().
+find_node(Bin) ->
+    case re:split(Bin, "@", [{return, list}]) of
+        [Name, Host] ->
+            case lists:member(Name, get_epmd_names(Host)) of
+                true ->
+                    binary_to_atom(Bin, utf8);
+                false ->
+                    erlang:error(badarg, [Bin])
+            end;
+        _ ->
+            erlang:error(badarg, [Bin])
+    end.
+
+%% @doc Return names known by epmd for a given host.
+-spec get_epmd_names(binary()) -> list().
+get_epmd_names(Host) ->
+    case erl_epmd:names(Host) of
+        {ok, Nodes} ->
+            [ Name || {Name, _Port} <- Nodes ];
+        _ ->
+            []
+    end.
+
+%% @doc Given a binary node name, attempt to find an atom.
+-spec nodename_to_atom(binary()) -> atom().
+nodename_to_atom(Bin) when is_binary(Bin) ->
+    try
+        binary_to_existing_atom(Bin, utf8)
+    catch
+        error:badarg ->
+            find_node(Bin)
     end.
