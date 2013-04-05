@@ -316,8 +316,6 @@ minispade.register('cluster', function() {
             emberObject.set('expanded', false);
           }
 
-          console.log(node)
-
           self.reload();
         },
 
