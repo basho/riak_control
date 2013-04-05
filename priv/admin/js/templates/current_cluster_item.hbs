@@ -69,7 +69,7 @@
                             <div class="gui-dropdown-wrapper replacement-node-dropdown">
                                 <div class="gui-dropdown-bg gui-text">Select Replacement Node</div>
                                 <div class="gui-dropdown-cap left"></div>
-                                {{view Ember.Select classNames="gui-dropdown" contentBinding="controller.joiningNodes"}}
+                                {{view Ember.Select classNames="gui-dropdown" contentBinding="controller.joiningNodes" optionLabelPath="content.name"}}
                             </div>
                             <div class="gui-checkbox-wrapper">
                                 <input class="gui-checkbox" type="checkbox" {{bindAttr name="name" id="force_replace_check"}} value="true" />
