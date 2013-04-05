@@ -261,12 +261,7 @@ minispade.register('cluster', function() {
         type:     'DELETE',
         url:      '/admin/cluster',
         dataType: 'json',
-        success:  function(d) {
-          // Remove visual indicators that nodes are un-actionable
-          $('.node').removeClass('semi-transparent');
-          $('.node-blocker').hide();
-          self.reload();
-        },
+        success:  function(d) { self.reload(); },
         error:    self.get('displayError')
       });
     },
@@ -290,7 +285,7 @@ minispade.register('cluster', function() {
      *
      * @returns {void}
      */
-    stageChange: function(node, action, replacement, jqNode, emberObject) {
+    stageChange: function(node, action, replacement) {
       var self = this;
 
       $.ajax({
@@ -306,18 +301,7 @@ minispade.register('cluster', function() {
                     }]
                   },
 
-        success: function(d) {
-
-          // Make the node semi-opaque if it's been staged to
-          // indicate that you can't mess with it anymore.
-          if (jqNode.length) {
-            jqNode.addClass('semi-transparent');
-            jqNode.find('.node-blocker').show();
-            emberObject.set('expanded', false);
-          }
-
-          self.reload();
-        },
+        success: function(d) { self.reload(); },
 
         error:   self.get('displayError')
       });
@@ -451,8 +435,6 @@ minispade.register('cluster', function() {
       var replacement = this.$().
         find("input[type='select']:selected").val();
 
-      var jqNode = $(ev.target).closest('.node');
-
       // Make sure we handle the force replace correctly.
       //
       if(action === 'replace' && forced === 'true') {
@@ -464,7 +446,7 @@ minispade.register('cluster', function() {
         replacement = '';
       }
 
-      controller.stageChange(name, action, replacement, jqNode, self);
+      controller.stageChange(name, action, replacement);
     },
 
     /**

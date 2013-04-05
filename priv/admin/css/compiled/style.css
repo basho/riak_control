@@ -969,15 +969,6 @@ input.gui-point-button-right:active {
     text-align: left;
   }
 }
-#cluster-page .node-blocker {
-  position: absolute;
-  left: -5px;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  display: none;
-}
 #cluster-page .warning {
   display: block;
   padding: 10px 0 0;
