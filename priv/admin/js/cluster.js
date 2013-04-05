@@ -112,7 +112,6 @@ minispade.register('cluster', function() {
         dataType: 'json',
 
         success: function(d) {
-          //console.log(d)
           var updatedCurrentCluster = d.cluster.current;
           var currentCurrentCluster = self.get('content.currentCluster');
 
