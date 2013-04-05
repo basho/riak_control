@@ -261,7 +261,12 @@ minispade.register('cluster', function() {
         type:     'DELETE',
         url:      '/admin/cluster',
         dataType: 'json',
-        success:  function(d) { self.reload(); },
+        success:  function(d) {
+          // Remove visual indicators that nodes are un-actionable
+          $('.node').removeClass('semi-transparent');
+          $('.node-blocker').hide();
+          self.reload();
+        },
         error:    self.get('displayError')
       });
     },
@@ -285,7 +290,7 @@ minispade.register('cluster', function() {
      *
      * @returns {void}
      */
-    stageChange: function(node, action, replacement) {
+    stageChange: function(node, action, replacement, jqNode, emberObject) {
       var self = this;
 
       $.ajax({
@@ -301,7 +306,21 @@ minispade.register('cluster', function() {
                     }]
                   },
 
-        success: function(d) { self.reload(); },
+        success: function(d) {
+
+          // Make the node semi-opaque if it's been staged to
+          // indicate that you can't mess with it anymore.
+          if (jqNode.length) {
+            jqNode.addClass('semi-transparent');
+            jqNode.find('.node-blocker').show();
+            emberObject.set('expanded', false);
+          }
+
+          console.log(node)
+
+          self.reload();
+        },
+
         error:   self.get('displayError')
       });
     },
@@ -406,6 +425,7 @@ minispade.register('cluster', function() {
     reachableBinding:   'content.reachable',
     statusBinding:      'content.status',
     ring_pctBinding:    'content.ring_pct',
+    pending_pctBinding: 'content.pending_pct',
     mem_totalBinding:   'content.mem_total',
     mem_usedBinding:    'content.mem_used',
     mem_erlangBinding:  'content.mem_erlang',
@@ -433,6 +453,8 @@ minispade.register('cluster', function() {
       var replacement = this.$().
         find("input[type='select']:selected").val();
 
+      var jqNode = $(ev.target).closest('.node');
+
       // Make sure we handle the force replace correctly.
       //
       if(action === 'replace' && forced === 'true') {
@@ -444,7 +466,7 @@ minispade.register('cluster', function() {
         replacement = '';
       }
 
-      controller.stageChange(name, action, replacement);
+      controller.stageChange(name, action, replacement, jqNode, self);
     },
 
     /**
@@ -469,6 +491,26 @@ minispade.register('cluster', function() {
 
       return "gui-light status-light inline-block " + color;
     }.property('reachable', 'status'),
+
+    /**
+     * Color the arrows in the partitions column appropriately based
+     * on how ring_pct and pending_pct compare.
+     *
+     * @returns {String}
+     */
+    coloredArrows: function() {
+      var current = this.get('ring_pct'),
+          pending = this.get('pending_pct'),
+          common  = 'left pct-arrows ';
+
+      if (pending > current) {
+        return common + 'pct-gaining';
+      } else if (pending < current) {
+        return common + 'pct-losing';
+      } else {
+        return common + 'pct-static';
+      }
+    }.property('ring_pct', 'pending_pct'),
 
     /**
      * In order for labels to be clickable, they need to be bound to checks/radios
@@ -609,7 +651,7 @@ minispade.register('cluster', function() {
      * @returns {string}
      */
     ring_pct_readable: function () {
-      return this.get('ring_pct') * 100;
+      return Math.round(this.get('ring_pct') * 100);
     }.property('ring_pct')
 
   });
@@ -673,7 +715,7 @@ minispade.register('cluster', function() {
      * @returns {string}
      */
     ring_pct_readable: function () {
-      return this.get('ring_pct') * 100;
+      return Math.round(this.get('ring_pct') * 100);
     }.property('ring_pct')
 
   });

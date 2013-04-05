@@ -8,6 +8,12 @@ CSS to be applied ONLY on the cluster page
 
 #cluster-page
 
+  .node-blocker
+    absoluteLeft(-5px, 0)
+    dimensions(100%, 100%)
+    background : transparent
+    display    : none
+
   .warning
     display : block
     padding : 10px 0 0
@@ -112,6 +118,7 @@ CSS to be applied ONLY on the cluster page
 
   .node
     margin-bottom : 10px
+    position      : relative
 
   .node > div
     float : left
