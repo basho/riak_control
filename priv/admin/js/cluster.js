@@ -350,7 +350,7 @@ minispade.register('cluster', function() {
     displayError: function (jqXHR, textStatus, errorThrown) {
       var parsed, errors;
 
-      if(jqXHR !== undefined) {
+      if(jqXHR) {
         parsed = JSON.parse(jqXHR.responseText);
         errors = parsed.errors.join(', ');
       } else {
