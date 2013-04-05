@@ -229,7 +229,7 @@ apply_claim_change(Node, Claim) ->
 
     case lists:keyfind(Name, 1, Claim) of
         false ->
-            Node#member_info{ring_pct=0};
+            Node#member_info{ring_pct=0, pending_pct=0};
         {_, {_, Future}} ->
             %% @doc Hack until core returns normalized values.
             Normalized = if
@@ -238,7 +238,7 @@ apply_claim_change(Node, Claim) ->
                 true ->
                     Future
             end,
-            Node#member_info{ring_pct=Normalized}
+            Node#member_info{ring_pct=Normalized, pending_pct=Normalized}
     end.
 
 %% @doc Turn a node into a proper struct for serialization.
