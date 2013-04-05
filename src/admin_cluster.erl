@@ -251,7 +251,7 @@ apply_claim_change(Node, Claim) ->
 
     case lists:keyfind(Name, 1, Claim) of
         false ->
-            Node#member_info{ring_pct=0, pending_pct=0};
+            Node#member_info{ring_pct=0.0, pending_pct=0.0};
         {_, {_, Future}} ->
             %% @doc Hack until core returns normalized values.
             Normalized = if
