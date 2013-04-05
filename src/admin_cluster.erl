@@ -281,7 +281,7 @@ jsonify_node(Node) ->
 %% @doc Given a struct/proplist that we've received via JSON,
 %% recursively turn the keys into atoms from binaries.
 atomize({struct, L}) ->
-    {struct, [{binary_to_atom(I, utf8), atomize(J)} || {I, J} <- L]};
+    {struct, [{binary_to_existing_atom(I, utf8), atomize(J)} || {I, J} <- L]};
 atomize(L) when is_list(L) ->
     [atomize(I) || I <- L];
 atomize(X) ->
@@ -292,7 +292,7 @@ atomized_get_value(Key, List) ->
     Result = proplists:get_value(Key, List),
     case is_binary(Result) of
         true ->
-            binary_to_atom(Result, utf8);
+            binary_to_existing_atom(Result, utf8);
         false ->
             Result
     end.
@@ -302,7 +302,7 @@ atomized_get_value(Key, List, Default) when is_atom(Default) ->
     Result = proplists:get_value(Key, List, Default),
     case is_binary(Result) of
         true ->
-            binary_to_atom(Result, utf8);
+            binary_to_existing_atom(Result, utf8);
         false ->
             Result
     end.
