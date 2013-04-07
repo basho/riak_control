@@ -37,6 +37,10 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
+         get_plan/0,
+         clear_plan/0,
+         stage_change/3,
+         commit_plan/0,
          force_update/0]).
 
 %% gen_server callbacks
@@ -56,6 +60,8 @@
                 partitions  :: partitions(),
                 nodes       :: members(),
                 update_tick :: boolean()}).
+
+-type normalized_action() :: leave | remove | replace | force_replace.
 
 %% @doc Periodically update the ring with itself
 -define(INTERVAL, 3000).
@@ -97,6 +103,28 @@ get_services() ->
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
+%% @doc Get the staged cluster plan.
+-spec get_plan() -> {ok, list(), list()} | {error, atom()}.
+get_plan() ->
+    gen_server:call(?MODULE, get_plan, infinity).
+
+%% @doc Stage a change to the cluster.
+-spec stage_change(node(), normalized_action(), node()) ->
+    ok | {error, stage_error()} | {badrpc, nodedown}.
+stage_change(Node, Action, Replacement) ->
+    gen_server:call(?MODULE,
+                    {stage_change, Node, Action, Replacement}, infinity).
+
+%% @doc Commit a staged cluster plan.
+-spec commit_plan() -> ok | error.
+commit_plan() ->
+    gen_server:call(?MODULE, commit_plan, infinity).
+
+%% @doc Clear the staged cluster plan.
+-spec clear_plan() -> {ok, ok | error}.
+clear_plan() ->
+    gen_server:call(?MODULE, clear_plan, infinity).
+
 %% @doc Force ring/membership update.
 -spec force_update() -> ok.
 force_update() ->
@@ -119,7 +147,6 @@ init([]) ->
     %% setup a callback that will see the ring changing as it happens
     %% so we can see block and wait for a change instead of just
     %% grabbing it every time
-    add_ring_watcher(),
     add_node_watcher(),
 
     %% get the current ring so we have a baseline to work from
@@ -138,6 +165,14 @@ init([]) ->
     %% start the server
     {ok, update_ring(State, Ring)}.
 
+handle_call(commit_plan, _From, State) ->
+    {reply, maybe_commit_plan(), State};
+handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
+    {reply, maybe_stage_change(Node, Action, Replacement), State};
+handle_call(clear_plan, _From, State) ->
+    {reply, {ok, maybe_clear_plan()}, State};
+handle_call(get_plan, _From, State) ->
+    {reply, retrieve_plan(), State};
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
@@ -194,13 +229,6 @@ code_change (_Old,State,_Extra) ->
 -spec rev_state(#state{}) -> #state{}.
 rev_state(State=#state{vsn=V}) ->
     State#state{vsn=V+1}.
-
-%% @doc Register a watcher for ring changes.
--spec add_ring_watcher() -> ok.
-add_ring_watcher() ->
-    Self = self(),
-    Fn = fun (Ring) -> gen_server:cast(Self,{update_ring,Ring}) end,
-    riak_core_ring_events:add_sup_callback(Fn).
 
 %% @doc Register a watcher for membership changes.
 -spec add_node_watcher() -> ok.
@@ -362,4 +390,75 @@ get_vnode_status(Service, Ring, Index) ->
             {Service, Status};
         [] ->
             {Service, undefined}
+    end.
+
+%% @doc Attempt to clear the cluster plan.
+-spec maybe_clear_plan() -> ok | error.
+maybe_clear_plan() ->
+    try riak_core_claimant:clear() of
+        ok ->
+            ok
+    catch
+        _:_ ->
+            error
+    end.
+
+%% @doc Return list of nodes, current and future claim.
+-spec nodes_and_claim_percentages(ring()) -> list().
+nodes_and_claim_percentages(Ring) ->
+    Nodes = lists:keysort(2, riak_core_ring:all_member_status(Ring)),
+    [{Name, riak_core_console:pending_claim_percentage(Ring, Name)} ||
+        {Name, _} <- Nodes].
+
+%% @doc Compute from a series of ring transitions, the final ring.
+-spec compute_final_ring_claim(list({ring(), ring()})) ->
+    [{node(),{number(),number()}}].
+compute_final_ring_claim(Rings) ->
+    {_, FinalRing} = lists:last(Rings),
+    nodes_and_claim_percentages(FinalRing).
+
+%% @doc Attempt to retrieve the claim plan.
+-spec retrieve_plan() -> {ok, list(), list(ring())} | {error, atom()}.
+retrieve_plan() ->
+    try riak_core_claimant:plan() of
+        {error, Error} ->
+            {error, Error};
+        {ok, Changes, NextRings} ->
+            case Changes of
+                [] ->
+                    {ok, [], []};
+                _ ->
+                    {ok, Changes, compute_final_ring_claim(NextRings)}
+            end
+    catch
+        _:_ ->
+            {error, unknown}
+    end.
+
+%% @doc Attempt to commit the plan.
+-spec maybe_commit_plan() -> ok | {error, term()}.
+maybe_commit_plan() ->
+    riak_core_claimant:commit().
+
+%% @doc Stage a change for one particular node.
+-spec maybe_stage_change(node(), normalized_action(), node()) ->
+    ok | {error, stage_error()} | {badrpc, nodedown}.
+maybe_stage_change(Node, Action, Replacement) ->
+    case Action of
+        join ->
+            {ok, Ring} = riak_core_ring_manager:get_my_ring(),
+            case riak_core_ring:all_members(Ring) of
+                [_Me] ->
+                    riak_core:staged_join(Node);
+                _ ->
+                    rpc:call(Node, riak_core, staged_join, [node()])
+            end;
+        leave ->
+            riak_core_claimant:leave_member(Node);
+        remove ->
+            riak_core_claimant:remove_member(Node);
+        replace ->
+            riak_core_claimant:replace(Node, Replacement);
+        force_replace ->
+            riak_core_claimant:force_replace(Node, Replacement)
     end.

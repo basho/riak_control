@@ -26,8 +26,11 @@
          https_redirect_loc/1,
          csrf_token/2,
          is_valid_csrf_token/2,
-         is_null_origin/1
-        ]).
+         is_null_origin/1,
+         is_protected/2]).
+
+-type context() :: term() | undefined.
+-type csrf_token() :: list() | undefined.
 
 -include("riak_control.hrl").
 
@@ -129,29 +132,46 @@ valid_userpass(_User, _Pass, _Auth) ->
     error_logger:warning_msg("Unknown auth type '~p'", [_Auth]),
     false.
 
-%% @doc store a csrf protection token in a cookie.
-csrf_token(RD, Ctx) ->
-    case get_csrf_token(RD, Ctx) of
+%% @doc Generate a new CSRF token.
+-spec csrf_token(wrq:reqdata(), context()) -> csrf_token().
+csrf_token(ReqData, Context) ->
+    case get_csrf_token(ReqData, Context) of
         undefined ->
             binary_to_list(base64url:encode(crypto:rand_bytes(256)));
         Token ->
             Token
     end.
 
-get_csrf_token(RD, _Ctx) ->
-    wrq:get_cookie_value("csrf_token", RD).
+%% @doc Get the CSRF token from the cookie.
+-spec get_csrf_token(wrq:reqdata(), context()) -> csrf_token().
+get_csrf_token(ReqData, _Context) ->
+    wrq:get_cookie_value("csrf_token", ReqData).
 
-%% @doc ensure this request contains a valid csrf protection token.
-is_valid_csrf_token(RD, Ctx) ->
-    Body = mochiweb_util:parse_qs(wrq:req_body(RD)),
-    BodyToken = proplists:get_value("csrf_token", Body),
-    CookieToken = get_csrf_token(RD, Ctx),
-    BodyToken /= undefined andalso BodyToken == CookieToken.
+%% @doc Ensure this request contains a valid csrf protection token.
+-spec is_valid_csrf_token(wrq:reqdata(), context()) -> boolean().
+is_valid_csrf_token(ReqData, Context) ->
+    HeaderToken = wrq:get_req_header("X-CSRF-Token", ReqData),
+    CookieToken = get_csrf_token(ReqData, Context),
+    HeaderToken /= undefined andalso HeaderToken == CookieToken.
 
-%% @doc Check if the Origin header is "null". This is useful to look for attempts
-%%      at CSRF, but is not a complete answer to the problem.
-is_null_origin(RD) ->
-    case wrq:get_req_header("Origin", RD) of
+%% @doc Is this a protected method?
+-spec is_protected_method(wrq:reqdata()) -> boolean().
+is_protected_method(ReqData) ->
+    Method = wrq:method(ReqData),
+    Method == 'POST' orelse Method == 'PUT'.
+
+%% @doc Is this a protected?
+-spec is_protected(wrq:reqdata(), context()) -> boolean().
+is_protected(ReqData, Context) ->
+    (is_null_origin(ReqData) or
+     not is_valid_csrf_token(ReqData, Context)) and
+    is_protected_method(ReqData).
+
+%% @doc Check if the Origin header is "null". This is useful to look for
+%% attempts at CSRF, but is not a complete answer to the problem.
+-spec is_null_origin(wrq:reqdata()) -> boolean().
+is_null_origin(ReqData) ->
+    case wrq:get_req_header("Origin", ReqData) of
         "null" ->
             true;
         _ ->
