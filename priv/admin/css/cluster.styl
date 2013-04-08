@@ -4,51 +4,205 @@ CSS to be applied ONLY on the cluster page
 */
 
 @import reusable
+  
 
 #cluster-page
-  
+
+  .warning
+    display : block
+    padding : 10px 0 0
+    color   : riakred
+
+  #current-area, #planned-area
+    float : left
+    width : 47%
+
+  #current-area
+    margin : 0 0 45px 0
+
+
+  #area-separator
+    width      : 6%
+    height     : 450px
+    float      : left
+    text-align : center
+
+    div
+      margin     : 0 auto
+      width      : 1px
+      height     : 100%
+      background : lightWhite
+ 
+  span.gui-text-flat
+    line-height : 1.5
+
   h3
     copy-font()
 
+  .spinner-box
+    corners()
+    text-align : center
+    background : rgba(255, 255, 255, .05)
+    padding    : 25px
+
+    img, h4
+      vertical-align : middle
+
+    h4
+      opaque(.8)
+      display      : inline-block
+      padding-top  : 6px
+      padding-left : 10px
+      line-height  : 1.2
+
+  .actions-container
+    css-transition(height .4s ease, margin-bottom .4s ease)
+    overflow      : hidden
+    height        : 0
+    margin-bottom : 0
+
+  .open .actions-container
+    css-transition(height .4s ease, margin-bottom .4s ease)
+    height        : 375px
+    margin-bottom : 25px
+
+  .gui-light
+    vertical-align : middle
+    padding        : 9px 5px 9px 14px
+    margin-left    : -6px
+    margin-top     : -7px
+
+  .field-container
+    width          : 75%
+    vertical-align : middle
+
+  .gui-field
+    margin-right : 0
+    overflow     : hidden
+
   #add-node
     padding-top   : 40px
-    margin-bottom : 25px
+    margin-bottom : 45px
     
   .add-node-table tr td
     padding-top : 25px
-    
-  .more-node-actions
-    display : none
-    vendor('box-shadow', 0 3px 5px darkened)
 
-  .more-node-actions td
-    padding : 0 5px
+  .list-header
+    min-height : 18px
+
+    li
+      float : left
+      margin-bottom : 30px
+
+      h4
+        display : inline-block
+
+  #node-list, #planned-list
+    margin-top : 20px
+
+  #node-list
+    .item1
+      width : 18%
+    .item2
+      width : 42%
+    .item3
+      width : 18%
+    .item4
+      width : 22%
+
+  .node
+    margin-bottom : 10px
+    position      : relative
+
+  .node > div
+    float : left
+
+  .node > div.clear
+    float : none
+
+  .toggle-container
+    overflow : visible
+    padding  : 0
+
+    .actions-toggle
+      dimensions(82px, 30px)
+      position   : relative
+      overflow   : visible
+      padding    : 0
+      background : url('/admin/ui/images/actions-toggle-text.png') -5px top no-repeat rgba(0, 0, 0, .3)
+      margin-top : 3px
+
+      a
+        dimensions(48px, 34px)
+        css-transition(left .2s ease)
+        position   : absolute
+        display    : inline-block
+        background : url('/admin/ui/images/actions-toggle-slider.png') left top no-repeat transparent
+        top        : 0
+        left       : -5px
+
+  .open .actions-toggle a
+    css-transition(left .2s ease)
+    left : 38px
+
+  .name-box
+    overflow : visible
+
+  .ring-pct, .used-memory, .action-name
+    monospace();
+
+  .used-memory
+    display : inline-block
+    padding : 0 0 0 5px
+    vertical-align : middle
+
+  .action-name
+    display     : inline-block
+    padding-top : 8px
+
+  .replacing-box .field-container
+    width : 100%
+
+  #planned-list
+    .item1
+      width : 40%
+    .item2
+      width : 17%
+    .item3
+      width : 17%
+    .item4
+      width : 26%
+
+
+  .plan-details-header
+    margin-top : 30px
+    padding    : 10px 0
+  
+  .accept-plan
+    position   : relative
+    padding    : 15px 0
+    margin-top : 15px
+
+  .clear-plan-box
+    border-top  : 1px solid lightWhite
+    margin-top  : 25px
+    padding-top : 25px
+
+    a
+      display : block
+      margin-top  : 15px
+      margin-left : -5px
+
+  .plan-details
+    @extend .gui-text-flat
+    copy-font()
+    line-height : 1.5
+
+  #commit-button
+    absoluteRight(0, 12px)
     
   .button-column
     text-align : right
-
-  .switch-box
-    dimensions(125px, auto)
-    vertical-align : top
-    
-    div
-      width        : 88px
-      padding-left : 4px
-    
-    &.on > div
-      vendor('box-shadow', inset 0 1px 3px darkened)
-      singleCorner(top, left, 4px)
-      singleCorner(top, right, 4px)
-      background     : darkened
-
-
-  .status-box
-    dimensions(170px, auto)
-    
-  .actions-header
-    padding-left : 6px
-
-
 
   .pct-box
     margin-top     : 8px
@@ -77,11 +231,14 @@ CSS to be applied ONLY on the cluster page
     margin     : 0 5px 0 0
     display    : none
 
-  #node-error
-    headline-font()
+  .error-message
+    copy-font()
     vendor('box-shadow', 0 2px 3px darkened)
     corners()
-    padding    : 8px 10px 8px 12px
+    font-size  : 14px
+    font-style : italic
+    color      : mediumGray
+    padding    : 8px 10px 9px 12px
     background : rgba(232, 78, 78, .5)
     border     : 1px solid lighten(rgba(232, 78, 78, .5), 15%)
     
@@ -104,8 +261,6 @@ CSS to be applied ONLY on the cluster page
       &:hover
         opaque(1)
         
-  .ring_pct-box
-    width : 150px
 
   .memory-box
     width : 175px
@@ -160,121 +315,231 @@ CSS to be applied ONLY on the cluster page
     background-color : #404040
     width            : 100%
 
-  .action-button
-    dimensions(45px, 45px)
-    gradient(#616161, #434343)
-    corners()
-    vendor('box-shadow', 0 2px 3px darkened)
-    display       : block
-    margin-bottom : 5px
-    
-    &:hover
-      gradient(lighten(#616161, 10%), #434343)
-      
-    &:active, &.pressed
-      gradient(#434343, #515151)
-
-  .disabled.action-button
-    gradient(#434343, #515151) !important
-
-  .action-icon
-    dimensions(45px, 45px)
-    vendor('box-shadow', inset 0 1px 2px lightWhite)
-    corners()
-    display    : block
-    background : url('/admin/ui/images/action-button-sprite.png') left top no-repeat transparent
+  .actions-pointer
+    dimensions(72px, 13px)
+    background : url('/admin/ui/images/pointer.png') center top no-repeat transparent
+    margin-top : 8px
     
   .actions-box
-    singleCorner(bottom, left, 10px)
-    singleCorner(bottom, right, 10px)
-    singleCorner(top, left, 4px)
+    corners()
+    width         : 92%
     background    : darkened
-    margin-top    : -6px
     margin-bottom : 15px
     border-bottom : 1px solid lightWhite
-    padding       : 15px
+    padding       : 18px
     margin-right  : 33px
-    display       : none
+    position      : relative
+
+    & > h4
+      display       : block
+      border-bottom : 1px solid lightWhite
+      padding       : 0 0 12px
+
     
   .actions-box > div > span
-    headline-bold()
+    copy-font()
     color        : lightGray
     padding-left : 3px
-    
-  .markdown-box, .shutdown-box, .leave-cluster-box
-    margin-bottom : 10px
-    margin-right  : 15px
 
-  .shutdown-button .action-icon
-    background-position : left bottom
-    
-  .markdown-button .action-icon
-    background-position : 1px 1px
+  .extra-actions
+    opaque(.32)
+    padding-bottom : 25px
+    height         : 35px
+    position       : relative
 
-  .leave-cluster-button .action-icon
-    background-position : 1px -44px
+    & > div
+      float : left
+
+    .gui-checkbox-wrapper
+      margin-left : 15px
+
+    &.active
+      opaque(1)
    
   .replacement-controls
-    float : left
-    width : auto
+    width         : auto
+    margin-top    : 18px
+    border-bottom : 1px solid lightWhite
+    margin-bottom : 10px
+
+    div
+      margin-bottom : 8px
+
+    select
+      margin-top : -38px
    
   .replacement-node-dropdown
-    width         : 100%
-    float         : left
     margin-bottom : 5px
+
+  .right-angle-arrow
+    dimensions(15px, 18px)
+    background : url('/admin/ui/images/right-angle-arrow.png') left top no-repeat transparent
+    margin     : 0 10px 0 10px
+
+  .disabler
+    background : red
+    opaque(.2)
+    absoluteLeft(0, 0)
+    dimensions(100%, 100%)
+    background : transparent
+
+  .stage-button
+    float : right
+
+  .stage-instructions
+    float   : left
+    display : block
+    width   : 50%
+
+  .no-joining-nodes
+    padding-top : 6px
+
+  .slide-up
+    margin-top : -35px
+
+  .semi-transparent
+    opaque(.32)
+
 
   /* RESPONSIVE MEDIA QUERIES */
 
-  @media screen and (min-width : 1100px)
+  @media screen and (max-width : 1200px)
 
-    .replacement-controls
-      width : 250px
-
-  @media screen and (max-width : 959px)
-
-    .free-memory
+    #area-separator
       display : none
-      
-    .actions-box
-      margin-right : 0
-      
-    .switch-box
-      width : 100px
-      
-    .switch-box div
-      width        : 78px
-      padding-left : 0
-      
-    .switch-box > div
-      width      : auto
-      padding    : 0
-      text-align : center
-      
-    .actions-header
-      padding-left : 0
-      text-align   : center
 
-  @media screen and (max-width : 699px)
+    #current-area, #planned-area
+      width : 100%
 
-    .status-box, .ring_pct-box, .memory-box
-      width : auto
+    #planned-area
+      padding-top : 30px
+      border-top  : 1px solid lightWhite
+
+    .field-container
+      width : 90%
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 500px
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item1
+        width : 300px
+      .item2
+        width       : 100px
+        margin-left : 25px
+      .item3
+        width : 100px
+      .item4
+        width : 350px
+
+  @media screen and (max-width : 950px)
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 400px
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item1
+        width : 275px
+      .item2
+        width : 100px
+      .item3
+        width : 100px
+      .item4
+        width : 225px
+
+  @media screen and (max-width : 850px)
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 300px
+        
+        .field-container
+          width : 75%
+
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item3
+        display : none
+
+    .used-memory
+      display : none
+
+  @media screen and (max-width : 700px)
+
+    #node-list
+      .item1
+        width : 100px
+      .item2
+        width : 200px
+        
+        .field-container
+          width : 75%
+
+      .item3
+        width : 100px
+      .item4
+        width : 150px
+
+    #planned-list
+      .item1
+        width : 200px
+      .item2
+        width       : 100px
+        margin-left : 0
+      .item4
+        width : 200px
+
+    .gui-light
+      display : none
+
+  @media screen and (max-width : 600px)
+
+    #node-list
+      .item1
+        display : none
+      .item2
+        width : 40%
+        .field-container
+          width : 95%
+      .item4
+        width : 100px
+
+    #planned-list
+      .item1
+        width : 40%
+        .field-container
+          width : 95%
+      .item2
+        width : 20%
+        margin-right : 2%
+      .item4
+        width : 38%
+        .field-container
+          width : 95%
     
-    .status-box
-      text-align : center
-      
-    .gui-light span
+    .actions-container
       display : none
-      
-    .markdown-box, .shutdown-box, .leave-cluster-box
-      margin-right : 10px
 
-    .replacement-controls
-      margin-right : 0
-      
-  @media screen and (max-width : 499px)
 
-    .switch-box div
-      padding: 0 7px 0 0
-      margin : 0 0 0 5px
 
-  /* END RESPONSIVE MEDIA QUERIES */
+

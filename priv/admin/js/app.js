@@ -41,6 +41,30 @@ minispade.register('app', function() {
 
   RiakControl.store = RiakControl.Store.create();
 
+  // Automatically add CSRF tokens to AJAX requests.
+  $("body").bind("ajaxSend", function(elm, xhr, s){
+    var csrf_token = $('meta[name=csrf_token]').attr('content');
+
+    if(s.type === 'POST' || s.type === 'PUT') {
+      xhr.setRequestHeader('X-CSRF-Token', csrf_token);
+    }
+  });
+
+  // Set default content-type for AJAX requests.
+  // From: http://stackoverflow.com/questions/1749272/jquery-how-to-put-json-via-ajax
+  $.ajaxSetup({
+      contentType: 'application/json',
+      processData: false
+  });
+
+  // Prefilter for stringifying.
+  // From: http://stackoverflow.com/questions/1749272/jquery-how-to-put-json-via-ajax
+  $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+    if(options.data) {
+      options.data = JSON.stringify(options.data);
+    }
+  });
+
   minispade.require('core');
   minispade.require('router');
   minispade.require('snapshot');
