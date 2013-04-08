@@ -135,7 +135,7 @@ error_response(ReqData, Errors) ->
 stage_changes(ReqData, Context) ->
     case wrq:req_body(ReqData) of
         <<"">> ->
-            {true, []};
+            ok;
         _ ->
             Changes = extract_changes(ReqData, Context),
             Result = lists:foldl(fun({struct, Change}, {Status, Errors}) ->
