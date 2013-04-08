@@ -412,6 +412,7 @@ footer {
 }
 footer {
   padding: 0 25px 0;
+  margin-bottom: 25px;
 }
 footer .title-box {
   width: 16%;
@@ -876,7 +877,7 @@ input.gui-point-button-right:active {
     height: 2px;
   }
   #riak-control-logo {
-    width: 114px;
+    width: 123px;
     height: 32px;
     background: url("/admin/ui/images/riak-control-logo-small.png") right bottom no-repeat transparent;
     margin: 6px 0 0 10px;
