@@ -855,6 +855,41 @@ input.gui-point-button-right:active {
   }
 }
 @media screen and (max-width : 499px) {
+  #header {
+    height: 44px;
+  }
+  #navbar,
+  #nav-ul {
+    height: 41px;
+  }
+  .nav-li {
+    width: 45px;
+    height: 41px;
+  }
+  .nav-li .nav-item {
+    width: 45px;
+    height: 41px;
+    background: url("/admin/ui/images/nav-icons-small.png") center bottom no-repeat transparent;
+  }
+  .nav-li .indicator {
+    width: 45px;
+    height: 2px;
+  }
+  #riak-control-logo {
+    width: 114px;
+    height: 32px;
+    background: url("/admin/ui/images/riak-control-logo-small.png") right bottom no-repeat transparent;
+    margin: 6px 0 0 10px;
+  }
+  #nav-snapshot a {
+    background-position: 8px -237px;
+  }
+  #nav-cluster a {
+    background-position: 8px 11px;
+  }
+  #nav-ring a {
+    background-position: 8px -24px;
+  }
   h1 {
     font-size: 30px;
     letter-spacing: 0;

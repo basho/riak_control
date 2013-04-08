@@ -569,8 +569,38 @@ input.gui-point-button:active, input.gui-rect-button:active, input.gui-point-but
     width : 212px
     
 @media screen and (max-width : 499px)
+
+  #header
+    height : 44px
+
+  #navbar, #nav-ul
+    height : 41px
+
+  .nav-li
+    dimensions(45px, 41px)
+
+    .nav-item
+      dimensions(45px, 41px)
+      background : url('/admin/ui/images/nav-icons-small.png') center bottom no-repeat transparent
+
+    .indicator
+      dimensions(45px, 2px)
+
+  #riak-control-logo
+    dimensions(123px, 32px)
+    background : url('/admin/ui/images/riak-control-logo-small.png') right bottom no-repeat transparent
+    margin     : 6px 0 0 10px
+
+  #nav-snapshot a
+    background-position : 8px -237px
+
+  #nav-cluster a
+    background-position : 8px 11px
+
+  #nav-ring a
+    background-position : 8px -24px
   
-    h1
-      hSize(30px, 0, 5px)
+  h1
+    hSize(30px, 0, 5px)
     
 /* END RESPONSIVE MEDIA QUERIES */
