@@ -138,7 +138,9 @@ minispade.register('cluster', function() {
           }
         },
 
-        error: self.get('displayError')
+        error: function (jqXHR, textStatus, errorThrown) {
+          self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+        }
       });
     },
 
@@ -190,6 +192,11 @@ minispade.register('cluster', function() {
      * Holds a boolean tracking if the ring is not yet ready.
      */
     ringNotReady: false,
+
+    /**
+     * Holds the most recent error message.
+     */
+    errorMessage: '',
 
     /**
      * Return nodes from the current cluster which have not been deleted.
@@ -246,7 +253,9 @@ minispade.register('cluster', function() {
           url:      '/admin/cluster',
           dataType: 'json',
           success:  function(d) { self.reload(); },
-          error:    self.get('displayError')
+          error:    function (jqXHR, textStatus, errorThrown) {
+            self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+          }
         });
       } else {
         self.get('displayError')(undefined, undefined, "Please confirm the plan.");
@@ -268,7 +277,9 @@ minispade.register('cluster', function() {
         url:      '/admin/cluster',
         dataType: 'json',
         success:  function(d) { self.reload(); },
-        error:    self.get('displayError')
+        error:    function (jqXHR, textStatus, errorThrown) {
+          self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+        }
       });
     },
 
@@ -309,7 +320,9 @@ minispade.register('cluster', function() {
 
         success: function(d) { self.reload(); },
 
-        error:   self.get('displayError')
+        error: function (jqXHR, textStatus, errorThrown) {
+          self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+        }
       });
     },
 
@@ -345,8 +358,17 @@ minispade.register('cluster', function() {
         errors = errorThrown;
       }
 
-      $('.error-message').removeClass('hide').find('.error-text').
-          html('Request failed: ' + errors);
+      this.set('errorMessage', 'Request failed: ' + errors);
+    },
+
+    /**
+     * The action specified on the <a> tag creating the 'x' button in the error message div.
+     * By setting the 'errorMessage' property back to an empty string, the message will disappear.
+     *
+     * @returns {void}
+     */
+    hideError: function () {
+      this.set('errorMessage', '');
     }
   });
 
