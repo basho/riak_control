@@ -51,3 +51,6 @@ cleanplt:
 	@echo
 	sleep 5
 	rm $(PLT)
+
+typer:
+	typer --annotate -I ../ --plt $(PLT) -r src

@@ -32,39 +32,63 @@
 -include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
+-record(ctx, {
+          base_url,
+          base_path
+         }).
+
+-type context() :: #ctx{}.
+
 %% mappings to the various content types supported for this resource
 -define(CONTENT_TYPES,[{"application/json",to_json}]).
 
 %% defines the webmachine routes this module handles
+-spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
     [{admin_routes:nodes_route(),?MODULE,[]}].
 
 %% entry-point for the resource from webmachine
+-spec init(_) -> {'ok',_}.
 init(Action) ->
     {ok,Action}.
 
 %% validate origin
+-spec forbidden(wrq:reqdata(), context()) -> {boolean(), wrq:reqdata(), context()}.
 forbidden(RD, C) ->
     {riak_control_security:is_null_origin(RD), RD, C}.
 
 %% redirect to SSL port if using HTTP
+-spec service_available(wrq:reqdata(), context()) ->
+                               {boolean() | {halt, non_neg_integer()}, wrq:reqdata(), context()}.
 service_available(RD,C) ->
     riak_control_security:scheme_is_available(RD,C).
 
 %% validate username and password
+-spec is_authorized(wrq:reqdata(), context()) ->
+                           {true | string(), wrq:reqdata(), context()}.
 is_authorized(RD,C) ->
     riak_control_security:enforce_auth(RD,C).
 
 %% return the list of available content types for webmachine
+-spec content_types_provided(wrq:reqdata(), context()) ->
+         {[{ContentType::string(), HandlerFunction::atom()}],
+          wrq:reqdata(), context()}.
 content_types_provided(Req,C) ->
     {?CONTENT_TYPES,Req,C}.
 
 %% get a list of all the nodes in the ring and their status
+-spec to_json(wrq:reqdata(),context()) -> {iolist(), wrq:reqdata(),context()}.
 to_json(Req,C) ->
     {ok,_V,RawNodes}=riak_control_session:get_nodes(),
     Nodes=[jsonify_node(Node) || Node=#member_info{} <- RawNodes],
     {mochijson2:encode({struct, [{nodes, Nodes}]}),Req,C}.
 
+-spec jsonify_node(#member_info{node::atom(),
+                                status::status(),
+                                reachable::boolean(),
+                                vnodes::[vnode()],
+                                mem_erlang:: integer()}) ->
+                          {'struct',[{[any(),...],atom() | number()},...]}.
 jsonify_node(Node) ->
     LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
     MemUsed = Node#member_info.mem_used,
