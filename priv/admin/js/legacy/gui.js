@@ -17,11 +17,6 @@ $(document).ready(function() {
   });
   */
 
-  // MAKE ALL CLOSE ERROR BUTTONS WORK
-  $(document).on('click', '.close-error', function () {
-    $(this).parent().hide();
-  }); 
-
   // MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {
