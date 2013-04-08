@@ -104,8 +104,6 @@ minispade.register('cluster', function() {
     load: function() {
       var self = this;
 
-      self.setProperties({ ringNotReady: false, legacyRing: false });
-
       $.ajax({
         type:     'GET',
         url:      '/admin/cluster',
@@ -122,9 +120,17 @@ minispade.register('cluster', function() {
 
           if(updatedStagedCluster === 'ring_not_ready') {
             self.set('ringNotReady', true);
-          } else if (updatedStagedCluster === 'legacy') {
+          } else {
+            self.set('ringNotReady', false);
+          }
+
+          if(updatedStagedCluster === 'legacy') {
             self.set('legacyRing', true);
           } else {
+            self.set('legacyRing', false);
+          }
+
+          if($.isArray(updatedStagedCluster)) {
             var currentStagedCluster = self.get('content.stagedCluster');
 
             self.refresh(updatedStagedCluster,
