@@ -381,7 +381,23 @@ minispade.register('cluster', function() {
   RiakControl.AddNodeView = Ember.TextField.extend(
     /** @scope RiakControl.AddNodeView.prototype */ {
     valueBinding: 'controller.addNodeField',
-    classNames: ['gui-input', 'gui-text']
+    classNames: ['gui-input', 'gui-text'],
+
+    /**
+     * When the user presses the enter/return key in the
+     * add nodes field, calls the 'addNode' method of
+     * the controller.
+     *
+     * @param {Object} ev - The keyup event.
+     *
+     * @returns {void}
+     */
+    keyUp: function (ev) {
+      var controller = this.get('controller');
+      if(ev.keyCode === 13){
+        controller.get('addNode').call(controller, ev);
+      }
+    }
   });
 
   /**

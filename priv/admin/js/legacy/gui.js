@@ -8,14 +8,6 @@
 $(document).ready(function() {
   $.riakControl = $.riakControl || {};
 
-  /*
-  // ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM
-  $(document).on('keyup', '#node-to-add', function (event) {
-    if(event.keyCode === 13){
-      $('#add-node-button').trigger('click');
-    }
-  });
-  */
 
   // MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
@@ -31,33 +23,6 @@ $(document).ready(function() {
     });
   };
 
-
-  // UPDATE DROPDOWN MENUS
-  $.riakControl.updateDropdown = $.riakControl.updateDropdown || function updateDropdown (me, val) {
-    Ember.run.next(function() {
-      var textSpot = me.prev().prev(); textSpot.text(val);
-    });
-  };
-
-  /*
-  // MAKE HIDE/SHOW SWITCHES WORK
-  $(document).on('click', '.gui-switch', function (e) {
-    var that = $(this),
-        parent = that.parent().parent(),
-        corresponder = that.closest('tr').next(),
-        box = corresponder.find('.actions-box');
-    if (that.hasClass('off')) {
-      corresponder.show();
-      box.slideDown('fast');
-    } else {
-      box.slideUp('fast', function () {
-        corresponder.hide();
-      });
-    }
-    parent.toggleClass('on off');
-    that.toggleClass('on off');
-  });
-  */
 
   // MAKE CHECKBOXES WORK WHEN YOU CLICK THEM
   $(document).on('change', '.gui-checkbox', function(e) {
@@ -113,7 +78,7 @@ $(document).ready(function() {
       }
   });
 
-  /*
+
   // CODE FOR ALL THE TOOLTIPS
   var wait;
   function emptyTips () {
@@ -264,5 +229,5 @@ $(document).ready(function() {
       }
   }).on('mouseout', '.kv-light, .pipe-light, .search-light', emptyTips);
 
-*/
+
 });
