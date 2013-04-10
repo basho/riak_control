@@ -25,11 +25,19 @@
 
 -include("riak_control.hrl").
 
+-record(ctx, {
+          base_url,
+          base_path
+         }).
+-type context() :: #ctx{}.
+
 %% get the target node for the action
 target_node(Req) ->
     list_to_existing_atom(dict:fetch(node,wrq:path_info(Req))).
 
 %% remote to the target node, perform the action, and return
+-spec perform_rpc_action(wrq:reqdata(), context(), atom(), function(), list(any())) ->
+                                {boolean(), wrq:reqdata(), context()}.
 perform_rpc_action(Req,C,Module,Fun,Args) ->
     Node=target_node(Req),
     Result=case rpc:call(Node,Module,Fun,Args) of

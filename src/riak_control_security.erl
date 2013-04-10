@@ -37,6 +37,8 @@
 %% if riak_control has an auth scheme selected, then we enforce
 %% use of HTTPS and will redirect the user to the HTTPS version
 %% of the page requested
+-spec scheme_is_available(wrq:reqdata(), context()) ->
+                               {boolean() | {halt, non_neg_integer()}, wrq:reqdata(), context()}.
 scheme_is_available(RD, Ctx) ->
     case app_helper:get_env(riak_control, auth, none) of
         none ->
@@ -51,6 +53,8 @@ scheme_is_available(RD, Ctx) ->
     end.
 
 %% get the https location to redirect to (callable w/o a request)
+-spec https_redirect_loc(string()) ->
+                                {ok, string()} | undefined.
 https_redirect_loc(Path) ->
     case app_helper:get_env(riak_control, enabled, false) of
         true ->
@@ -65,6 +69,8 @@ https_redirect_loc(Path) ->
     end.
 
 %% set the redirect header and where to go with it
+-spec https_redirect(wrq:reqdata(), context()) ->
+                             {{halt, non_neg_integer()}, wrq:reqdata(), context()}.
 https_redirect(RD,Ctx) ->
     Path=wrq:raw_path(RD),
     Loc=case https_redirect_loc(Path) of
@@ -92,6 +98,8 @@ https_redirect(RD,Ctx) ->
 %%
 %%    - `none'     :: No authentication.
 %%
+-spec enforce_auth(wrq:reqdata(), context()) ->
+                          {true | string(), wrq:reqdata(), context()}.
 enforce_auth(RD, Ctx) ->
     case app_helper:get_env(riak_control,auth,none) of
         none ->
@@ -114,6 +122,8 @@ enforce_basic_auth(RD, Ctx, Base64, Auth) ->
             {?ADMIN_AUTH_HEAD, RD, Ctx}
     end.
 
+-spec enforce_user_pass(wrq:reqdata(), context(), string(), string(), string()) ->
+                               {boolean(), wrq:reqdata(), context()}.
 enforce_user_pass(RD, Ctx, User, Pass, Auth) ->
     case valid_userpass(User, Pass, Auth) of
         true ->
