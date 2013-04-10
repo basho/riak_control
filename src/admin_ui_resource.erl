@@ -76,6 +76,7 @@ service_available(RD, #ctx{base_url=Base}=Ctx) ->
             riak_control_security:scheme_is_available(RD, Ctx)
     end.
 
+%% @doc Ensure user has access.
 -spec is_authorized(wrq:reqdata(), context()) ->
          {true | string(), wrq:reqdata(), context()}.
 is_authorized(RD, Ctx) ->

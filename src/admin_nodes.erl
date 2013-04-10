@@ -38,6 +38,7 @@
          }).
 
 -type context() :: #ctx{}.
+%% TODO pull these into common header file??
 
 %% mappings to the various content types supported for this resource
 -define(CONTENT_TYPES,[{"application/json",to_json}]).

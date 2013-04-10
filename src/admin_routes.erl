@@ -23,24 +23,28 @@
 -export([admin_route/1,
          ring_route/0,
          ring_route/1,
-         vnode_route/0,
-         vnode_route/1,
          nodes_route/0,
          partitions_route/0,
          cluster_route/0]).
 
 %% helper, ensures all routes begin with /admin
+-spec admin_route([string()]) -> [string() ,...].
 admin_route(Rest) -> ["admin"|Rest].
 
 %% routes that query/act on partitions
+-spec ring_route([string()])
+                -> [string() ,...].
 ring_route(Route) -> admin_route(["ring"|Route]).
+
+-spec ring_route() -> [string() ,...].
 ring_route() -> admin_route(["ring"]).
 
-%% routes that query/act on individual v-nodes
-vnode_route(Route) -> admin_route(["vnode",partition|Route]).
-vnode_route() -> admin_route(["vnode",partition]).
-
 %% new routes.
+-spec nodes_route() -> [string() ,...].
 nodes_route() -> admin_route(["nodes"]).
+
+-spec partitions_route() -> [string() ,...].
 partitions_route() -> admin_route(["partitions"]).
+
+-spec cluster_route() -> [string() ,...].
 cluster_route() -> admin_route(["cluster"]).

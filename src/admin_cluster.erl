@@ -50,7 +50,8 @@
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% @doc Return routes this resource should respond to.
--spec routes() -> list().
+-spec routes() -> [webmachine_dispatcher:matchterm()].
+
 routes() ->
     [{admin_routes:cluster_route(), ?MODULE, []}].
 
@@ -79,7 +80,7 @@ service_available(ReqData, Context) ->
 
 %% @doc Ensure user has access.
 -spec is_authorized(wrq:reqdata(), undefined) ->
-    {boolean(), wrq:reqdata(), undefined}.
+    {true | string(), wrq:reqdata(), undefined}.
 is_authorized(ReqData, Context) ->
     riak_control_security:enforce_auth(ReqData, Context).
 
@@ -155,7 +156,7 @@ stage_changes(ReqData, Context) ->
     end.
 
 %% @doc Stage individual change, used in fold.
--spec stage_individual_change(term())-> ok | {error, term()}.
+-spec stage_individual_change(term()) -> 'ok' | {'error', stage_error()}.
 stage_individual_change(Change) ->
     try
         Node = nodename_to_atom(proplists:get_value(node, Change)),
@@ -226,12 +227,13 @@ merge_transitions(Nodes, Changes, Claim) ->
         end, [], Nodes).
 
 %% @doc Merge change into member info record.
--spec apply_changes(#member_info{}, list(), list()) -> #member_info{}.
+-spec apply_changes(#member_info{},[any(),...],[any()]) ->
+                           #member_info{}.
 apply_changes(Node, Changes, Claim) ->
     apply_status_change(apply_claim_change(Node, Claim), Changes).
 
 %% @doc Merge change into member info record.
--spec apply_status_change(#member_info{}, list()) -> #member_info{}.
+-spec apply_status_change(#member_info{}, [any(),...]) -> #member_info{}.
 apply_status_change(Node, Changes) ->
     Name = Node#member_info.node,
 
@@ -245,7 +247,7 @@ apply_status_change(Node, Changes) ->
     end.
 
 %% @doc Merge change into member info record.
--spec apply_claim_change(#member_info{}, list()) -> #member_info{}.
+-spec apply_claim_change(#member_info{}, [any()]) -> #member_info{}.
 apply_claim_change(Node, Claim) ->
     Name = Node#member_info.node,
 
@@ -264,7 +266,8 @@ apply_claim_change(Node, Claim) ->
     end.
 
 %% @doc Turn a node into a proper struct for serialization.
--spec jsonify_node(#member_info{}) -> {struct, list()}.
+-spec jsonify_node(#member_info{}) ->
+                          {'struct', [{string(), any()}]}.
 jsonify_node(Node) ->
     LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
     MemUsed = Node#member_info.mem_used,

@@ -53,6 +53,8 @@
 
 -type change() :: {node(), action()}.
 
+-type base64url() :: binary() | string().
+
 -record(partition_info,
         { index       :: index(),
           partition   :: integer(),
