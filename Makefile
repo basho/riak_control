@@ -27,7 +27,7 @@ docs:
 	./rebar skip_deps=true doc
 
 APPS = kernel stdlib sasl erts ssl tools os_mon runtime_tools crypto inets \
-	xmerl webtool eunit syntax_tools compiler
+	xmerl webtool eunit syntax_tools compiler mnesia public_key snmp
 PLT = $(HOME)/.riak_control_dialyzer_plt
 
 check_plt: compile
@@ -42,7 +42,7 @@ dialyzer: compile
 	@echo Use "'make build_plt'" to build PLT prior to using this target.
 	@echo
 	@sleep 1
-	dialyzer -Wno_return -Wunmatched_returns --plt $(PLT) ebin
+	dialyzer -Wno_return -Wunderspecs -Wunmatched_returns --plt $(PLT) ebin
 
 cleanplt:
 	@echo

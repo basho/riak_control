@@ -35,13 +35,15 @@
 %% API functions
 %% ===================================================================
 
+-spec start_link() -> {ok, Pid::pid()} | ignore | {error, Error::any()}.
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %% ===================================================================
 %% Supervisor callbacks
 %% ===================================================================
-
+-spec init(list()) ->
+                  {ok, {{'one_for_one', non_neg_integer(), non_neg_integer()}, [{_,{atom() | tuple(),atom(),'undefined' | [any()]},'permanent' | 'temporary' | 'transient','brutal_kill' | 'infinity' | non_neg_integer(),'supervisor' | 'worker','dynamic' | [atom() | tuple()]}]}}.
 init([]) ->
     RiakControlSession={riak_control_session,
                          {riak_control_session, start_link, []},

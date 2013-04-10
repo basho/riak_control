@@ -61,6 +61,7 @@
                 nodes       :: members(),
                 update_tick :: boolean()}).
 
+-type state() :: #state{}.
 -type normalized_action() :: leave | remove | replace | force_replace.
 
 %% @doc Periodically update the ring with itself
@@ -140,6 +141,8 @@ force_update() ->
 %% ring and membership changes.
 %%
 %% @end
+-spec init(list()) ->
+                  {ok, state()}.
 init([]) ->
     %% make sure terminate/2 is called when the process exits
     process_flag(trap_exit,true),
@@ -165,6 +168,8 @@ init([]) ->
     %% start the server
     {ok, update_ring(State, Ring)}.
 
+-spec handle_call(commit_plan, any(), state()) ->
+                         {reply, any(), state()}.
 handle_call(commit_plan, _From, State) ->
     {reply, maybe_commit_plan(), State};
 handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
@@ -194,6 +199,9 @@ handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
 %% update the ring any more until it's cleared.
 %%
 %% @end
+-spec handle_cast('update_ring' | {'update_ring',_} |
+                  {'update_services',[{atom(),'fallback' | 'primary' | 'undefined'}]}, state()) ->
+                         {'noreply',state()}.
 handle_cast({update_ring, Ring}, State=#state{update_tick=Tick}) ->
     case Tick of
         false -> {noreply,update_ring(State,Ring)};
@@ -205,20 +213,23 @@ handle_cast(update_ring,State) ->
 handle_cast({update_services, Services}, State) ->
     {noreply, update_services(State, Services)}.
 
+-spec handle_info(ping_ring_nodes|clear_update_tick|_,state()) ->
+                         {noreply, state()}.
 handle_info(ping_ring_nodes, State) ->
     erlang:send_after(?INTERVAL, self(), ping_ring_nodes),
     {ok, Ring}=riak_core_ring_manager:get_my_ring(),
     handle_cast({update_ring, Ring}, State);
-
 handle_info(clear_update_tick, State) ->
     {noreply, State#state{update_tick=false}};
 handle_info(_,State) ->
     {noreply, State}.
 
+-spec terminate(any(), any()) -> ok.
 terminate (_Reason,_State) ->
     ok.
 
-code_change (_Old,State,_Extra) ->
+-spec code_change(any(), state(), any()) -> {ok, state()}.
+code_change(_Old,State,_Extra) ->
     {ok,State}.
 
 %% ===================================================================
@@ -321,7 +332,7 @@ get_my_info() ->
                  handoffs = get_handoff_status()}.
 
 %% @doc Return current nodes memory.
--spec get_my_memory() -> {term(), term()}.
+-spec get_my_memory() -> {number(), number()}.
 get_my_memory() ->
     Mem = memsup:get_system_memory_data(),
 

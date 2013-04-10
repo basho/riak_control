@@ -76,6 +76,7 @@
           replacement :: node()
         }).
 
+-type partition()     :: #partition_info{}.
 -type partitions()    :: [#partition_info{}].
 -type members()       :: [#member_info{}].
 
