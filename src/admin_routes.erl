@@ -30,17 +30,28 @@
          cluster_route/0]).
 
 %% helper, ensures all routes begin with /admin
+-spec admin_route(list(string())) -> list(string()).
 admin_route(Rest) -> ["admin"|Rest].
 
 %% routes that query/act on partitions
+-spec ring_route([string()])
+                -> [string() ,...].
 ring_route(Route) -> admin_route(["ring"|Route]).
+
+-spec ring_route() -> [string() ,...].
 ring_route() -> admin_route(["ring"]).
 
 %% routes that query/act on individual v-nodes
+-spec vnode_route(list(string())) -> list(string()).
 vnode_route(Route) -> admin_route(["vnode",partition|Route]).
+
+-spec vnode_route() -> list(string()).
 vnode_route() -> admin_route(["vnode",partition]).
 
 %% new routes.
+-spec nodes_route() -> list(string()).
 nodes_route() -> admin_route(["nodes"]).
+-spec partitions_route() -> list(string()).
 partitions_route() -> admin_route(["partitions"]).
+-spec cluster_route() -> list(string()).
 cluster_route() -> admin_route(["cluster"]).
