@@ -546,7 +546,7 @@ minispade.register('cluster', function() {
      * @returns {String}
      */
     node_id: function() {
-      return Ember.generateGuid();
+      return Ember.guidFor(this);
     }.property(),
 
     /**
