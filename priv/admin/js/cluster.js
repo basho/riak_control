@@ -139,7 +139,11 @@ minispade.register('cluster', function() {
         },
 
         error: function (jqXHR, textStatus, errorThrown) {
-          self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+          if(jqXHR.status === 404) {
+            self.get('displayError').call(self, undefined, undefined, "The node hosting Riak Control is unavailable.");
+          } else {
+            self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+          }
         }
       });
     },
