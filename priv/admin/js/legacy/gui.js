@@ -166,14 +166,14 @@ $(document).ready(function() {
   // Memory usage
   $(document).on('mouseover', '.membar-bg, .free-memory', function () {
       var parent = $(this).parent(),
-          free_mem = parent.find('.free-memory').text(),
-          erlang_mem, non_erlang_mem;
+          erlang_mem, non_erlang_mem,
+          free_mem = parent.find('.unknown-mem').attr('name');
       if (free_mem.charAt(0) === '?') {
           displayTips('Because this node is currently unreachable or incompatible with Riak Control, Riak Control is not able to assess its memory usage.');
       } else {
-          free_mem = parseInt(free_mem);
-          erlang_mem = parseInt(parent.find('.erlang-mem').attr('name'));
-          non_erlang_mem = parseInt(parent.find('.non-erlang-mem').attr('name'));
+          free_mem = parseInt(free_mem, 10);
+          erlang_mem = parseInt(parent.find('.erlang-mem').attr('name'), 10);
+          non_erlang_mem = parseInt(parent.find('.non-erlang-mem').attr('name'), 10);
           displayTips('The machine running this node currently has ' + free_mem + '% free memory.  Of the ' + (erlang_mem + non_erlang_mem) + '% currently in use, ' + erlang_mem + '% is being used by Riak and ' + non_erlang_mem + '% is being used by other processes.');
       }
   }).on('mouseout', '.membar-bg, .free-memory', emptyTips);
