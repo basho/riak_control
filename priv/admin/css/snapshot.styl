@@ -23,22 +23,31 @@ CSS to be applied ONLY on the snapshot page
       margin : 10px 0 0 20px
     
     li
-      monospace()
+      headline-font()
       line-height : 1.5
+      font-size   : 15px
       
       a
         color : lightGray
 
   #health-indicator
-    dimensions(311px, 309px)
     float        : left
     margin-right : 25px
+
+  #healthy-cluster #health-indicator
+    dimensions(337px, 310px)
+
+  #unhealthy-cluster #health-indicator
+    dimensions(311px, 309px)
 
   /* RESPONSIVE MEDIA QUERIES */
 
   @media screen and (max-width : 899px)
 
-    #health-indicator
+    #healthy-cluster #health-indicator
+      dimensions(279px, 249px)
+
+    #unhealthy-cluster #health-indicator
       dimensions(250px, 249px)
       
     #healthy-cluster section, #unhealthy-cluster section

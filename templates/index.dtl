@@ -13,7 +13,6 @@
     <script src="/admin/ui/js/generated/templates.js"></script>
 
     <script src="/admin/ui/js/legacy/gui.js"></script>
-    <script src="/admin/ui/js/legacy/actions.js"></script>
 
     <script src="/admin/ui/js/app.js"></script>
     <script src="/admin/ui/js/core.js"></script>

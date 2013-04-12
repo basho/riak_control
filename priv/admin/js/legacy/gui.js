@@ -8,69 +8,78 @@
 $(document).ready(function() {
   $.riakControl = $.riakControl || {};
 
-  /* ALLOWS YOU TO HIT ENTER IN THE ADD-NODE FIELD WITHOUT MAKING IT A FORM */
-  $(document).on('keyup', '#node-to-add', function (event) {
-    if(event.keyCode === 13){
-      $('#add-node-button').trigger('click');
-    }
-  });
 
-  /* MAKE ALL CLOSE ERROR BUTTONS WORK */
-  $(document).on('click', '.close-error', function () {
-    $(this).parent().hide();
-  });
-
-  /* MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS */
+  // MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {
-      var lis = $('nav li'), activeli = $("#" + id);
-      lis.each(function (index, item) {
-        if (item !== activeli[0]) {
-          $(item).removeClass('active');
+      var listItems = $('nav li'), activeItem = $("#" + id);
+      listItems.each(function (index, each) {
+        if (each !== activeItem[0]) {
+          $(each).removeClass('active');
         } else {
-          $(item).addClass('active');
+          $(each).addClass('active');
         }
       });
     });
   };
 
-  /* UPDATE DROPDOWN MENUS */
-  $.riakControl.updateDropdown = $.riakControl.updateDropdown || function updateDropdown (me, val) {
-    Ember.run.next(function() {
-      var textSpot = me.prev().prev(); textSpot.text(val);
-    });
-  };
 
-  /* MAKE HIDE/SHOW SWITCHES WORK */
-  $(document).on('click', '.gui-switch', function (e) {
-    var that = $(this),
-        parent = that.parent().parent(),
-        corresponder = that.closest('tr').next(),
-        box = corresponder.find('.actions-box');
-    if (that.hasClass('off')) {
-      corresponder.show();
-      box.slideDown('fast');
-    } else {
-      box.slideUp('fast', function () {
-        corresponder.hide();
-      });
-    }
-    parent.toggleClass('on off');
-    that.toggleClass('on off');
-  });
-
-
-  /* MAKE CHECKBOXES WORK WHEN YOU CLICK THEM */
+  // MAKE CHECKBOXES WORK WHEN YOU CLICK THEM
   $(document).on('change', '.gui-checkbox', function(e) {
-      var me = $(this), parent = me.parent(); checked = me.attr('checked');
+      var me      = $(this),
+          parent  = me.parent(),
+          checked = me.attr('checked');
+
       if (checked) {
-          parent.css('background-position', 'left bottom');
+        parent.css('background-position', 'left bottom');
       } else {
-          parent.css('background-position', 'left top');
+        parent.css('background-position', 'left top');
       }
   });
 
-  /* CODE FOR ALL THE TOOLTIPS */
+  // MAKE RADIO BUTTONS WORK WHEN YOU CLICK THEM
+  $(document).on('change', '.gui-radio', function(e) {
+      var me      = $(this),
+          parent  = me.parent(),
+          checked = me.attr('checked'),
+          group   = $('input[type="radio"][name="' + me.attr('name') + '"]');
+      /*
+       * If the radio button is checked...
+       */
+      if (checked) {
+        /*
+         * Change the position of the background image sprite.
+         */
+        parent.css('background-position', 'left bottom');
+        /*
+         * Loop over all other radio buttons in the group and set their
+         * background positions to reflect the unchecked state.
+         */
+        group.each(function (index, item) {
+          var $item = $(item);
+          if ($item[0] !== me[0]) {
+            $item.parent().css('background-position', 'left top');
+          }
+        });
+        /*
+         * If the checked radio button is the 'replace' radio button...
+         */
+        if (me.attr('value') === 'replace') {
+          /*
+           * Enable the extra replacement actions.
+           */
+          parent.parent().find('.extra-actions').addClass('active').find('.disabler').hide();
+        /*
+         * Otherwise disable the replacement actions.
+         */
+        } else {
+          parent.parent().find('.extra-actions').removeClass('active').find('.disabler').show();
+        }
+      }
+  });
+
+  
+  // CODE FOR ALL THE TOOLTIPS
   var wait;
   function emptyTips () {
       wait = setTimeout(function () {
@@ -87,6 +96,7 @@ $(document).ready(function() {
       $('#display-tips').html(str);
       clearTimeout(wait);
   }
+
 
   // Navigation
 
@@ -156,14 +166,14 @@ $(document).ready(function() {
   // Memory usage
   $(document).on('mouseover', '.membar-bg, .free-memory', function () {
       var parent = $(this).parent(),
-          free_mem = parent.find('.free-memory').text(),
-          erlang_mem, non_erlang_mem;
+          erlang_mem, non_erlang_mem,
+          free_mem = parent.find('.unknown-mem').attr('name');
       if (free_mem.charAt(0) === '?') {
           displayTips('Because this node is currently unreachable or incompatible with Riak Control, Riak Control is not able to assess its memory usage.');
       } else {
-          free_mem = parseInt(free_mem);
-          erlang_mem = parseInt(parent.find('.erlang-mem').attr('name'));
-          non_erlang_mem = parseInt(parent.find('.non-erlang-mem').attr('name'));
+          free_mem = parseInt(free_mem, 10);
+          erlang_mem = parseInt(parent.find('.erlang-mem').attr('name'), 10);
+          non_erlang_mem = parseInt(parent.find('.non-erlang-mem').attr('name'), 10);
           displayTips('The machine running this node currently has ' + free_mem + '% free memory.  Of the ' + (erlang_mem + non_erlang_mem) + '% currently in use, ' + erlang_mem + '% is being used by Riak and ' + non_erlang_mem + '% is being used by other processes.');
       }
   }).on('mouseout', '.membar-bg, .free-memory', emptyTips);
@@ -218,4 +228,6 @@ $(document).ready(function() {
           displayTips(texts.msg + 'This node worker is currently in the process of handing off its data to other nodes.');
       }
   }).on('mouseout', '.kv-light, .pipe-light, .search-light', emptyTips);
+
+
 });

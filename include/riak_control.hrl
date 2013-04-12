@@ -31,6 +31,27 @@
 -type ring()          :: riak_core_ring:riak_core_ring().
 -type handoffs()      :: [handoff()].
 -type vnodes()        :: [vnode()].
+-type plan()          :: [] | legacy | ring_not_ready | unavailable.
+
+-type stage_error() :: nodedown
+                     | already_leaving
+                     | not_member
+                     | only_member
+                     | is_claimant
+                     | invalid_replacement
+                     | already_replacement
+                     | not_reachable
+                     | not_single_node
+                     | self_join.
+
+-type action() :: leave
+                | remove
+                | {replace, node()}
+                | {force_replace, node()}.
+
+-type claim_percentage() :: number().
+
+-type change() :: {node(), action()}.
 
 -record(partition_info,
         { index       :: index(),
@@ -50,7 +71,9 @@
           pending_pct :: float(),
           mem_total   :: integer(),
           mem_used    :: integer(),
-          mem_erlang  :: integer()
+          mem_erlang  :: integer(),
+          action      :: action(),
+          replacement :: node()
         }).
 
 -type partitions()    :: [#partition_info{}].
