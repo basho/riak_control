@@ -38,33 +38,47 @@
 -define(VNODE_TYPES, [riak_kv,riak_pipe,riak_search]).
 
 -record(context, {partitions}).
+-type context() :: #context{}.
 
 %% @doc Route handling.
+-spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
     [{admin_routes:partitions_route(), ?MODULE, []}].
 
 %% @doc Get partition list at the start of the request.
+-spec init(list()) ->
+                  {ok, context()}.
 init([]) ->
     {ok, _, Partitions} = riak_control_session:get_partitions(),
     {ok, #context{partitions=Partitions}}.
 
 %% @doc Validate origin.
+-spec forbidden(wrq:reqdata(), context()) ->
+                       {boolean(), wrq:reqdata(), context()}.
 forbidden(ReqData, Context) ->
     {riak_control_security:is_null_origin(ReqData), ReqData, Context}.
 
 %% @doc Determine if it's available.
+-spec service_available(wrq:reqdata(), context()) ->
+                               {boolean() | {halt, non_neg_integer()}, wrq:reqdata(), context()}.
 service_available(ReqData, Context) ->
     riak_control_security:scheme_is_available(ReqData, Context).
 
 %% @doc Handle authorization.
+-spec is_authorized(wrq:reqdata(), context()) ->
+                           {true | string(), wrq:reqdata(), context()}.
 is_authorized(ReqData, Context) ->
     riak_control_security:enforce_auth(ReqData, Context).
 
 %% @doc Return available content types.
+-spec content_types_provided(wrq:reqdata(), context()) ->
+         {[{ContentType::string(), HandlerFunction::atom()}],
+          wrq:reqdata(), context()}.
 content_types_provided(ReqData, Context) ->
     {?CONTENT_TYPES, ReqData, Context}.
 
 %% @doc Return a list of partitions.
+-spec to_json(wrq:reqdata(),context()) ->  {iolist(), wrq:reqdata(), context()}.
 to_json(ReqData, Context) ->
     {ok, _, Nodes} = riak_control_session:get_nodes(),
     Details = [{struct,
