@@ -1,0 +1,58 @@
+<div id="nodes-page">
+
+    <section id="title-container">
+      <div class="side-line"></div>
+      <div class="title-box">
+        <span class="vert-border-left"></span>
+        <h1 id="node-headline" class="gui-headline-bold page-title">Node Management</h1>
+        <span class="vert-border-right"></span>
+      </div>
+      <div class="side-line"></div>
+      <div class="clear"></div>
+    </section>
+
+    {{#if errorMessage}}
+      <div class="error-message">
+          <a class="close-error gui-text" {{action hideError target="controller"}}></a>
+          <a class="error-text offline gui-text-flat">{{errorMessage}}</a>
+      </div>
+    {{/if}}
+
+    <div id="current-area">
+        <h2 class="gui-headline">
+            Current Cluster<br/>
+        </h2>
+        <span id="total-number" class="gui-text-flat italic">
+          Click the radio button for each node you would like to stop or mark as down, then click "APPLY" to apply your changes. If the radio button is grayed out, the action is not
+          available due to the current status of the node.
+        </span><br/>
+        <section id="node-list">
+            {{#if controller.isLoading}}
+                <div class="spinner-box">
+                    <img id="cluster-spinner" class="spinner" src="/admin/ui/images/spinner.gif">
+                    <h4 class="gui-headline-bold">Loading...</h4>
+                </div>
+            {{else}}
+                <ul class="list-header">
+                    <li class="item1"><h4 class="gui-headline-bold">Stop</h4></li>
+                    <li class="item2"><h4 class="gui-headline-bold">Down</h4></li>
+                    <li class="item3"><h4 class="gui-headline-bold">Name &amp; Status</h4></li>
+                    <li class="item4"><h4 class="gui-headline-bold">Partitions</h4></li>
+                    <li class="item5"><h4 class="gui-headline-bold">RAM Usage</h4></li>
+                </ul>
+                <div class="clear"></div>
+                {{collection RiakControl.CurrentNodesView contentBinding="content"}}
+            {{/if}}
+        </section>
+        <section class="buttons">
+          <a class="gui-point-button-right gui-text-bold right" {{action applyChanges target="controller"}}>
+            <span class="gui-button-msg">APPLY</span>
+          </a>
+          <a class="gui-rect-button gui-text-bold right" {{action clearChecked target="controller"}}>
+            <span class="gui-button-msg">CLEAR</span>
+          </a>
+          <div class="clear"></div>
+        </section>
+    </div>
+
+</div>

@@ -61,7 +61,12 @@
                 nodes       :: members(),
                 update_tick :: boolean()}).
 
--type normalized_action() :: leave | remove | replace | force_replace.
+-type normalized_action() :: leave
+                           | remove
+                           | replace
+                           | force_replace
+                           | stop
+                           | down.
 
 %% @doc Periodically update the ring with itself
 -define(INTERVAL, 3000).
@@ -460,5 +465,9 @@ maybe_stage_change(Node, Action, Replacement) ->
         replace ->
             riak_core_claimant:replace(Node, Replacement);
         force_replace ->
-            riak_core_claimant:force_replace(Node, Replacement)
+            riak_core_claimant:force_replace(Node, Replacement);
+        down ->
+            riak_core:down(Node);
+        stop ->
+            rpc:call(Node, riak_core, stop, [])
     end.
