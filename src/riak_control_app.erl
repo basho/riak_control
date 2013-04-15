@@ -28,9 +28,11 @@
 %% ===================================================================
 %% Application callbacks
 %% ===================================================================
-
+-spec start(any(), any()) ->
+                   {'error',_} | {'ok',pid()} | {'ok',pid(),_}.
 start(_StartType, _StartArgs) ->
     riak_control_sup:start_link().
 
+-spec stop(any()) -> ok.
 stop(_State) ->
     ok.

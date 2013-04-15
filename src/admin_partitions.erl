@@ -46,7 +46,7 @@ routes() ->
     [{admin_routes:partitions_route(), ?MODULE, []}].
 
 %% @doc Get partition list at the start of the request.
--spec init(list()) ->
+-spec init([]) ->
                   {ok, context()}.
 init([]) ->
     {ok, _, Partitions} = riak_control_session:get_partitions(),
@@ -78,7 +78,8 @@ content_types_provided(ReqData, Context) ->
     {?CONTENT_TYPES, ReqData, Context}.
 
 %% @doc Return a list of partitions.
--spec to_json(wrq:reqdata(),context()) ->  {iolist(), wrq:reqdata(), context()}.
+-spec to_json(wrq:reqdata(),context()) ->
+                     {iolist(), wrq:reqdata(), context()}.
 to_json(ReqData, Context) ->
     {ok, _, Nodes} = riak_control_session:get_nodes(),
     Details = [{struct,

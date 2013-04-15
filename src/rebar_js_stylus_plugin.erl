@@ -61,11 +61,14 @@
 -export([compile/2,
          clean/2]).
 
+-type config() :: [{atom(), string()|list(string())}].
+
 %% ===================================================================
 %% Public API
 %% ===================================================================
 
-
+-spec compile(config(), any()) ->
+                     any().
 compile(Config, _AppFile) ->
     Options = options(Config),
     DocRoot = option(doc_root, Options),
@@ -101,9 +104,10 @@ process(Targets, Options) ->
             ok
     end.
 
+-spec clean(any(), any()) ->
+                   ok.
 clean(_Config, _AppFile) ->
     ok.
-
 %% ===================================================================
 %% Internal functions
 %% ===================================================================

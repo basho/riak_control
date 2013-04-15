@@ -25,7 +25,15 @@
 
 -include("riak_control.hrl").
 
+-record(ctx, {
+          base_url,
+          base_path
+         }).
+-type context() :: #ctx{}.
+
 %% all actions return the same format
+-spec action_result({badrpc, any()}, wrq:reqdata(), context()) ->
+                           {boolean(), wrq:reqdata(), context()}.
 action_result(Error={badrpc,_},Req,C) ->
     Body = mochijson2:encode({struct,[Error]}),
     {false, wrq:set_resp_body(Body, Req), C};
@@ -37,6 +45,8 @@ action_result(_,Req,C) ->
     {true, wrq:set_resp_body(Body, Req), C}.
 
 %% return a proplist of details for a given index
+-spec node_ring_details(#partition_info{}, maybe_improper_list()) ->
+                               [{'i' | 'index' | 'node' | 'reachable' | 'status' | [any(),...],atom() | binary() | integer()}].
 node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
     case lists:keyfind(P#partition_info.owner,2,Nodes) of
         #member_info{node=Node,status=Status,reachable=Reachable} ->
