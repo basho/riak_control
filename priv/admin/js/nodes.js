@@ -1,4 +1,4 @@
-minispade.register('node_management', function() {
+minispade.register('nodes', function() {
 
   /**
    * @class
@@ -6,9 +6,9 @@ minispade.register('node_management', function() {
    * Node_managementView is responsible for allowing you to stop
    * or down a node.
    */
-  RiakControl.Node_managementView = Ember.View.extend(
+  RiakControl.NodesView = Ember.View.extend(
     /** @scope RiakControl.ClusterView.prototype */ {
-    templateName: 'node_management'
+    templateName: 'nodes'
   });
 
 });

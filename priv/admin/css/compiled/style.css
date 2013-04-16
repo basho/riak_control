@@ -307,7 +307,7 @@ th {
 #nav-support   a {
   background-position: 14px -300px;
 }
-#nav-node-management a {
+#nav-nodes     a {
   background-position: 15px -392px;
 }
 .nav-item {
@@ -892,7 +892,7 @@ input.gui-point-button-right:active {
   #nav-cluster a {
     background-position: 8px 11px;
   }
-  #nav-node-management a {
+  #nav-nodes a {
     background-position: 7px -269px;
   }
   #nav-ring a {
