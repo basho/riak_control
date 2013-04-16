@@ -50,7 +50,7 @@
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% @doc Return routes this resource should respond to.
--spec routes() -> list().
+-spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
     [{admin_routes:cluster_route(), ?MODULE, []}].
 
