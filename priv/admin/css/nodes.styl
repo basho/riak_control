@@ -6,35 +6,23 @@ CSS to be applied ONLY on the cluster page
 @import reusable
   
 
-#cluster-page
+#nodes-page
 
-  .warning
-    display : block
-    padding : 10px 0 0
-    color   : riakred
+  .right
+    float : right
 
-  #current-area, #planned-area
-    float : left
-    width : 47%
+  .gui-point-button-right, .gui-rect-button
+    margin-right : 10px
+    margin-top   : 35px
 
   #current-area
-    margin : 0 0 45px 0
-
-
-  #area-separator
-    width      : 6%
-    height     : 450px
-    float      : left
-    text-align : center
-
-    div
-      margin     : 0 auto
-      width      : 1px
-      height     : 100%
-      background : lightWhite
+    max-width   : 850px
+    margin      : 0 auto 45px auto
+    padding-top : 40px
  
-  span.gui-text-flat
-    line-height : 1.5
+    & > span.gui-text-flat
+      line-height : 1.5
+      display     : block
 
   h3
     copy-font()
@@ -55,17 +43,6 @@ CSS to be applied ONLY on the cluster page
       padding-left : 10px
       line-height  : 1.2
 
-  .actions-container
-    css-transition(height .4s ease, margin-bottom .4s ease)
-    overflow      : hidden
-    height        : 0
-    margin-bottom : 0
-
-  .open .actions-container
-    css-transition(height .4s ease, margin-bottom .4s ease)
-    height        : 375px
-    margin-bottom : 25px
-
   .gui-light
     vertical-align : middle
     padding        : 9px 5px 9px 14px
@@ -73,19 +50,12 @@ CSS to be applied ONLY on the cluster page
     margin-top     : -7px
 
   .field-container
-    width          : 75%
+    width          : 86%
     vertical-align : middle
 
   .gui-field
     margin-right : 0
     overflow     : hidden
-
-  #add-node
-    padding-top   : 40px
-    margin-bottom : 45px
-    
-  .add-node-table tr td
-    padding-top : 25px
 
   .list-header
     min-height : 18px
@@ -97,18 +67,23 @@ CSS to be applied ONLY on the cluster page
       h4
         display : inline-block
 
-  #node-list, #planned-list
+  #node-list
     margin-top : 20px
 
-  #node-list
     .item1
-      width : 18%
+      width : 6%
     .item2
-      width : 42%
+      width : 10%
     .item3
-      width : 18%
+      width : 56%
     .item4
-      width : 22%
+      width : 13%
+    .item5
+      width : 15%
+
+
+
+
 
   .node
     margin-bottom : 10px
@@ -120,30 +95,32 @@ CSS to be applied ONLY on the cluster page
   .node > div.clear
     float : none
 
-  .toggle-container
-    overflow : visible
-    padding  : 0
+  .node
 
-    .actions-toggle
-      dimensions(82px, 30px)
-      position   : relative
-      overflow   : visible
-      padding    : 0
-      background : url('/admin/ui/images/actions-toggle-text.png') -5px top no-repeat rgba(0, 0, 0, .3)
-      margin-top : 3px
+    .gui-radio-wrapper
+      dimensions(25px, 24px)
+      text-align   : center
+      display      : inline-block
+      position     : relative
 
-      a
-        dimensions(48px, 34px)
-        css-transition(left .2s ease)
-        position   : absolute
-        display    : inline-block
-        background : url('/admin/ui/images/actions-toggle-slider.png') left top no-repeat transparent
-        top        : 0
-        left       : -5px
+      .disabler
+        dimensions(100%, 100%)
+        absoluteLeft(0, 0);
+        opaque(0)
+        display : none
 
-  .open .actions-toggle a
-    css-transition(left .2s ease)
-    left : 38px
+        &.show
+          display : block
+    
+    .item1 .gui-radio-wrapper
+      margin-left : 4px
+
+    .item2 .gui-radio-wrapper
+      margin-left : 8px
+
+    input[type=radio]
+      display : inline
+      float   : none
 
   .name-box
     overflow : visible
@@ -155,54 +132,6 @@ CSS to be applied ONLY on the cluster page
     display : inline-block
     padding : 0 0 0 5px
     vertical-align : middle
-
-  .action-name
-    display     : inline-block
-    padding-top : 8px
-
-  .replacing-box .field-container
-    width : 100%
-
-  #planned-list
-    .item1
-      width : 40%
-    .item2
-      width : 17%
-    .item3
-      width : 17%
-    .item4
-      width : 26%
-
-
-  .plan-details-header
-    margin-top : 30px
-    padding    : 10px 0
-  
-  .accept-plan
-    position   : relative
-    padding    : 15px 0
-    margin-top : 15px
-
-  .clear-plan-box
-    border-top  : 1px solid lightWhite
-    margin-top  : 25px
-    padding-top : 25px
-
-    a
-      display : block
-      margin-top  : 15px
-      margin-left : -5px
-
-  .plan-details
-    @extend .gui-text-flat
-    copy-font()
-    line-height : 1.5
-
-  #commit-button
-    absoluteRight(0, 12px)
-    
-  .button-column
-    text-align : right
 
   .pct-box
     margin-top     : 8px
@@ -230,37 +159,6 @@ CSS to be applied ONLY on the cluster page
     background : url('/admin/ui/images/pct-arrows-sprite.png') no-repeat -57px top transparent
     margin     : 0 5px 0 0
     display    : none
-
-  .error-message
-    copy-font()
-    vendor('box-shadow', 0 2px 3px darkened)
-    corners()
-    font-size  : 14px
-    font-style : italic
-    color      : mediumGray
-    padding    : 8px 10px 9px 12px
-    background : rgba(232, 78, 78, .5)
-    border     : 1px solid lighten(rgba(232, 78, 78, .5), 15%)
-    
-    .error-link
-      headline-bold()
-      padding-left : 5px
-      
-      &:hover
-        text-decoration : underline
-    
-    .close-error
-      dimensions(16px, 16px)
-      opaque(.6)
-      cursor         : pointer
-      display        : inline-block
-      float          : right
-      vertical-align : middle
-      background     : url('/admin/ui/images/close-error.png') left top no-repeat transparent
-      
-      &:hover
-        opaque(1)
-        
 
   .memory-box
     width : 175px
@@ -315,84 +213,6 @@ CSS to be applied ONLY on the cluster page
     background-color : #404040
     width            : 100%
 
-  .actions-pointer
-    dimensions(72px, 13px)
-    background : url('/admin/ui/images/pointer.png') center top no-repeat transparent
-    margin-top : 8px
-    
-  .actions-box
-    corners()
-    width         : 92%
-    background    : darkened
-    margin-bottom : 15px
-    border-bottom : 1px solid lightWhite
-    padding       : 18px
-    margin-right  : 33px
-    position      : relative
-
-    & > h4
-      display       : block
-      border-bottom : 1px solid lightWhite
-      padding       : 0 0 12px
-
-    
-  .actions-box > div > span
-    copy-font()
-    color        : lightGray
-    padding-left : 3px
-
-  .extra-actions
-    opaque(.32)
-    padding-bottom : 25px
-    height         : 35px
-    position       : relative
-
-    & > div
-      float : left
-
-    .gui-checkbox-wrapper
-      margin-left : 15px
-
-    &.active
-      opaque(1)
-   
-  .replacement-controls
-    width         : auto
-    margin-top    : 18px
-    border-bottom : 1px solid lightWhite
-    margin-bottom : 10px
-
-    div
-      margin-bottom : 8px
-
-    select
-      margin-top : -38px
-   
-  .replacement-node-dropdown
-    margin-bottom : 5px
-
-  .right-angle-arrow
-    dimensions(15px, 18px)
-    background : url('/admin/ui/images/right-angle-arrow.png') left top no-repeat transparent
-    margin     : 0 10px 0 10px
-
-  .disabler
-    background : red
-    opaque(.2)
-    absoluteLeft(0, 0)
-    dimensions(100%, 100%)
-    background : transparent
-
-  .stage-button
-    float : right
-
-  .stage-instructions
-    float   : left
-    display : block
-    width   : 50%
-
-  .no-joining-nodes
-    padding-top : 6px
 
   .slide-up
     margin-top : -35px
@@ -403,142 +223,61 @@ CSS to be applied ONLY on the cluster page
 
   /* RESPONSIVE MEDIA QUERIES */
 
-  @media screen and (max-width : 1200px)
-
-    #area-separator
-      display : none
-
-    #current-area, #planned-area
-      width : 100%
-
-    #planned-area
-      padding-top : 30px
-      border-top  : 1px solid lightWhite
-
-    .field-container
-      width : 90%
+  @media screen and (max-width : 800px)
 
     #node-list
       .item1
-        width : 100px
+        width : 8%
       .item2
-        width : 500px
+        width : 10%
       .item3
-        width : 100px
+        width : 49%
       .item4
-        width : 150px
+        width : 15%
+      .item5
+        width : 18%
 
-    #planned-list
-      .item1
-        width : 300px
-      .item2
-        width       : 100px
-        margin-left : 25px
-      .item3
-        width : 100px
-      .item4
-        width : 350px
+      .field-container
+        width : 75%
 
-  @media screen and (max-width : 950px)
+
+  @media screen and (max-width : 670px)
 
     #node-list
-      .item1
-        width : 100px
-      .item2
-        width : 400px
-      .item3
-        width : 100px
-      .item4
-        width : 150px
+      .memory-box
+        padding-top : 7px
 
-    #planned-list
-      .item1
-        width : 275px
-      .item2
-        width : 100px
-      .item3
-        width : 100px
-      .item4
-        width : 225px
-
-  @media screen and (max-width : 850px)
-
-    #node-list
-      .item1
-        width : 100px
-      .item2
-        width : 300px
-        
-        .field-container
-          width : 75%
-
-      .item3
-        width : 100px
-      .item4
-        width : 150px
-
-    #planned-list
-      .item3
+      .membar-bg
         display : none
 
-    .used-memory
-      display : none
-
-  @media screen and (max-width : 700px)
+  @media screen and (max-width : 570px)
 
     #node-list
       .item1
-        width : 100px
+        width : 12%
       .item2
-        width : 200px
-        
-        .field-container
-          width : 75%
-
+        width : 15%
       .item3
-        width : 100px
+        width : 53%
       .item4
-        width : 150px
-
-    #planned-list
-      .item1
-        width : 200px
-      .item2
-        width       : 100px
-        margin-left : 0
-      .item4
-        width : 200px
-
-    .gui-light
-      display : none
-
-  @media screen and (max-width : 600px)
-
-    #node-list
-      .item1
         display : none
-      .item2
-        width : 40%
-        .field-container
-          width : 95%
-      .item4
-        width : 100px
-
-    #planned-list
-      .item1
-        width : 40%
-        .field-container
-          width : 95%
-      .item2
+      .item5
         width : 20%
-        margin-right : 2%
+
+   @media screen and (max-width : 400px)
+
+    #node-list
+      .item1
+        width : 12%
+      .item2
+        width : 15%
+      .item3
+        width : 47%
       .item4
-        width : 38%
-        .field-container
-          width : 95%
-    
-    .actions-container
-      display : none
+        display : none
+      .item5
+        width : 15%
+
 
 
 

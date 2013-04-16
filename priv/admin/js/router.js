@@ -73,8 +73,16 @@ minispade.register('router', function() {
         route: 'nodes',
 
         connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('nodes');
+          router.get('applicationController').connectOutlet('nodes', RiakControl.Node.find());
           $.riakControl.markNavActive('nav-nodes');
+        },
+
+        enter: function(router) {
+          router.get('nodesController').startInterval();
+        },
+
+        exit: function(router) {
+          router.get('nodesController').cancelInterval();
         },
 
         index: Ember.Route.extend({
