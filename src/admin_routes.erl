@@ -23,8 +23,6 @@
 -export([admin_route/1,
          ring_route/0,
          ring_route/1,
-         vnode_route/0,
-         vnode_route/1,
          nodes_route/0,
          partitions_route/0,
          cluster_route/0]).
@@ -35,10 +33,6 @@ admin_route(Rest) -> ["admin"|Rest].
 %% routes that query/act on partitions
 ring_route(Route) -> admin_route(["ring"|Route]).
 ring_route() -> admin_route(["ring"]).
-
-%% routes that query/act on individual v-nodes
-vnode_route(Route) -> admin_route(["vnode",partition|Route]).
-vnode_route() -> admin_route(["vnode",partition]).
 
 %% new routes.
 nodes_route() -> admin_route(["nodes"]).
