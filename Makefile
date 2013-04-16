@@ -44,7 +44,7 @@ dialyzer: compile
 	@sleep 1
 	dialyzer -Wno_return -Wunmatched_returns --plt $(PLT) ebin
 
-cleanplt:
+clean_plt:
 	@echo
 	@echo "Are you sure?  It takes about 1/2 hour to re-build."
 	@echo Deleting $(PLT) in 5 seconds.
