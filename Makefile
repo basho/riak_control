@@ -27,14 +27,14 @@ docs:
 	./rebar skip_deps=true doc
 
 APPS = kernel stdlib sasl erts ssl tools os_mon runtime_tools crypto inets \
-	xmerl webtool eunit syntax_tools compiler
+	xmerl webtool eunit syntax_tools compiler mnesia public_key snmp
 PLT = $(HOME)/.riak_control_dialyzer_plt
 
 check_plt: compile
-	dialyzer --check_plt --plt $(PLT) --apps $(APPS)
+	dialyzer --check_plt --plt $(PLT) --apps $(APPS) deps/webmachine/ebin deps/mochiweb/ebin deps/erlydtl/ebin
 
 build_plt: compile
-	dialyzer --build_plt --output_plt $(PLT) --apps $(APPS)
+	dialyzer --build_plt --output_plt $(PLT) --apps $(APPS) deps/webmachine/ebin deps/mochiweb/ebin deps/erlydtl/ebin
 
 dialyzer: compile
 	@echo
