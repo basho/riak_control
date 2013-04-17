@@ -53,8 +53,10 @@ minispade.register('shared', function () {
       var reachable = this.get('reachable');
       var color;
 
-      if(reachable === false) {
+      if(reachable === false && status !== "down") {
         color = "red";
+      } else if (status === "down") {
+        color = "blue";
       } else if(status === 'leaving' || status === 'joining') {
         color = "orange";
       } else if (status === 'valid') {
