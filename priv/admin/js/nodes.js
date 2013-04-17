@@ -57,7 +57,7 @@ minispade.register('nodes', function() {
 
       $("#node-list input[type='radio']:checked").each(function(index, item) {
         var name = item.name,
-            action = item.action,
+            action = item.value,
             replacement;
 
         // Empty string instead of undefined for null.
