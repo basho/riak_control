@@ -108,7 +108,12 @@ $(document).ready(function() {
 
   // Cluster link in navigation
   $(document).on('mouseover', '#nav-cluster', function () {
-      displayTips('The cluster view allows you to add and remove nodes from your cluster as well as stop Riak on various nodes or mark them as down.  You will also be able to view percentages indicating how much ring data is owned by each node.');
+      displayTips('The cluster view is where you can plan and commit changes to your cluster such as adding, removing, or replacing nodes.');
+  }).on('mouseout', '#nav-cluster', emptyTips);
+
+  // Nodes link in navigation
+  $(document).on('mouseover', '#nav-nodes', function () {
+      displayTips('The nodes view contains actions that are not part of the plan and commit process. From here you can stop nodes or mark them as down.');
   }).on('mouseout', '#nav-cluster', emptyTips);
 
   // Ring link in navigation
@@ -121,43 +126,38 @@ $(document).ready(function() {
       displayTips('Selecting the snapshot view commands Riak Control to gather some general information related to the current health of your cluster.  It is useful in quickly determining whether or not there are any issues to be concerned about.');
   }).on('mouseout', '#nav-snapshot', emptyTips);
 
-  // Cluster View
+  // Cluster/Nodes Views
 
   // Add new node area
   $(document).on('mouseover', '#add-node table', function () {
       displayTips('Type a node name (for example: dev2@127.0.0.1) into the text field and hit "Add Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
   }).on('mouseout', '#add-node table', emptyTips);
 
+  // Clear down/stop radios button
+  $(document).on('mouseover', '.buttons .gui-rect-button', function () {
+      displayTips('Click this button to clear marks from all of the radio buttons on this page.');
+  }).on('mouseout', '.buttons .gui-rect-button', emptyTips);
+
+  // Apply down/stop radios button
+  $(document).on('mouseover', '.buttons .gui-point-button-right', function () {
+      displayTips('Click this button to initialize all stops and downs on currently marked nodes.');
+  }).on('mouseout', '.buttons .gui-point-button-right', emptyTips);
+
+  // Commit cluster plan button
+  $(document).on('mouseover', '#commit-button', function () {
+      displayTips('Click this button to commit your cluster plan.  This will initialize all joins, leaves, and replacements as you have indicated.');
+  }).on('mouseout', '#commit-button', emptyTips).on('click', '#commit-button', emptyTips);
+
+  // Commit cluster plan button
+  $(document).on('mouseover', '.clear-plan-box .gui-rect-button', function () {
+      displayTips('Click this button to un-stage all changes made to the cluster plan.');
+  }).on('mouseout', '.clear-plan-box .gui-rect-button', emptyTips).on('click', '.clear-plan-box .gui-rect-button', emptyTips);
+
   // Name of a node
   $(document).on('mouseover', '.node .name', function () {
       var name = $(this).text();
       displayTips('This node is named ' + name + '.  It is a member of this cluster.');
   }).on('mouseout', '.node .name', emptyTips);
-
-  // View actions cluster sliders
-  $(document).on('mouseover', '.more-actions-slider-box .gui-slider', function () {
-      displayTips('Move the slider over to view possible actions for this node.  Move the slider back to hide those actions again.');
-  }).on('mouseout', '.more-actions-slider-box .gui-slider', emptyTips);
-
-  // Leave cluster button
-  $(document).on('mouseover', '.leave-cluster-button', function () {
-      displayTips('This will cause the node to begin relinquishing ownership of its data to other nodes in the cluster.  You will not be able to interact with the node via Riak Control during this process.  Once completed, Riak will shutdown on this node and it will leave the cluster.');
-  }).on('mouseout', '.leave-cluster-button', emptyTips);
-
-  // The 'Hosting Riak Control' message
-  $(document).on('mouseover', '.current-host', function () {
-      displayTips('This node cannot be shutdown or removed via Riak Control because it is currently hosting the app.');
-  }).on('mouseout', '.current-host', emptyTips);
-
-  // Markdown button
-  $(document).on('mouseover', '.markdown-button', function () {
-      displayTips('This button becomes active when the node becomes unreachable.  While in an unreachable state, a node may hinder cluster membership changes of other nodes.  Marking this node as "down" will allow other nodes to engage in membership changes unimpeded.');
-  }).on('mouseout', '.markdown-button', emptyTips);
-
-  // Shutdown button
-  $(document).on('mouseover', '.shutdown-button', function () {
-      displayTips('This button will stop the Riak process on this node.  If this button is not active, your node is already unreachable.  It will have to be restarted manually.');
-  }).on('mouseout', '.shutdown-button', emptyTips);
 
   // Ring ownership percent
   $(document).on('mouseover', '.pct-box, .pct-arrows', function () {
@@ -169,7 +169,7 @@ $(document).ready(function() {
       var parent = $(this).parent(),
           erlang_mem, non_erlang_mem,
           free_mem = parent.find('.unknown-mem').attr('name');
-      if (free_mem && free_mem.charAt(0) === '?') {
+      if (!free_mem || free_mem.charAt(0) === '?') {
           displayTips('Because this node is currently unreachable or incompatible with Riak Control, Riak Control is not able to assess its memory usage.');
       } else {
           free_mem = parseInt(free_mem, 10);
@@ -180,20 +180,18 @@ $(document).ready(function() {
   }).on('mouseout', '.membar-bg, .free-memory', emptyTips);
 
   // Node status
-  $(document).on('mouseover', '.status-box', function () {
-      var mytext = $(this).find('.status').text().toLowerCase();
-      if (mytext === 'valid') {
+  $(document).on('mouseover', '.status-light', function () {
+      var classes = this.className;
+      if (/\bgreen\b/.test(classes)) {
           displayTips('This node is currently online and working.');
-      } else if (mytext === 'incompatible') {
-          displayTips('This node is incompatible with Riak Control.  While in this state, Riak Control will be unable to determine status of this node.');
-      } else if (mytext === 'unreachable') {
+      } else if (/\bred\b/.test(classes)) {
           displayTips('This node is unreachable.  Riak may need to be restarted or there may be other connectivity issues.  Cluster membership changes like "join" and "leave" cannot complete until this node is reachable or marked as "down".');
-      } else if (mytext === 'down') {
+      } else if (/\bblue\b/.test(classes)) {
           displayTips('This node has been marked as "down". While in this state it can not be interacted with but it will not impede cluster membership changes of other nodes.  To return to a "valid" state, simply restart Riak on this node.');
-      } else if (mytext === 'leaving') {
+      } else if (/\borange\b/.test(classes)) {
           displayTips('This node is in process of leaving the cluster.  When it has finished relinquishing ownership and transferring data to other nodes, Riak will stop on this node and it will cease to be a member of the cluster.  You can not interact with this node during this process.');
       }
-  }).on('mouseout', '.status-box', emptyTips);
+  }).on('mouseout', '.status-light', emptyTips);
 
   // Ring View
 

@@ -11,6 +11,13 @@
       <div class="clear"></div>
     </section>
 
+    {{#if errorMessage}}
+      <div class="error-message">
+          <a class="close-error gui-text" {{action hideError target="controller"}}></a>
+          <a class="error-text offline gui-text-flat">{{errorMessage}}</a>
+      </div>
+    {{/if}}
+
     <div id="current-area">
         <h2 class="gui-headline">
             Current Cluster<br/>
