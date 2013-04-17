@@ -20,27 +20,29 @@
 
 -module(admin_routes).
 
+-author('Christopher Meiklejohn <cmeiklejohn@basho.com>').
+
 -export([admin_route/1,
-         ring_route/0,
-         ring_route/1,
-         vnode_route/0,
-         vnode_route/1,
          nodes_route/0,
-         partitions_route/0,
-         cluster_route/0]).
+         cluster_route/0,
+         partitions_route/0]).
 
-%% helper, ensures all routes begin with /admin
-admin_route(Rest) -> ["admin"|Rest].
+%% @doc Provide a resource that all resources sit under.
+-spec admin_route(list()) -> list().
+admin_route(Rest) ->
+    ["admin"|Rest].
 
-%% routes that query/act on partitions
-ring_route(Route) -> admin_route(["ring"|Route]).
-ring_route() -> admin_route(["ring"]).
+%% @doc Return route for node resource.
+-spec nodes_route() -> list().
+nodes_route() ->
+    admin_route(["nodes"]).
 
-%% routes that query/act on individual v-nodes
-vnode_route(Route) -> admin_route(["vnode",partition|Route]).
-vnode_route() -> admin_route(["vnode",partition]).
+%% @doc Return route for partition resource.
+-spec partitions_route() -> list().
+partitions_route() ->
+    admin_route(["partitions"]).
 
-%% new routes.
-nodes_route() -> admin_route(["nodes"]).
-partitions_route() -> admin_route(["partitions"]).
-cluster_route() -> admin_route(["cluster"]).
+%% @doc Return route for cluster resource.
+-spec cluster_route() -> list().
+cluster_route() ->
+    admin_route(["cluster"]).

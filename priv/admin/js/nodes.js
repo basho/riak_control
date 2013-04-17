@@ -38,8 +38,10 @@ minispade.register('nodes', function() {
      *
      * @returns {void}
      */
-    clearChecked: function () {
-      $('#node-list input[type=radio]').each(function (index, item) {
+    clearChecked: function(ev) {
+      ev.preventDefault();
+
+      $('#node-list input[type=radio]').each(function(index, item) {
         item.checked = false;
         $(item).parent().css('background-position', 'left top');
       });
@@ -48,10 +50,21 @@ minispade.register('nodes', function() {
     /**
      * Submits requests to stop and/or down nodes to the app.
      */
-    applyChanges: function () {
-      /*
-       * Submit changes to the backend.
-       */
+    applyChanges: function(ev) {
+      ev.preventDefault();
+
+      $("#node-list input[type='radio']:checked").each(function(index, item) {
+        var name = item.name,
+            action = item.action,
+            replacement;
+
+        // Empty string instead of undefined for null.
+        if(replacement === undefined) {
+          replacement = '';
+        }
+
+        controller.stageChange(name, action, replacement);
+      });
     }
 
   });
@@ -97,14 +110,14 @@ minispade.register('nodes', function() {
     /**
      * An ID value for the leave normally radio button and corresponding label.
      */
-    stopRadio: function () {
+    stopRadio: function() {
       return this.get('nodeID') + '_stop_node';
     }.property('nodeID'),
 
     /**
      * An ID value for the force leave radio button and corresponding label.
      */
-    downRadio: function () {
+    downRadio: function() {
       return this.get('nodeID') + '_down_node';
     }.property('nodeID'),
 
@@ -113,13 +126,13 @@ minispade.register('nodes', function() {
      * - It is unreachable.
      * - It is down.
      */
-    stopRadioClasses: function () {
+    stopRadioClasses: function() {
       var status    = this.get('status'),
           reachable = this.get('reachable'),
           classes   = 'gui-radio-wrapper';
       if (!reachable || status === 'down') {
         classes += ' semi-transparent';
-      } 
+      }
       return classes;
     }.property('status', 'reachable'),
 
@@ -128,13 +141,13 @@ minispade.register('nodes', function() {
      * - It is alive and well
      * - It is already down.
      */
-    downRadioClasses: function () {
+    downRadioClasses: function() {
       var status    = this.get('status'),
           reachable = this.get('reachable'),
           classes   = 'gui-radio-wrapper';
       if ((reachable && status === 'valid') || status === 'down') {
         classes += ' semi-transparent';
-      } 
+      }
       return classes;
     }.property('status', 'reachable'),
 
@@ -142,7 +155,7 @@ minispade.register('nodes', function() {
      * When a node can't be stopped, disable the user
      * from clicking the stop radio button.
      */
-    stopDisablerClasses: function () {
+    stopDisablerClasses: function() {
       return 'disabler' + (/\ssemi\-transparent$/.test(this.get('stopRadioClasses')) ? ' show' : '');
     }.property('stopRadioClasses'),
 
@@ -150,7 +163,7 @@ minispade.register('nodes', function() {
      * When a node can't be downed, disable the user from
      * clicking the down radio button.
      */
-    downDisablerClasses: function () {
+    downDisablerClasses: function() {
       return 'disabler' + (/\ssemi\-transparent$/.test(this.get('downRadioClasses')) ? ' show' : '');
     }.property('downRadioClasses')
   });
