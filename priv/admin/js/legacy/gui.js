@@ -43,6 +43,7 @@ $(document).ready(function() {
           parent  = me.parent(),
           checked = me.attr('checked'),
           group   = $('input[type="radio"][name="' + me.attr('name') + '"]');
+      
       /*
        * If the radio button is checked...
        */
