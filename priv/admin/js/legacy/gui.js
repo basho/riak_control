@@ -169,7 +169,7 @@ $(document).ready(function() {
       var parent = $(this).parent(),
           erlang_mem, non_erlang_mem,
           free_mem = parent.find('.unknown-mem').attr('name');
-      if (free_mem.charAt(0) === '?') {
+      if (free_mem && free_mem.charAt(0) === '?') {
           displayTips('Because this node is currently unreachable or incompatible with Riak Control, Riak Control is not able to assess its memory usage.');
       } else {
           free_mem = parseInt(free_mem, 10);
