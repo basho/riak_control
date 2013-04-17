@@ -53,6 +53,8 @@ minispade.register('nodes', function() {
     applyChanges: function(ev) {
       ev.preventDefault();
 
+      var self = this;
+
       $("#node-list input[type='radio']:checked").each(function(index, item) {
         var name = item.name,
             action = item.action,
@@ -63,7 +65,7 @@ minispade.register('nodes', function() {
           replacement = '';
         }
 
-        controller.stageChange(name, action, replacement);
+        self.stageChange(name, action, replacement);
       });
     }
 

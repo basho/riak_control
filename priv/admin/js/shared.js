@@ -6,7 +6,36 @@ minispade.register('shared', function () {
    * - RiakControl.NodesController
    */
   RiakControl.ClusterAndNodeControls = Ember.Mixin.create({
-    
+
+    /**
+     * Stage a change.
+     *
+     * @returns {void}
+     */
+    stageChange: function(node, action, replacement) {
+      var self = this;
+
+      $.ajax({
+        type:     'PUT',
+        url:      '/admin/cluster',
+        dataType: 'json',
+
+        data:     { changes:
+                    [{
+                      node:        node,
+                      action:      action,
+                      replacement: replacement
+                    }]
+                  },
+
+        success: function(d) { self.reload(); },
+
+        error: function (jqXHR, textStatus, errorThrown) {
+          self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+        }
+      });
+    },
+
     /**
      * If content is loading, return true.
      *
