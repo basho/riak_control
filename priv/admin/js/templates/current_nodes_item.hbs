@@ -1,0 +1,52 @@
+{{#with view}}
+    <div class="node">
+        <div class="item1">
+            <div {{bindAttr class="stopRadioClasses"}}>
+                <input class="gui-radio" type="radio" value="stop" {{bindAttr name="name" id="stopRadio"}} />
+                <div {{bindAttr class="stopDisablerClasses"}}></div>
+            </div>
+        </div>
+        <div class="item2">
+            <div {{bindAttr class="downRadioClasses"}}>
+                <input class="gui-radio" type="radio" value="down" {{bindAttr name="name" id="downRadio"}} />
+                <div {{bindAttr class="downDisablerClasses"}}></div>
+            </div>
+        </div>
+        <div class="item3 name-box gui-text">
+            <div {{bindAttr class="indicatorLights"}}>
+            </div><div class="gui-text field-container inline-block">
+                <div class="name gui-field">{{name}}</div>
+            </div>
+        </div>
+        <div class="item4 gui-text ring-pct-box">
+            <div {{bindAttr class="coloredArrows"}}></div>
+            <div class="left gui-text pct-box">
+                <span class="ring-pct">{{ringPctReadable}}%</span>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="item5 gui-text memory-box">
+            {{#if reachable}}
+                <div class="membar-bg">
+                    <div class="mem-colors">
+                        <div class="erlang-mem mem-color" {{bindAttr style="memErlangStyle"}} {{bindAttr name="memErlangCeil"}}></div>
+                        <div class="non-erlang-mem mem-color" {{bindAttr style="memNonErlangStyle"}} {{bindAttr name="memNonErlang"}}></div>
+                        <div class="unknown-mem" {{bindAttr style="memFreeStyle"}} {{bindAttr name="memFreeReadable"}}></div>
+                    </div>
+                    <div class="membar-fg"></div>
+                </div>
+                <span class="used-memory">{{memUsedReadable}}%</span>
+            {{else}}
+                <div class="membar-bg">
+                    <div class="mem-colors">
+                        <div class="unknown-mem" style="width: 100%"></div>
+                    </div>
+                    <div class="membar-fg"></div>
+                </div>
+                <span class="used-memory"></span>
+            {{/if}}
+        </div>
+        <div class="clear"></div>
+    </div><!-- .node -->
+
+{{/with}}
