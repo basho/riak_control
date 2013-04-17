@@ -160,6 +160,36 @@ CSS to be applied ONLY on the cluster page
     margin     : 0 5px 0 0
     display    : none
 
+  .error-message
+    copy-font()
+    vendor('box-shadow', 0 2px 3px darkened)
+    corners()
+    font-size  : 14px
+    font-style : italic
+    color      : mediumGray
+    padding    : 8px 10px 9px 12px
+    background : rgba(232, 78, 78, .5)
+    border     : 1px solid lighten(rgba(232, 78, 78, .5), 15%)
+    
+    .error-link
+      headline-bold()
+      padding-left : 5px
+      
+      &:hover
+        text-decoration : underline
+    
+    .close-error
+      dimensions(16px, 16px)
+      opaque(.6)
+      cursor         : pointer
+      display        : inline-block
+      float          : right
+      vertical-align : middle
+      background     : url('/admin/ui/images/close-error.png') left top no-repeat transparent
+      
+      &:hover
+        opaque(1)
+
   .memory-box
     width : 175px
         
