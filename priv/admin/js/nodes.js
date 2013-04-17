@@ -38,8 +38,10 @@ minispade.register('nodes', function() {
      *
      * @returns {void}
      */
-    clearChecked: function () {
-      $('#node-list input[type=radio]').each(function (index, item) {
+    clearChecked: function(ev) {
+      ev.preventDefault();
+
+      $('#node-list input[type=radio]').each(function(index, item) {
         item.checked = false;
         $(item).parent().css('background-position', 'left top');
       });
@@ -48,10 +50,21 @@ minispade.register('nodes', function() {
     /**
      * Submits requests to stop and/or down nodes to the app.
      */
-    applyChanges: function () {
-      /*
-       * Submit changes to the backend.
-       */
+    applyChanges: function(ev) {
+      ev.preventDefault();
+
+      $("#node-list input[type='radio']:checked").each(function(index, item) {
+        var name = item.name,
+            action = item.action,
+            replacement;
+
+        // Empty string instead of undefined for null.
+        if(replacement === undefined) {
+          replacement = '';
+        }
+
+        controller.stageChange(name, action, replacement);
+      });
     }
 
   });
