@@ -16,6 +16,7 @@
 
     <script src="/admin/ui/js/app.js"></script>
     <script src="/admin/ui/js/core.js"></script>
+    <script src="/admin/ui/js/shared.js"></script>
     <script src="/admin/ui/js/cluster.js"></script>
     <script src="/admin/ui/js/nodes.js"></script>
     <script src="/admin/ui/js/router.js"></script>

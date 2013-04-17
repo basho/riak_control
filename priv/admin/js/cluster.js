@@ -52,6 +52,10 @@ minispade.register('cluster', function() {
    * wrapper around the legacy cluster page until we rewrite it.
    */
   RiakControl.ClusterController = Ember.ObjectController.extend(
+    /**
+     * Shares properties with RiakControl.NodesController
+     */
+    RiakControl.ClusterAndNodeControls,
     /** @scope RiakControl.ClusterController.prototype */ {
 
     /**
@@ -156,36 +160,6 @@ minispade.register('cluster', function() {
     reload: function() {
       this.load();
     },
-
-    /**
-     * Called by the router to start the polling interval when the page
-     * is selected.
-     *
-     * @returns {void}
-     */
-    startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.reload, this),
-              RiakControl.refreshInterval);
-    },
-
-    /**
-     * Called by the router to stop the polling interval when the page
-     * is navigated away from.
-     *
-     * @returns {void}
-     */
-    cancelInterval: function() {
-      if(this._intervalId) {
-        clearInterval(this._intervalId);
-      }
-    },
-
-    /**
-     * If content is loading, return true.
-     *
-     * @returns {boolean}
-     */
-    isLoading: false,
 
     /**
      * Holds a boolean tracking if the ring is legacy.
@@ -450,6 +424,10 @@ minispade.register('cluster', function() {
    * One item in the collection of current cluster views.
    */
   RiakControl.CurrentClusterItemView = Ember.View.extend(
+    /**
+     * Shares properties with other views that display lists of nodes.
+     */
+    RiakControl.NodeProperties,
     /** @scope RiakControl.CurrentClusterItemView.prototype */ {
 
     /* Bindings from the model */
@@ -502,49 +480,6 @@ minispade.register('cluster', function() {
     },
 
     /**
-     * Color the lights appropriately based on the node status.
-     *
-     * @returns {string}
-     */
-    indicatorLights: function() {
-      var status = this.get('status');
-      var reachable = this.get('reachable');
-      var color;
-
-      if(reachable === false) {
-        color = "red";
-      } else if(status === 'leaving' || status === 'joining') {
-        color = "orange";
-      } else if (status === 'valid') {
-        color = "green";
-      } else {
-        color = "grey";
-      }
-
-      return "gui-light status-light inline-block " + color;
-    }.property('reachable', 'status'),
-
-    /**
-     * Color the arrows in the partitions column appropriately based
-     * on how ring_pct and pending_pct compare.
-     *
-     * @returns {String}
-     */
-    coloredArrows: function() {
-      var current = this.get('ring_pct'),
-          pending = this.get('pending_pct'),
-          common  = 'left pct-arrows ';
-
-      if (pending > current) {
-        return common + 'pct-gaining';
-      } else if (pending < current) {
-        return common + 'pct-losing';
-      } else {
-        return common + 'pct-static';
-      }
-    }.property('ring_pct', 'pending_pct'),
-
-    /**
      * In order for labels to be clickable, they need to be bound to checks/radios
      * by ID.  However, since these nodes are cloned by Ember, we need a way to make
      * sure all of those elements get id's that don't override each other. This
@@ -553,138 +488,46 @@ minispade.register('cluster', function() {
      *
      * @returns {String}
      */
-    node_id: function() {
+    nodeID: function() {
       return Ember.guidFor(this);
     }.property(),
 
     /**
      * An ID value for the leave normally radio button and corresponding label.
      */
-    normal_leave_radio: function () {
-      return this.get('node_id') + '_normal_leave';
-    }.property('node_id'),
+    normalLeaveRadio: function () {
+      return this.get('nodeID') + '_normal_leave';
+    }.property('nodeID'),
 
     /**
      * An ID value for the force leave radio button and corresponding label.
      */
-    force_leave_radio: function () {
-      return this.get('node_id') + '_force_leave';
-    }.property('node_id'),
+    forceLeaveRadio: function () {
+      return this.get('nodeID') + '_force_leave';
+    }.property('nodeID'),
 
     /**
      * An ID value for the replace node radio button and corresponding label.
      */
-    replace_radio: function () {
-      return this.get('node_id') + '_replace';
-    }.property('node_id'),
+    replaceRadio: function () {
+      return this.get('nodeID') + '_replace';
+    }.property('nodeID'),
 
     /**
      * An ID value for the force replace check box and corresponding label.
      */
-    force_replace_check: function () {
-      return this.get('node_id') + '_force_replace';
-    }.property('node_id'),
+    forceReplaceCheck: function () {
+      return this.get('nodeID') + '_force_replace';
+    }.property('nodeID'),
 
     /**
      * When there are no joining nodes, the radio button for selecting
      * a node should be grayed out.  This will put the proper classes
      * on that radio button to gray it out when there are no joining nodes.
      */
-    replace_radio_classes: function () {
+    replaceRadioClasses: function () {
       return 'gui-radio-wrapper' + (this.get('controller.joiningNodesExist') ? '' : ' semi-transparent');
-    }.property('controller.joiningNodesExist'),
-
-    /**
-     * Normalizer.
-     *
-     * @returns {number}
-     */
-    mem_divider: function() {
-      return this.get('mem_total') / 100;
-    }.property('mem_total'),
-
-    /**
-     * Compute memory ceiling.
-     *
-     * @returns {number}
-     */
-    mem_erlang_ceil: function () {
-      return Math.ceil(this.get('mem_erlang') / this.get('mem_divider'));
-    }.property('mem_erlang', 'mem_divider'),
-
-    /**
-     * Compute free memory from total and used.
-     *
-     * @returns {number}
-     */
-    mem_non_erlang: function () {
-      return Math.round(
-          (this.get('mem_used') / this.get('mem_divider')) - this.get('mem_erlang_ceil'));
-    }.property('mem_used', 'mem_divider', 'mem_erlang_ceil'),
-
-    /**
-     * Compute free memory from total and used.
-     *
-     * @returns {number}
-     */
-    mem_free: function () {
-      return this.get('mem_total') - this.get('mem_used');
-    }.property('mem_total', 'mem_used'),
-
-    /**
-     * Format free memory to be a readbale version.
-     *
-     * @returns {number}
-     */
-    mem_free_readable: function () {
-      return Math.round(this.get('mem_free') / this.get('mem_divider'));
-    }.property('mem_free', 'mem_divider'),
-
-    /**
-     * Format used memory to be a readbale version.
-     *
-     * @returns {number}
-     */
-    mem_used_readable: function () {
-      return Math.round((this.get('mem_total') - this.get('mem_free')) /
-          this.get('mem_divider'));
-    }.property('mem_total', 'mem_free', 'mem_divider'),
-
-    /**
-     * Return CSS style for rendering memory used by Erlang.
-     *
-     * @returns {number}
-     */
-    mem_erlang_style: function () {
-      return 'width: ' + this.get('mem_erlang_ceil') + '%';
-    }.property('mem_erlang_ceil'),
-
-    /**
-     * Return CSS style for rendering occupied non-erlang memory.
-     *
-     * @returns {string}
-     */
-    mem_non_erlang_style: function () {
-      return 'width: ' + this.get('mem_non_erlang') + '%';
-    }.property('mem_non_erlang'),
-
-    /**
-     * Return CSS style for rendering free memory.
-     *
-     * @returns {string}
-     */
-    mem_free_style: function () {
-      return 'width: ' + this.get('mem_free_readable') + '%';
-    }.property('mem_free_readable'),
-
-    /**
-     * Formatted ring percentage.
-     *
-     * @returns {string}
-     */
-    ring_pct_readable: function () {
-      return Math.round(this.get('ring_pct') * 100);
-    }.property('ring_pct')
+    }.property('controller.joiningNodesExist')
 
   });
 
@@ -704,6 +547,10 @@ minispade.register('cluster', function() {
    * One item in the collection of current cluster views.
    */
   RiakControl.StagedClusterItemView = Ember.View.extend(
+    /**
+     * Shares properties with other views that display lists of nodes.
+     */
+    RiakControl.NodeProperties,
     /** @scope RiakControl.StagedClusterItemView.prototype */ {
 
     /* Bindings from the model */
@@ -716,39 +563,7 @@ minispade.register('cluster', function() {
     isActionBinding:    'content.isAction',
 
     /* Necessary rename to avoid collision */
-    node_actionBinding: 'content.action',
-
-    /**
-     * Color the lights appropriately based on the node status.
-     *
-     * @returns {string}
-     */
-     indicatorLights: function() {
-       var status = this.get('status');
-       var reachable = this.get('reachable');
-       var color;
-
-       if(reachable === false) {
-         color = "red";
-       } else if(status === 'leaving' || status === 'joining') {
-         color = "orange";
-       } else if (status === 'valid') {
-         color = "green";
-       } else {
-         color = "grey";
-       }
-
-       return "gui-light status-light inline-block " + color;
-     }.property('reachable', 'status'),
-
-    /**
-     * Formatted ring percentage.
-     *
-     * @returns {string}
-     */
-    ring_pct_readable: function () {
-      return Math.round(this.get('ring_pct') * 100);
-    }.property('ring_pct')
+    node_actionBinding: 'content.action'
 
   });
 

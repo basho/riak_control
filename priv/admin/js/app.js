@@ -67,6 +67,7 @@ minispade.register('app', function() {
 
   minispade.require('core');
   minispade.require('router');
+  minispade.require('shared');
   minispade.require('snapshot');
   minispade.require('cluster');
   minispade.require('nodes');

@@ -21,7 +21,7 @@
         <div class="item4 gui-text ring-pct-box">
             <div {{bindAttr class="coloredArrows"}}></div>
             <div class="left gui-text pct-box">
-                <span class="ring-pct">{{ring_pct_readable}}%</span>
+                <span class="ring-pct">{{ringPctReadable}}%</span>
             </div>
             <div class="clear"></div>
         </div>
@@ -29,13 +29,13 @@
             {{#if reachable}}
                 <div class="membar-bg">
                     <div class="mem-colors">
-                        <div class="erlang-mem mem-color" {{bindAttr style="mem_erlang_style"}} {{bindAttr name="mem_erlang_ceil"}}></div>
-                        <div class="non-erlang-mem mem-color" {{bindAttr style="mem_non_erlang_style"}} {{bindAttr name="mem_non_erlang"}}></div>
-                        <div class="unknown-mem" {{bindAttr style="mem_free_style"}} {{bindAttr name="mem_free_readable"}}></div>
+                        <div class="erlang-mem mem-color" {{bindAttr style="memErlangStyle"}} {{bindAttr name="memErlangCeil"}}></div>
+                        <div class="non-erlang-mem mem-color" {{bindAttr style="memNonErlangStyle"}} {{bindAttr name="memNonErlang"}}></div>
+                        <div class="unknown-mem" {{bindAttr style="memFreeStyle"}} {{bindAttr name="memFreeReadable"}}></div>
                     </div>
                     <div class="membar-fg"></div>
                 </div>
-                <span class="used-memory">{{mem_used_readable}}%</span>
+                <span class="used-memory">{{memUsedReadable}}%</span>
             {{else}}
                 <div class="membar-bg">
                     <div class="mem-colors">
