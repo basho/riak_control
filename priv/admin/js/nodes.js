@@ -39,7 +39,9 @@ minispade.register('nodes', function() {
      * @returns {void}
      */
     clearChecked: function(ev) {
-      ev.preventDefault();
+      if(ev) {
+        ev.preventDefault();
+      }
 
       $('#node-list input[type=radio]').each(function(index, item) {
         item.checked = false;
@@ -51,7 +53,9 @@ minispade.register('nodes', function() {
      * Submits requests to stop and/or down nodes to the app.
      */
     applyChanges: function(ev) {
-      ev.preventDefault();
+      if(ev) {
+        ev.preventDefault();
+      }
 
       var self = this;
 
@@ -67,6 +71,8 @@ minispade.register('nodes', function() {
 
         self.stageChange(name, action, replacement);
       });
+
+      self.clearChecked();
     }
 
   });
