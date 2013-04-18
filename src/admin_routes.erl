@@ -20,8 +20,6 @@
 
 -module(admin_routes).
 
--author('Christopher Meiklejohn <cmeiklejohn@basho.com>').
-
 -export([admin_route/1,
          nodes_route/0,
          cluster_route/0,

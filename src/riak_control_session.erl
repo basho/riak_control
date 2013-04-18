@@ -20,8 +20,6 @@
 
 -module(riak_control_session).
 
--author('Christopher Meiklejohn <cmeiklejohn@basho.com>').
-
 -behavior(gen_server).
 
 -ifdef (TEST).

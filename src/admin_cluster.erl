@@ -31,8 +31,6 @@
 
 -module(admin_cluster).
 
--author('Christopher Meiklejohn <cmeiklejohn@basho.com>').
-
 -export([routes/0,
          init/1,
          to_json/2,
