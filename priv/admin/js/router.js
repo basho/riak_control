@@ -15,6 +15,8 @@ minispade.register('router', function() {
 
       showCluster: Ember.Route.transitionTo('cluster.index'),
 
+      showNodes: Ember.Route.transitionTo('nodes.index'),
+
       showRing: Ember.Route.transitionTo('ring.index'),
 
       index: Ember.Route.extend({
@@ -60,6 +62,27 @@ minispade.register('router', function() {
 
         exit: function(router) {
           router.get('clusterController').cancelInterval();
+        },
+
+        index: Ember.Route.extend({
+          route: '/'
+        })
+      }),
+
+      nodes: Ember.Route.extend({
+        route: 'nodes',
+
+        connectOutlets: function(router) {
+          router.get('applicationController').connectOutlet('nodes', RiakControl.Node.find());
+          $.riakControl.markNavActive('nav-nodes');
+        },
+
+        enter: function(router) {
+          router.get('nodesController').startInterval();
+        },
+
+        exit: function(router) {
+          router.get('nodesController').cancelInterval();
         },
 
         index: Ember.Route.extend({

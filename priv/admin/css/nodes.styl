@@ -1,0 +1,284 @@
+
+/*
+CSS to be applied ONLY on the cluster page
+*/
+
+@import reusable
+  
+
+#nodes-page
+
+  .right
+    float : right
+
+  .gui-point-button-right, .gui-rect-button
+    margin-right : 10px
+    margin-top   : 35px
+
+  #current-area
+    max-width   : 850px
+    margin      : 0 auto 45px auto
+    padding-top : 40px
+ 
+    & > span.gui-text-flat
+      line-height : 1.5
+      display     : block
+
+  h3
+    copy-font()
+
+  .spinner-box
+    corners()
+    text-align : center
+    background : rgba(255, 255, 255, .05)
+    padding    : 25px
+
+    img, h4
+      vertical-align : middle
+
+    h4
+      opaque(.8)
+      display      : inline-block
+      padding-top  : 6px
+      padding-left : 10px
+      line-height  : 1.2
+
+  .gui-light
+    vertical-align : middle
+    padding        : 9px 5px 9px 14px
+    margin-left    : -6px
+    margin-top     : -7px
+
+  .field-container
+    width          : 86%
+    vertical-align : middle
+
+  .gui-field
+    margin-right : 0
+    overflow     : hidden
+
+  .list-header
+    min-height : 18px
+
+    li
+      float : left
+      margin-bottom : 30px
+
+      h4
+        display : inline-block
+
+  #node-list
+    margin-top : 20px
+
+    .item1
+      width : 6%
+    .item2
+      width : 10%
+    .item3
+      width : 56%
+    .item4
+      width : 13%
+    .item5
+      width : 15%
+
+
+
+
+
+  .node
+    margin-bottom : 10px
+    position      : relative
+
+  .node > div
+    float : left
+
+  .node > div.clear
+    float : none
+
+  .node
+
+    .gui-radio-wrapper
+      dimensions(25px, 24px)
+      text-align   : center
+      display      : inline-block
+      position     : relative
+
+      .disabler
+        dimensions(100%, 100%)
+        absoluteLeft(0, 0);
+        opaque(0)
+        display : none
+
+        &.show
+          display : block
+    
+    .item1 .gui-radio-wrapper
+      margin-left : 4px
+
+    .item2 .gui-radio-wrapper
+      margin-left : 8px
+
+    input[type=radio]
+      display : inline
+      float   : none
+
+  .name-box
+    overflow : visible
+
+  .ring-pct, .used-memory, .action-name
+    monospace();
+
+  .used-memory
+    display : inline-block
+    padding : 0 0 0 5px
+    vertical-align : middle
+
+  .pct-box
+    margin-top     : 8px
+    display        : inline-block
+    vertical-align : middle
+
+  .pct-arrows
+    dimensions(19px, 33px)
+    background     : url('/admin/ui/images/pct-arrows-sprite.png') no-repeat transparent
+    margin         : 0 5px 0 0
+    display        : inline-block
+    vertical-align : middle
+
+  .pct-gaining
+    background-position : -19px top
+
+  .pct-losing
+    background-position : -38px top
+
+  .pct-static
+    background-position : left top
+
+  .green-pct-arrow
+    dimensions(19px, 33px)
+    background : url('/admin/ui/images/pct-arrows-sprite.png') no-repeat -57px top transparent
+    margin     : 0 5px 0 0
+    display    : none
+
+  .memory-box
+    width : 175px
+        
+  .membar-bg
+    corners()
+    dimensions(79px, 30px)
+    position       : relative
+    display        : inline-block
+    vertical-align : middle
+    
+  .membar-fg
+    corners()
+    gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .05))
+    vendor('box-shadow', 0 1px 0 lightWhite)
+    dimensions(100%, 26px)
+    absoluteLeft(0, 0)
+    width   : 75px
+    z-index : 5
+    border  : 2px solid #1d1d1d
+    
+  .mem-colors
+    dimensions(75px, 26px)
+    float  : left
+    margin : 2px 0 0 2px
+    
+  .membar-mem
+    dimensions(auto, 26px)
+    background : url('/admin/ui/images/mem-bar-overlay.png') left top repeat transparent
+    float      : left
+    z-index    : 1
+
+  .non-erlang-mem
+    dimensions(auto, 26px)
+    background : url('/admin/ui/images/mem-bar-overlay.png') left top repeat transparent
+    float      : left
+    z-index    : 1
+    background-color : rgba(65, 179, 243, .8)
+    
+  .erlang-mem
+    dimensions(auto, 26px)
+    background : url('/admin/ui/images/mem-bar-overlay.png') left top repeat transparent
+    float      : left
+    z-index    : 1
+    background-color : rgba(70, 166, 55, .8)
+
+  .unknown-mem
+    dimensions(auto, 26px)
+    background : url('/admin/ui/images/mem-bar-overlay.png') left top repeat transparent
+    float      : left
+    z-index    : 1
+    background-color : #404040
+    width            : 100%
+
+
+  .slide-up
+    margin-top : -35px
+
+  .semi-transparent
+    opaque(.32)
+
+
+  /* RESPONSIVE MEDIA QUERIES */
+
+  @media screen and (max-width : 800px)
+
+    #node-list
+      .item1
+        width : 8%
+      .item2
+        width : 10%
+      .item3
+        width : 49%
+      .item4
+        width : 15%
+      .item5
+        width : 18%
+
+      .field-container
+        width : 75%
+
+
+  @media screen and (max-width : 670px)
+
+    #node-list
+      .memory-box
+        padding-top : 7px
+
+      .membar-bg
+        display : none
+
+  @media screen and (max-width : 570px)
+
+    #node-list
+      .item1
+        width : 12%
+      .item2
+        width : 15%
+      .item3
+        width : 53%
+      .item4
+        display : none
+      .item5
+        width : 20%
+
+   @media screen and (max-width : 400px)
+
+    #node-list
+      .item1
+        width : 12%
+      .item2
+        width : 15%
+      .item3
+        width : 47%
+      .item4
+        display : none
+      .item5
+        width : 15%
+
+
+
+
+

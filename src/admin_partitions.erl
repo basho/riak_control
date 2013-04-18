@@ -20,8 +20,6 @@
 
 -module(admin_partitions).
 
--author('Christopher Meiklejohn <cmeiklejohn@basho.com>').
-
 -export([routes/0,
          init/1,
          content_types_provided/2,

@@ -31,8 +31,6 @@
 
 -module(admin_cluster).
 
--author('Christopher Meiklejohn <cmeiklejohn@basho.com>').
-
 -export([routes/0,
          init/1,
          to_json/2,
@@ -50,7 +48,7 @@
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% @doc Return routes this resource should respond to.
--spec routes() -> list().
+-spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
     [{admin_routes:cluster_route(), ?MODULE, []}].
 
