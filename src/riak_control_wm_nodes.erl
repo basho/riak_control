@@ -20,13 +20,13 @@
 %%
 %% @doc
 %%
-%% Responsible for viewing and modifying node properties.
+%% Responsible for viewing and modifying nodes.
 %%
-%% GET  /nodes returns the current and staged clusters.
+%% GET /nodes returns the node list.
 %%
 %% @end
 
--module(admin_nodes).
+-module(riak_control_wm_nodes).
 
 -export([routes/0,
          init/1,
@@ -42,7 +42,7 @@
 %% @doc Return routes this resource should respond to.
 -spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
-    [{admin_routes:nodes_route(), ?MODULE, []}].
+    [{riak_control_routes:nodes_route(), ?MODULE, []}].
 
 %% @doc Initialize resource.
 -spec init([]) -> {ok, undefined}.

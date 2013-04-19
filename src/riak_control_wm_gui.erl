@@ -18,7 +18,8 @@
 %%
 %% -------------------------------------------------------------------
 
--module(admin_gui).
+-module(riak_control_wm_gui).
+
 -export([routes/0,
          init/1,
          content_types_provided/2,
@@ -50,9 +51,9 @@
 %% defines the webmachine routes this module handles
 -spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
-    [{admin_routes:admin_route([]),?MODULE,index},
-     {admin_routes:admin_route(["ui",'*']),?MODULE,undefined},
-     {admin_routes:admin_route(["ui","index.html"]),?MODULE,oldindex}
+    [{riak_control_routes:admin_route([]),?MODULE,index},
+     {riak_control_routes:admin_route(["ui",'*']),?MODULE,undefined},
+     {riak_control_routes:admin_route(["ui","index.html"]),?MODULE,oldindex}
     ].
 
 %% entry-point for the resource from webmachine
