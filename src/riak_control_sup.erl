@@ -53,10 +53,10 @@ init([]) ->
     %% determine if riak_control is enabled or not
     case app_helper:get_env(riak_control,enabled,false) of
         true ->
-            Resources = [{admin, admin_gui},
-                         {admin, admin_cluster},
-                         {admin, admin_nodes},
-                         {admin, admin_partitions}
+            Resources = [{admin, riak_control_wm_gui},
+                         {admin, riak_control_wm_cluster},
+                         {admin, riak_control_wm_nodes},
+                         {admin, riak_control_wm_partitions}
                         ],
             Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
             _ = [webmachine_router:add_route(R) || R <- Routes],

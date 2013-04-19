@@ -18,7 +18,7 @@
 %%
 %% -------------------------------------------------------------------
 
--module(admin_partitions).
+-module(riak_control_wm_partitions).
 
 -export([routes/0,
          init/1,
@@ -41,7 +41,7 @@
 %% @doc Route handling.
 -spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
-    [{admin_routes:partitions_route(), ?MODULE, []}].
+    [{riak_control_routes:partitions_route(), ?MODULE, []}].
 
 %% @doc Get partition list at the start of the request.
 -spec init(list()) ->

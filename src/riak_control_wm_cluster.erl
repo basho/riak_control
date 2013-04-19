@@ -29,7 +29,7 @@
 %%
 %% @end
 
--module(admin_cluster).
+-module(riak_control_wm_cluster).
 
 -export([routes/0,
          init/1,
@@ -50,7 +50,7 @@
 %% @doc Return routes this resource should respond to.
 -spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
-    [{admin_routes:cluster_route(), ?MODULE, []}].
+    [{riak_control_routes:cluster_route(), ?MODULE, []}].
 
 %% @doc Initialize resource.
 -spec init([]) -> {ok, undefined}.

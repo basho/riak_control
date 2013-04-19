@@ -18,7 +18,7 @@
 %%
 %% -------------------------------------------------------------------
 
--module(admin_routes).
+-module(riak_control_routes).
 
 -export([admin_route/1,
          nodes_route/0,
