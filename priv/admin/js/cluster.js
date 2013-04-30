@@ -271,12 +271,13 @@ minispade.register('cluster', function() {
     joinNode: function(ev) {
       ev.preventDefault();
 
-      var self = this;
-      var node = this.get('joinNodeField');
+      var self    = this;
+      var node    = this.get('joinNodeField');
+      var success = function() {
+        self.set('joinNodeField', undefined);
+      };
 
-      this.stageChange(node, "join", "");
-
-      this.set('joinNodeField', undefined);
+      this.stageChange(node, "join", "", success, undefined);
     },
 
     /**

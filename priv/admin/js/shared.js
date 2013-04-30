@@ -12,7 +12,7 @@ minispade.register('shared', function () {
      *
      * @returns {void}
      */
-    stageChange: function(node, action, replacement) {
+    stageChange: function(node, action, replacement, success, failure) {
       var self = this;
 
       $.ajax({
@@ -28,9 +28,19 @@ minispade.register('shared', function () {
                     }]
                   },
 
-        success: function(d) { self.reload(); },
+        success: function(d) {
+          if(success) {
+            success();
+          }
+
+          self.reload();
+        },
 
         error: function (jqXHR, textStatus, errorThrown) {
+          if(failure) {
+            failure();
+          }
+
           self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
         }
       });
