@@ -93,22 +93,22 @@ in the Riak Control interface.  While in this state, Riak Control will
 be unable to retrieve and display statistics and configuration for that
 node.
 
-** Cluster
-This is a high-level overview of your cluster. It lists each of the
-nodes in the cluster and their current status, partition ownerships,
-and memory usage. If a node is currently offline it will be red.
+** Cluster Management
+The Cluster Management page gives you the ability to add the node
+running Riak Control to an existing cluster, or to join standalone nodes
+into the current cluster.  Cluster Management also provides an overview
+of claim, and the current cluster configuration, allowing you to stage
+changes to the existing cluster and commit the staged plan once
+confirming the staged cluster.
 
-If you click on a node, the details to the right should provide you
-with some additional actions you can perform on the node (e.g. shutdown,
-leave the cluster, mark as 'down' if offline).
+** Node Management
+The Node Management page gives you an overview of how much memory your
+nodes are using, what percentage of the ring they claim ownership of,
+and the ability to mark a failed node as down, or stop an individual
+node.
 
-Additionally, at the top of the list of nodes is a field that you
-can use to either add another, single node to this node's cluster or to
-join this node to an existing cluster. Just type in the name of the
-node you wish to add/join and click "Add".
-
-** Ring
-This Ring Overview gives you a quick glimpse into all the partitions
+** Ring Overview
+The Ring Overview gives you a quick glimpse into all the partitions
 in your ring, what nodes own them, whether they are offline, handing
 off data, and what services are currently running on them (e.g. kv,
 pipe, search).
