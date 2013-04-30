@@ -172,6 +172,13 @@ minispade.register('cluster', function() {
     ringNotReady: false,
 
     /**
+     * Returns whether this is a standalone node or not.
+     */
+    standalone: function() {
+      return this.get('contentCurrentCluster.length') === 1;
+    }.property('content.currentCluster', 'content.currentCluster.@each'),
+
+    /**
      * Return nodes from the current cluster which have not been deleted.
      *
      * @returns {Ember.Array}
@@ -257,17 +264,19 @@ minispade.register('cluster', function() {
     },
 
     /**
-     * Add a new node.
+     * Join a node.
      *
      * @returns {void}
      */
-    addNode: function(ev) {
+    joinNode: function(ev) {
       ev.preventDefault();
 
       var self = this;
-      var node = this.get('addNodeField');
+      var node = this.get('joinNodeField');
 
       this.stageChange(node, "join", "");
+
+      this.set('joinNodeField', undefined);
     },
 
     /**
@@ -287,17 +296,17 @@ minispade.register('cluster', function() {
   /**
    * @class
    *
-   * Add Node text field.
+   * Join Node text field.
    *
    */
-  RiakControl.AddNodeView = Ember.TextField.extend(
-    /** @scope RiakControl.AddNodeView.prototype */ {
-    valueBinding: 'controller.addNodeField',
+  RiakControl.JoinNodeView = Ember.TextField.extend(
+    /** @scope RiakControl.JoinNodeView.prototype */ {
+    valueBinding: 'controller.joinNodeField',
     classNames: ['gui-input', 'gui-text'],
 
     /**
      * When the user presses the enter/return key in the
-     * add nodes field, calls the 'addNode' method of
+     * add nodes field, calls the 'joinNode' method of
      * the controller.
      *
      * @param {Object} ev - The keyup event.
@@ -307,7 +316,7 @@ minispade.register('cluster', function() {
     keyUp: function (ev) {
       var controller = this.get('controller');
       if(ev.keyCode === 13){
-        controller.get('addNode').call(controller, ev);
+        controller.get('joinNode').call(controller, ev);
       }
     }
   });
