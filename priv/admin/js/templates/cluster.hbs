@@ -12,11 +12,12 @@
     </section>
 
     <div id="add-node">
-        <h2 class="gui-headline">Join Node</h2>
         {{#if standalone}}
+          <h2 class="gui-headline">Join Node</h2>
           <span class="gui-text-flat italic">Type the name of a node in an existing cluster to join this node to.</span>
         {{else}}
-          <span class="gui-text-flat italic">Type the name of a node to join into this cluster.</span>
+          <h2 class="gui-headline">Add Node</h2>
+          <span class="gui-text-flat italic">Type the name of a node to add to this cluster.</span>
         {{/if}}
         <table class="add-node-table">
             <tr class="no-highlight">

@@ -175,7 +175,7 @@ minispade.register('cluster', function() {
      * Returns whether this is a standalone node or not.
      */
     standalone: function() {
-      return this.get('contentCurrentCluster.length') === 1;
+      return this.get('content.currentCluster.length') === 1;
     }.property('content.currentCluster', 'content.currentCluster.@each'),
 
     /**
