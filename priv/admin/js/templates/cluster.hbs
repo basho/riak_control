@@ -12,20 +12,16 @@
     </section>
 
     <div id="add-node">
-        <h2 class="gui-headline">Join Node</h2>
-        {{#if standalone}}
-          <span class="gui-text-flat italic">Type the name of a node in an existing cluster to join this node to.</span>
-        {{else}}
-          <span class="gui-text-flat italic">Type the name of a node to join into this cluster.</span>
-        {{/if}}
+        <h2 class="gui-headline">Join Nodes</h2>
+        <span class="gui-text-flat italic">Type a node name or list of names separated by commas.</span>
         <table class="add-node-table">
             <tr class="no-highlight">
                 <td id="add-node-box">
-                    {{view RiakControl.JoinNodeView}}
+                    {{view RiakControl.AddNodeView id="node-to-add"}}
                 </td>
                 <td class="button-column">
-                    <a class="gui-point-button gui-text-bold right" {{action joinNode target="controller"}}>
-                        <span class="gui-button-msg">JOIN NODE</span>
+                    <a class="gui-point-button gui-text-bold right" {{action addNode target="controller"}}>
+                        <span class="gui-button-msg">ADD NODES</span>
                     </a>
                 </td>
             </tr>

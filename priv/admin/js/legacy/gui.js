@@ -130,7 +130,7 @@ $(document).ready(function() {
 
   // Add new node area
   $(document).on('mouseover', '#add-node table', function () {
-      displayTips('Type a node name (for example: dev2@127.0.0.1) into the text field and hit "Join Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
+      displayTips('Type a node name (for example: dev2@127.0.0.1) into the text field and hit "Add Node" to add it to this cluster.  The node will then take ownership of partitions in the ring to help ensure balanced data across the cluster.');
   }).on('mouseout', '#add-node table', emptyTips);
 
   // Clear down/stop radios button
