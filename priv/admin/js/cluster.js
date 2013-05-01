@@ -531,7 +531,7 @@ minispade.register('cluster', function() {
       var item = this.$(),
           val  = item.val();
       Ember.run.next(function() {
-        item.prev().prev().text(val);
+        item.parent().find('.gui-dropdown-bg').text(val);
       });
     }
   });
