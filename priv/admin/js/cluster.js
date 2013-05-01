@@ -517,4 +517,23 @@ minispade.register('cluster', function() {
     itemViewClass: RiakControl.StagedClusterItemView
   });
 
+  /**
+   * @class
+   *
+   * View for select menus in cluster item actions boxes.
+   */
+  RiakControl.ClusterItemSelectView = Ember.Select.extend({
+
+    /*
+     * When the select menu changes, update its display.
+     */
+    change: function () {
+      var item = this.$(),
+          val  = item.val();
+      Ember.run.next(function() {
+        item.parent().find('.gui-dropdown-bg').text(val);
+      });
+    }
+  });
+
 });
