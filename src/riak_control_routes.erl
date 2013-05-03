@@ -23,6 +23,7 @@
 -export([admin_route/1,
          nodes_route/0,
          cluster_route/0,
+         handoffs_route/0,
          partitions_route/0]).
 
 %% @doc Provide a resource that all resources sit under.
@@ -34,6 +35,11 @@ admin_route(Rest) ->
 -spec nodes_route() -> list().
 nodes_route() ->
     admin_route(["nodes"]).
+
+%% @doc Return route for node resource.
+-spec handoffs_route() -> list().
+handoffs_route() ->
+    admin_route(["handoffs"]).
 
 %% @doc Return route for partition resource.
 -spec partitions_route() -> list().
