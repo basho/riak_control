@@ -1,0 +1,28 @@
+<div id="handoffs">
+  <ul>
+    <li class="item-1">
+      <h4 class="gui-headline-bold">Index</h4>
+    </li><li class="item-2">
+      <h4 class="gui-headline-bold">Current Owner</h4>
+    </li><li class="item-3">
+      <h4 class="gui-headline-bold">Next Owner</h4>
+    </li><li class="item-4">
+      <h4 class="gui-headline-bold">Waiting For</h4>
+    </li>
+  </ul>
+
+  {{#each}}
+    <div class="partition">
+      <span class="item-1 monospace">
+        {{ partitionId }}
+      </span><div class="item-2">
+        <span class="monospace">{{ currentOwner }}</span>
+        <span class="orange-arrow"></span>
+      </div><span class="item-3 monospace">
+        {{ nextOwner }}
+      </span><span class="item-4 monospace">
+        {{ waitingFor }}
+      </span>
+    </div>
+  {{/each}}
+</div>

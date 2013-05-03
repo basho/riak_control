@@ -34,6 +34,29 @@ minispade.register('core', function() {
     me: DS.attr("boolean")
   });
 
+  RiakControl.RingStatus = Ember.Object.extend({
+    claimant: undefined,
+    ringReady: undefined,
+    currentHandoffs: function(){
+      return 24;
+    }.property()
+  });
+
+  // vv THESE ARE JUST FOR TESTING, REMOVE vv
+
+  RiakControl.RingStatus.fixtureStatus = RiakControl.RingStatus.create({
+    claimant: 'dev1@127.0.0.1',
+    ringReady: true
+  });
+
+  RiakControl.RingStatus.reopenClass({
+    find: function(){
+      return RiakControl.RingStatus.fixtureStatus;
+    }
+  });
+
+  // ^^ THESE ARE JUST FOR TESTING, REMOVE ^^
+
   /**
    * @class
    *

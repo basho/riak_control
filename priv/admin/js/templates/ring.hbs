@@ -24,7 +24,7 @@
         <h4 class="gui-headline-bold">Claimant Name &amp; Status</h4>
         <div class="gui-light status-light inline-block green">
         </div><div class="gui-text field-container inline-block">
-          <div class="name gui-field">dev1@127.0.0.1</div>
+          <div class="name gui-field">{{ claimant }}</div>
         </div>
       </div>
 
@@ -32,7 +32,7 @@
         <h4 class="gui-headline-bold">Ring Ready</h4>
         <div class="ring-light inline-block green">
         </div><div class="gui-text field-container inline-block">
-          <div class="name gui-field">True</div>
+          <div class="name gui-field">{{ ringReady }}</div>
         </div>
       </div>
 
@@ -40,14 +40,13 @@
         <h4 class="gui-headline-bold">Current Handoffs</h4>
         <div class="gui-light status-light inline-block orange">
         </div><div class="gui-text field-container inline-block">
-          <div class="name gui-field">24</div>
+          <div class="name gui-field">{{ currentHandoffs }}</div>
         </div>
       </div>
 
       <div class="clear"></div>
     </section>
-
-
+    
     <h2 class="gui-headline">View Details<br/></h2>
     <span class="gui-text-flat italic">
       Use this section to determine whether unreachable nodes are preventing
@@ -58,111 +57,21 @@
       <h4 class="gui-headline-bold">Currently Viewing:</h4>
 
       <div class="gui-radio-wrapper first">
-        <input class="gui-radio" type="radio" value="leave" id="unreachable-radio" name="currentlyViewing"/>
+        <input class="gui-radio" type="radio" value="leave"
+        id="unreachable-radio" name="currentlyViewing" checked="checked"
+          {{action unreachableNodes}}/>
         <label for="unreachable-radio">Unreachable Nodes</label>
       </div>
 
       <div class="gui-radio-wrapper last">
-        <input class="gui-radio" type="radio" value="leave" id="handoff-radio" name="currentlyViewing"/>
+        <input class="gui-radio" type="radio" value="leave" id="handoff-radio" name="currentlyViewing"
+           {{action ownershipHandoffs}}/>
         <label for="handoff-radio">Ownership Handoffs</label>
       </div>
     </section>
 
 
     <section id="display-container">
-      
-      <div id="nodes">
-        <ul>
-          <li class="item-1"><h4 class="gui-headline-bold">Node Name</h4></li>
-          <li class="item-2"><h4 class="gui-headline-bold">Status</h4></li>
-        </ul>
-
-        <div class="node">
-          <div class="item-1">
-            <div class="gui-light status-light inline-block red"></div>
-            <span class="monospace">dev1@127.0.0.1</span>
-          </div>
-          <span class="item-2 monospace">unreachable</span>
-        </div>
-      </div>
-      
-      <div id="handoffs">
-        <ul>
-          <li class="item-1">
-            <h4 class="gui-headline-bold">Index</h4>
-          </li><li class="item-2">
-            <h4 class="gui-headline-bold">Current Owner</h4>
-          </li><li class="item-3">
-            <h4 class="gui-headline-bold">Next Owner</h4>
-          </li><li class="item-4">
-            <h4 class="gui-headline-bold">Waiting For</h4>
-          </li>
-        </ul>
-
-        <div class="partition">
-          <span class="item-1 monospace">
-            3653754093327257...
-          </span><div class="item-2">
-            <span class="monospace">dev1@127.0.01</span>
-            <span class="orange-arrow"></span>
-          </div><span class="item-3 monospace">
-            dev2@127.0.01
-          </span><span class="item-4 monospace">
-            Ownership change
-          </span>
-        </div>
-      </div>
+      {{ outlet ringDetails }}      
     </section>
-
-
-
-
-
-
-    <!--
-    <div id="partition-list">
-        <table class="list-table" id="ring-table">
-            <thead>
-                <tr class="table-head has-cut">
-                    <th><h3>#</h3></th>
-                    <th><h3>Owner Node</h3></th>
-                    <th><h3>KV</h3></th>
-                    <th><h3>Pipe</h3></th>
-                    <th><h3>Search</h3></th>
-                </tr>
-            </thead>
-            {{#collection RiakControl.PartitionView contentBinding="controller.paginatedContent"}}
-              {{#with view.content}}
-              <td class="partition-number gui-text">{{i}}</td>
-              <td class="owner-box gui-text">
-                  <div class="owner gui-field">{{node}}</div>
-                  <div class="partition-index hide">{{index}}</div>
-              </td>
-              {{/with}}
-              {{#with view}}
-              <td class="kv-box gui-text">
-                  <a {{bindAttr class="kvIndicator lightClasses"}}>
-                      <span class="kv-status">{{kvStatus}}</span>
-                      <span class="hide fallback-to"></span>
-                  </a>
-              </td>
-              <td class="pipe-box gui-text">
-                  <a {{bindAttr class="pipeIndicator lightClasses"}}>
-                      <span class="pipe-status">{{pipeStatus}}</span>
-                      <span class="hide fallback-to"></span>
-                  </a>
-              </td>
-              <td class="search-box gui-text">
-                  <a {{bindAttr class="searchIndicator lightClasses"}}>
-                      <span class="search-status">{{searchStatus}}</span>
-                      <span class="hide fallback-to"></span>
-                  </a>
-              </td>
-              {{/with}}
-            {{/collection}}
-        </table>
-    </div>
-    <div class="cut"></div>
-  </div>
-  -->
 </div>
