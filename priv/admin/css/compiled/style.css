@@ -740,6 +740,7 @@ input.gui-point-button-right:active {
   padding: 10px;
   border-bottom: 1px solid rgba(255,255,255,0.18);
   margin-right: 2em;
+  font-size: 13px;
 }
 .gui-input {
   width: 100%;
@@ -1902,6 +1903,214 @@ input.gui-point-button-right:active {
   }
   #nodes-page #node-list .item5 {
     width: 15%;
+  }
+}
+#ring-page .monospace {
+  font-family: 'menlo', 'consolas', 'monaco', monospace;
+  font-size: 13px;
+}
+#ring-page #current-area {
+  max-width: 850px;
+  margin: 0 auto 45px auto;
+  padding-top: 40px;
+}
+#ring-page #current-area > span.gui-text-flat {
+  line-height: 1.5;
+  display: block;
+}
+#ring-page .field-container {
+  width: 90%;
+  vertical-align: middle;
+}
+#ring-page .field-container .gui-field {
+  margin-right: 0;
+}
+#ring-page .gui-light {
+  vertical-align: middle;
+  padding: 14px 0 9px 20px;
+}
+#ring-page .ring-light {
+  width: 32px;
+  height: 35px;
+  background: url("/admin/ui/images/ring-indicator.png") no-repeat transparent;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+#ring-page .ring-light.green {
+  background-position: center top;
+}
+#ring-page .ring-light.red {
+  background-position: center bottom;
+}
+#ring-page #summary-info {
+  margin: 20px 0 0;
+}
+#ring-page #summary-info h4 {
+  margin-bottom: 30px;
+}
+#ring-page #summary-info > div {
+  float: left;
+  margin-bottom: 30px;
+  padding: 5px 18px;
+  border-right: 1px solid rgba(255,255,255,0.18);
+}
+#ring-page #summary-info > div.clear {
+  float: none;
+  clear: both;
+}
+#ring-page #summary-info .item-1 {
+  width: 47%;
+  padding-left: 0;
+}
+#ring-page #summary-info .item-2 {
+  width: 22%;
+}
+#ring-page #summary-info .item-2 .field-container {
+  width: 75%;
+}
+#ring-page #summary-info .item-3 {
+  width: 22%;
+  padding-right: 0;
+  border-right: none;
+}
+#ring-page #summary-info .item-3 .field-container {
+  width: 75%;
+}
+#ring-page #summary-info .clear {
+  border-right: none;
+  padding: 0 0 0 0;
+}
+#ring-page #details-info label {
+  font-weight: normal;
+  color: #ccc;
+  text-shadow: none;
+}
+#ring-page #details-info > h4,
+#ring-page #details-info > div {
+  display: inline-block;
+  vertical-align: middle;
+  padding-bottom: 0;
+  margin: 20px 0 30px;
+}
+#ring-page #details-info > h4 {
+  padding-right: 30px;
+}
+#ring-page #details-info > div {
+  padding-right: 30px;
+}
+#ring-page #details-info > div.first {
+  border-right: 1px solid rgba(255,255,255,0.18);
+}
+#ring-page #details-info > div.last {
+  margin-left: 15px;
+}
+#ring-page #display-container {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow: inset 0 1px 3px rgba(0,0,0,0.35);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.35);
+  width: 92%;
+  background: rgba(0,0,0,0.35);
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+  padding: 18px 22px;
+  margin-right: 33px;
+  position: relative;
+  max-height: 372px;
+}
+#ring-page #display-container #nodes ul,
+#ring-page #display-container #handoffs ul {
+  margin-bottom: 10px;
+}
+#ring-page #display-container #nodes ul li,
+#ring-page #display-container #handoffs ul li {
+  display: inline-block;
+  padding-top: 8px;
+}
+#ring-page #display-container #nodes .item-1 {
+  width: 33%;
+}
+#ring-page #display-container #nodes .item-2 {
+  width: 15%;
+}
+#ring-page #display-container #handoffs .item-1 {
+  width: 25%;
+}
+#ring-page #display-container #handoffs .item-2 {
+  width: 28%;
+}
+#ring-page #display-container #handoffs .item-2 span.monospace {
+  padding-top: 5px;
+}
+#ring-page #display-container #handoffs .item-3 {
+  width: 22%;
+}
+#ring-page #display-container #handoffs .item-4 {
+  width: 25%;
+}
+#ring-page #display-container .node,
+#ring-page #display-container .partition {
+  margin-bottom: 5px;
+}
+#ring-page #display-container .node .gui-light,
+#ring-page #display-container .partition .gui-light {
+  padding-top: 10px;
+  margin-right: 8px;
+}
+#ring-page #display-container .node div,
+#ring-page #display-container .partition div,
+#ring-page #display-container .node span,
+#ring-page #display-container .partition span {
+  display: inline-block;
+  vertical-align: middle;
+}
+#ring-page #display-container .node .orange-arrow,
+#ring-page #display-container .partition .orange-arrow {
+  width: 29px;
+  height: 26px;
+  background: url("/admin/ui/images/orange-arrow.png") no-repeat transparent;
+  float: right;
+  margin-right: 15px;
+}
+@media screen and (max-width: 900px) {
+  #ring-page #summary-info .item-1 {
+    width: 33%;
+    padding-right: 0;
+  }
+  #ring-page #summary-info .item-1 .field-container {
+    width: 75%;
+  }
+}
+@media screen and (max-width: 750px) {
+  #ring-page #summary-info .item-2 {
+    width: 28%;
+  }
+  #ring-page #summary-info .item-3 .gui-light {
+    display: none;
+  }
+}
+@media screen and (max-width: 600px) {
+  #ring-page .ring-light {
+    display: none;
+  }
+  #ring-page #summary-info .item-1 {
+    width: 50%;
+    padding-right: 10px;
+  }
+  #ring-page #summary-info .item-2 {
+    width: 22%;
+    border-right: none;
+    padding-right: 0;
+  }
+  #ring-page #summary-info .item-3 {
+    display: none;
+  }
+}
+@media screen and (max-width: 450px) {
+  #ring-page #summary-info .item-2 {
+    width: 22%;
   }
 }
 #ring-page #ring-filter {

@@ -5,72 +5,164 @@
     <div class="side-line"></div>
     <div class="title-box">
       <span class="vert-border-left"></span>
-      <h1 id="ring-headline" class="gui-headline-bold page-title">Current Ring</h1>
+      <h1 id="ring-headline" class="gui-headline-bold page-title">Ring Status</h1>
       <span class="vert-border-right"></span>
     </div>
-    <div class="side-line">
-      {{outlet partitionFilter}}
-    </div>
+    <div class="side-line"></div>
     <div class="clear"></div>
   </section>
 
-  <ul class="pagination first gui-text">
-    <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
-    {{#each pages}}
-      {{view RiakControl.PaginationItemView contentBinding="this"}}
-    {{/each}}
-    <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
-  </ul>
-  <div class="cut"></div>
-  <div id="partition-list">
-      <table class="list-table" id="ring-table">
-          <thead>
-              <tr class="table-head has-cut">
-                  <th><h3>#</h3></th>
-                  <th><h3>Owner Node</h3></th>
-                  <th><h3>KV</h3></th>
-                  <th><h3>Pipe</h3></th>
-                  <th><h3>Search</h3></th>
-              </tr>
-          </thead>
-          {{#collection RiakControl.PartitionView contentBinding="controller.paginatedContent"}}
-            {{#with view.content}}
-            <td class="partition-number gui-text">{{i}}</td>
-            <td class="owner-box gui-text">
-                <div class="owner gui-field">{{node}}</div>
-                <div class="partition-index hide">{{index}}</div>
-            </td>
-            {{/with}}
-            {{#with view}}
-            <td class="kv-box gui-text">
-                <a {{bindAttr class="kvIndicator lightClasses"}}>
-                    <span class="kv-status">{{kvStatus}}</span>
-                    <span class="hide fallback-to"></span>
-                </a>
-            </td>
-            <td class="pipe-box gui-text">
-                <a {{bindAttr class="pipeIndicator lightClasses"}}>
-                    <span class="pipe-status">{{pipeStatus}}</span>
-                    <span class="hide fallback-to"></span>
-                </a>
-            </td>
-            <td class="search-box gui-text">
-                <a {{bindAttr class="searchIndicator lightClasses"}}>
-                    <span class="search-status">{{searchStatus}}</span>
-                    <span class="hide fallback-to"></span>
-                </a>
-            </td>
-            {{/with}}
-          {{/collection}}
-      </table>
+  <div id="current-area">
+    <h2 class="gui-headline">Summary<br/></h2>
+    <span class="gui-text-flat italic">
+      The claimant node is responsible for all partition ownership decisions and for determining
+      whether the ring is ready.
+    </span><br/>
+
+    <section id="summary-info">
+      <div class="item-1">
+        <h4 class="gui-headline-bold">Claimant Name &amp; Status</h4>
+        <div class="gui-light status-light inline-block green">
+        </div><div class="gui-text field-container inline-block">
+          <div class="name gui-field">dev1@127.0.0.1</div>
+        </div>
+      </div>
+
+      <div class="item-2">
+        <h4 class="gui-headline-bold">Ring Ready</h4>
+        <div class="ring-light inline-block green">
+        </div><div class="gui-text field-container inline-block">
+          <div class="name gui-field">True</div>
+        </div>
+      </div>
+
+      <div class="item-3">
+        <h4 class="gui-headline-bold">Current Handoffs</h4>
+        <div class="gui-light status-light inline-block orange">
+        </div><div class="gui-text field-container inline-block">
+          <div class="name gui-field">24</div>
+        </div>
+      </div>
+
+      <div class="clear"></div>
+    </section>
+
+
+    <h2 class="gui-headline">View Details<br/></h2>
+    <span class="gui-text-flat italic">
+      Use this section to determine whether unreachable nodes are preventing
+      convergence or to view all current handoffs.
+    </span><br/>
+
+    <section id="details-info">
+      <h4 class="gui-headline-bold">Currently Viewing:</h4>
+
+      <div class="gui-radio-wrapper first">
+        <input class="gui-radio" type="radio" value="leave" id="unreachable-radio" name="currentlyViewing"/>
+        <label for="unreachable-radio">Unreachable Nodes</label>
+      </div>
+
+      <div class="gui-radio-wrapper last">
+        <input class="gui-radio" type="radio" value="leave" id="handoff-radio" name="currentlyViewing"/>
+        <label for="handoff-radio">Ownership Handoffs</label>
+      </div>
+    </section>
+
+
+    <section id="display-container">
+      
+      <div id="nodes">
+        <ul>
+          <li class="item-1"><h4 class="gui-headline-bold">Node Name</h4></li>
+          <li class="item-2"><h4 class="gui-headline-bold">Status</h4></li>
+        </ul>
+
+        <div class="node">
+          <div class="item-1">
+            <div class="gui-light status-light inline-block red"></div>
+            <span class="monospace">dev1@127.0.0.1</span>
+          </div>
+          <span class="item-2 monospace">unreachable</span>
+        </div>
+      </div>
+      
+      <div id="handoffs">
+        <ul>
+          <li class="item-1">
+            <h4 class="gui-headline-bold">Index</h4>
+          </li><li class="item-2">
+            <h4 class="gui-headline-bold">Current Owner</h4>
+          </li><li class="item-3">
+            <h4 class="gui-headline-bold">Next Owner</h4>
+          </li><li class="item-4">
+            <h4 class="gui-headline-bold">Waiting For</h4>
+          </li>
+        </ul>
+
+        <div class="partition">
+          <span class="item-1 monospace">
+            3653754093327257...
+          </span><div class="item-2">
+            <span class="monospace">dev1@127.0.01</span>
+            <span class="orange-arrow"></span>
+          </div><span class="item-3 monospace">
+            dev2@127.0.01
+          </span><span class="item-4 monospace">
+            Ownership change
+          </span>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+
+    <!--
+    <div id="partition-list">
+        <table class="list-table" id="ring-table">
+            <thead>
+                <tr class="table-head has-cut">
+                    <th><h3>#</h3></th>
+                    <th><h3>Owner Node</h3></th>
+                    <th><h3>KV</h3></th>
+                    <th><h3>Pipe</h3></th>
+                    <th><h3>Search</h3></th>
+                </tr>
+            </thead>
+            {{#collection RiakControl.PartitionView contentBinding="controller.paginatedContent"}}
+              {{#with view.content}}
+              <td class="partition-number gui-text">{{i}}</td>
+              <td class="owner-box gui-text">
+                  <div class="owner gui-field">{{node}}</div>
+                  <div class="partition-index hide">{{index}}</div>
+              </td>
+              {{/with}}
+              {{#with view}}
+              <td class="kv-box gui-text">
+                  <a {{bindAttr class="kvIndicator lightClasses"}}>
+                      <span class="kv-status">{{kvStatus}}</span>
+                      <span class="hide fallback-to"></span>
+                  </a>
+              </td>
+              <td class="pipe-box gui-text">
+                  <a {{bindAttr class="pipeIndicator lightClasses"}}>
+                      <span class="pipe-status">{{pipeStatus}}</span>
+                      <span class="hide fallback-to"></span>
+                  </a>
+              </td>
+              <td class="search-box gui-text">
+                  <a {{bindAttr class="searchIndicator lightClasses"}}>
+                      <span class="search-status">{{searchStatus}}</span>
+                      <span class="hide fallback-to"></span>
+                  </a>
+              </td>
+              {{/with}}
+            {{/collection}}
+        </table>
+    </div>
+    <div class="cut"></div>
   </div>
-  <div class="cut"></div>
-  <ul class="pagination gui-text">
-    <li name="prev"><span class="paginator" {{action prevPage href=true target="controller"}}>Prev</span></li>
-    {{#each pages}}
-      {{view RiakControl.PaginationItemView contentBinding="this"}}
-    {{/each}}
-    <li name="next"><span class="paginator" {{action nextPage href=true target="controller"}}>Next</span></li>
-  </ul>
-  
+  -->
 </div>
