@@ -52,7 +52,9 @@ minispade.register('core', function() {
      */
     primaryKey: 'index',
 
-    current_owner: DS.attr("string"),
+    index: DS.attr("string"),
+
+    owner: DS.attr("string"),
     next_owner: DS.attr("string"),
 
     waiting_for: DS.attr("string")
