@@ -10,6 +10,7 @@ minispade.register('router', function() {
    */
   RiakControl.Router = Ember.Router.extend(
     /** @scope RiakControl.Router.prototype */ {
+
     root: Ember.Route.extend({
       showSnapshot: Ember.Route.transitionTo('snapshot.index'),
 
@@ -54,6 +55,7 @@ minispade.register('router', function() {
             RiakControl.CurrentAndPlannedCluster.create({
               stagedCluster: [], currentCluster: []
             }));
+
           $.riakControl.markNavActive('nav-cluster');
         },
 
@@ -74,7 +76,8 @@ minispade.register('router', function() {
         route: 'nodes',
 
         connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('nodes', RiakControl.Node.find());
+          router.get('applicationController').
+            connectOutlet('nodes', RiakControl.Node.find());
           $.riakControl.markNavActive('nav-nodes');
         },
 
@@ -101,8 +104,10 @@ minispade.register('router', function() {
         connectOutlets: function(router) {
           router.get('applicationController').
             connectOutlet('ring', RiakControl.RingStatus.find());
+
           router.get('ringController').
             connectOutlet('ringDetails', 'ringDetails', undefined);
+
           $.riakControl.markNavActive('nav-ring');
         },
 
@@ -115,7 +120,8 @@ minispade.register('router', function() {
 
           connectOutlets: function(router) {
             router.get('ringController').
-              connectOutlet('ringDetails', 'unreachableNodes', RiakControl.Node.find());
+              connectOutlet('ringDetails', 'unreachableNodes',
+                RiakControl.Node.find());
           },
 
           enter: function(router) {
