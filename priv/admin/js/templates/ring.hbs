@@ -57,14 +57,14 @@
       <h4 class="gui-headline-bold">Currently Viewing:</h4>
 
       <div class="gui-radio-wrapper first">
-        <input class="gui-radio" type="radio" value="leave"
-        id="unreachable-radio" name="currentlyViewing" checked="checked"
+        <input class="gui-radio" type="radio"
+        id="unreachable-radio" name="currentlyViewing"
           {{action unreachableNodes}}/>
         <label for="unreachable-radio">Unreachable Nodes</label>
       </div>
 
       <div class="gui-radio-wrapper last">
-        <input class="gui-radio" type="radio" value="leave" id="handoff-radio" name="currentlyViewing"
+        <input class="gui-radio" type="radio" id="handoff-radio" name="currentlyViewing"
            {{action ownershipHandoffs}}/>
         <label for="handoff-radio">Ownership Handoffs</label>
       </div>

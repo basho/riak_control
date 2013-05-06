@@ -139,17 +139,16 @@ minispade.register('ring', function() {
    * Controls filtering, pagination and loading/reloading of the partition list
    * for the cluster.
    */
-
   RiakControl.RingController = Ember.ObjectController.extend({
+
+    /**
+     * Determines the ringReady status text.
+     *
+     * @returns {String}
+     */
     ringReady: function(){
-      var ready = this.get('content.ringReady');
-      if(ready === true) {
-        return "True";
-      } else if (ready === false) {
-        return "False";
-      } else {
-        return "";
-      }
+      var ready = this.get('content.ringReady').toString();
+      return ready[0].toUpperCase() + ready.slice(1);
     }.property('content.ringReady')
   });
 

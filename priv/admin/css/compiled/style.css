@@ -1905,6 +1905,10 @@ input.gui-point-button-right:active {
     width: 15%;
   }
 }
+#ring-page #no-details {
+  text-align: center;
+  margin: 25px auto;
+}
 #ring-page .monospace {
   font-family: 'menlo', 'consolas', 'monaco', monospace;
   font-size: 13px;
