@@ -31,7 +31,12 @@ minispade.register('core', function() {
      * responsible for the API requests is running
      * Riak Control.
      */
-    me: DS.attr("boolean")
+    me: DS.attr("boolean"),
+
+    /**
+     * Whether this node is currently the claimant or not.
+     */
+    claimant: DS.attr("boolean")
   });
 
 

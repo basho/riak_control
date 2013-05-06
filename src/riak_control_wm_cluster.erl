@@ -193,10 +193,13 @@ delete_resource(ReqData, Context) ->
 %% @doc Return the current cluster, along with a plan if it's available.
 -spec to_json(wrq:reqdata(), undefined) -> {binary(), wrq:reqdata(), undefined}.
 to_json(ReqData, Context) ->
+    %% Get the current claimant.
+    {ok, Ring} = riak_core_ring_manager:get_my_ring(),
+    Claimant = riak_core_ring:claimant(Ring),
 
     %% Get the current node list.
     {ok, _V, Nodes} = riak_control_session:get_nodes(),
-    Current = [jsonify_node(Node) || Node=#member_info{} <- Nodes],
+    Current = [jsonify_node(Node, Claimant) || Node=#member_info{} <- Nodes],
 
     %% Get the current list of planned changes and updated claim.
     Planned = case riak_control_session:get_plan() of
@@ -205,7 +208,7 @@ to_json(ReqData, Context) ->
         {ok, [], _Claim} ->
             [];
         {ok, Changes, Claim} ->
-            merge_transitions(Nodes, Changes, Claim)
+            merge_transitions(Nodes, Changes, Claim, Claimant)
     end,
 
     %% Generate a list of two clusters, current, and future with
@@ -215,12 +218,12 @@ to_json(ReqData, Context) ->
     {mochijson2:encode({struct,[{cluster,Clusters}]}), ReqData, Context}.
 
 %% @doc Generate a new "planned" cluster which outlines transitions.
--spec merge_transitions(list(#member_info{}), list(), list()) ->
+-spec merge_transitions(list(#member_info{}), list(), list(), node()) ->
     [{struct, list()}].
-merge_transitions(Nodes, Changes, Claim) ->
+merge_transitions(Nodes, Changes, Claim, Claimant) ->
     lists:foldl(fun(Node, TransitionedNodes) ->
                 ChangedNode = apply_changes(Node, Changes, Claim),
-                TransitionedNodes ++ [jsonify_node(ChangedNode)]
+                TransitionedNodes ++ [jsonify_node(ChangedNode, Claimant)]
         end, [], Nodes).
 
 %% @doc Merge change into member info record.
@@ -262,8 +265,8 @@ apply_claim_change(Node, Claim) ->
     end.
 
 %% @doc Turn a node into a proper struct for serialization.
--spec jsonify_node(#member_info{}) -> {struct, list()}.
-jsonify_node(Node) ->
+-spec jsonify_node(#member_info{}, node()) -> {struct, list()}.
+jsonify_node(Node, Claimant) ->
     LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
     MemUsed = Node#member_info.mem_used,
     MemTotal = Node#member_info.mem_total,
@@ -284,6 +287,7 @@ jsonify_node(Node) ->
              {"mem_erlang",Node#member_info.mem_erlang},
              {"low_mem",LowMem},
              {"me",Node#member_info.node == node()},
+             {"claimant",Node#member_info.node == Claimant},
              {"action",Node#member_info.action},
              {"replacement",Node#member_info.replacement}]}.
 
