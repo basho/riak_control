@@ -39,6 +39,26 @@ minispade.register('core', function() {
     claimant: DS.attr("boolean")
   });
 
+  /**
+   * @class
+   *
+   * Model an actual ownership handoff.
+   */
+  RiakControl.Handoff = DS.Model.extend(
+    /** @scope RiakControl.Handoff.prototype */ {
+
+    /**
+     * Use the partition index as a primary key
+     */
+    primaryKey: 'index',
+
+    current_owner: DS.attr("string"),
+    next_owner: DS.attr("string"),
+
+    waiting_for: DS.attr("string")
+
+  });
+
   RiakControl.RingStatus = Ember.Object.extend({
     claimant: undefined,
     ringReady: undefined,

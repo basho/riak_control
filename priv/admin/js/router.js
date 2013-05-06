@@ -138,7 +138,16 @@ minispade.register('router', function() {
 
           connectOutlets: function(router) {
             router.get('ringController').
-              connectOutlet('ringDetails', 'handoffs', []);
+              connectOutlet('ringDetails', 'handoffs',
+                RiakControl.Handoff.find());
+          },
+
+          enter: function(router) {
+            router.get('handoffsController').startInterval();
+          },
+
+          exit: function(router) {
+            router.get('handoffsController').startInterval();
           }
         })
       })

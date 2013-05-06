@@ -79,7 +79,7 @@ minispade.register('ring', function() {
      * @returns {void}
      */
      startInterval: function() {
-       this._intervalId = setInterval($.proxy(this.reload, this), 
+       this._intervalId = setInterval($.proxy(this.reload, this),
         RiakControl.refreshInterval);
      },
 
@@ -120,222 +120,40 @@ minispade.register('ring', function() {
     templateName: 'handoffs'
   });
 
-  RiakControl.HandoffsController = Ember.ArrayController.extend({});
+  RiakControl.HandoffsController = Ember.ArrayController.extend(
+    /** @scope RiakControl.HandoffsController.prototype */ {
 
-  // RiakControl.RingController = Ember.ArrayController.extend(
-  //   /** @scope RiakControl.RingController.prototype */ {
+    /**
+     * Reload the recordarray from the server.
+     *
+     * @returns {void}
+     */
+    reload: function() {
+      this.get('content').reload();
+    },
 
-  //   /**
-  //    * Reload the recordarray from the server.
-  //    *
-  //    * @returns {void}
-  //    */
-  //   reload: function() {
-  //     this.get('content').reload();
-  //   },
+    /**
+     * Called by the router to start the polling interval when the page is selected.
+     *
+     * @returns {void}
+     */
+     startInterval: function() {
+       this._intervalId = setInterval($.proxy(this.reload, this),
+        RiakControl.refreshInterval);
+     },
 
-  //   /**
-  //    * Called by the router to start polling and reloading of partition list when route is entered.
-  //    *
-  //    * @returns {void}
-  //    */
-  //   startInterval: function() {
-  //     this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
-  //   },
-
-  //   /**
-  //    * Called by the router to stop polling when route is left.
-  //    *
-  //    * @returns {void}
-  //    */
-  //   cancelInterval: function() {
-  //     if(this._intervalId) {
-  //       clearInterval(this._intervalId);
-  //     }
-  //   },
-
-  //   /**
-  //    * Given a known number of available pages, generate an array of objects which
-  //    * can be used by the UI for filtering
-  //    *
-  //    * @returns {Array}
-  //    */
-  //   pages: function() {
-  //     var availablePages = this.get('availablePages'),
-  //         pages = [],
-  //         page;
-
-  //     for (i = 0; i < availablePages; i++) {
-  //       page = i + 1;
-  //       pages.push({ page_id: page.toString() });
-  //     }
-
-  //     return pages;
-  //   }.property('availablePages'),
-
-  //   /**
-  //    * Returns the currently selected page as Integer.
-  //    *
-  //    * @returns {Integer}
-  //    */
-  //   currentPage: function() {
-  //     return this.get('selectedPage') || 1;
-  //   }.property('selectedPage'),
-
-  //   /**
-  //    * Handle the nextPage event.  Call to the router to advance to the appropriate
-  //    * page.
-  //    *
-  //    * @returns {void}
-  //    */
-  //   nextPage: function() {
-  //     var availablePages = this.get('availablePages');
-  //     var currentPage = parseInt(this.get('currentPage'), 10);
-  //     var pages = this.get('pages');
-  //     var nextPage;
-
-  //     nextPage = currentPage + 1;
-
-  //     if(nextPage > availablePages) {
-  //       nextPage = nextPage - availablePages;
-  //     }
-
-  //     RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
-  //   },
-
-  //   /**
-  //    * Handle the prevPage event.  Call to the router to advance to the appropriate
-  //    * page.
-  //    *
-  //    * @returns {void}
-  //    */
-  //   prevPage: function() {
-  //     var availablePages = this.get('availablePages');
-  //     var currentPage = parseInt(this.get('currentPage'), 10);
-  //     var pages = this.get('pages');
-  //     var nextPage;
-
-  //     nextPage = currentPage - 1;
-
-  //     if(nextPage <= 0) {
-  //       nextPage = nextPage + availablePages;
-  //     }
-
-  //     RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
-  //   },
-
-  //   /**
-  //    * Determine the number of available pages for pagination.
-  //    *
-  //    * @returns {Number}
-  //    */
-  //   availablePages: function() {
-  //     var length = this.get('filteredContent.length');
-  //     var itemsPerPage = 32;
-
-  //     return (length / itemsPerPage) || 1;
-  //   }.property('filteredContent.length'),
-
-  //   /**
-  //    * Returns filtered content, paginated based on the currently applied
-  //    * selectedPage property
-  //    *
-  //    * @returns {Array}
-  //    */
-  //   paginatedContent: function() {
-  //     var filteredContent = this.get('filteredContent');
-  //     var selectedPage = this.get('selectedPage') || 1;
-
-  //     var itemsPerPage = 32;
-  //     var upperBound = (selectedPage * itemsPerPage);
-  //     var lowerBound = (selectedPage * itemsPerPage) - itemsPerPage;
-
-  //     return this.get('filteredContent').slice(lowerBound, upperBound);
-  //   }.property('selectedPage', 'filteredContent.@each'),
-
-  //   /**
-  //    * Returns content filtered based on the currently applied
-  //    * selectedPartitionFilter property.
-  //    *
-  //    * @returns {Array}
-  //    */
-  //   filteredContent: function() {
-  //     var selectedPartitionFilter = this.get('selectedPartitionFilter');
-
-  //     if(selectedPartitionFilter) {
-  //       var filterType = selectedPartitionFilter.get('type');
-  //       var filterValue = selectedPartitionFilter.get('value');
-  //       var self = this;
-  //       var filtered;
-
-  //       if(filterType) {
-  //         if(filterType == 'vnodes') {
-  //           filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
-  //             return self.get('content').filterProperty(property + '_vnode_status', filterValue);
-  //           });
-
-  //           return filtered.reduce(function(a, b) { return a.concat(b); }).uniq();
-  //         } else {
-  //           return this.get('content').filterProperty(filterType, filterValue);
-  //         }
-  //       } else {
-  //         return this.get('content');
-  //       }
-  //     } else {
-  //       return this.get('content');
-  //     }
-  //   }.property('selectedPartitionFilter', 'content.@each')
-  // });
-
-  // /**
-  //  * @class
-  //  *
-  //  * View containing a select field and wrapper for filtering content.
-  //  */
-  // RiakControl.PartitionFilterView = Ember.View.extend(
-  //   /** @scope RiakControl.PartitionFilterView.prototype */ {
-  //   templateName: 'partition_filter'
-  // });
-
-  // /**
-  //  * @class
-  //  *
-  //  * View rendering the select box for filtering, handling on change
-  //  * events and updating of the div wrapping it.
-  //  */
-  // RiakControl.PartitionFilterSelectView = Ember.Select.extend(
-  //   /** @scope RiakControl.PartitionFilterSelectView.prototype */ {
-
-  //   /**
-  //    * As the select is currently wrapped in a span for prettyfying the display,
-  //    * as the selected value updates, update the display.
-  //    *
-  //    * @returns {void}
-  //    */
-  //   updateDisplay: function() {
-  //     var val  = this.get('controller.selectedPartitionFilter.name'),
-  //         item = this.$();
-  //     Ember.run.next(function() {
-  //       item.prev().prev().text(val);
-  //     });
-  //   }.observes('controller.selectedPartitionFilter'),
-
-  //   /**
-  //    * When the value changes, call to the router to navigate to the appropriate
-  //    * filtered view.
-  //    *
-  //    * @returns {void}
-  //    */
-  //   change: function(ev) {
-  //     var selection = this.get('selection');
-
-  //     if(selection) {
-  //       RiakControl.get('router').send('filterRing', this.get('selection'));
-  //     } else {
-  //       RiakControl.get('router').send('showRing');
-  //     }
-  //   }
-  // });
+    /**
+     * Called by the router to stop the polling interval when the page is navigated
+     * away from.
+     *
+     * @returns {void}
+     */
+    cancelInterval: function() {
+      if(this._intervalId) {
+        clearInterval(this._intervalId);
+      }
+    }
+  });
 
   /**
    * @class
