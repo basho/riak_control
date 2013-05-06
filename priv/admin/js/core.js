@@ -39,7 +39,6 @@ minispade.register('core', function() {
     claimant: DS.attr("boolean")
   });
 
-
   RiakControl.RingStatus = Ember.Object.extend({
     claimant: undefined,
     ringReady: undefined,
