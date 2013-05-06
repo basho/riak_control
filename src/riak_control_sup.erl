@@ -55,6 +55,7 @@ init([]) ->
         true ->
             Resources = [{admin, riak_control_wm_gui},
                          {admin, riak_control_wm_cluster},
+                         {admin, riak_control_wm_handoffs},
                          {admin, riak_control_wm_nodes},
                          {admin, riak_control_wm_partitions}
                         ],
