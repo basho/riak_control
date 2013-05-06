@@ -186,7 +186,49 @@ minispade.register('ring', function() {
   });
 
   RiakControl.RingDetailsController = Ember.Controller.extend();
-  RiakControl.UnreachableNodesController = Ember.ArrayController.extend();
+
+  RiakControl.UnreachableNodesController = Ember.ArrayController.extend(
+    /** @scope RiakControl.UnreachableNodesController.prototype */ {
+
+    /**
+     * Filter out the reachable nodes.
+     * */
+    filteredContent: function() {
+      return this.get('content').filterProperty('reachable', false);
+    }.property('content', 'content.@each'),
+
+    /**
+     * Reload the recordarray from the server.
+     *
+     * @returns {void}
+     */
+    reload: function() {
+      this.get('content').reload();
+    },
+
+    /**
+     * Called by the router to start the polling interval when the page is selected.
+     *
+     * @returns {void}
+     */
+     startInterval: function() {
+       this._intervalId = setInterval($.proxy(this.reload, this), 
+        RiakControl.refreshInterval);
+     },
+
+    /**
+     * Called by the router to stop the polling interval when the page is navigated
+     * away from.
+     *
+     * @returns {void}
+     */
+    cancelInterval: function() {
+      if(this._intervalId) {
+        clearInterval(this._intervalId);
+      }
+    }
+  });
+
   RiakControl.RingDetailsView = Ember.View.extend({
     templateName: 'ring_details'
   });

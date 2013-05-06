@@ -28,7 +28,8 @@ minispade.register('router', function() {
         route: 'snapshot',
 
         connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('snapshot', RiakControl.Node.find());
+          router.get('applicationController').
+            connectOutlet('snapshot', RiakControl.Node.find());
           $.riakControl.markNavActive('nav-snapshot');
         },
 
@@ -93,31 +94,16 @@ minispade.register('router', function() {
       ring: Ember.Route.extend({
         route: 'ring',
 
-        // filterRing: Ember.Route.transitionTo('ring.filtered.index'),
-
-        // paginateRing: Ember.Route.transitionTo('paginated'),
-
         unreachableNodes: Ember.Route.transitionTo('nodes'),
 
         ownershipHandoffs: Ember.Route.transitionTo('handoffs'),
 
         connectOutlets: function(router) {
-          // outlet, controller/view, context
-          router.get('applicationController').connectOutlet('ring', RiakControl.RingStatus.find());
-          router.get('ringController').connectOutlet('ringDetails', 'ringDetails', undefined);
-          // router.get('ringController').connectOutlet('partitionFilter', 'partitionFilter', RiakControl.Node.find());
-          // router.get('applicationController').connectOutlet('ring');
+          router.get('applicationController').
+            connectOutlet('ring', RiakControl.RingStatus.find());
+          router.get('ringController').
+            connectOutlet('ringDetails', 'ringDetails', undefined);
           $.riakControl.markNavActive('nav-ring');
-        },
-
-        enter: function(router) {
-          // router.get('ringController').startInterval();
-          // router.get('partitionFilterController').startInterval();
-        },
-
-        exit: function(router) {
-          // router.get('ringController').cancelInterval();
-          // router.get('partitionFilterController').cancelInterval();
         },
 
         index: Ember.Route.extend({
@@ -126,77 +112,29 @@ minispade.register('router', function() {
 
         nodes: Ember.Route.extend({
           route: 'nodes',
-          connectOutlets: function(router){
-            router.get('ringController').connectOutlet('ringDetails', 'unreachableNodes', []);
+
+          connectOutlets: function(router) {
+            router.get('ringController').
+              connectOutlet('ringDetails', 'unreachableNodes', RiakControl.Node.find());
+          },
+
+          enter: function(router) {
+            router.get('unreachableNodesController').startInterval();
+          },
+
+          exit: function(router) {
+            router.get('unreachableNodesController').startInterval();
           }
         }),
 
         handoffs: Ember.Route.extend({
           route: 'handoffs',
-          connectOutlets: function(router){
-            router.get('ringController').connectOutlet('ringDetails', 'handoffs', []);
+
+          connectOutlets: function(router) {
+            router.get('ringController').
+              connectOutlet('ringDetails', 'handoffs', []);
           }
         })
-
-        // paginated: Ember.Route.extend({
-        //   route: '/page/:page_id',
-
-        //   connectOutlets: function(router, context) {
-        //     router.get('ringController').set('selectedPage', context.page_id);
-        //   },
-
-        //   exit: function(router) {
-        //     router.get('ringController').set('selectedPage', undefined);
-        //   }
-        // }),
-
-        // filtered: Ember.Route.extend({
-        //   route: '/filter/:filterType/:filterValue',
-
-        //   serialize: function(router, context) {
-        //     if(context) {
-        //       return {
-        //         filterType: context.type,
-        //         filterValue: context.value
-        //       };
-        //     } else {
-        //       return {};
-        //     }
-        //   },
-
-        //   deserialize: function(router, params) {
-        //     return RiakControl.PartitionFilter.create({
-        //       type: params.filterType,
-        //       value: params.filterValue
-        //     });
-        //   },
-
-        //   connectOutlets: function(router, context) {
-        //     router.get('ringController').set('selectedPartitionFilter', context);
-        //     router.get('partitionFilterController').set('selectedPartitionFilterValue', context.value);
-        //   },
-
-        //   exit: function(router) {
-        //     router.get('ringController').set('selectedPartitionFilter', undefined);
-        //     router.get('partitionFilterController').set('selectedPartitionFilterValue', undefined);
-        //   },
-
-        //   index: Ember.Route.extend({
-        //     route: '/'
-        //   }),
-
-        //   paginated: Ember.Route.extend({
-        //     route: '/page/:page_id',
-
-        //     connectOutlets: function(router, context) {
-        //       router.get('ringController').set('selectedPage', context.page_id);
-        //     },
-
-        //     exit: function(router) {
-        //       router.get('ringController').set('selectedPage', undefined);
-        //     }
-          // })
-        // })
       })
     })
   });
