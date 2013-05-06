@@ -149,7 +149,40 @@ minispade.register('ring', function() {
     ringReady: function(){
       var ready = this.get('content.ringReady').toString();
       return ready[0].toUpperCase() + ready.slice(1);
-    }.property('content.ringReady')
+    }.property('content.ringReady'),
+
+    /**
+     * Determines class names for the claimant node's indicator light.
+     * CURRENTLY RETURNS EXAMPLE CODE.
+     *
+     * @returns {String} - Class names specifying light color.
+     */
+    claimantIndicatorLight: function () {
+      return "gui-light status-light inline-block green";
+    }.property(),
+
+    /**
+     * Determines class names for the ringReady field's indicator light.
+     * CURRENTLY RETURNS EXAMPLE CODE.
+     *
+     * @returns {String} - Class names specifying light color.
+     */
+    ringReadyIndicatorLight: function () {
+      return "ring-light inline-block green";
+    }.property(),
+
+    /**
+     * Determines class names for the currentHandoff field's indicator light.
+     *
+     * @returns {String} - Class names specifying light color.
+     */
+    currentHandoffsIndicatorLight: function () {
+      if (this.get('content.currentHandoffs') > 0) {
+        return "gui-light status-light inline-block orange";
+      } else {
+        return "gui-light status-light inline-block gray";
+      }
+    }.property('content.currentHandoffs')
   });
 
   RiakControl.RingDetailsController = Ember.Controller.extend();
