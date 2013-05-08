@@ -104,6 +104,9 @@ minispade.register('ring', function() {
     templateName: 'unreachable_nodes'
   });
 
+  /**
+   * Specifies which template to use for listing out bad nodes.
+   */
   RiakControl.UnreachableNodeView = Ember.View.extend(
     RiakControl.NodeProperties,
     {
@@ -111,15 +114,22 @@ minispade.register('ring', function() {
     }
   );
 
+  /**
+   * Creates a collection of bad nodes.
+   */
   RiakControl.UnreachableNodesCollectionView = Ember.CollectionView.extend({
     tagName: 'div',
     itemViewClass: RiakControl.UnreachableNodeView
   });
 
+  /**
+   * Specified which template to use for listing out handoffs.
+   */
   RiakControl.HandoffsView = Ember.View.extend({
     templateName: 'handoffs'
   });
 
+  
   RiakControl.HandoffsController = Ember.ArrayController.extend(
     /** @scope RiakControl.HandoffsController.prototype */ {
 
