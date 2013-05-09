@@ -97,7 +97,7 @@ to_json(ReqData, Context) ->
 %% @doc Format transfers.
 -spec format_transfers({term(), term()}, list(), list()) -> list().
 format_transfers({Owner, NextOwner}, Transfers, Handoffs) ->
-    Handoffs ++ lists:map(fun({Index, Waiting, _Complete, Status}) ->
+    Handoffs ++ lists:flatmap(fun({Index, Waiting, _Complete, Status}) ->
                 case Status of
                     complete ->
                         [];
