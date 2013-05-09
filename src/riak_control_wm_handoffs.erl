@@ -84,9 +84,9 @@ content_types_provided(ReqData, Context) ->
 -spec to_json(wrq:reqdata(), undefined) -> {binary(), wrq:reqdata(), undefined}.
 to_json(ReqData, Context) ->
     Handoffs = case riak_control_session:get_transfers() of
-        {ok, []} ->
+        {ok, _V, []} ->
             [];
-        {ok, Transfers} ->
+        {ok, _V, Transfers} ->
             orddict:fold(fun format_transfers/3, [], Transfers)
     end,
     Encoded = mochijson2:encode({struct, [{handoffs, Handoffs}]}),

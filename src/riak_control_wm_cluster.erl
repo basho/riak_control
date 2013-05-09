@@ -183,9 +183,9 @@ extract_changes(ReqData, _Context) ->
     {true, wrq:reqdata(), undefined}.
 delete_resource(ReqData, Context) ->
     Result = case riak_control_session:clear_plan() of
-        {ok, ok} ->
+        ok ->
             true;
-        {ok, error} ->
+        error ->
             false
     end,
     {Result, ReqData, Context}.

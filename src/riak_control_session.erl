@@ -58,7 +58,8 @@
                 ring        :: ring(),
                 partitions  :: partitions(),
                 nodes       :: members(),
-                update_tick :: boolean()}).
+                update_tick :: boolean(),
+                transfers   :: transfers()}).
 
 -type normalized_action() :: leave
                            | remove
@@ -130,7 +131,7 @@ commit_plan() ->
     gen_server:call(?MODULE, commit_plan, infinity).
 
 %% @doc Clear the staged cluster plan.
--spec clear_plan() -> {ok, ok | error}.
+-spec clear_plan() -> ok | error.
 clear_plan() ->
     gen_server:call(?MODULE, clear_plan, infinity).
 
@@ -166,24 +167,24 @@ init([]) ->
 
     %% the initial state of the session
     State=#state{vsn=1,
-                 partitions=[],
                  nodes=[],
                  services=[],
+                 transfers=[],
+                 partitions=[],
                  update_tick=false},
 
     %% start the server
     {ok, update_ring(State, Ring)}.
 
-handle_call(get_transfers, _From, State) ->
-    {reply, retrieve_transfers(), State};
+handle_call(get_plan, _From, State) ->
+    {reply, retrieve_plan(), State};
+handle_call(clear_plan, _From, State) ->
+    {reply, maybe_clear_plan(), State};
 handle_call(commit_plan, _From, State) ->
     {reply, maybe_commit_plan(), State};
 handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
     {reply, maybe_stage_change(Node, Action, Replacement), State};
-handle_call(clear_plan, _From, State) ->
-    {reply, {ok, maybe_clear_plan()}, State};
-handle_call(get_plan, _From, State) ->
-    {reply, retrieve_plan(), State};
+
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
@@ -192,6 +193,8 @@ handle_call(get_nodes, _From, State=#state{vsn=V,nodes=N}) ->
     {reply, {ok, V, N}, State};
 handle_call(get_services, _From, State=#state{vsn=V,services=S}) ->
     {reply, {ok, V, S}, State};
+handle_call(get_transfers, _From, State=#state{vsn=V,transfers=T}) ->
+    {reply, {ok, V, T}, State};
 handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
     {reply, {ok, V, P}, State}.
 
@@ -207,8 +210,10 @@ handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
 %% @end
 handle_cast({update_ring, Ring}, State=#state{update_tick=Tick}) ->
     case Tick of
-        false -> {noreply,update_ring(State,Ring)};
-        true -> {noreply,State}
+        false ->
+            {noreply, update_ring(State,Ring)};
+        true ->
+            {noreply, State}
     end;
 handle_cast(update_ring,State) ->
     {ok, Ring}=riak_core_ring_manager:get_my_ring(),
@@ -262,7 +267,21 @@ update_ring(State, Ring) ->
     erlang:send_after(?UPDATE_TICK_TIMEOUT, self(), clear_update_tick),
     NodeState = update_nodes(State#state{update_tick=true, ring=Ring}),
     NewState = update_partitions(NodeState),
-    rev_state(NewState).
+    FinalState = update_transfers(NewState),
+    rev_state(FinalState).
+
+%% @doc Update transfers.
+-spec update_transfers(#state{}) -> #state{}.
+update_transfers(State) ->
+    Transfers = case riak_core_gossip:legacy_gossip() of
+        true ->
+            [];
+        false ->
+            {_Claimant, _RingReady, _Down, _MarkedDown, Changes} =
+                riak_core_status:ring_status(),
+            Changes
+    end,
+    State#state{transfers=Transfers}.
 
 %% @doc Update ring.
 -spec update_nodes(#state{}) -> #state{}.
@@ -477,16 +496,3 @@ maybe_stage_change(Node, Action, Replacement) ->
         stop ->
             rpc:call(Node, riak_core, stop, [])
     end.
-
-%% @doc Retrieve transfers from the ring.
--spec retrieve_transfers() -> {ok, [{term(), term()}]}.
-retrieve_transfers() ->
-    Transfers = case riak_core_gossip:legacy_gossip() of
-        true ->
-            [];
-        false ->
-            {_Claimant, _RingReady, _Down, _MarkedDown, Changes} =
-                riak_core_status:ring_status(),
-            Changes
-    end,
-    {ok, Transfers}.
