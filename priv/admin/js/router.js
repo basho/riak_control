@@ -18,7 +18,7 @@ minispade.register('router', function() {
 
       showNodes: Ember.Route.transitionTo('nodes.index'),
 
-      showRing: Ember.Route.transitionTo('ring.index'),
+      showRing: Ember.Route.transitionTo('ring.nodes'),
 
       index: Ember.Route.extend({
         route: '/',
@@ -97,9 +97,9 @@ minispade.register('router', function() {
       ring: Ember.Route.extend({
         route: 'ring',
 
-        unreachableNodes: Ember.Route.transitionTo('nodes'),
+        showUnreachableNodes: Ember.Route.transitionTo('nodes'),
 
-        ownershipHandoffs: Ember.Route.transitionTo('handoffs'),
+        showOwnershipHandoffs: Ember.Route.transitionTo('handoffs'),
 
         connectOutlets: function(router) {
           router.get('applicationController').
@@ -110,10 +110,6 @@ minispade.register('router', function() {
 
           $.riakControl.markNavActive('nav-ring');
         },
-
-        index: Ember.Route.extend({
-          route: '/'
-        }),
 
         nodes: Ember.Route.extend({
           route: 'nodes',
@@ -129,7 +125,7 @@ minispade.register('router', function() {
           },
 
           exit: function(router) {
-            router.get('unreachableNodesController').startInterval();
+            router.get('unreachableNodesController').cancelInterval();
           }
         }),
 
@@ -147,7 +143,7 @@ minispade.register('router', function() {
           },
 
           exit: function(router) {
-            router.get('handoffsController').startInterval();
+            router.get('handoffsController').cancelInterval();
           }
         })
       })

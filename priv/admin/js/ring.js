@@ -110,7 +110,16 @@ minispade.register('ring', function() {
   RiakControl.UnreachableNodeView = Ember.View.extend(
     RiakControl.NodeProperties,
     {
-      templateName: 'bad_node'
+      templateName:       'bad_node',
+      nameBinding:        'content.name',
+      reachableBinding:   'content.reachable',
+      statusBinding:      'content.status',
+      ring_pctBinding:    'content.ring_pct',
+      pending_pctBinding: 'content.pending_pct',
+      mem_totalBinding:   'content.mem_total',
+      mem_usedBinding:    'content.mem_used',
+      mem_erlangBinding:  'content.mem_erlang',
+      meBinding:          'content.me'
     }
   );
 

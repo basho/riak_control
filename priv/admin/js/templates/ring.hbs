@@ -1,4 +1,3 @@
-
 <div id="ring-page">
 
   <section id="title-container">
@@ -46,7 +45,7 @@
 
       <div class="clear"></div>
     </section>
-    
+
     <h2 class="gui-headline">View Details<br/></h2>
     <span class="gui-text-flat italic">
       Use this section to determine whether unreachable nodes are preventing
@@ -59,19 +58,18 @@
       <div class="gui-radio-wrapper first">
         <input class="gui-radio" type="radio"
         id="unreachable-radio" name="currentlyViewing"
-          {{action unreachableNodes}}/>
+          {{action showUnreachableNodes}}/>
         <label for="unreachable-radio">Unreachable Nodes</label>
       </div>
 
       <div class="gui-radio-wrapper last">
         <input class="gui-radio" type="radio" id="handoff-radio" name="currentlyViewing"
-           {{action ownershipHandoffs}}/>
+           {{action showOwnershipHandoffs}}/>
         <label for="handoff-radio">Ownership Handoffs</label>
       </div>
     </section>
 
-
     <section id="display-container">
-      {{ outlet ringDetails }}      
+      {{ outlet ringDetails }}
     </section>
 </div>
