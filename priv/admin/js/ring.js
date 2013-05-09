@@ -6,7 +6,8 @@ minispade.register('ring', function() {
    * Controls filtering, pagination and loading/reloading of the partition list
    * for the cluster.
    */
-  RiakControl.RingController = Ember.ObjectController.extend({
+  RiakControl.RingController = Ember.ObjectController.extend(
+    /** @scope RiakControl.RingController.prototype */ {
 
     /**
      * Determines the ringReady status text.
@@ -52,7 +53,9 @@ minispade.register('ring', function() {
     }.property('content.currentHandoffs')
   });
 
-  RiakControl.RingDetailsController = Ember.Controller.extend();
+  RiakControl.RingDetailsController = Ember.Controller.extend(
+    /** @scope RiakControl.RingDetailsController.prototype */ {
+    });
 
   RiakControl.UnreachableNodesController = Ember.ArrayController.extend(
     /** @scope RiakControl.UnreachableNodesController.prototype */ {
@@ -96,19 +99,34 @@ minispade.register('ring', function() {
     }
   });
 
-  RiakControl.RingDetailsView = Ember.View.extend({
+  /**
+   * @class
+   *
+   * Container for the ring details.
+   */
+  RiakControl.RingDetailsView = Ember.View.extend(
+    /** @scope RiakControl.RingDetailsView.prototype */ {
     templateName: 'ring_details'
   });
 
-  RiakControl.UnreachableNodesView = Ember.View.extend({
+  /**
+   * @class
+   *
+   * Unreachable node list.
+   */
+  RiakControl.UnreachableNodesView = Ember.View.extend(
+    /** @scope RiakControl.UnreachableNodesView.prototype */ {
     templateName: 'unreachable_nodes'
   });
 
   /**
+   * @class
+   *
    * Specifies which template to use for listing out bad nodes.
    */
   RiakControl.UnreachableNodeView = Ember.View.extend(
     RiakControl.NodeProperties,
+    /** @scope RiakControl.UnreachableNodeView.prototype */
     {
       templateName:       'bad_node',
       nameBinding:        'content.name',
@@ -124,21 +142,59 @@ minispade.register('ring', function() {
   );
 
   /**
+   * @class
+   *
+   * Specifies which template to use for listing out bad nodes.
+   */
+  RiakControl.HandoffView = Ember.View.extend(
+    RiakControl.NodeProperties,
+    /** @scope RiakControl.HandoffView.prototype */
+    {
+      templateName:       'handoff',
+      indexBinding:       'content.index',
+      ownerBinding:       'content.owner',
+      next_ownerBinding:  'content.next_owner',
+      waiting_forBinding: 'content.waiting_for'
+    }
+  );
+
+  /**
+   * @class
+   *
    * Creates a collection of bad nodes.
    */
-  RiakControl.UnreachableNodesCollectionView = Ember.CollectionView.extend({
+  RiakControl.UnreachableNodesCollectionView = Ember.CollectionView.extend(
+    /** @scope RiakControl.UnreachableNodesCollectionView.prototype */ {
     tagName: 'div',
     itemViewClass: RiakControl.UnreachableNodeView
   });
 
   /**
+   * @class
+   *
+   * Creates a collection of handoffs.
+   */
+  RiakControl.HandoffsCollectionView = Ember.CollectionView.extend(
+    /** @scope RiakControl.HandoffsCollectionView.prototype */ {
+    tagName: 'div',
+    itemViewClass: RiakControl.HandoffView
+  });
+
+  /**
+   * @class
+   *
    * Specified which template to use for listing out handoffs.
    */
-  RiakControl.HandoffsView = Ember.View.extend({
+  RiakControl.HandoffsView = Ember.View.extend(
+    /** @scope RiakControl.HandoffsView.prototype */ {
     templateName: 'handoffs'
   });
 
-  
+  /**
+   * @class
+   *
+   * Responsible for loading all of the handoffs.
+   */
   RiakControl.HandoffsController = Ember.ArrayController.extend(
     /** @scope RiakControl.HandoffsController.prototype */ {
 
