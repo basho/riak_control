@@ -1912,6 +1912,8 @@ input.gui-point-button-right:active {
 #ring-page .monospace {
   font-family: 'menlo', 'consolas', 'monaco', monospace;
   font-size: 13px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 #ring-page #current-area {
   max-width: 850px;
