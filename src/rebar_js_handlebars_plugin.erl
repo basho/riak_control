@@ -79,7 +79,7 @@
 %% ===================================================================
 %% Public API
 %% ===================================================================
-
+-spec compile(rebar_config:config(), undefined) -> ok.
 compile(Config, _AppFile) ->
     Options = options(Config),
     OutDir = option(out_dir, Options),
@@ -89,6 +89,7 @@ compile(Config, _AppFile) ->
         normalize_paths(Sources, DocRoot), Options} || {Destination, Sources} <- Templates],
     build_each(Targets).
 
+-spec clean(rebar_config:config(), undefined) -> ok.
 clean(Config, _AppFile) ->
     Options = options(Config),
     OutDir = option(out_dir, Options),
@@ -96,8 +97,8 @@ clean(Config, _AppFile) ->
     Targets = [normalize_path(Destination, OutDir) || {Destination, _} <- Templates],
     delete_each(Targets).
 
-%% @spec handlebars(list(), list(), list(), list()) -> binary()
 %% @doc Generate a handlebars compiler line.
+-spec handlebars(list(), list(), list(), list()) -> binary().
 handlebars(Name, Body, Target, Compiler) ->
     Targeted = lists:flatten([Target, "['" ++ ensure_list(Name) ++ "']"]),
     Compiled = lists:flatten([Compiler, "('" ++ ensure_list(Body) ++ "');\n"]),
