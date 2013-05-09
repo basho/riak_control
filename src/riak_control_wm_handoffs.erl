@@ -102,12 +102,17 @@ format_transfers({Owner, NextOwner}, Transfers, Handoffs) ->
                     complete ->
                         [];
                     awaiting ->
-                        [{struct,[{"index", Index},
-                                 {"owner", Owner},
-                                 {"next_owner", NextOwner},
+                        [{struct,[{"index", format_index(Index)},
+                                  {"owner", Owner},
+                                  {"next_owner", NextOwner},
                                   {"waiting_for", Waiting}]}]
                 end
         end, Transfers).
+
+%% @doc Format index as binary.
+-spec format_index(number()) -> binary().
+format_index(Index) ->
+    list_to_binary(integer_to_list(Index)).
 
 %% @doc Retrieve transfers from the ring.
 -spec retrieve_transfers() -> [{term(), term()}].
