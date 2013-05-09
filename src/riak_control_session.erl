@@ -35,6 +35,7 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
+         get_transfers/0,
          get_plan/0,
          clear_plan/0,
          stage_change/3,
@@ -106,6 +107,11 @@ get_services() ->
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
+%% @doc Return partition list.
+-spec get_transfers() -> {ok, transfers()}.
+get_transfers() ->
+    gen_server:call(?MODULE, get_transfers, infinity).
+
 %% @doc Get the staged cluster plan.
 -spec get_plan() -> {ok, list(), list()} | {error, atom()}.
 get_plan() ->
@@ -168,6 +174,8 @@ init([]) ->
     %% start the server
     {ok, update_ring(State, Ring)}.
 
+handle_call(get_transfers, _From, State) ->
+    {reply, retrieve_transfers(), State};
 handle_call(commit_plan, _From, State) ->
     {reply, maybe_commit_plan(), State};
 handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
@@ -469,3 +477,16 @@ maybe_stage_change(Node, Action, Replacement) ->
         stop ->
             rpc:call(Node, riak_core, stop, [])
     end.
+
+%% @doc Retrieve transfers from the ring.
+-spec retrieve_transfers() -> {ok, [{term(), term()}]}.
+retrieve_transfers() ->
+    Transfers = case riak_core_gossip:legacy_gossip() of
+        true ->
+            [];
+        false ->
+            {_Claimant, _RingReady, _Down, _MarkedDown, Changes} =
+                riak_core_status:ring_status(),
+            Changes
+    end,
+    {ok, Transfers}.

@@ -37,8 +37,6 @@
          service_available/2,
          content_types_provided/2]).
 
--export([retrieve_transfers/0]).
-
 -include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
@@ -85,17 +83,17 @@ content_types_provided(ReqData, Context) ->
 %% @doc Return the list of handoffs.
 -spec to_json(wrq:reqdata(), undefined) -> {binary(), wrq:reqdata(), undefined}.
 to_json(ReqData, Context) ->
-    Handoffs = case retrieve_transfers() of
-        [] ->
+    Handoffs = case riak_control_session:get_transfers() of
+        {ok, []} ->
             [];
-        Transfers ->
+        {ok, Transfers} ->
             orddict:fold(fun format_transfers/3, [], Transfers)
     end,
     Encoded = mochijson2:encode({struct, [{handoffs, Handoffs}]}),
     {Encoded, ReqData, Context}.
 
 %% @doc Format transfers.
--spec format_transfers({term(), term()}, list(), list()) -> list().
+-spec format_transfers({term(), term()}, transfers(), list()) -> list().
 format_transfers({Owner, NextOwner}, Transfers, Handoffs) ->
     Handoffs ++ lists:flatmap(fun({Index, Waiting, _Complete, Status}) ->
                 case Status of
@@ -113,15 +111,3 @@ format_transfers({Owner, NextOwner}, Transfers, Handoffs) ->
 -spec format_index(number()) -> binary().
 format_index(Index) ->
     list_to_binary(integer_to_list(Index)).
-
-%% @doc Retrieve transfers from the ring.
--spec retrieve_transfers() -> [{term(), term()}].
-retrieve_transfers() ->
-    case riak_core_gossip:legacy_gossip() of
-        true ->
-            [];
-        false ->
-            {_Claimant, _RingReady, _Down, _MarkedDown, Changes} =
-                riak_core_status:ring_status(),
-            Changes
-    end.
