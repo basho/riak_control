@@ -2025,6 +2025,7 @@ input.gui-point-button-right:active {
   margin-right: 33px;
   position: relative;
   max-height: 372px;
+  overflow: auto;
 }
 #ring-page #display-container #nodes ul,
 #ring-page #display-container #handoffs ul {
@@ -2042,13 +2043,14 @@ input.gui-point-button-right:active {
   width: 15%;
 }
 #ring-page #display-container #handoffs .item-1 {
-  width: 25%;
+  width: 22%;
+  margin-right: 3%;
 }
 #ring-page #display-container #handoffs .item-2 {
   width: 28%;
 }
 #ring-page #display-container #handoffs .item-2 span.monospace {
-  padding-top: 5px;
+  padding-top: 6px;
 }
 #ring-page #display-container #handoffs .item-3 {
   width: 22%;
@@ -2087,6 +2089,21 @@ input.gui-point-button-right:active {
   }
   #ring-page #summary-info .item-1 .field-container {
     width: 75%;
+  }
+  #ring-page #display-container #handoffs .orange-arrow {
+    display: none;
+  }
+  #ring-page #display-container #handoffs .item-2 {
+    width: 22%;
+    margin-right: 3%;
+  }
+  #ring-page #display-container #handoffs .item-2 span.monospace {
+    width: 100%;
+    padding-top: 0;
+    line-height: 1.2;
+  }
+  #ring-page #display-container #handoffs .item-3 {
+    margin-right: 3%;
   }
 }
 @media screen and (max-width: 750px) {

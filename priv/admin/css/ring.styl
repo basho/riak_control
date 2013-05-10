@@ -123,6 +123,7 @@ CSS to be applied ONLY on the snapshot page
     margin-right  : 33px
     position      : relative
     max-height    : 372px
+    overflow      : auto
 
     #nodes, #handoffs
       ul 
@@ -140,11 +141,12 @@ CSS to be applied ONLY on the snapshot page
     
     #handoffs
       .item-1
-        width : 25%
+        width        : 22%
+        margin-right : 3%
       .item-2
         width : 28%
         span.monospace
-          padding-top : 5px
+          padding-top : 6px
       .item-3
         width : 22%
       .item-4
@@ -175,6 +177,21 @@ CSS to be applied ONLY on the snapshot page
         padding-right : 0
         .field-container
           width : 75%
+
+    #display-container #handoffs
+      .orange-arrow
+        display : none
+
+      .item-2
+        width : 22%
+        margin-right : 3%;
+        span.monospace
+          width       : 100%
+          padding-top : 0;
+          line-height : 1.2
+
+      .item-3
+        margin-right : 3%
 
   @media screen and (max-width: 750px)
     #summary-info
