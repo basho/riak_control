@@ -109,7 +109,7 @@ get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
 
 %% @doc Return partition list.
--spec get_transfers() -> {ok, transfers()}.
+-spec get_transfers() -> {ok, version(), transfers()}.
 get_transfers() ->
     gen_server:call(?MODULE, get_transfers, infinity).
 
