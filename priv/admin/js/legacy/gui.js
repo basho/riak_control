@@ -8,7 +8,6 @@
 $(document).ready(function() {
   $.riakControl = $.riakControl || {};
 
-
   // MARK THE ACTIVE NAV ICON WITH THE PROPER CLASS
   $.riakControl.markNavActive = $.riakControl.markNavActive || function markNavActive(id) {
     Ember.run.next(function() {
@@ -22,7 +21,6 @@ $(document).ready(function() {
       });
     });
   };
-
 
   // MAKE CHECKBOXES WORK WHEN YOU CLICK THEM
   $(document).on('change', '.gui-checkbox', function(e) {
