@@ -77,9 +77,6 @@ content_types_provided(ReqData, Context) ->
 
 %% @doc Return a list of partitions.
 -spec to_json(wrq:reqdata(),context()) ->  {iolist(), wrq:reqdata(), context()}.
-to_json(ReqData, Context) ->
-    {ok, _, Nodes} = riak_control_session:get_nodes(),
-    Details = [{struct,
-                riak_control_formatting:node_ring_details(P, Nodes)} ||
-                P <- Context#context.partitions],
-    {mochijson2:encode({struct,[{partitions,Details}]}), ReqData, Context}.
+to_json(ReqData, Context=#context{partitions=Partitions}) ->
+    Encoded = mochijson2:encode({struct,[{partitions, Partitions}]}),
+    {Encoded, ReqData, Context}.

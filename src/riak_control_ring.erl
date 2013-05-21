@@ -18,31 +18,40 @@
 %%
 %% -------------------------------------------------------------------
 %%
-%% @todo Write specs.
+%% @doc Helper utilities for dealing with the ring.
 
 -module(riak_control_ring).
 
--export([status/1]).
+-export([ring/0,
+         n_val/0,
+         status/2,
+         status/3]).
 
 -include_lib("riak_control/include/riak_control.hrl").
 
 %% @doc Return the ring.
+-spec ring() -> riak_core:ring().
 ring() ->
     {ok, Ring} = riak_core_ring_manager:get_my_ring(),
     Ring.
 
 %% @doc Return the current default n_val.
+-spec n_val() -> number().
 n_val() ->
     {ok, Props} = application:get_env(riak_core, default_bucket_props),
     {n_val, NVal} = lists:keyfind(n_val, 1, Props),
     NVal.
 
 %% @doc Return list of nodes, available partition and quorum.
--spec status(list(node())) ->
-    list({number(), number(), number()}).
-status(Unavailable) ->
-    Ring = ring(),
+status(Ring, Unavailable) ->
     NVal = n_val(),
+    Quorum = ceiling((NVal / 2) + 1),
+    status(Ring, NVal, Quorum, Unavailable).
+
+%% @doc Return list of nodes, available partition and quorum.
+-spec status(riak_core:ring(), number(), list(node())) ->
+    list({number(), number(), number()}).
+status(Ring, NVal, Unavailable) ->
     Quorum = ceiling((NVal / 2) + 1),
     status(Ring, NVal, Quorum, Unavailable).
 
@@ -71,7 +80,10 @@ status(Ring, NVal, Quorum, Unavailable) ->
 
                 %% Return each index, available primaries, and what the
                 %% quorum is.
-                Acc ++ [{Index, Available, Quorum}]
+                Acc ++ [[{n_val, NVal},
+                         {index, list_to_binary(integer_to_list(Index))},
+                         {quorum, Quorum},
+                         {available, Available}]]
 
         end, [], Preflists).
 

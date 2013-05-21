@@ -292,10 +292,16 @@ update_nodes(State=#state{ring=Ring}) ->
 
 %% @doc Update partitions.
 -spec update_partitions(#state{}) -> #state{}.
-update_partitions(State=#state{ring=Ring}) ->
-    Owners = riak_core_ring:all_owners(Ring),
-    Handoffs = get_all_handoffs(State),
-    Partitions = [get_partition_details(State, Owner, Handoffs) || Owner <- Owners],
+update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
+    Unavailable = lists:foldl(fun(Node=#member_info{node=Name}, Acc) ->
+                    case Node#member_info.reachable of
+                        false ->
+                            Acc ++ [Name];
+                        true ->
+                            []
+                    end
+            end, [], Nodes),
+    Partitions = riak_control_ring:status(Ring, Unavailable),
     State#state{partitions=Partitions}.
 
 %% @doc Ping and retrieve vnode workers.
@@ -387,40 +393,6 @@ format_transfer({status_v2, Handoff}) ->
 get_handoff_status() ->
     Transfers = riak_core_handoff_manager:status({direction, outbound}),
     [format_transfer(Transfer) || Transfer <- lists:flatten(Transfers)].
-
-%% @doc Get handoffs for every node.
--spec get_all_handoffs(#state{}) -> handoffs().
-get_all_handoffs(#state{nodes=Members}) ->
-    lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
-
-%% @doc Get information for a particular index.
--spec get_partition_details(#state{}, {integer(), term()}, handoffs())
-    -> #partition_info{}.
-get_partition_details(#state{services=Services, ring=Ring}, {Idx, Owner}, HS) ->
-    Statuses = [get_vnode_status(Service, Ring, Idx) || Service <- Services],
-    Handoffs = [{Mod, Node} || {Mod, I, Node} <- HS, I == Idx],
-    #partition_info{index = Idx,
-                    partition = partition_index(Ring,Idx),
-                    owner = Owner,
-                    vnodes = Statuses,
-                    handoffs = Handoffs}.
-
-%% @doc Given a partition index, return.
--spec partition_index(ring(), integer()) -> term().
-partition_index(Ring, Index) ->
-    NumPartitions = riak_core_ring:num_partitions(Ring),
-    Index div chash:ring_increment(NumPartitions).
-
-%% @doc Return current vnode status.
--spec get_vnode_status(term(), term(), integer()) -> {service(), home()}.
-get_vnode_status(Service, Ring, Index) ->
-    UpNodes = riak_core_node_watcher:nodes(Service),
-    case riak_core_apl:get_apl_ann(<<(Index-1):160>>, 1, Ring, UpNodes) of
-        [{{_, _}, Status}|_] ->
-            {Service, Status};
-        [] ->
-            {Service, undefined}
-    end.
 
 %% @doc Attempt to clear the cluster plan.
 -spec maybe_clear_plan() -> ok | error.
