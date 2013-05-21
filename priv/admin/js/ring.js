@@ -157,15 +157,15 @@ minispade.register('ring', function() {
       waiting_forBinding: 'content.waiting_for',
 
       /**
-       * Removes underscores and the word "vnode" from the waiting_for property,
-       * and capitalizes the first letter.
+       * Removes underscores and the word "vnode" from the waiting_for
+       * property, and capitalizes the first letter.
        *
        * @returns {String}
        */
       waiting_forReadable: function () {
-        var cleaned = this.get('waiting_for').replace(/_vnode/g, '')
-                                             .replace(/\_/g, ' ')
-                                             .replace(/\,/g, ', ');
+        var cleaned = this.get('waiting_for').replace(/_vnode/g, '').
+                                              replace(/\_/g, ' ').
+                                              replace(/\,/g, ', ');
         return cleaned[0].toUpperCase() + cleaned.slice(1);
       }.property('waiting_for')
     }
