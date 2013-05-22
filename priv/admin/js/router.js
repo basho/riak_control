@@ -100,14 +100,20 @@ minispade.register('router', function() {
         connectOutlets: function(router) {
           router.get('applicationController').
             connectOutlet('ring', RiakControl.Partition.find());
-
           $.riakControl.markNavActive('nav-ring');
+        },
+
+        enter: function(router) {
+          router.get('ringController').startInterval();
+        },
+
+        exit: function(router) {
+          router.get('ringController').cancelInterval();
         },
 
         index: Ember.Route.extend({
           route: '/'
         })
-
       })
     })
   });

@@ -3,11 +3,44 @@ minispade.register('ring', function() {
   /**
    * @class
    *
-   * Controls filtering, pagination and loading/reloading of the partition list
-   * for the cluster.
+   * Controls filtering, pagination and loading/reloading of the
+   * partition list for the cluster.
    */
   RiakControl.RingController = Ember.ObjectController.extend(
     /** @scope RiakControl.RingController.prototype */ {
+
+    /**
+     * Reloads the record array associated with this controller.
+     *
+     * @returns {void}
+     */
+    reload: function() {
+      this.get('content').reload();
+    },
+
+    /**
+     * Called by the router, to start polling when this controller/view
+     * is navigated to.
+     *
+     * @returns {void}
+     */
+    startInterval: function() {
+      this._intervalId = setInterval(
+        $.proxy(this.reload, this), RiakControl.refreshInterval);
+    },
+
+    /**
+     * Called by the router, to stop polling when this controller/view
+     * is navigated away from.
+     *
+     * @returns {void}
+     */
+    cancelInterval: function() {
+      if(this._intervalId) {
+        clearInterval(this._intervalId);
+      }
+    }
+
   });
 
   /**
@@ -18,6 +51,26 @@ minispade.register('ring', function() {
   RiakControl.RingView = Ember.View.extend(
     /** @scope RiakControl.RingView.prototype */ {
     templateName: 'ring'
+  });
+
+  /**
+   * @class
+   *
+   * Collection view for partitions.
+   */
+  RiakControl.PartitionsView = Ember.CollectionView.extend(
+    /** @scope RiakControl.PartitionsView.prototype */ {
+    itemViewClass: RiakControl.PartitionView
+  });
+
+  /**
+   * @class
+   *
+   * View for a single partition.
+   */
+  RiakControl.PartitionView = Ember.View.extend(
+    /** @scope RiakControl.PartitionView.prototype */ {
+    templateName: 'partition'
   });
 
 });
