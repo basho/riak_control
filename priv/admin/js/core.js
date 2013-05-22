@@ -61,36 +61,6 @@ minispade.register('core', function() {
 
   });
 
-  RiakControl.RingStatus = Ember.Object.extend({
-    claimant: undefined,
-    ringReady: undefined,
-
-    /**
-     * Determines how many handoffs are currently happening.
-     * CURRENTLY RETURNS EXAMPLE CODE.
-     *
-     * @returns {Number} - The number of handoffs currently happening.
-     */
-    currentHandoffs: function(){
-      return 24;
-    }.property()
-  });
-
-  // vv THESE ARE JUST FOR TESTING, REMOVE vv
-
-  RiakControl.RingStatus.fixtureStatus = RiakControl.RingStatus.create({
-    claimant: 'dev1@127.0.0.1',
-    ringReady: true
-  });
-
-  RiakControl.RingStatus.reopenClass({
-    find: function(){
-      return RiakControl.RingStatus.fixtureStatus;
-    }
-  });
-
-  // ^^ THESE ARE JUST FOR TESTING, REMOVE ^^
-
   /**
    * @class
    *

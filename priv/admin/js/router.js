@@ -18,7 +18,7 @@ minispade.register('router', function() {
 
       showNodes: Ember.Route.transitionTo('nodes.index'),
 
-      showRing: Ember.Route.transitionTo('ring.nodes'),
+      showRing: Ember.Route.transitionTo('ring.index'),
 
       index: Ember.Route.extend({
         route: '/',
@@ -97,55 +97,17 @@ minispade.register('router', function() {
       ring: Ember.Route.extend({
         route: 'ring',
 
-        showUnreachableNodes: Ember.Route.transitionTo('nodes'),
-
-        showOwnershipHandoffs: Ember.Route.transitionTo('handoffs'),
-
         connectOutlets: function(router) {
           router.get('applicationController').
-            connectOutlet('ring', RiakControl.RingStatus.find());
-
-          router.get('ringController').
-            connectOutlet('ringDetails', 'ringDetails', undefined);
+            connectOutlet('ring', RiakControl.Partition.find());
 
           $.riakControl.markNavActive('nav-ring');
         },
 
-        nodes: Ember.Route.extend({
-          route: 'nodes',
-
-          connectOutlets: function(router) {
-            router.get('ringController').
-              connectOutlet('ringDetails', 'unreachableNodes',
-                RiakControl.Node.find());
-          },
-
-          enter: function(router) {
-            router.get('unreachableNodesController').startInterval();
-          },
-
-          exit: function(router) {
-            router.get('unreachableNodesController').cancelInterval();
-          }
-        }),
-
-        handoffs: Ember.Route.extend({
-          route: 'handoffs',
-
-          connectOutlets: function(router) {
-            router.get('ringController').
-              connectOutlet('ringDetails', 'handoffs',
-                RiakControl.Handoff.find());
-          },
-
-          enter: function(router) {
-            router.get('handoffsController').startInterval();
-          },
-
-          exit: function(router) {
-            router.get('handoffsController').cancelInterval();
-          }
+        index: Ember.Route.extend({
+          route: '/'
         })
+
       })
     })
   });
