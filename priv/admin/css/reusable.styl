@@ -29,6 +29,14 @@ gradient(lightcolor, darkcolor)
   background : -ms-linear-gradient(     top,                   lightcolor 0%, darkcolor 100%)
   background : linear-gradient(         top bottom,            lightcolor 0%, darkcolor 100%)
 
+radialGradient(lightcolor, darkcolor)
+  background-image : -moz-radial-gradient(    center, lightcolor 0%, darkcolor 100%)
+  background-image : -webkit-gradient(radial, center, color-stop(0%, lightcolor), color-stop(100%, darkcolor))
+  background-image : -webkit-radial-gradient( center, lightcolor 0%, darkcolor 100%)
+  background-image : -o-radial-gradient(      center, lightcolor 0%, darkcolor 100%)
+  background-image : -ms-radial-gradient(     center, lightcolor 0%, darkcolor 100%)
+  background-image : radial-gradient(         center, lightcolor 0%, darkcolor 100%)
+
 corners(curve = 4px)
   vendor('border-radius', curve)
   
