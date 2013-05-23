@@ -94,13 +94,5 @@ unavailable_node(Node, Unavailable) ->
 
 %% @doc Produce ceiling.
 -spec ceiling(number()) -> number().
-ceiling(X) when X < 0 ->
-    trunc(X);
 ceiling(X) ->
-    T = trunc(X),
-    case (X - T == 0) of
-        true ->
-            T;
-        false ->
-            T + 1
-    end.
+    mochinum:int_ceil(X).
