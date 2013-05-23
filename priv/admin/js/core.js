@@ -76,6 +76,7 @@ minispade.register('core', function() {
      */
     primaryKey: 'index',
 
+    index: DS.attr("string"),
     n_val: DS.attr("number"),
     available: DS.attr("number"),
     quorum: DS.attr("number")
