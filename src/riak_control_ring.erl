@@ -60,32 +60,40 @@ status(Ring, NVal, Unavailable) ->
     list({number(), number(), number()}).
 status(Ring, NVal, Quorum, Unavailable) ->
     Preflists = riak_core_ring:all_preflists(Ring, NVal),
-    lists:foldl(fun(Preflist, Acc) ->
+    Status = lists:foldl(fun(Preflist, Acc) ->
 
                 %% Get the first partition in the preflist.
                 %%
                 [{Index, _}|_] = Preflist,
 
-                %% Determine count of nodes in the preflist that are
-                %% down.
+                %% Determine nodes in the preflist that are down.
                 %%
                 Available = lists:foldl(fun({_Index, Node}, Acc1) ->
                             case unavailable_node(Node, Unavailable) of
                                 false ->
-                                    Acc1 + 1;
+                                    Acc1 ++ [Node];
                                 true ->
                                     Acc1
                             end
-                    end, 0, Preflist),
+                        end, [], Preflist),
+
+                %% Do some conversions.
+                %%
+                BinaryIndex = list_to_binary(integer_to_list(Index)),
+                NumAvailable = length(Available),
 
                 %% Return each index, available primaries, and what the
                 %% quorum is.
                 Acc ++ [[{n_val, NVal},
-                         {index, list_to_binary(integer_to_list(Index))},
                          {quorum, Quorum},
-                         {available, Available}]]
+                         {index, BinaryIndex},
+                         {available, NumAvailable},
+                         {available_nodes, Available}]]
 
-        end, [], Preflists).
+        end, [], Preflists),
+    lists:usort(fun(A, B) ->
+            proplists:get_value(index, A) < proplists:get_value(index, B)
+        end, Status).
 
 %% @doc Return true if a node is unavailable.
 -spec unavailable_node(node(), list(node())) -> boolean().
@@ -94,13 +102,5 @@ unavailable_node(Node, Unavailable) ->
 
 %% @doc Produce ceiling.
 -spec ceiling(number()) -> number().
-ceiling(X) when X < 0 ->
-    trunc(X);
 ceiling(X) ->
-    T = trunc(X),
-    case (X - T == 0) of
-        true ->
-            T;
-        false ->
-            T + 1
-    end.
+    mochinum:int_ceil(X).
