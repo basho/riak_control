@@ -60,7 +60,20 @@ minispade.register('ring', function() {
    */
   RiakControl.PartitionView = Ember.View.extend(
     /** @scope RiakControl.PartitionView.prototype */ {
-    templateName: 'partition'
+    templateName: 'partition',
+
+    indexBinding: 'content.index',
+    n_valBinding: 'content.n_val',
+    quorumBinding: 'content.quorum',
+    availableBinding: 'content.available',
+
+    quorumUnavailable: function() {
+      var quorum = this.get('quorum');
+      var available = this.get('available');
+
+      return available < quorum;
+
+    }.property('quorum', 'available')
   });
 
   /**
