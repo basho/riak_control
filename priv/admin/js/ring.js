@@ -56,21 +56,21 @@ minispade.register('ring', function() {
   /**
    * @class
    *
-   * Collection view for partitions.
-   */
-  RiakControl.PartitionsView = Ember.CollectionView.extend(
-    /** @scope RiakControl.PartitionsView.prototype */ {
-    itemViewClass: RiakControl.PartitionView
-  });
-
-  /**
-   * @class
-   *
    * View for a single partition.
    */
   RiakControl.PartitionView = Ember.View.extend(
     /** @scope RiakControl.PartitionView.prototype */ {
     templateName: 'partition'
+  });
+
+  /**
+   * @class
+   *
+   * Collection view for partitions.
+   */
+  RiakControl.PartitionsView = Ember.CollectionView.extend(
+    /** @scope RiakControl.PartitionsView.prototype */ {
+    itemViewClass: RiakControl.PartitionView
   });
 
 });
