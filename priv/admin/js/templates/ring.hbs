@@ -11,8 +11,13 @@
     <div class="clear"></div>
   </section>
 
-  <section id="partition-container">
-    {{collection RiakControl.PartitionsView contentBinding="content"}}
-    <div class="clear"></div>
-  </section>
+  <div id="current-ring">
+    <h2 class="gui-headline">Current Ring</h2>
+    <span class="gui-text-flat italic">Here lies the ring.</span><br/>
+    <section id="partition-container">
+      {{collection RiakControl.PartitionsView contentBinding="content"}}
+      <div class="clear"></div>
+    </section>
+  </div>
+  <div class="clear"></div>
 </div>
