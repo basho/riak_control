@@ -76,10 +76,20 @@ minispade.register('core', function() {
      */
     primaryKey: 'index',
 
+    /* Partition index. */
     index: DS.attr("string"),
+
+    /* Cluster n_val. */
     n_val: DS.attr("number"),
+
+    /* Number of reachable/available primaries. */
     available: DS.attr("number"),
-    quorum: DS.attr("number")
+
+    /* Cluster quorum value. */
+    quorum: DS.attr("number"),
+
+    /* Whether all primaries are on distinct nodes. */
+    distinct: DS.attr("boolean")
 
   });
 
