@@ -1945,6 +1945,15 @@ input.gui-point-button-right:active {
     width: 15%;
   }
 }
+#ring-page #current-ring {
+  max-width: 850px;
+  margin: 0 auto 45px auto;
+  padding-top: 40px;
+}
+#ring-page #current-ring > span.gui-text-flat {
+  line-height: 1.5;
+  display: block;
+}
 @-webkit-keyframes pulseGreen {
   0% {
     opacity: 0.8;
