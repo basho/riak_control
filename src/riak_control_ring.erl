@@ -81,6 +81,7 @@ status(Ring, NVal, Quorum, Unavailable) ->
                 %%
                 BinaryIndex = list_to_binary(integer_to_list(Index)),
                 NumAvailable = length(Available),
+                UniqueNodes = lists:usort(Available),
 
                 %% Return each index, available primaries, and what the
                 %% quorum is.
@@ -88,7 +89,7 @@ status(Ring, NVal, Quorum, Unavailable) ->
                          {quorum, Quorum},
                          {index, BinaryIndex},
                          {available, NumAvailable},
-                         {available_nodes, Available}]]
+                         {available_nodes, UniqueNodes}]]
 
         end, [], Preflists),
     lists:usort(fun(A, B) ->
