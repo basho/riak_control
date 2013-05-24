@@ -43,6 +43,8 @@ n_val() ->
     NVal.
 
 %% @doc Return list of nodes, available partition and quorum.
+-spec status(riak_core:ring(), list(node())) ->
+    list({number(), number(), number()}).
 status(Ring, Unavailable) ->
     NVal = n_val(),
     Quorum = ceiling((NVal / 2) + 1),
