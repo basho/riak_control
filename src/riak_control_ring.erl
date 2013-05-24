@@ -47,14 +47,14 @@ n_val() ->
     list({number(), number(), number()}).
 status(Ring, Unavailable) ->
     NVal = n_val(),
-    Quorum = ceiling((NVal / 2) + 1),
+    Quorum = mochinum:int_ceil((NVal / 2) + 1),
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
 -spec status(riak_core:ring(), number(), list(node())) ->
     list({number(), number(), number()}).
 status(Ring, NVal, Unavailable) ->
-    Quorum = ceiling((NVal / 2) + 1),
+    Quorum = mochinum:int_ceil((NVal / 2) + 1),
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
@@ -70,40 +70,30 @@ status(Ring, NVal, Quorum, Unavailable) ->
 
                 %% Determine nodes in the preflist that are down.
                 %%
-                Available = lists:foldl(fun({_Index, Node}, Acc1) ->
-                            case unavailable_node(Node, Unavailable) of
-                                false ->
-                                    Acc1 ++ [Node];
+                {Available, All} = lists:foldl(fun({_, Node}, {Available, Nodes}) ->
+                            case lists:member(Node, Unavailable) of
                                 true ->
-                                    Acc1
+                                    {Available, Nodes ++ [Node]};
+                                false ->
+                                    {Available ++ [Node], Nodes ++ [Node]}
                             end
-                        end, [], Preflist),
+                        end, {[], []}, Preflist),
 
                 %% Do some conversions.
                 %%
                 BinaryIndex = list_to_binary(integer_to_list(Index)),
                 NumAvailable = length(Available),
-                UniqueNodes = lists:usort(Available),
+                UniqueNodes = lists:usort(All),
 
                 %% Return each index, available primaries, and what the
                 %% quorum is.
                 Acc ++ [[{n_val, NVal},
                          {quorum, Quorum},
+                         {distinct, length(UniqueNodes) =:= length(All)},
                          {index, BinaryIndex},
-                         {available, NumAvailable},
-                         {available_nodes, UniqueNodes}]]
+                         {available, NumAvailable}]]
 
         end, [], Preflists),
     lists:usort(fun(A, B) ->
             proplists:get_value(index, A) < proplists:get_value(index, B)
         end, Status).
-
-%% @doc Return true if a node is unavailable.
--spec unavailable_node(node(), list(node())) -> boolean().
-unavailable_node(Node, Unavailable) ->
-    lists:member(Node, Unavailable).
-
-%% @doc Produce ceiling.
--spec ceiling(number()) -> number().
-ceiling(X) ->
-    mochinum:int_ceil(X).
