@@ -18,6 +18,8 @@ riakred     = #f05f5f
 vendor(prop, args)
   -webkit-{prop} : args
   -moz-{prop}    : args
+  -ms-{prop}     : args
+  -o-{prop}      : args
   {prop}         : args
   
 gradient(lightcolor, darkcolor)
@@ -101,19 +103,18 @@ headline-bold()
   font-weight : bold
 
 // Applies a css transition
-css-transition(args) {
+css-transition(args)
   -webkit-transition : args
   -moz-transition    : args
   -ms-transition     : args
   transition         : args
-}
 
 // Applies a css transform
-css-transform(args) {
+css-transform(args)
   -webkit-transform : rotate(args)
   -moz-transform    : rotate(args)
   -o-transform      : rotate(args)
   transform         : rotate(args)
-}
+
 
 /* End Functions */
