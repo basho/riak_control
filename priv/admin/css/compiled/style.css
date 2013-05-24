@@ -1999,3 +1999,23 @@ input.gui-point-button-right:active {
   border-color: #071a20;
   background-color: #299ce5;
 }
+#ring-page .partition.green {
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+  background-image: -moz-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: -webkit-gradient(radial, center, color-stop(0%, #84ff7e), color-stop(100%, rgba(132,255,126,0)));
+  background-image: -webkit-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: -o-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: -ms-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  -webkit-box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  -moz-box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  border-color: #071a03;
+  background-color: #6ce157;
+}
