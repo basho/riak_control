@@ -86,7 +86,7 @@ minispade.register('ring', function() {
       }
 
       return colors.join(' ');
-    }.property('content'),
+    }.property('allPrimariesDown', 'quorumUnavailable', 'distinct'),
 
     allPrimariesDown: function() {
       var available = this.get('available');
