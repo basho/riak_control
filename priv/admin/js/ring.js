@@ -71,14 +71,17 @@ minispade.register('ring', function() {
     color: function() {
       var colors = ['partition'];
 
-      var allPrimariesDown = this.get('allPrimariesDown');
+      var allPrimariesDown  = this.get('allPrimariesDown');
       var quorumUnavailable = this.get('quorumUnavailable');
+      var quorumAtRisk      = this.get('quorumAtRisk');
       var primariesDistinct = this.get('distinct');
 
       if(allPrimariesDown) {
         colors.push('red');
       } else if(!primariesDistinct) {
         colors.push('blue');
+      } else if(quorumAtRisk) {
+        colors.push('orange', 'pulse');
       } else if(quorumUnavailable) {
         colors.push('orange');
       } else {
@@ -94,6 +97,14 @@ minispade.register('ring', function() {
       return available === 0;
 
     }.property('available'),
+
+    quorumAtRisk: function() {
+      var quorum = this.get('quorum');
+      var available = this.get('available');
+
+      return (available - 1) < quorum;
+
+    }.property('quorum', 'available'),
 
     quorumUnavailable: function() {
       var quorum = this.get('quorum');
