@@ -15,25 +15,26 @@
     <h2 class="gui-headline">Current Ring</h2>
     <span class="gui-text-flat italic">
       Overview of the hash-space and availability of data stored in the cluster.
-      Any partitions with unique issues are represented by glowing squares, color coded by issue.
+      Each square represents one partition in the cluster.
     </span><br/>
 
     <section id="legend">
       <h4 class="gui-headline-bold">Legend</h4>
       <div class="partition red"></div>
-      <span class="legend-label gui-text">All sorts of bad stuff is going down.</span><br/>
+      <span class="legend-label gui-text">All available replicas are fallbacks.</span><br/>
       <div class="partition orange"></div>
-      <span class="legend-label gui-text">The partition is at risk for something terrible happening.<strong>*</strong></span><br/>
+      <span class="legend-label gui-text">Majority of available replicas are fallbacks.</span><br/>
       <div class="partition blue"></div>
-      <span class="legend-label gui-text">Some less bad stuff is happening in this case.</span><br/>
+      <span class="legend-label gui-text">Not all replicas are on distinct nodes.</span><br/>
 
       <span class="footnote gui-text">
-        <strong>*</strong> If the square is pulsing, it means that there is a time lord nearby.
+        <strong>*</strong> If the square is pulsing, it means this partition is at risk for that state.
       </span>
-    </section>
+      </section>
+
 
     <section id="partition-container">
-      <h4 class="gui-headline-bold partition-header">Partitions With Issues</h4>
+      <h4 class="gui-headline-bold partition-header">Partitions</h4>
       {{collection RiakControl.PartitionsView contentBinding="content"}}
       <div class="clear"></div>
     </section>
