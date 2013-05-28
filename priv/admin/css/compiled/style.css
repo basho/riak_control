@@ -1945,6 +1945,13 @@ input.gui-point-button-right:active {
     width: 15%;
   }
 }
+#ring-page h4 {
+  margin-bottom: 20px;
+}
+#ring-page strong {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  font-weight: bold;
+}
 #ring-page #current-ring {
   max-width: 850px;
   margin: 0 auto 45px auto;
@@ -1953,6 +1960,203 @@ input.gui-point-button-right:active {
 #ring-page #current-ring > span.gui-text-flat {
   line-height: 1.5;
   display: block;
+}
+#ring-page .clear {
+  clear: both;
+}
+#ring-page #legend {
+  width: 33%;
+  height: auto;
+  border-right: 1px solid rgba(255,255,255,0.18);
+  float: left;
+  margin: 25px 0 25px 0;
+}
+#ring-page #legend span {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  display: inline-block;
+  width: 80%;
+  margin: 3px 0 15px 0;
+  font-size: 15px;
+  line-height: 1.3;
+  vertical-align: top;
+}
+#ring-page #legend span.footnote {
+  width: auto;
+  border-top: 1px solid rgba(255,255,255,0.18);
+  padding: 20px 20px 0 0;
+  margin-bottom: 10px;
+}
+#ring-page #legend .partition {
+  display: inline-block;
+  float: none;
+  margin-right: 8px;
+  vertical-align: top;
+}
+#ring-page #partition-container {
+  width: 63%;
+  height: auto;
+  margin: 25px 0 25px 3%;
+  float: left;
+}
+#ring-page .partition {
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+  width: 14px;
+  height: 14px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+  border-radius: 2px;
+  background: #626262;
+  display: block;
+  float: left;
+  margin: 3px;
+  border: 2px solid rgba(0,0,0,0.78);
+}
+#ring-page .partition.gray {
+  background-image: -moz-radial-gradient(center, #626262 0%, #555 100%);
+  background-image: -webkit-gradient(radial, center, color-stop(0%, #626262), color-stop(100%, #555));
+  background-image: -webkit-radial-gradient(center, #626262 0%, #555 100%);
+  background-image: -o-radial-gradient(center, #626262 0%, #555 100%);
+  background-image: -ms-radial-gradient(center, #626262 0%, #555 100%);
+  background-image: radial-gradient(center, #626262 0%, #555 100%);
+}
+#ring-page .partition.orange {
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+  background-image: -moz-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
+  background-image: -webkit-gradient(radial, center, color-stop(0%, #ffb765), color-stop(100%, rgba(255,183,101,0)));
+  background-image: -webkit-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
+  background-image: -o-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
+  background-image: -ms-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
+  background-image: radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
+  -webkit-box-shadow: 0 0 8px rgba(255,183,101,0.45);
+  -moz-box-shadow: 0 0 8px rgba(255,183,101,0.45);
+  -ms-box-shadow: 0 0 8px rgba(255,183,101,0.45);
+  -o-box-shadow: 0 0 8px rgba(255,183,101,0.45);
+  box-shadow: 0 0 8px rgba(255,183,101,0.45);
+  border-color: #36280e;
+  background-color: #feac4f;
+}
+#ring-page .partition.orange.pulse {
+  -webkit-animation: pulseOrange 1s infinite;
+  -moz-animation: pulseOrange 1s infinite;
+  -ms-animation: pulseOrange 1s infinite;
+  -o-animation: pulseOrange 1s infinite;
+  animation: pulseOrange 1s infinite;
+}
+#ring-page .partition.red {
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+  background-image: -moz-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
+  background-image: -webkit-gradient(radial, center, color-stop(0%, #f65d5d), color-stop(100%, rgba(246,93,93,0)));
+  background-image: -webkit-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
+  background-image: -o-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
+  background-image: -ms-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
+  background-image: radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
+  -webkit-box-shadow: 0 0 8px rgba(246,93,93,0.45);
+  -moz-box-shadow: 0 0 8px rgba(246,93,93,0.45);
+  -ms-box-shadow: 0 0 8px rgba(246,93,93,0.45);
+  -o-box-shadow: 0 0 8px rgba(246,93,93,0.45);
+  box-shadow: 0 0 8px rgba(246,93,93,0.45);
+  border-color: #2b0c0c;
+  background-color: #ea5050;
+}
+#ring-page .partition.red.pulse {
+  -webkit-animation: pulseRed 1s infinite;
+  -moz-animation: pulseRed 1s infinite;
+  -ms-animation: pulseRed 1s infinite;
+  -o-animation: pulseRed 1s infinite;
+  animation: pulseRed 1s infinite;
+}
+#ring-page .partition.blue {
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+  background-image: -moz-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
+  background-image: -webkit-gradient(radial, center, color-stop(0%, #3baaff), color-stop(100%, rgba(59,170,255,0)));
+  background-image: -webkit-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
+  background-image: -o-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
+  background-image: -ms-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
+  background-image: radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
+  -webkit-box-shadow: 0 0 8px rgba(59,170,255,0.45);
+  -moz-box-shadow: 0 0 8px rgba(59,170,255,0.45);
+  -ms-box-shadow: 0 0 8px rgba(59,170,255,0.45);
+  -o-box-shadow: 0 0 8px rgba(59,170,255,0.45);
+  box-shadow: 0 0 8px rgba(59,170,255,0.45);
+  border-color: #071a20;
+  background-color: #299ce5;
+}
+#ring-page .partition.blue.pulse {
+  -webkit-animation: pulseBlue 1s infinite;
+  -moz-animation: pulseBlue 1s infinite;
+  -ms-animation: pulseBlue 1s infinite;
+  -o-animation: pulseBlue 1s infinite;
+  animation: pulseBlue 1s infinite;
+}
+#ring-page .partition.green {
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+  background-image: -moz-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: -webkit-gradient(radial, center, color-stop(0%, #84ff7e), color-stop(100%, rgba(132,255,126,0)));
+  background-image: -webkit-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: -o-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: -ms-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  background-image: radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
+  -webkit-box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  -moz-box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  -ms-box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  -o-box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  box-shadow: 0 0 8px rgba(132,255,126,0.45);
+  border-color: #071a03;
+  background-color: #6ce157;
+}
+#ring-page .partition.green.pulse {
+  -webkit-animation: pulseGreen 1s infinite;
+  -moz-animation: pulseGreen 1s infinite;
+  -ms-animation: pulseGreen 1s infinite;
+  -o-animation: pulseGreen 1s infinite;
+  animation: pulseGreen 1s infinite;
+}
+@media screen and (max-width: 620px) {
+  #ring-page #legend,
+  #ring-page #partition-container {
+    float: none;
+    width: auto;
+    border-right: none;
+    margin-left: 0;
+  }
+  #ring-page h4.partition-header {
+    font-size: 26px;
+    letter-spacing: 0;
+    padding-bottom: 12px;
+    font-weight: normal;
+  }
 }
 @-webkit-keyframes pulseGreen {
   0% {
@@ -2361,158 +2565,6 @@ input.gui-point-button-right:active {
     box-shadow: 0 0 8px rgba(255,183,101,0.1);
     background-color: #555;
   }
-}
-#ring-page .clear {
-  clear: both;
-}
-#ring-page #partition-container {
-  margin: 25px auto;
-  max-width: 696px;
-}
-#ring-page .partition {
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -ms-transition: background-color 0.3s ease;
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -o-transition: background-color 0.3s ease;
-  transition: background-color 0.3s ease;
-  width: 14px;
-  height: 14px;
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  -ms-border-radius: 2px;
-  -o-border-radius: 2px;
-  border-radius: 2px;
-  background: #626262;
-  display: block;
-  float: left;
-  margin: 3px;
-  border: 2px solid rgba(0,0,0,0.78);
-}
-#ring-page .partition.gray {
-  background-image: -moz-radial-gradient(center, #626262 0%, #555 100%);
-  background-image: -webkit-gradient(radial, center, color-stop(0%, #626262), color-stop(100%, #555));
-  background-image: -webkit-radial-gradient(center, #626262 0%, #555 100%);
-  background-image: -o-radial-gradient(center, #626262 0%, #555 100%);
-  background-image: -ms-radial-gradient(center, #626262 0%, #555 100%);
-  background-image: radial-gradient(center, #626262 0%, #555 100%);
-}
-#ring-page .partition.orange {
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -ms-transition: background-color 0.3s ease;
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -o-transition: background-color 0.3s ease;
-  transition: background-color 0.3s ease;
-  background-image: -moz-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
-  background-image: -webkit-gradient(radial, center, color-stop(0%, #ffb765), color-stop(100%, rgba(255,183,101,0)));
-  background-image: -webkit-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
-  background-image: -o-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
-  background-image: -ms-radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
-  background-image: radial-gradient(center, #ffb765 0%, rgba(255,183,101,0) 100%);
-  -webkit-box-shadow: 0 0 8px rgba(255,183,101,0.45);
-  -moz-box-shadow: 0 0 8px rgba(255,183,101,0.45);
-  -ms-box-shadow: 0 0 8px rgba(255,183,101,0.45);
-  -o-box-shadow: 0 0 8px rgba(255,183,101,0.45);
-  box-shadow: 0 0 8px rgba(255,183,101,0.45);
-  border-color: #36280e;
-  background-color: #feac4f;
-}
-#ring-page .partition.orange.pulse {
-  -webkit-animation: pulseOrange 1s infinite;
-  -moz-animation: pulseOrange 1s infinite;
-  -ms-animation: pulseOrange 1s infinite;
-  -o-animation: pulseOrange 1s infinite;
-  animation: pulseOrange 1s infinite;
-}
-#ring-page .partition.red {
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -ms-transition: background-color 0.3s ease;
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -o-transition: background-color 0.3s ease;
-  transition: background-color 0.3s ease;
-  background-image: -moz-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
-  background-image: -webkit-gradient(radial, center, color-stop(0%, #f65d5d), color-stop(100%, rgba(246,93,93,0)));
-  background-image: -webkit-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
-  background-image: -o-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
-  background-image: -ms-radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
-  background-image: radial-gradient(center, #f65d5d 0%, rgba(246,93,93,0) 100%);
-  -webkit-box-shadow: 0 0 8px rgba(246,93,93,0.45);
-  -moz-box-shadow: 0 0 8px rgba(246,93,93,0.45);
-  -ms-box-shadow: 0 0 8px rgba(246,93,93,0.45);
-  -o-box-shadow: 0 0 8px rgba(246,93,93,0.45);
-  box-shadow: 0 0 8px rgba(246,93,93,0.45);
-  border-color: #2b0c0c;
-  background-color: #ea5050;
-}
-#ring-page .partition.red.pulse {
-  -webkit-animation: pulseRed 1s infinite;
-  -moz-animation: pulseRed 1s infinite;
-  -ms-animation: pulseRed 1s infinite;
-  -o-animation: pulseRed 1s infinite;
-  animation: pulseRed 1s infinite;
-}
-#ring-page .partition.blue {
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -ms-transition: background-color 0.3s ease;
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -o-transition: background-color 0.3s ease;
-  transition: background-color 0.3s ease;
-  background-image: -moz-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
-  background-image: -webkit-gradient(radial, center, color-stop(0%, #3baaff), color-stop(100%, rgba(59,170,255,0)));
-  background-image: -webkit-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
-  background-image: -o-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
-  background-image: -ms-radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
-  background-image: radial-gradient(center, #3baaff 0%, rgba(59,170,255,0) 100%);
-  -webkit-box-shadow: 0 0 8px rgba(59,170,255,0.45);
-  -moz-box-shadow: 0 0 8px rgba(59,170,255,0.45);
-  -ms-box-shadow: 0 0 8px rgba(59,170,255,0.45);
-  -o-box-shadow: 0 0 8px rgba(59,170,255,0.45);
-  box-shadow: 0 0 8px rgba(59,170,255,0.45);
-  border-color: #071a20;
-  background-color: #299ce5;
-}
-#ring-page .partition.blue.pulse {
-  -webkit-animation: pulseBlue 1s infinite;
-  -moz-animation: pulseBlue 1s infinite;
-  -ms-animation: pulseBlue 1s infinite;
-  -o-animation: pulseBlue 1s infinite;
-  animation: pulseBlue 1s infinite;
-}
-#ring-page .partition.green {
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -ms-transition: background-color 0.3s ease;
-  -webkit-transition: background-color 0.3s ease;
-  -moz-transition: background-color 0.3s ease;
-  -o-transition: background-color 0.3s ease;
-  transition: background-color 0.3s ease;
-  background-image: -moz-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
-  background-image: -webkit-gradient(radial, center, color-stop(0%, #84ff7e), color-stop(100%, rgba(132,255,126,0)));
-  background-image: -webkit-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
-  background-image: -o-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
-  background-image: -ms-radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
-  background-image: radial-gradient(center, #84ff7e 0%, rgba(132,255,126,0) 100%);
-  -webkit-box-shadow: 0 0 8px rgba(132,255,126,0.45);
-  -moz-box-shadow: 0 0 8px rgba(132,255,126,0.45);
-  -ms-box-shadow: 0 0 8px rgba(132,255,126,0.45);
-  -o-box-shadow: 0 0 8px rgba(132,255,126,0.45);
-  box-shadow: 0 0 8px rgba(132,255,126,0.45);
-  border-color: #071a03;
-  background-color: #6ce157;
-}
-#ring-page .partition.green.pulse {
-  -webkit-animation: pulseGreen 1s infinite;
-  -moz-animation: pulseGreen 1s infinite;
-  -ms-animation: pulseGreen 1s infinite;
-  -o-animation: pulseGreen 1s infinite;
-  animation: pulseGreen 1s infinite;
 }
 @-moz-keyframes pulseGreen {
   0% {
