@@ -244,7 +244,7 @@ minispade.register('ring', function() {
       return [normalizedUnavailable, normalizedPartitions];
     }.property('partitionCount', 'quorumUnavailableCount'),
 
-    id: '#quorum-unavailable',
+    id: '#all-unavailable',
 
     abnormalColor: function() {
       return "#ffb765";
