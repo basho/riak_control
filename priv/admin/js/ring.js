@@ -65,7 +65,7 @@ minispade.register('ring', function() {
      *
      * @returns {number}
      */
-    allPrimariesDownCount: function() {
+    allUnavailableCount: function() {
       return this.get('content').
         filterProperty('allPrimariesDown', true).length;
     }.property('content.@each'),
@@ -162,7 +162,97 @@ minispade.register('ring', function() {
 
     pie: function() {
       return d3.layout.pie().sort(null);
+    }.property()
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the all unavailable chart.
+   */
+  RiakControl.AllUnavailableChart = Ember.View.extend(
+    RiakControl.PieChart,
+    /** @scope RiakControl.AllUnavailableChart.prototype */ {
+    templateName: 'all_unavailable_chart',
+
+    classNames: ['chart'],
+
+    partitionCountBinding: 'controller.partitionCount',
+    allUnavailableCountBinding: 'controller.allUnavailableCount',
+
+    data: function() {
+      var partitionCount = this.get('partitionCount');
+      var allUnavailableCount = this.get('allUnavailableCount');
+
+      var normalizedUnavailable;
+      var normalizedPartitions;
+
+      if(partitionCount > 0) {
+        normalizedUnavailable = (allUnavailableCount / partitionCount) * 100;
+        normalizedPartitions = 100 - normalizedUnavailable;
+      } else {
+        // Default to all partitions as good until otherwise known.
+        normalizedUnavailable = 0;
+        normalizedPartitions = 100;
+      }
+
+      return [normalizedUnavailable, normalizedPartitions];
+    }.property('partitionCount', 'quorumUnavailableCount'),
+
+    id: '#quorum-unavailable',
+
+    abnormalColor: function() {
+      return "#f65d5d";
     }.property(),
+
+    normalColor: function() {
+      return "#84ff7e";
+    }.property()
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the quorum unavailable chart.
+   */
+  RiakControl.QuorumUnavailableChart = Ember.View.extend(
+    RiakControl.PieChart,
+    /** @scope RiakControl.QuorumUnavailableChart.prototype */ {
+    templateName: 'quorum_unavailable_chart',
+
+    classNames: ['chart'],
+
+    partitionCountBinding: 'controller.partitionCount',
+    quorumUnavailableCountBinding: 'controller.quorumUnavailableCount',
+
+    data: function() {
+      var partitionCount = this.get('partitionCount');
+      var quorumUnavailableCount = this.get('quorumUnavailableCount');
+
+      var normalizedUnavailable;
+      var normalizedPartitions;
+
+      if(partitionCount > 0) {
+        normalizedUnavailable = (quorumUnavailableCount / partitionCount) * 100;
+        normalizedPartitions = 100 - normalizedUnavailable;
+      } else {
+        // Default to all partitions as good until otherwise known.
+        normalizedUnavailable = 0;
+        normalizedPartitions = 100;
+      }
+
+      return [normalizedUnavailable, normalizedPartitions];
+    }.property('partitionCount', 'quorumUnavailableCount'),
+
+    id: '#quorum-unavailable',
+
+    abnormalColor: function() {
+      return "#ffb765";
+    }.property(),
+
+    normalColor: function() {
+      return "#84ff7e";
+    }.property()
   });
 
   /**
@@ -235,17 +325,17 @@ minispade.register('ring', function() {
     availableBinding:   'content.available',
     distinctBinding:    'content.distinct',
 
-    allPrimariesDownBinding:   'content.allPrimariesDown',
+    allUnavailableBinding:     'content.allUnavailable',
     quorumUnavailableBinding:  'content.quorumUnavailable',
 
     color: function() {
       var colors = ['partition'];
 
-      var allPrimariesDown  = this.get('allPrimariesDown');
+      var allUnavailable  =   this.get('allUnavailable');
       var quorumUnavailable = this.get('quorumUnavailable');
       var primariesDistinct = this.get('distinct');
 
-      if(allPrimariesDown) {
+      if(allUnavailable) {
         colors.push('red');
       } else if(!primariesDistinct) {
         colors.push('blue');
@@ -256,7 +346,7 @@ minispade.register('ring', function() {
       }
 
       return colors.join(' ');
-    }.property('allPrimariesDown', 'quorumUnavailable', 'distinct'),
+    }.property('allUnavailable', 'quorumUnavailable', 'distinct'),
 
   });
 

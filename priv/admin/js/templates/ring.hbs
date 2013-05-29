@@ -14,14 +14,13 @@
   <div id="current-ring">
     <h2 class="gui-headline">Availability</h2>
 
-    <!-- first chart -->
     {{view RiakControl.DegeneratePreflistChart}}
     <div class="chart-spacer"></div>
 
-    <!-- second chart goes here -->
+    {{view RiakControl.QuorumUnavailableChart}}
     <div class="chart-spacer"></div>
 
-    <!-- third chart goes here -->
+    {{view RiakControl.AllUnavailableChart}}
 
     <div class="clear"></div>
     <h2 class="gui-headline partition-section">Partitions</h2>
