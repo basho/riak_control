@@ -58,7 +58,7 @@ minispade.register('ring', function() {
     degenerateCount: function() {
       return this.get('content').
         filterProperty('distinct', false).length;
-    }.property('content.@each'),
+    }.property('content.@each.distinct'),
 
     /**
      * Count of partitions with primaries down.
@@ -68,7 +68,7 @@ minispade.register('ring', function() {
     allUnavailableCount: function() {
       return this.get('content').
         filterProperty('allPrimariesDown', true).length;
-    }.property('content.@each'),
+    }.property('content.@each.allPrimariesDown'),
 
     /**
      * Count of partitions with a quorum of primaries down.
@@ -78,7 +78,7 @@ minispade.register('ring', function() {
     quorumUnavailableCount: function() {
       return this.get('content').
         filterProperty('quorumUnavailable', true).length;
-    }.property('content.@each')
+    }.property('content.@each.quorumUnavailable')
   });
 
   /**
@@ -195,8 +195,6 @@ minispade.register('ring', function() {
         normalizedUnavailable = 0;
         normalizedPartitions = 100;
       }
-
-      console.log(normalizedUnavailable, normalizedPartitions);
 
       return [normalizedUnavailable, normalizedPartitions];
     }.property('partitionCount', 'quorumUnavailableCount'),
