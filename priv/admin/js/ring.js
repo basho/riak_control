@@ -196,10 +196,12 @@ minispade.register('ring', function() {
         normalizedPartitions = 100;
       }
 
+      console.log(normalizedUnavailable, normalizedPartitions);
+
       return [normalizedUnavailable, normalizedPartitions];
     }.property('partitionCount', 'quorumUnavailableCount'),
 
-    id: '#quorum-unavailable',
+    id: '#all-unavailable',
 
     normalizedUnavailable: function() {
       return this.get('data')[0];
@@ -248,10 +250,9 @@ minispade.register('ring', function() {
       return [normalizedUnavailable, normalizedPartitions];
     }.property('partitionCount', 'quorumUnavailableCount'),
 
-    id: '#all-unavailable',
+    id: '#quorum-unavailable',
 
     normalizedUnavailable: function() {
-      console.log('hi');
       return this.get('data')[0];
     }.property('data'),
 
