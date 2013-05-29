@@ -1964,6 +1964,12 @@ input.gui-point-button-right:active {
 #ring-page .clear {
   clear: both;
 }
+#ring-page .chart {
+  display: inline-block;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-bottom: 30px;
+}
 #ring-page #legend {
   width: 33%;
   height: auto;
@@ -1994,9 +2000,11 @@ input.gui-point-button-right:active {
 }
 #ring-page #partition-container {
   width: 63%;
-  height: auto;
+  height: 176px;
+  overflow: auto;
   margin: 25px 0 25px 3%;
   float: left;
+  padding-right: 5px;
 }
 #ring-page .partition {
   -webkit-transition: background-color 0.3s ease;

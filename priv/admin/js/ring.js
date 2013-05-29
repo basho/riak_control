@@ -50,7 +50,47 @@ minispade.register('ring', function() {
    */
   RiakControl.RingView = Ember.View.extend(
     /** @scope RiakControl.RingView.prototype */ {
-    templateName: 'ring'
+    templateName: 'ring',
+
+    didInsertElement: function() {
+        this.renderChart('degenerate');
+        this.renderChart('unavailable');
+        this.renderChart('fallbacks');
+    },
+
+    renderChart: function(tag) {
+      var dataset = {
+        apples: [53245, 28479, 19697, 24037, 40245],
+        oranges: [200, 200, 200, 200, 200]
+      };
+
+      var width = 100,
+          height = 100,
+          radius = Math.min(width, height) / 2;
+
+      var color = d3.scale.category20();
+
+      var pie = d3.layout.pie().sort(null);
+
+      var arc = d3.svg.arc().
+                   innerRadius(radius - 20).
+                   outerRadius(radius - 10);
+
+                   console.log(tag);
+
+      var svg = d3.select('#' + tag).append("svg")
+          .attr("width", width)
+          .attr("height", height)
+        .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+      var path = svg.selectAll("path")
+          .data(pie(dataset.apples))
+        .enter().append("path")
+          .attr("fill", function(d, i) { return color(i); })
+          .attr("d", arc)
+          .each(function(d) { this._current = d; }); // store the initial values
+    }
   });
 
   /**

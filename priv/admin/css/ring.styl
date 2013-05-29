@@ -17,13 +17,19 @@ CSS to be applied ONLY on the ring page
     max-width   : 850px
     margin      : 0 auto 45px auto
     padding-top : 40px
- 
+
     & > span.gui-text-flat
       line-height : 1.5
       display     : block
 
   .clear
     clear : both
+
+  .chart
+    display : inline-block
+    margin-left   : 50px
+    margin-right  : 50px
+    margin-bottom : 30px
 
   #legend
     dimensions(33%, auto)
@@ -53,9 +59,11 @@ CSS to be applied ONLY on the ring page
       vertical-align : top
 
   #partition-container
-    dimensions(63%, auto)
-    margin : 25px 0 25px 3%
-    float  : left
+    dimensions(63%, 176px)
+    overflow : auto
+    margin   : 25px 0 25px 3%
+    float    : left
+    padding-right: 5px;
 
   .partition
     css-transition(background-color .3s ease, border-color .3s ease)

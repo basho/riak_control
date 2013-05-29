@@ -12,11 +12,33 @@
   </section>
 
   <div id="current-ring">
-    <h2 class="gui-headline">Current Ring</h2>
-    <span class="gui-text-flat italic">
-      Overview of the hash-space and availability of data stored in the cluster.
-      Each square represents one partition in the cluster.
-    </span><br/>
+    <h2 class="gui-headline">Availability</h2>
+
+    <div class="chart">
+      <div id="degenerate"></div>
+      <span class="gui-text-flat italic">
+        <span>45%</span>
+        <span>of your partitions have<br/>replicas on the same node.</span>
+      </span>
+    </div>
+
+    <div class="chart">
+      <div id="unavailable"></div>
+      <span class="gui-text-flat italic">
+        <span>25%</span>
+        <span>of your partitions have<br/>no available replicas.</span>
+      </span>
+    </div>
+
+    <div class="chart">
+      <div id="fallbacks"></div>
+      <span class="gui-text-flat italic">
+        <span>15%</span>
+        <span>of your partitions are<br/>majority fallback replicas.</span>
+      </span>
+    </div>
+
+    <h2 class="gui-headline">Partitions</h2>
 
     <section id="legend">
       <h4 class="gui-headline-bold">Legend</h4>
