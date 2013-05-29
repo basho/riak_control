@@ -111,10 +111,10 @@ minispade.register('ring', function() {
         normalizedPartitions = 100;
       }
 
-      console.log('fired');
-
       return [normalizedDegenerate, normalizedPartitions];
     }.property('partitionCount', 'degenerateCount'),
+
+    id: '#degenerate',
 
     width: 100,
 
@@ -135,24 +135,23 @@ minispade.register('ring', function() {
     }.property('radius'),
 
     svg: function() {
+      var id = this.get('id');
       var width = this.get('width');
       var height = this.get('height');
 
-      return d3.select("#degenerate").append("svg").
+      return d3.select(id).append("svg").
           attr("width", width).
           attr("height", height).
         append("g").
           attr("transform",
                "translate(" + width / 2 + "," + height / 2 + ")");
-    }.property('width', 'height'),
+    }.property('width', 'height', 'id'),
 
     color: function() {
       return d3.scale.category20();
     }.property(),
 
     path: function() {
-      console.log('rendering path');
-
       var svg =      this.get('svg');
       var arc =      this.get('arc');
       var pie =      this.get('pie');
@@ -163,7 +162,7 @@ minispade.register('ring', function() {
       var path = svg.selectAll("path").
           data(pie(data)).
         enter().append("path").
-          attr("fill", function(d, i) { return color(i); }).
+          attr("fill", function(d, i) { return i === 0 ? "#3baaff" : "#84ff7e"; }).
           attr("d", arc).
           each(function(d) { this._current = d; });
 
