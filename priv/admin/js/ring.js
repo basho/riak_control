@@ -82,40 +82,14 @@ minispade.register('ring', function() {
   });
 
   /**
-   * @class
    *
-   * Container view for the degenerate preflist chart.
+   * @chart
+   *
+   * Pie chart mixin.
+   *
    */
-  RiakControl.DegeneratePreflistChart = Ember.View.extend(
-    /** @scope RiakControl.DegeneratePreflistChart.prototype */ {
-    templateName: 'degenerate_preflist_chart',
-
-    classNames: ['chart'],
-
-    partitionCountBinding: 'controller.partitionCount',
-    degenerateCountBinding: 'controller.degenerateCount',
-
-    data: function() {
-      var partitionCount = this.get('partitionCount');
-      var degenerateCount = this.get('degenerateCount');
-
-      var normalizedDegenerate;
-      var normalizedPartitions;
-
-      if(partitionCount > 0) {
-        normalizedDegenerate = (degenerateCount / partitionCount) * 100;
-        normalizedPartitions = 100 - normalizedDegenerate;
-      } else {
-        // Default to all partitions as good until otherwise known.
-        normalizedDegenerate = 0;
-        normalizedPartitions = 100;
-      }
-
-      return [normalizedDegenerate, normalizedPartitions];
-    }.property('partitionCount', 'degenerateCount'),
-
-    id: '#degenerate',
-
+  RiakControl.PieChart = Ember.Mixin.create(
+    /** @scope RiakControl.PieChart.prototype */ {
     width: 100,
 
     height: 100,
@@ -174,14 +148,6 @@ minispade.register('ring', function() {
       return true;
     }.observes('data'),
 
-    abnormalColor: function() {
-      return "#3baaff";
-    }.property(),
-
-    normalColor: function() {
-      return "#84ff7e";
-    }.property(),
-
     arcTween: function() {
       var arc = this.get('arc');
 
@@ -197,6 +163,51 @@ minispade.register('ring', function() {
     pie: function() {
       return d3.layout.pie().sort(null);
     }.property(),
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the degenerate preflist chart.
+   */
+  RiakControl.DegeneratePreflistChart = Ember.View.extend(
+    RiakControl.PieChart,
+    /** @scope RiakControl.DegeneratePreflistChart.prototype */ {
+    templateName: 'degenerate_preflist_chart',
+
+    classNames: ['chart'],
+
+    partitionCountBinding: 'controller.partitionCount',
+    degenerateCountBinding: 'controller.degenerateCount',
+
+    data: function() {
+      var partitionCount = this.get('partitionCount');
+      var degenerateCount = this.get('degenerateCount');
+
+      var normalizedDegenerate;
+      var normalizedPartitions;
+
+      if(partitionCount > 0) {
+        normalizedDegenerate = (degenerateCount / partitionCount) * 100;
+        normalizedPartitions = 100 - normalizedDegenerate;
+      } else {
+        // Default to all partitions as good until otherwise known.
+        normalizedDegenerate = 0;
+        normalizedPartitions = 100;
+      }
+
+      return [normalizedDegenerate, normalizedPartitions];
+    }.property('partitionCount', 'degenerateCount'),
+
+    id: '#degenerate',
+
+    abnormalColor: function() {
+      return "#3baaff";
+    }.property(),
+
+    normalColor: function() {
+      return "#84ff7e";
+    }.property()
   });
 
   /**
