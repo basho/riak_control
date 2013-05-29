@@ -201,6 +201,10 @@ minispade.register('ring', function() {
 
     id: '#quorum-unavailable',
 
+    normalizedUnavailable: function() {
+      return this.get('data')[0];
+    }.property('data'),
+
     abnormalColor: function() {
       return "#f65d5d";
     }.property(),
@@ -246,6 +250,11 @@ minispade.register('ring', function() {
 
     id: '#all-unavailable',
 
+    normalizedUnavailable: function() {
+      console.log('hi');
+      return this.get('data')[0];
+    }.property('data'),
+
     abnormalColor: function() {
       return "#ffb765";
     }.property(),
@@ -290,6 +299,10 @@ minispade.register('ring', function() {
     }.property('partitionCount', 'degenerateCount'),
 
     id: '#degenerate',
+
+    normalizedDegenerate: function() {
+      return this.get('data')[0];
+    }.property('data'),
 
     abnormalColor: function() {
       return "#3baaff";
