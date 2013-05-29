@@ -137,9 +137,11 @@ minispade.register('ring', function() {
       var abnormalColor = this.get('abnormalColor');
 
       var path = svg.selectAll("path").
-          data(pie(data)).
-        enter().append("path").
-          attr("fill", function(d, i) { return i === 0 ? abnormalColor : normalColor; }).
+          data(pie(data));
+
+      path.enter().append("path");
+
+      path.attr("fill", function(d, i) { return i === 0 ? abnormalColor : normalColor; }).
           attr("d", arc).
           each(function(d) { this._current = d; });
 
