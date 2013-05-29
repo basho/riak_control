@@ -95,8 +95,7 @@ minispade.register('ring', function() {
     partitionCountBinding: 'controller.partitionCount',
     degenerateCountBinding: 'controller.degenerateCount',
 
-    didInsertElement: function() {
-      // Setup initial state.
+    data: function() {
       var partitionCount = this.get('partitionCount');
       var degenerateCount = this.get('degenerateCount');
 
@@ -104,50 +103,90 @@ minispade.register('ring', function() {
       var normalizedPartitions;
 
       if(partitionCount > 0) {
-        normalizedDegenerate = (degenerateCount / partitionCount);
+        normalizedDegenerate = (degenerateCount / partitionCount) * 100;
         normalizedPartitions = 100 - normalizedDegenerate;
       } else {
-        // Default to all partitions as good iuntil otherwise known.
+        // Default to all partitions as good until otherwise known.
         normalizedDegenerate = 0;
         normalizedPartitions = 100;
       }
 
-      console.log(normalizedPartitions);
-      console.log(normalizedDegenerate);
+      console.log('fired');
 
-      // Build the data necessary for rendering the pie chart.
-      var data = [normalizedDegenerate, normalizedPartitions];
+      return [normalizedDegenerate, normalizedPartitions];
+    }.property('partitionCount', 'degenerateCount'),
 
-      // Chart dimentions.
-      var width = 100,
-          height = 100,
-          radius = Math.min(width, height) / 2;
+    width: 100,
 
-      // Color scaling.
-      var color = d3.scale.category20();
+    height: 100,
 
-      // Generate pie chart layout.
-      var pie = d3.layout.pie().sort(null);
+    radius: function() {
+      var width = this.get('width');
+      var height = this.get('height');
 
-      // Generate arcs.
-      var arc = d3.svg.arc().innerRadius(radius - 20).
-                             outerRadius(radius - 10);
+      return Math.min(width, height) / 2;
+    }.property('width', 'height'),
 
-      // Draw the SVG.
-      var svg = d3.select("#degenerate").append("svg").
+    arc: function() {
+      var radius = this.get('radius');
+
+      return d3.svg.arc().innerRadius(radius - 20).
+                          outerRadius(radius - 10);
+    }.property('radius'),
+
+    svg: function() {
+      var width = this.get('width');
+      var height = this.get('height');
+
+      return d3.select("#degenerate").append("svg").
           attr("width", width).
           attr("height", height).
         append("g").
           attr("transform",
                "translate(" + width / 2 + "," + height / 2 + ")");
+    }.property('width', 'height'),
 
-      // Draw the path elements.
+    color: function() {
+      return d3.scale.category20();
+    }.property(),
+
+    path: function() {
+      console.log('rendering path');
+
+      var svg =      this.get('svg');
+      var arc =      this.get('arc');
+      var pie =      this.get('pie');
+      var data =     this.get('data');
+      var color =    this.get('color');
+      var arcTween = this.get('arcTween');
+
       var path = svg.selectAll("path").
           data(pie(data)).
         enter().append("path").
           attr("fill", function(d, i) { return color(i); }).
-          attr("d", arc);
-    }
+          attr("d", arc).
+          each(function(d) { this._current = d; });
+
+      path.transition().duration(750).attrTween("d", arcTween);
+
+      return true;
+    }.observes('partitionCount', 'degenerateCount'),
+
+    arcTween: function() {
+      var arc = this.get('arc');
+
+      return function(a) {
+        var i = d3.interpolate(this._current, a);
+        this._current = i(0);
+        return function(t) {
+          return arc(i(t));
+        };
+      };
+    }.property('arc'),
+
+    pie: function() {
+      return d3.layout.pie().sort(null);
+    }.property(),
   });
 
   /**
