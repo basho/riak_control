@@ -159,17 +159,28 @@ minispade.register('ring', function() {
       var color =    this.get('color');
       var arcTween = this.get('arcTween');
 
+      var normalColor =   this.get('normalColor');
+      var abnormalColor = this.get('abnormalColor');
+
       var path = svg.selectAll("path").
           data(pie(data)).
         enter().append("path").
-          attr("fill", function(d, i) { return i === 0 ? "#3baaff" : "#84ff7e"; }).
+          attr("fill", function(d, i) { return i === 0 ? abnormalColor : normalColor; }).
           attr("d", arc).
           each(function(d) { this._current = d; });
 
       path.transition().duration(750).attrTween("d", arcTween);
 
       return true;
-    }.observes('partitionCount', 'degenerateCount'),
+    }.observes('data'),
+
+    abnormalColor: function() {
+      return "#3baaff";
+    }.property(),
+
+    normalColor: function() {
+      return "#84ff7e";
+    }.property(),
 
     arcTween: function() {
       var arc = this.get('arc');
