@@ -89,8 +89,17 @@ minispade.register('core', function() {
     quorum: DS.attr("number"),
 
     /* Whether all primaries are on distinct nodes. */
-    distinct: DS.attr("boolean")
+    distinct: DS.attr("boolean"),
 
+    /* Whether or not all primaries are down or not. */
+    allPrimariesDown: function() {
+      return 0 === this.get('available');
+    }.property('available'),
+
+    /* Whether or not a quorum of primaries are down. */
+    quorumUnavailable: function() {
+      return this.get('available') < this.get('quorum');
+    }.property('quorum', 'available')
   });
 
 });

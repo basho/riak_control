@@ -39,8 +39,46 @@ minispade.register('ring', function() {
       if(this._intervalId) {
         clearInterval(this._intervalId);
       }
-    }
+    },
 
+    /**
+     * Count of all partitions.
+     *
+     * @returns {number}
+     */
+    partitionCount: function() {
+      return this.get('content.length');
+    }.property('content.@each'),
+
+    /**
+     * Count of degenerate partitions.
+     *
+     * @returns {number}
+     */
+    degenerateCount: function() {
+      return this.get('content').
+        filterProperty('distinct', false).length;
+    }.property('content.@each'),
+
+    /**
+     * Count of partitions with primaries down.
+     *
+     * @returns {number}
+     */
+    allPrimariesDownCount: function() {
+      return this.get('content').
+        filterProperty('allPrimariesDown', true).length;
+    }.property('content.@each'),
+
+    /**
+     * Count of partitions with a quorum of primaries down.
+     *
+     * @returns {number}
+     */
+    quorumUnavailableCount: function() {
+      return this.get('content').
+        filterProperty('quorumUnavailable', true).length;
+    }.property('content.@each')
   });
 
   /**
@@ -54,9 +92,31 @@ minispade.register('ring', function() {
 
     classNames: ['chart'],
 
+    partitionCountBinding: 'controller.partitionCount',
+    degenerateCountBinding: 'controller.degenerateCount',
+
     didInsertElement: function() {
-      // TODO: Replace with the real data.
-      var data = [50, 50];
+      // Setup initial state.
+      var partitionCount = this.get('partitionCount');
+      var degenerateCount = this.get('degenerateCount');
+
+      var normalizedDegenerate;
+      var normalizedPartitions;
+
+      if(partitionCount > 0) {
+        normalizedDegenerate = (degenerateCount / partitionCount);
+        normalizedPartitions = 100 - normalizedDegenerate;
+      } else {
+        // Default to all partitions as good iuntil otherwise known.
+        normalizedDegenerate = 0;
+        normalizedPartitions = 100;
+      }
+
+      console.log(normalizedPartitions);
+      console.log(normalizedDegenerate);
+
+      // Build the data necessary for rendering the pie chart.
+      var data = [normalizedDegenerate, normalizedPartitions];
 
       // Chart dimentions.
       var width = 100,
@@ -78,7 +138,8 @@ minispade.register('ring', function() {
           attr("width", width).
           attr("height", height).
         append("g").
-          attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+          attr("transform",
+               "translate(" + width / 2 + "," + height / 2 + ")");
 
       // Draw the path elements.
       var path = svg.selectAll("path").
@@ -108,11 +169,14 @@ minispade.register('ring', function() {
     /** @scope RiakControl.PartitionView.prototype */ {
     templateName: 'partition',
 
-    indexBinding: 'content.index',
-    n_valBinding: 'content.n_val',
-    quorumBinding: 'content.quorum',
-    availableBinding: 'content.available',
-    distinctBinding: 'content.distinct',
+    indexBinding:       'content.index',
+    n_valBinding:       'content.n_val',
+    quorumBinding:      'content.quorum',
+    availableBinding:   'content.available',
+    distinctBinding:    'content.distinct',
+
+    allPrimariesDownBinding:   'content.allPrimariesDown',
+    quorumUnavailableBinding:  'content.quorumUnavailable',
 
     color: function() {
       var colors = ['partition'];
@@ -134,20 +198,6 @@ minispade.register('ring', function() {
       return colors.join(' ');
     }.property('allPrimariesDown', 'quorumUnavailable', 'distinct'),
 
-    allPrimariesDown: function() {
-      var available = this.get('available');
-
-      return available === 0;
-
-    }.property('available'),
-
-    quorumUnavailable: function() {
-      var quorum = this.get('quorum');
-      var available = this.get('available');
-
-      return available < quorum;
-
-    }.property('quorum', 'available')
   });
 
   /**
