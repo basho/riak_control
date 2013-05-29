@@ -46,51 +46,57 @@ minispade.register('ring', function() {
   /**
    * @class
    *
-   * Container view for the ring page.
+   * Container view for the degenerate preflist chart.
    */
-  RiakControl.RingView = Ember.View.extend(
-    /** @scope RiakControl.RingView.prototype */ {
-    templateName: 'ring',
+  RiakControl.DegeneratePreflistChart = Ember.View.extend(
+    /** @scope RiakControl.DegeneratePreflistChart.prototype */ {
+    templateName: 'degenerate_preflist_chart',
+
+    classNames: ['chart'],
 
     didInsertElement: function() {
-        this.renderChart('degenerate');
-        this.renderChart('unavailable');
-        this.renderChart('fallbacks');
-    },
+      // TODO: Replace with the real data.
+      var data = [50, 50];
 
-    renderChart: function(tag) {
-      var dataset = {
-        apples: [53245, 28479, 19697, 24037, 40245],
-        oranges: [200, 200, 200, 200, 200]
-      };
-
+      // Chart dimentions.
       var width = 100,
           height = 100,
           radius = Math.min(width, height) / 2;
 
+      // Color scaling.
       var color = d3.scale.category20();
 
+      // Generate pie chart layout.
       var pie = d3.layout.pie().sort(null);
 
-      var arc = d3.svg.arc().
-                   innerRadius(radius - 20).
-                   outerRadius(radius - 10);
+      // Generate arcs.
+      var arc = d3.svg.arc().innerRadius(radius - 20).
+                             outerRadius(radius - 10);
 
-                   console.log(tag);
+      // Draw the SVG.
+      var svg = d3.select("#degenerate").append("svg").
+          attr("width", width).
+          attr("height", height).
+        append("g").
+          attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-      var svg = d3.select('#' + tag).append("svg")
-          .attr("width", width)
-          .attr("height", height)
-        .append("g")
-          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-      var path = svg.selectAll("path")
-          .data(pie(dataset.apples))
-        .enter().append("path")
-          .attr("fill", function(d, i) { return color(i); })
-          .attr("d", arc)
-          .each(function(d) { this._current = d; }); // store the initial values
+      // Draw the path elements.
+      var path = svg.selectAll("path").
+          data(pie(data)).
+        enter().append("path").
+          attr("fill", function(d, i) { return color(i); }).
+          attr("d", arc);
     }
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the ring page.
+   */
+  RiakControl.RingView = Ember.View.extend(
+    /** @scope RiakControl.RingView.prototype */ {
+    templateName: 'ring'
   });
 
   /**

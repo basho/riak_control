@@ -14,29 +14,7 @@
   <div id="current-ring">
     <h2 class="gui-headline">Availability</h2>
 
-    <div class="chart">
-      <div id="degenerate"></div>
-      <span class="gui-text-flat italic">
-        <span>45%</span>
-        <span>of your partitions have<br/>replicas on the same node.</span>
-      </span>
-    </div>
-
-    <div class="chart">
-      <div id="unavailable"></div>
-      <span class="gui-text-flat italic">
-        <span>25%</span>
-        <span>of your partitions have<br/>no available replicas.</span>
-      </span>
-    </div>
-
-    <div class="chart">
-      <div id="fallbacks"></div>
-      <span class="gui-text-flat italic">
-        <span>15%</span>
-        <span>of your partitions are<br/>majority fallback replicas.</span>
-      </span>
-    </div>
+    {{view RiakControl.DegeneratePreflistChart}}
 
     <h2 class="gui-headline">Partitions</h2>
 
