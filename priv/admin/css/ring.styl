@@ -25,11 +25,30 @@ CSS to be applied ONLY on the ring page
   .clear
     clear : both
 
+  .chart-spacer
+    float  : left
+    width  : 25px
+    height : 1px
+
   .chart
-    display : inline-block
-    margin-left   : 50px
-    margin-right  : 50px
-    margin-bottom : 30px
+    float          : left
+    margin-bottom  : 30px
+    margin-top     : 15px
+    width          : 266px
+    vertical-align : top
+
+    span
+      headline-font()
+      display        : inline-block
+      font-size      : 15px
+      padding-top    : 12px
+      line-height    : 1.3
+      vertical-align : top
+
+  .partition-section
+    border-top  : 1px solid lightWhite
+    padding-top : 35px
+    margin-top  : 20px
 
   #legend
     dimensions(33%, auto)
