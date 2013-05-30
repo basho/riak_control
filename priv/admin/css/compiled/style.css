@@ -2026,10 +2026,10 @@ input.gui-point-button-right:active {
   vertical-align: top;
 }
 #ring-page #partition-container {
-  width: 63%;
-  height: 176px;
+  width: 388px;
+  height: auto;
   overflow: auto;
-  margin: 25px 0 25px 3%;
+  margin: 25px 0 25px 6%;
   float: left;
   padding-right: 5px;
 }
