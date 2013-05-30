@@ -33,22 +33,26 @@ CSS to be applied ONLY on the ring page
   .chart
     float          : left
     margin-bottom  : 30px
-    margin-top     : 15px
+    margin-top     : 25px
     width          : 266px
     vertical-align : top
 
+    > div
+      text-align : center
+
     span
       headline-font()
+      corners()
+      background     : rgba(0, 0, 0, .25)
       display        : inline-block
       font-size      : 15px
-      padding-top    : 12px
+      padding        : 15px
       line-height    : 1.3
       vertical-align : top
+      margin-top     : 12px
 
   .partition-section
-    border-top  : 1px solid lightWhite
     padding-top : 35px
-    margin-top  : 20px
 
   #legend
     dimensions(33%, auto)

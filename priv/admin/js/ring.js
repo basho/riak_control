@@ -90,9 +90,9 @@ minispade.register('ring', function() {
    */
   RiakControl.PieChart = Ember.Mixin.create(
     /** @scope RiakControl.PieChart.prototype */ {
-    width: 100,
+    width: 115,
 
-    height: 100,
+    height: 115,
 
     radius: function() {
       var width = this.get('width');
@@ -105,7 +105,7 @@ minispade.register('ring', function() {
       var radius = this.get('radius');
 
       return d3.svg.arc().innerRadius(radius - 20).
-                          outerRadius(radius - 10);
+                          outerRadius(radius - 9);
     }.property('radius'),
 
     svg: function() {
@@ -113,7 +113,8 @@ minispade.register('ring', function() {
       var width = this.get('width');
       var height = this.get('height');
 
-      return d3.select(id).append("svg").
+      return d3.select(id).
+        append("svg").
           attr("width", width).
           attr("height", height).
         append("g").
@@ -143,6 +144,8 @@ minispade.register('ring', function() {
 
       path.attr("fill", function(d, i) { return i === 0 ? abnormalColor : normalColor; }).
           attr("d", arc).
+          style("stroke", "rgba(0, 0, 0, .7)").
+          style("stroke-width", "2px").
           each(function(d) { this._current = d; });
 
       path.transition().duration(750).attrTween("d", arcTween);
