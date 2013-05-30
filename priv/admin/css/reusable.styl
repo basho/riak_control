@@ -42,7 +42,7 @@ radialGradient(lightcolor, darkcolor)
 corners(curve = 4px)
   vendor('border-radius', curve)
   
-singleCorner(vert, horiz, args)
+singleCorner(vert, horiz, args = 4px)
   -webkit-border-{vert}-{horiz}-radius : args
   -moz-border-radius-{vert}{horiz}     : args
   border-{vert}-{horiz}-radius         : args

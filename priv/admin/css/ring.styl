@@ -27,14 +27,18 @@ CSS to be applied ONLY on the ring page
 
   .chart-spacer
     float  : left
-    width  : 25px
+    width  : 30px
     height : 1px
 
   .chart
+    corners()
+    background     : rgba(0, 0, 0, .15)
+    border         : 1px solid rgba(0, 0, 0, .6)
     float          : left
     margin-bottom  : 30px
     margin-top     : 25px
-    width          : 266px
+    padding-top    : 15px
+    width          : 254px
     vertical-align : top
 
     > div
@@ -42,7 +46,8 @@ CSS to be applied ONLY on the ring page
 
     span
       headline-font()
-      corners()
+      singleCorner(left, bottom)
+      singleCorner(right, bottom)
       background     : rgba(0, 0, 0, .25)
       display        : inline-block
       font-size      : 15px
@@ -55,7 +60,7 @@ CSS to be applied ONLY on the ring page
     padding-top : 35px
 
   #legend
-    dimensions(33%, auto)
+    dimensions(408px, auto)
     border-right : 1px solid lightWhite;
     float  : left
     margin : 25px 0 25px 0

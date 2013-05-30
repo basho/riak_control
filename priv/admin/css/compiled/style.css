@@ -1966,14 +1966,22 @@ input.gui-point-button-right:active {
 }
 #ring-page .chart-spacer {
   float: left;
-  width: 25px;
+  width: 30px;
   height: 1px;
 }
 #ring-page .chart {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.6);
   float: left;
   margin-bottom: 30px;
   margin-top: 25px;
-  width: 266px;
+  padding-top: 15px;
+  width: 254px;
   vertical-align: top;
 }
 #ring-page .chart > div {
@@ -1981,11 +1989,12 @@ input.gui-point-button-right:active {
 }
 #ring-page .chart span {
   font-family: 'titillium', helvetica, arial, sans-serif;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-  border-radius: 4px;
+  -webkit-border-left-bottom-radius: 4px;
+  -moz-border-radius-leftbottom: 4px;
+  border-left-bottom-radius: 4px;
+  -webkit-border-right-bottom-radius: 4px;
+  -moz-border-radius-rightbottom: 4px;
+  border-right-bottom-radius: 4px;
   background: rgba(0,0,0,0.25);
   display: inline-block;
   font-size: 15px;
@@ -1998,7 +2007,7 @@ input.gui-point-button-right:active {
   padding-top: 35px;
 }
 #ring-page #legend {
-  width: 33%;
+  width: 408px;
   height: auto;
   border-right: 1px solid rgba(255,255,255,0.18);
   float: left;

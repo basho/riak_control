@@ -90,9 +90,9 @@ minispade.register('ring', function() {
    */
   RiakControl.PieChart = Ember.Mixin.create(
     /** @scope RiakControl.PieChart.prototype */ {
-    width: 115,
+    width: 120,
 
-    height: 115,
+    height: 120,
 
     radius: function() {
       var width = this.get('width');
