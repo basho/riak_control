@@ -167,7 +167,12 @@ minispade.register('ring', function() {
 
     pie: function() {
       return d3.layout.pie().sort(null);
-    }.property()
+    }.property(),
+
+    didInsertElement: function() {
+      // Force rendering when the view is reinserted into the DOM.
+      this.path();
+    }
   });
 
   /**
