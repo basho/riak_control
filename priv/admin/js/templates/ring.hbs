@@ -23,18 +23,7 @@
     {{view RiakControl.AllUnavailableChart}}
 
     <div class="clear"></div>
-
-    <section class="details">
-      <div class="actions-pointer"></div>
-      <h4 class="gui-headline-bold">
-        Replicas do not live on unique nodes:
-      </h4>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-      varius lobortis ante, in vehicula sapien fringilla in. Fusc
-      sed mattis neque. Praesent lacinia felis enim. Aliquam erat
-      volutpat. Pellentesque ac metus dolor, vitae consequa
-      augue. Nam nisi eros, ullamcorper eu ullamcorper in.
-    </section>
+    {{outlet}}
 
     <h2 class="gui-headline partition-section">Partitions</h2>
 
@@ -49,7 +38,6 @@
       <div class="partition green"></div>
       <span class="legend-label gui-text">Available.</span><br/>
     </section>
-
 
     <section id="partition-container">
       <h4 class="gui-headline-bold partition-header">Partitions</h4>

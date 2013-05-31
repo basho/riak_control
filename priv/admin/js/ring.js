@@ -51,14 +51,31 @@ minispade.register('ring', function() {
     }.property('content.@each'),
 
     /**
+     * Degenerate partitions.
+     *
+     * @returns {array}
+     */
+    degenerates: function() {
+      return this.get('content').filterProperty('distinct', false);
+    }.property('content.@each.distinct'),
+
+    /**
      * Count of degenerate partitions.
      *
      * @returns {number}
      */
     degenerateCount: function() {
-      return this.get('content').
-        filterProperty('distinct', false).length;
-    }.property('content.@each.distinct'),
+      return this.get('degenerates').length;
+    }.property('degenerates'),
+
+    /**
+     * Partitions with primaries down.
+     *
+     * @returns {array}
+     */
+    allUnavailable: function() {
+      return this.get('content').filterProperty('allPrimariesDown', true);
+    }.property('content.@each.allPrimariesDown'),
 
     /**
      * Count of partitions with primaries down.
@@ -66,9 +83,17 @@ minispade.register('ring', function() {
      * @returns {number}
      */
     allUnavailableCount: function() {
-      return this.get('content').
-        filterProperty('allPrimariesDown', true).length;
-    }.property('content.@each.allPrimariesDown'),
+      return this.get('allUnavailable').length;
+    }.property('allUnavailable'),
+
+    /**
+     * Partitions with a quorum of primaries down.
+     *
+     * @returns {array}
+     */
+    quorumUnavailable: function() {
+      return this.get('content').filterProperty('quorumUnavailable', true);
+    }.property('content.@each.quorumUnavailable'),
 
     /**
      * Count of partitions with a quorum of primaries down.
@@ -76,24 +101,30 @@ minispade.register('ring', function() {
      * @returns {number}
      */
     quorumUnavailableCount: function() {
-      return this.get('content').
-        filterProperty('quorumUnavailable', true).length;
-    }.property('content.@each.quorumUnavailable')
+      return this.get('quorumUnavailable').length;
+    }.property('quorumUnavailable')
   });
 
   /**
-   *
-   * @chart
+   * @class
    *
    * Pie chart mixin.
-   *
    */
   RiakControl.PieChart = Ember.Mixin.create(
     /** @scope RiakControl.PieChart.prototype */ {
+
+    /**
+     * Pie chart dimensions.
+     */
     width: 120,
 
     height: 120,
 
+    /**
+     * Radius of the pie chart.
+     *
+     * @returns {number}
+     */
     radius: function() {
       var width = this.get('width');
       var height = this.get('height');
@@ -101,6 +132,11 @@ minispade.register('ring', function() {
       return Math.min(width, height) / 2;
     }.property('width', 'height'),
 
+    /**
+     * Arc rendering function, computed from outer and inner radius.
+     *
+     * @returns {function}
+     */
     arc: function() {
       var radius = this.get('radius');
 
@@ -108,6 +144,11 @@ minispade.register('ring', function() {
                           outerRadius(radius - 9);
     }.property('radius'),
 
+    /**
+     * Generate an svg, and insert into the DOM.
+     *
+     * @returns {function}
+     */
     svg: function() {
       var id = this.get('id');
       var width = this.get('width');
@@ -122,27 +163,28 @@ minispade.register('ring', function() {
                "translate(" + width / 2 + "," + height / 2 + ")");
     }.property('width', 'height', 'id'),
 
-    color: function() {
-      return d3.scale.category20();
-    }.property(),
-
+    /**
+     * Observer which redraws the path components into the svg element 
+     * as the data changes, while also triggering the motion tween.
+     *
+     * @returns {true}
+     */
     path: function() {
       var svg =      this.get('svg');
       var arc =      this.get('arc');
       var pie =      this.get('pie');
       var data =     this.get('data');
-      var color =    this.get('color');
       var arcTween = this.get('arcTween');
 
       var normalColor =   this.get('normalColor');
       var abnormalColor = this.get('abnormalColor');
 
-      var path = svg.selectAll("path").
-          data(pie(data));
+      var path = svg.selectAll("path").data(pie(data));
 
       path.enter().append("path");
 
-      path.attr("fill", function(d, i) { return i === 0 ? abnormalColor : normalColor; }).
+      path.attr("fill", function(d, i) {
+                  return i === 0 ? abnormalColor : normalColor; }).
           attr("d", arc).
           style("stroke", "rgba(0, 0, 0, .7)").
           style("stroke-width", "2px").
@@ -153,6 +195,11 @@ minispade.register('ring', function() {
       return true;
     }.observes('data'),
 
+    /**
+     * Tween interpolation function for arcs.
+     *
+     * @returns {function}
+     */
     arcTween: function() {
       var arc = this.get('arc');
 
@@ -165,10 +212,21 @@ minispade.register('ring', function() {
       };
     }.property('arc'),
 
+    /**
+     * Generate a pie chart layout.
+     *
+     * @returns {function}
+     */
     pie: function() {
       return d3.layout.pie().sort(null);
     }.property(),
 
+    /**
+     * Whenever the view is reinserted into the DOM, re-render
+     * the path components into the view.
+     *
+     * @returns {void}
+     */
     didInsertElement: function() {
       // Force rendering when the view is reinserted into the DOM.
       this.path();
@@ -368,7 +426,7 @@ minispade.register('ring', function() {
       }
 
       return colors.join(' ');
-    }.property('allUnavailable', 'quorumUnavailable', 'distinct'),
+    }.property('allUnavailable', 'quorumUnavailable', 'distinct')
 
   });
 
@@ -380,6 +438,35 @@ minispade.register('ring', function() {
   RiakControl.PartitionsView = Ember.CollectionView.extend(
     /** @scope RiakControl.PartitionsView.prototype */ {
     itemViewClass: RiakControl.PartitionView
+  });
+
+  /**
+   * @class
+   *
+   * Degenerate preflists details view.
+   */
+  RiakControl.DegeneratePreflistsView = Ember.View.extend(
+    /** @scope RiakControl.DegeneratePreflistsView.prototype */ {
+    templateName: 'degenerate_preflists'
+  });
+
+  /**
+   * @class
+   *
+   * Quorum unavailable details view.
+   */
+  RiakControl.QuorumUnavailableView = Ember.View.extend({
+    templateName: 'quorum_unavailable'
+  });
+
+  /**
+   * @class
+   *
+   * All unavailable details view.
+   */
+  RiakControl.AllUnavailableView = Ember.View.extend(
+    /** @scope RiakControl.AllUnavailableView.prototype */ {
+    templateName: 'all_unavailable'
   });
 
 });

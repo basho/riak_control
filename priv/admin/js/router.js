@@ -97,6 +97,12 @@ minispade.register('router', function() {
       ring: Ember.Route.extend({
         route: 'ring',
 
+        showDegeneratePreflists: Ember.Route.transitionTo('ring.degenerates'),
+
+        showQuorumUnavailable: Ember.Route.transitionTo('ring.quorum'),
+
+        showAllUnavailable: Ember.Route.transitionTo('ring.all'),
+
         connectOutlets: function(router) {
           router.get('applicationController').
             connectOutlet('ring', RiakControl.Partition.find());
@@ -113,6 +119,33 @@ minispade.register('router', function() {
 
         index: Ember.Route.extend({
           route: '/'
+        }),
+
+        degenerates: Ember.Route.extend({
+          route: '/degenerates',
+
+          connectOutlets: function(router) {
+            router.get('ringController').
+              connectOutlet('degeneratePreflists', undefined);
+          }
+        }),
+
+        quorum: Ember.Route.extend({
+          route: '/quorum',
+
+          connectOutlets: function(router) {
+            router.get('ringController').
+              connectOutlet('quorumUnavailable', undefined);
+          }
+        }),
+
+        all: Ember.Route.extend({
+          route: '/all',
+
+          connectOutlets: function(router) {
+            router.get('ringController').
+              connectOutlet('allUnavailable', undefined);
+          }
         })
       })
     })
