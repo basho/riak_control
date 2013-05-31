@@ -2032,11 +2032,23 @@ input.gui-point-button-right:active {
 #ring-page .details .actions-pointer {
   width: 72px;
   height: 13px;
+  background: url("/admin/ui/images/pointer.png") center top no-repeat transparent;
+  margin-top: 8px;
+}
+#ring-page .details .actions-pointer-left {
   position: absolute;
   left: 87px;
   top: -21px;
-  background: url("/admin/ui/images/pointer.png") center top no-repeat transparent;
-  margin-top: 8px;
+}
+#ring-page .details .actions-pointer-right {
+  position: absolute;
+  left: 676px;
+  top: -21px;
+}
+#ring-page .details .actions-pointer-center {
+  position: absolute;
+  left: 382px;
+  top: -21px;
 }
 #ring-page .partition-section {
   margin-top: 45px;

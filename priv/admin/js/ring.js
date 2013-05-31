@@ -60,6 +60,15 @@ minispade.register('ring', function() {
     }.property('content.@each.distinct'),
 
     /**
+     * Do any partitions have all degenerate preflists?
+     *
+     * @returns {boolean}
+     */
+    degeneratesExist: function() {
+      return this.get('degenerateCount') > 0;
+    }.property('degenerateCount'),
+
+    /**
      * Count of degenerate partitions.
      *
      * @returns {number}
@@ -76,6 +85,15 @@ minispade.register('ring', function() {
     allUnavailable: function() {
       return this.get('content').filterProperty('allPrimariesDown', true);
     }.property('content.@each.allPrimariesDown'),
+
+    /**
+     * Do any partitions have all primaries unreachable?
+     *
+     * @returns {boolean}
+     */
+    allUnavailableExist: function() {
+      return this.get('allUnavailableCount') > 0;
+    }.property('allUnavailableCount'),
 
     /**
      * Count of partitions with primaries down.
@@ -102,7 +120,16 @@ minispade.register('ring', function() {
      */
     quorumUnavailableCount: function() {
       return this.get('quorumUnavailable').length;
-    }.property('quorumUnavailable')
+    }.property('quorumUnavailable'),
+
+    /**
+     * Do any partitions have all majority unreachable?
+     *
+     * @returns {boolean}
+     */
+    quorumUnavailableExist: function() {
+      return this.get('quorumUnavailableCount') > 0;
+    }.property('quorumUnavailableCount')
   });
 
   /**
