@@ -1978,16 +1978,17 @@ input.gui-point-button-right:active {
   background: rgba(0,0,0,0.15);
   border: 1px solid rgba(0,0,0,0.6);
   float: left;
-  margin-bottom: 30px;
-  margin-top: 25px;
+  margin: 25px 3px 30px;
   padding-top: 15px;
   width: 254px;
   vertical-align: top;
+  overflow: visible;
+  position: relative;
 }
 #ring-page .chart > div {
   text-align: center;
 }
-#ring-page .chart span {
+#ring-page .chart > span {
   font-family: 'titillium', helvetica, arial, sans-serif;
   -webkit-border-left-bottom-radius: 4px;
   -moz-border-radius-leftbottom: 4px;
@@ -2003,8 +2004,42 @@ input.gui-point-button-right:active {
   vertical-align: top;
   margin-top: 12px;
 }
+#ring-page .chart .gui-rect-button {
+  position: absolute;
+  left: 50%;
+  bottom: -64px;
+  margin-left: -68px;
+}
+#ring-page .details {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  font-family: 'noticia', georgia, serif;
+  position: relative;
+  line-height: 1.4;
+  font-size: 14px;
+  font-style: italic;
+  background: rgba(0,0,0,0.35);
+  padding: 25px;
+  margin: 55px 5px 0;
+  overflow: visible;
+}
+#ring-page .details h4 {
+  font-style: normal;
+}
+#ring-page .details .actions-pointer {
+  width: 72px;
+  height: 13px;
+  position: absolute;
+  left: 87px;
+  top: -21px;
+  background: url("/admin/ui/images/pointer.png") center top no-repeat transparent;
+  margin-top: 8px;
+}
 #ring-page .partition-section {
-  padding-top: 35px;
+  margin-top: 45px;
 }
 #ring-page #legend {
   width: 408px;

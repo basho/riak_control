@@ -35,16 +35,17 @@ CSS to be applied ONLY on the ring page
     background     : rgba(0, 0, 0, .15)
     border         : 1px solid rgba(0, 0, 0, .6)
     float          : left
-    margin-bottom  : 30px
-    margin-top     : 25px
+    margin         : 25px 3px 30px
     padding-top    : 15px
     width          : 254px
     vertical-align : top
+    overflow       : visible
+    position       : relative
 
     > div
       text-align : center
 
-    span
+    > span
       headline-font()
       singleCorner(left, bottom)
       singleCorner(right, bottom)
@@ -56,8 +57,35 @@ CSS to be applied ONLY on the ring page
       vertical-align : top
       margin-top     : 12px
 
+    .gui-rect-button
+      position    : absolute
+      left        : 50%
+      bottom      : -64px
+      margin-left : -68px
+
+  .details
+    corners()
+    copy-font()
+    position    : relative
+    line-height : 1.4
+    font-size   : 14px
+    font-style  : italic
+    background  : rgba(0, 0, 0, .35)
+    padding     : 25px
+    margin      : 55px 5px 0
+    overflow    : visible
+
+    h4
+      font-style : normal
+
+    .actions-pointer
+      dimensions(72px, 13px)
+      absoluteLeft(87px, -21px)
+      background : url('/admin/ui/images/pointer.png') center top no-repeat transparent
+      margin-top : 8px
+
   .partition-section
-    padding-top : 35px
+    margin-top : 45px
 
   #legend
     dimensions(408px, auto)
