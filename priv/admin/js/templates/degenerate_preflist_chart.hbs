@@ -4,6 +4,9 @@
   of partitions have primary replicas that do not live on a unique set
   of nodes.
 </span>
-<a {{action showDegeneratePreflists href=true}} class="gui-rect-button gui-text-bold">
-  <span class="gui-button-msg">DETAILS</span>
-</a>
+<div>
+  <a {{action showDegeneratePreflists href=true}} class="gui-rect-button gui-text-bold">
+    <span class="gui-button-msg">DETAILS</span>
+  </a>
+  {{outlet degenPrefOutlet}}
+</div>

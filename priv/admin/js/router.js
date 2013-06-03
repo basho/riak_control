@@ -126,7 +126,7 @@ minispade.register('router', function() {
 
           connectOutlets: function(router) {
             router.get('ringController').
-              connectOutlet('degeneratePreflists', undefined);
+              connectOutlet('degenPrefOutlet', 'degeneratePreflists', undefined);
           }
         }),
 
@@ -135,7 +135,7 @@ minispade.register('router', function() {
 
           connectOutlets: function(router) {
             router.get('ringController').
-              connectOutlet('quorumUnavailable', undefined);
+              connectOutlet('quorumUnavailOutlet', 'quorumUnavailable', undefined);
           }
         }),
 
@@ -144,7 +144,7 @@ minispade.register('router', function() {
 
           connectOutlets: function(router) {
             router.get('ringController').
-              connectOutlet('allUnavailable', undefined);
+              connectOutlet('allUnavailOutlet', 'allUnavailable', undefined);
           }
         })
       })

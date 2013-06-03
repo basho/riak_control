@@ -4,6 +4,9 @@
   of partitions have a majority of primary replicas down or unreachable
   nodes.
 </span>
-<a {{action showQuorumUnavailable href=true}} class="gui-rect-button gui-text-bold">
-  <span class="gui-button-msg">DETAILS</span>
-</a>
+<div>
+  <a {{action showQuorumUnavailable href=true}} class="gui-rect-button gui-text-bold">
+    <span class="gui-button-msg">DETAILS</span>
+  </a>
+  {{outlet quorumUnavailOutlet}}
+</div>

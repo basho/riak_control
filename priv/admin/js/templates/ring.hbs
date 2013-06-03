@@ -12,40 +12,44 @@
   </section>
 
   <div id="current-ring">
-    <h2 class="gui-headline">Availability</h2>
 
-    {{view RiakControl.DegeneratePreflistChart}}
-    <div class="chart-spacer"></div>
+    <div class="chart-wrapper">
+      <h2 class="gui-headline">Availability</h2>
+      
+      {{view RiakControl.DegeneratePreflistChart}}
+      <div class="chart-spacer"></div>
 
-    {{view RiakControl.QuorumUnavailableChart}}
-    <div class="chart-spacer"></div>
+      {{view RiakControl.QuorumUnavailableChart}}
+      <div class="chart-spacer"></div>
 
-    {{view RiakControl.AllUnavailableChart}}
+      {{view RiakControl.AllUnavailableChart}}
 
-    <div class="clear"></div>
-    {{outlet}}
-
-    <h2 class="gui-headline partition-section">Partitions</h2>
-
-    <section id="legend">
-      <h4 class="gui-headline-bold">Legend</h4>
-      <div class="partition red"></div>
-      <span class="legend-label gui-text">Only fallbacks available.</span><br/>
-      <div class="partition orange"></div>
-      <span class="legend-label gui-text">Majority fallbacks available.</span><br/>
-      <div class="partition blue"></div>
-      <span class="legend-label gui-text">Replicas do not live on unique nodes.</span><br/>
-      <div class="partition green"></div>
-      <span class="legend-label gui-text">Available.</span><br/>
-    </section>
-
-    <section id="partition-container">
-      <h4 class="gui-headline-bold partition-header">Partitions</h4>
-      {{collection RiakControl.PartitionsView contentBinding="content"}}
       <div class="clear"></div>
-    </section>
+    </div>
 
-    <div class="clear"></div>
+    <div class="partition-wrapper">
+      <h2 class="gui-headline partition-section">Partitions</h2>
+
+      <section id="legend">
+        <h4 class="gui-headline-bold">Legend</h4>
+        <div class="partition red"></div>
+        <span class="legend-label gui-text">Only fallbacks available.</span><br/>
+        <div class="partition orange"></div>
+        <span class="legend-label gui-text">Majority fallbacks available.</span><br/>
+        <div class="partition blue"></div>
+        <span class="legend-label gui-text">Replicas do not live on unique nodes.</span><br/>
+        <div class="partition green"></div>
+        <span class="legend-label gui-text">Available.</span><br/>
+      </section>
+
+      <section id="partition-container">
+        <h4 class="gui-headline-bold partition-header">Partitions</h4>
+        {{collection RiakControl.PartitionsView contentBinding="content"}}
+        <div class="clear"></div>
+      </section>
+
+      <div class="clear"></div>
+    </div>
   </div>
   <div class="clear"></div>
 </div>
