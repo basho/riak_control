@@ -414,7 +414,54 @@ minispade.register('ring', function() {
    */
   RiakControl.RingView = Ember.View.extend(
     /** @scope RiakControl.RingView.prototype */ {
-    templateName: 'ring'
+    templateName: 'ring',
+
+    /**
+     * Turns the details buttons into toggles that
+     * hide and show the actual details section.
+     */
+    togglifyButtons: function () {
+
+      /*
+       * Get the element that was clicked and its
+       * corresponding details section.
+       */
+      var that = $(this),
+          info = that.parent().find('.details');
+
+      /*
+       * If the details section is currently invisible,
+       * add the 'pressed' class to the button and show the
+       * details section.
+       */
+      if (!info.is(':visible')) {
+        that.addClass('pressed');
+        info.slideDown(250);
+
+      /*
+       * Otherwise, remove the class and hide it.
+       */
+      } else {
+        that.removeClass('pressed');
+        info.slideUp(250);
+      }
+    },
+
+    /**
+     * After we've rendered the view, set up .togglifyButtons
+     * to run whenever we click a details button.
+     */
+    didInsertElement: function () {
+      $('.details-button').on('click', this.get('togglifyButtons'));
+    },
+
+    /**
+     * If the details buttons get destroyed, we don't need to retain
+     * their cached event handlers.
+     */
+    willDestroyElement: function () {
+      $('.details-button').off('click', this.get('togglifyButtons'));
+    }
   });
 
   /**

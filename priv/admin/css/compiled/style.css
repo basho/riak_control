@@ -2021,6 +2021,7 @@ input.gui-point-button-right:active {
   margin: 10px auto 0;
   overflow: visible;
   text-align: left;
+  display: none;
 }
 #ring-page .details h4 {
   font-style: normal;
