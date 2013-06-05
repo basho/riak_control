@@ -91,7 +91,6 @@ minispade.register('core', function() {
 
     /* Whether unavailable nodes are present. */
     unavailable: function() {
-      console.log(this.get('unavailable_nodes').length);
       return this.get('unavailable_nodes').length > 0;
     }.property('unavailable_nodes'),
 
