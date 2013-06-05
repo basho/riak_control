@@ -58,42 +58,46 @@ status(Ring, NVal, Unavailable) ->
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
--spec status(riak_core:ring(), number(), number(), list(node())) ->
-    list({number(), number(), number()}).
 status(Ring, NVal, Quorum, Unavailable) ->
     Preflists = riak_core_ring:all_preflists(Ring, NVal),
-    Status = lists:foldl(fun(Preflist, Acc) ->
+    {Status, _, _, _} = lists:foldl(fun fold_preflist_proplist/2,
+                                    {[], NVal, Quorum, Unavailable},
+                                    Preflists),
+    lists:usort(fun sort_preflist_proplist/2, Status).
 
-                %% Get the first partition in the preflist.
-                %%
-                [{Index, _}|_] = Preflist,
+%% @doc Perform a binary conversion of the index to be returned to the
+%%      user.
+pretty_index(Index) ->
+    list_to_binary(integer_to_list(Index)).
 
-                %% Determine nodes in the preflist that are down.
-                %%
-                {Available, All} = lists:foldl(fun({_, Node}, {Available, Nodes}) ->
-                            case lists:member(Node, Unavailable) of
-                                true ->
-                                    {Available, Nodes ++ [Node]};
-                                false ->
-                                    {Available ++ [Node], Nodes ++ [Node]}
-                            end
-                        end, {[], []}, Preflist),
+%% @doc Sort the preference-as-proplist data structures by index.
+sort_preflist_proplist(A, B) ->
+    proplists:get_value(index, A) < proplists:get_value(index, B).
 
-                %% Do some conversions.
-                %%
-                BinaryIndex = list_to_binary(integer_to_list(Index)),
-                NumAvailable = length(Available),
-                UniqueNodes = lists:usort(All),
+%% @doc Fold over the preference lists and generate a data structure
+%%      representing partitions in the cluster along with primary
+%%      replicas.
+fold_preflist_proplist(Preflist, {Status0, NVal, Quorum, Unavailable}) ->
+    [{Index, _}|_] = Preflist,
 
-                %% Return each index, available primaries, and what the
-                %% quorum is.
-                Acc ++ [[{n_val, NVal},
-                         {quorum, Quorum},
-                         {distinct, length(UniqueNodes) =:= length(All)},
-                         {index, BinaryIndex},
-                         {available, NumAvailable}]]
+    {Down, Up, All} = lists:foldl(fun({_, Node}, {Down0, Up0, Nodes0}) ->
+                case lists:member(Node, Unavailable) of
+                    true ->
+                        {Down0 ++ [Node], Up0, Nodes0 ++ [Node]};
+                    false ->
+                        {Down0, Up0 ++ [Node], Nodes0 ++ [Node]}
+                end
+            end, {[], [], []}, Preflist),
 
-        end, [], Preflists),
-    lists:usort(fun(A, B) ->
-            proplists:get_value(index, A) < proplists:get_value(index, B)
-        end, Status).
+    Status = Status0 ++ [
+            [{n_val, NVal},
+             {quorum, Quorum},
+             {distinct, length(lists:usort(All)) =:= length(All)},
+             {index, pretty_index(Index)},
+             {available, length(Up)},
+             {unavilable_nodes, Down},
+             {available_nodes, Up},
+             {all_nodes, All}]
+            ],
+
+    {Status, NVal, Quorum, Unavailable}.

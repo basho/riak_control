@@ -42,28 +42,6 @@ minispade.register('core', function() {
   /**
    * @class
    *
-   * Model an actual ownership handoff.
-   */
-  RiakControl.Handoff = DS.Model.extend(
-    /** @scope RiakControl.Handoff.prototype */ {
-
-    /**
-     * Use the partition index as a primary key
-     */
-    primaryKey: 'index',
-
-    index: DS.attr("string"),
-
-    owner: DS.attr("string"),
-    next_owner: DS.attr("string"),
-
-    waiting_for: DS.attr("string")
-
-  });
-
-  /**
-   * @class
-   *
    * Partition represents one of the partitions in the
    * consistent hashing ring owned by the cluster.
    */
