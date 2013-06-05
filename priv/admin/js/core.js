@@ -1,5 +1,16 @@
 minispade.register('core', function() {
 
+  /** Handle an array type. */
+  DS.attr.transforms.array = {
+    from: function(serialized) {
+      return Em.none(serialized) ? [] : serialized;
+    },
+
+    to: function(deserialized) {
+      return Em.none(deserialized) ? [] : deserialized;
+    }
+  };
+
   /**
    * @class
    *
@@ -15,15 +26,21 @@ minispade.register('core', function() {
     primaryKey: 'name',
 
     name: DS.attr("string"),
+
     status: DS.attr("string"),
+
     reachable: DS.attr("boolean"),
 
     ring_pct: DS.attr("number"),
+
     pending_pct: DS.attr("number"),
 
     mem_total: DS.attr("number"),
+
     mem_used: DS.attr("number"),
+
     mem_erlang: DS.attr("number"),
+
     low_mem: DS.attr("boolean"),
 
     /**
@@ -68,6 +85,21 @@ minispade.register('core', function() {
 
     /* Whether all primaries are on distinct nodes. */
     distinct: DS.attr("boolean"),
+
+    /* The list of unavailable primaries. */
+    unavailable_nodes: DS.attr("array"),
+
+    /* Whether unavailable nodes are present. */
+    unavailable: function() {
+      console.log(this.get('unavailable_nodes').length);
+      return this.get('unavailable_nodes').length > 0;
+    }.property('unavailable_nodes'),
+
+    /* The list of available primaries. */
+    available_nodes: DS.attr("array"),
+
+    /* The list of primaries. */
+    all_nodes: DS.attr("array"),
 
     /* Whether or not all primaries are down or not. */
     allPrimariesDown: function() {

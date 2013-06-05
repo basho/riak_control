@@ -95,7 +95,7 @@ fold_preflist_proplist(Preflist, {Status0, NVal, Quorum, Unavailable}) ->
              {distinct, length(lists:usort(All)) =:= length(All)},
              {index, pretty_index(Index)},
              {available, length(Up)},
-             {unavilable_nodes, Down},
+             {unavailable_nodes, Down},
              {available_nodes, Up},
              {all_nodes, All}]
             ],

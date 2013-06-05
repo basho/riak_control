@@ -41,6 +41,12 @@ minispade.register('ring', function() {
       }
     },
 
+    selectedPartition: undefined,
+
+    partitionSelected: function() {
+      return this.get('selectedPartition') !== undefined;
+    }.property('selectedPartition'),
+
     /**
      * Count of all partitions.
      *
@@ -481,6 +487,14 @@ minispade.register('ring', function() {
 
     allUnavailableBinding:     'content.allUnavailable',
     quorumUnavailableBinding:  'content.quorumUnavailable',
+
+    mouseEnter: function() {
+      this.get('controller').set('selectedPartition', this.get('content'));
+    },
+
+    mouseLeave: function() {
+      this.get('controller').set('selectedPartition', undefined);
+    },
 
     color: function() {
       var colors = ['partition'];

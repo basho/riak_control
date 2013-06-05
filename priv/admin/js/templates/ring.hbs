@@ -40,12 +40,41 @@
         <div id="contextual-info">
           <h4 class="gui-headline-bold">Partition Information</h4>
           <div class="contextual-container">
+            {{#if partitionSelected}}
             <span class="gui-text italic hover-message">
-              Hover over a partition square to view its contextual information.
+              <h4 class="gui-headline-bold">Index</h4>
+
+              <span class="gui-text italic hover-message">
+                {{selectedPartition.index}}
+              </span>
+
+              {{#if selectedPartition.unavailable}}
+                <h4 class="gui-headline-bold">Unavailable Primaries</h4>
+
+                <ul>
+                  {{#each selectedPartition.unavailable_nodes}}
+                  <li>{{this}}</li>
+                  {{/each}}
+                </ul>
+              {{/if}}
+
+              <h4 class="gui-headline-bold">All Primaries</h4>
+
+              <ul>
+                {{#each selectedPartition.all_nodes}}
+                <li>{{this}}</li>
+                {{/each}}
+              </ul>
+
             </span>
+            {{else}}
+            <span class="gui-text italic hover-message">
+              Hover over a partition square to view its more information.
+            </span>
+            {{/if}}
           </div>
         </div>
-        
+
         <h4 class="gui-headline-bold">Legend</h4>
         <div class="partition red"></div>
         <span class="legend-label gui-text">Only fallbacks available.</span><br/>
