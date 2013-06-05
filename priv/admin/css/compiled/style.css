@@ -2040,17 +2040,18 @@ input.gui-point-button-right:active {
   margin-top: 45px;
 }
 #ring-page #legend {
-  width: 408px;
+  width: 385px;
   height: auto;
-  border-right: 1px solid rgba(255,255,255,0.18);
+  border-left: 1px solid rgba(255,255,255,0.18);
   float: left;
   margin: 25px 0 25px 0;
+  padding-left: 35px;
 }
 #ring-page #legend span {
   font-family: 'titillium', helvetica, arial, sans-serif;
   display: inline-block;
   width: 80%;
-  margin: 3px 0 15px 0;
+  margin: 3px 0 10px 0;
   font-size: 15px;
   line-height: 1.3;
   vertical-align: top;
@@ -2067,11 +2068,27 @@ input.gui-point-button-right:active {
   margin-right: 8px;
   vertical-align: top;
 }
+#ring-page #legend #contextual-info {
+  margin-bottom: 35px;
+}
+#ring-page #legend .contextual-container {
+  border-radius: 4px;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.6);
+  width: 345px;
+  min-height: 68px;
+  padding: 15px 15px 10px;
+}
+#ring-page #legend .contextual-container .hover-message {
+  font-family: 'noticia', georgia, serif;
+  padding: 10px 0 0 0;
+}
 #ring-page #partition-container {
   width: 388px;
   height: auto;
+  max-height: 312px;
   overflow: auto;
-  margin: 25px 0 25px 4%;
+  margin: 25px 4% 25px 0;
   float: left;
   padding-right: 5px;
 }
@@ -2223,6 +2240,9 @@ input.gui-point-button-right:active {
 @media screen and (max-width: 950px) {
   #ring-page .chart-wrapper {
     float: left;
+    border-right: 1px solid rgba(255,255,255,0.18);
+    padding-right: 40px;
+    margin-right: 0;
   }
   #ring-page .chart-spacer {
     display: none;
@@ -2234,19 +2254,21 @@ input.gui-point-button-right:active {
   }
   #ring-page .partition-wrapper {
     float: left;
-    margin-left: 40px;
+    padding-left: 40px;
   }
   #ring-page #legend,
   #ring-page #partition-container {
     width: auto;
   }
   #ring-page #legend {
-    border-right: 0;
+    border-left: 0;
     float: left;
+    clear: left;
     width: 350px;
+    padding-left: 0;
   }
   #ring-page #partition-container {
-    clear: left;
+    float: left;
     width: 388px;
     margin-right: 0;
     margin-left: 0;
@@ -2255,9 +2277,23 @@ input.gui-point-button-right:active {
     margin-top: 0;
   }
 }
+@media screen and (max-width: 850px) {
+  #ring-page .chart-wrapper {
+    padding-right: 25px;
+  }
+  #ring-page .partition-wrapper {
+    padding-left: 25px;
+  }
+}
 @media screen and (max-width: 800px) {
   #ring-page .chart-wrapper {
     float: none;
+    border-right: 0;
+    padding-right: 0;
+  }
+  #ring-page .partition-wrapper {
+    padding-left: 0;
+    width: auto;
   }
   #ring-page .chart {
     width: auto;
@@ -2266,20 +2302,20 @@ input.gui-point-button-right:active {
   #ring-page .details {
     text-align: center;
   }
+  #ring-page #contextual-info {
+    display: none;
+  }
 }
 @media screen and (max-width: 620px) {
+  #ring-page .partition-wrapper {
+    float: none;
+  }
   #ring-page #legend,
   #ring-page #partition-container {
     float: none;
     width: auto;
     border-right: none;
     margin-left: 0;
-  }
-  #ring-page h4.partition-header {
-    font-size: 26px;
-    letter-spacing: 0;
-    padding-bottom: 12px;
-    font-weight: normal;
   }
 }
 @-webkit-keyframes pulseGreen {

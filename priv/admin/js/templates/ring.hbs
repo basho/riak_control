@@ -30,7 +30,22 @@
     <div class="partition-wrapper">
       <h2 class="gui-headline partition-section">Partitions</h2>
 
+      <section id="partition-container">
+        <h4 class="gui-headline-bold partition-header">Partitions</h4>
+        {{collection RiakControl.PartitionsView contentBinding="content"}}
+        <div class="clear"></div>
+      </section>
+
       <section id="legend">
+        <div id="contextual-info">
+          <h4 class="gui-headline-bold">Partition Information</h4>
+          <div class="contextual-container">
+            <span class="gui-text italic hover-message">
+              Hover over a partition square to view its contextual information.
+            </span>
+          </div>
+        </div>
+        
         <h4 class="gui-headline-bold">Legend</h4>
         <div class="partition red"></div>
         <span class="legend-label gui-text">Only fallbacks available.</span><br/>
@@ -40,12 +55,6 @@
         <span class="legend-label gui-text">Replicas do not live on unique nodes.</span><br/>
         <div class="partition green"></div>
         <span class="legend-label gui-text">Available.</span><br/>
-      </section>
-
-      <section id="partition-container">
-        <h4 class="gui-headline-bold partition-header">Partitions</h4>
-        {{collection RiakControl.PartitionsView contentBinding="content"}}
-        <div class="clear"></div>
       </section>
 
       <div class="clear"></div>
