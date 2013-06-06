@@ -2137,6 +2137,11 @@ input.gui-point-button-right:active {
   height: 16px;
   margin: 2px;
 }
+#ring-page .partition.pulse {
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+}
 #ring-page .partition.gray {
   background-image: -moz-radial-gradient(center, #626262 0%, #555 100%);
   background-image: -webkit-gradient(radial, center, color-stop(0%, #626262), color-stop(100%, #555));

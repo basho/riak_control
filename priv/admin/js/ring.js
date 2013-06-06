@@ -488,12 +488,36 @@ minispade.register('ring', function() {
     allUnavailableBinding:     'content.allUnavailable',
     quorumUnavailableBinding:  'content.quorumUnavailable',
 
-    mouseEnter: function() {
-      this.get('controller').set('selectedPartition', this.get('content'));
-    },
 
-    mouseLeave: function() {
-      this.get('controller').set('selectedPartition', undefined);
+    /**
+     * When we click on a partition square, display its info
+     * in the context box and start it pulsing so we know it
+     * is selected.
+     */
+    click: function () {
+      var $this     = this.$(),
+          pulsing   = $this.closest('#partition-container').find('.pulse'),
+          partition = $this.find('.partition');
+
+      /*
+       * If we are clicking on a currently selected partition,
+       * we're "turning it off".  Remove its pulse class and
+       * set the selectedPartition to undefined.
+       */
+      if (partition.hasClass('pulse')) {
+        pulsing.removeClass('pulse');
+        this.get('controller').set('selectedPartition', undefined);
+
+      /*
+       * Otherwise, our attempt is to "turn it on". We'll stop any
+       * other currently pulsing squares and add the pulse class to this one.
+       * Then we set the selectedPartition to this object's content.
+       */
+      } else {
+        pulsing.removeClass('pulse');
+        partition.addClass('pulse');
+        this.get('controller').set('selectedPartition', this.get('content'));
+      }
     },
 
     color: function() {
