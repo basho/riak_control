@@ -2079,9 +2079,28 @@ input.gui-point-button-right:active {
   min-height: 68px;
   padding: 15px 15px 10px;
 }
+#ring-page #legend .contextual-container h4 {
+  margin: 0;
+}
 #ring-page #legend .contextual-container .hover-message {
   font-family: 'noticia', georgia, serif;
   padding: 10px 0 0 0;
+}
+#ring-page #legend .contextual-container .monospace {
+  font-family: 'menlo', 'consolas', 'monaco', monospace;
+  font-size: 12px;
+}
+#ring-page #legend .contextual-container .info-section {
+  margin-bottom: 15px;
+}
+#ring-page #legend .contextual-container ul {
+  list-style: disc;
+  margin-left: 15px;
+}
+#ring-page #legend .contextual-container li {
+  font-family: 'noticia', georgia, serif;
+  font-size: 14px;
+  padding-bottom: 5px;
 }
 #ring-page #partition-container {
   width: 388px;
@@ -2112,6 +2131,11 @@ input.gui-point-button-right:active {
   float: left;
   margin: 3px;
   border: 2px solid rgba(0,0,0,0.78);
+}
+#ring-page .partition:hover {
+  width: 16px;
+  height: 16px;
+  margin: 2px;
 }
 #ring-page .partition.gray {
   background-image: -moz-radial-gradient(center, #626262 0%, #555 100%);

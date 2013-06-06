@@ -41,32 +41,38 @@
           <h4 class="gui-headline-bold">Partition Information</h4>
           <div class="contextual-container">
             {{#if partitionSelected}}
-            <span class="gui-text italic hover-message">
-              <h4 class="gui-headline-bold">Index</h4>
 
-              <span class="gui-text italic hover-message">
-                {{selectedPartition.index}}
-              </span>
+              <div class="info-section">
+                <h4 class="gui-headline-bold">Index</h4>
+                <span class="monospace">
+                  {{selectedPartition.index}}
+                </span>
+              </div>
 
               {{#if selectedPartition.unavailable}}
-                <h4 class="gui-headline-bold">Unavailable Primaries</h4>
-
-                <ul>
-                  {{#each selectedPartition.unavailable_nodes}}
-                  <li>{{this}}</li>
-                  {{/each}}
-                </ul>
+                <div class="info-section">
+                  <h4 class="gui-headline-bold">Unavailable Primaries</h4>
+                  <ul>
+                    {{#each selectedPartition.unavailable_nodes}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                  </ul>
+                </div>
               {{/if}}
 
-              <h4 class="gui-headline-bold">All Primaries</h4>
+              <div class="info-section">
+                {{#if selectedPartition.all_nodes.length}}
+                  <h4 class="gui-headline-bold">All Primaries</h4>
+                  <ul>
+                    {{#each selectedPartition.all_nodes}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                  </ul>
+                {{else}}
+                  <h4 class="gui-headline-bold">No Primaries To Display</h4>
+                {{/if}}
+              </div>
 
-              <ul>
-                {{#each selectedPartition.all_nodes}}
-                <li>{{this}}</li>
-                {{/each}}
-              </ul>
-
-            </span>
             {{else}}
             <span class="gui-text italic hover-message">
               Hover over a partition square to view its more information.

@@ -108,8 +108,8 @@ CSS to be applied ONLY on the ring page
         margin-bottom : 10px
 
     .partition
-      display : inline-block
-      float   : none
+      display        : inline-block
+      float          : none
       margin-right   : 8px
       vertical-align : top
 
@@ -124,9 +124,28 @@ CSS to be applied ONLY on the ring page
       min-height    : 68px
       padding       : 15px 15px 10px
 
+      h4
+        margin : 0
+
       .hover-message
         copy-font()
         padding : 10px 0 0 0
+
+      .monospace
+        monospace()
+        font-size : 12px
+
+      .info-section
+        margin-bottom : 15px
+
+      ul
+        list-style  : disc
+        margin-left : 15px
+
+      li
+        copy-font()
+        font-size      : 14px
+        padding-bottom : 5px
 
   #partition-container
     dimensions(388px, auto)
@@ -145,6 +164,10 @@ CSS to be applied ONLY on the ring page
     float      : left
     margin     : 3px
     border     : 2px solid rgba(0, 0, 0, .78)
+
+    &:hover
+      dimensions(16px, 16px)
+      margin : 2px
 
     &.gray
       radialGradient(#626262, #555555)
