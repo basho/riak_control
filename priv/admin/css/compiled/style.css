@@ -2133,6 +2133,7 @@ input.gui-point-button-right:active {
   border: 2px solid rgba(0,0,0,0.78);
 }
 #ring-page .partition:hover {
+  cursor: pointer;
   width: 16px;
   height: 16px;
   margin: 2px;
