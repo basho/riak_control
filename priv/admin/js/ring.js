@@ -289,7 +289,8 @@ minispade.register('ring', function() {
       var normalizedPartitions;
 
       if(partitionCount > 0) {
-        normalizedUnavailable = (allUnavailableCount / partitionCount) * 100;
+        normalizedUnavailable =
+          Math.round((allUnavailableCount / partitionCount) * 100);
         normalizedPartitions = 100 - normalizedUnavailable;
       } else {
         // Default to all partitions as good until otherwise known.
@@ -338,7 +339,8 @@ minispade.register('ring', function() {
       var normalizedPartitions;
 
       if(partitionCount > 0) {
-        normalizedUnavailable = (quorumUnavailableCount / partitionCount) * 100;
+        normalizedUnavailable =
+          Math.round((quorumUnavailableCount / partitionCount) * 100);
         normalizedPartitions = 100 - normalizedUnavailable;
       } else {
         // Default to all partitions as good until otherwise known.
@@ -387,7 +389,8 @@ minispade.register('ring', function() {
       var normalizedPartitions;
 
       if(partitionCount > 0) {
-        normalizedDegenerate = (degenerateCount / partitionCount) * 100;
+        normalizedDegenerate =
+          Math.round((degenerateCount / partitionCount) * 100);
         normalizedPartitions = 100 - normalizedDegenerate;
       } else {
         // Default to all partitions as good until otherwise known.
