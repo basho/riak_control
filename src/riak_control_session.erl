@@ -35,7 +35,6 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
-         get_transfers/0,
          get_plan/0,
          clear_plan/0,
          stage_change/3,
@@ -107,11 +106,6 @@ get_services() ->
 -spec get_partitions() -> {ok, version(), partitions()}.
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
-
-%% @doc Return partition list.
--spec get_transfers() -> {ok, version(), transfers()}.
-get_transfers() ->
-    gen_server:call(?MODULE, get_transfers, infinity).
 
 %% @doc Get the staged cluster plan.
 -spec get_plan() -> {ok, list(), list()} | {error, atom()}.
@@ -193,8 +187,6 @@ handle_call(get_nodes, _From, State=#state{vsn=V,nodes=N}) ->
     {reply, {ok, V, N}, State};
 handle_call(get_services, _From, State=#state{vsn=V,services=S}) ->
     {reply, {ok, V, S}, State};
-handle_call(get_transfers, _From, State=#state{vsn=V,transfers=T}) ->
-    {reply, {ok, V, T}, State};
 handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
     {reply, {ok, V, P}, State}.
 
