@@ -95,6 +95,6 @@ fold_preflist_proplist(Preflist, {Status0, NVal, Quorum, Unavailable}) ->
                {available, length(Up)},
                {unavailable_nodes, UDown},
                {available_nodes, UUp},
-               {all_nodes, UAll}] |Status0],
+               {all_nodes, UAll}]|Status0],
 
     {Status, NVal, Quorum, Unavailable}.
