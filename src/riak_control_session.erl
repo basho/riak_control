@@ -57,7 +57,8 @@
                 ring        :: ring(),
                 partitions  :: partitions(),
                 nodes       :: members(),
-                update_tick :: boolean()}).
+                update_tick :: boolean(),
+                transfers   :: transfers()}).
 
 -type normalized_action() :: leave
                            | remove
@@ -124,7 +125,7 @@ commit_plan() ->
     gen_server:call(?MODULE, commit_plan, infinity).
 
 %% @doc Clear the staged cluster plan.
--spec clear_plan() -> {ok, ok | error}.
+-spec clear_plan() -> ok | error.
 clear_plan() ->
     gen_server:call(?MODULE, clear_plan, infinity).
 
@@ -160,22 +161,24 @@ init([]) ->
 
     %% the initial state of the session
     State=#state{vsn=1,
-                 partitions=[],
                  nodes=[],
                  services=[],
+                 transfers=[],
+                 partitions=[],
                  update_tick=false},
 
     %% start the server
     {ok, update_ring(State, Ring)}.
 
+handle_call(get_plan, _From, State) ->
+    {reply, retrieve_plan(), State};
+handle_call(clear_plan, _From, State) ->
+    {reply, maybe_clear_plan(), State};
 handle_call(commit_plan, _From, State) ->
     {reply, maybe_commit_plan(), State};
 handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
     {reply, maybe_stage_change(Node, Action, Replacement), State};
-handle_call(clear_plan, _From, State) ->
-    {reply, {ok, maybe_clear_plan()}, State};
-handle_call(get_plan, _From, State) ->
-    {reply, retrieve_plan(), State};
+
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
@@ -199,8 +202,10 @@ handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
 %% @end
 handle_cast({update_ring, Ring}, State=#state{update_tick=Tick}) ->
     case Tick of
-        false -> {noreply,update_ring(State,Ring)};
-        true -> {noreply,State}
+        false ->
+            {noreply, update_ring(State,Ring)};
+        true ->
+            {noreply, State}
     end;
 handle_cast(update_ring,State) ->
     {ok, Ring}=riak_core_ring_manager:get_my_ring(),
@@ -253,8 +258,8 @@ update_services(State=#state{services=S}, Services) ->
 update_ring(State, Ring) ->
     erlang:send_after(?UPDATE_TICK_TIMEOUT, self(), clear_update_tick),
     NodeState = update_nodes(State#state{update_tick=true, ring=Ring}),
-    NewState = update_partitions(NodeState),
-    rev_state(NewState).
+    FinalState = update_partitions(NodeState),
+    rev_state(FinalState).
 
 %% @doc Update ring.
 -spec update_nodes(#state{}) -> #state{}.
@@ -265,10 +270,10 @@ update_nodes(State=#state{ring=Ring}) ->
 
 %% @doc Update partitions.
 -spec update_partitions(#state{}) -> #state{}.
-update_partitions(State=#state{ring=Ring}) ->
-    Owners = riak_core_ring:all_owners(Ring),
-    Handoffs = get_all_handoffs(State),
-    Partitions = [get_partition_details(State, Owner, Handoffs) || Owner <- Owners],
+update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
+    Unavailable = [Name ||
+        #member_info{node=Name, reachable=false} <- Nodes],
+    Partitions = riak_control_ring:status(Ring, Unavailable),
     State#state{partitions=Partitions}.
 
 %% @doc Ping and retrieve vnode workers.
@@ -360,40 +365,6 @@ format_transfer({status_v2, Handoff}) ->
 get_handoff_status() ->
     Transfers = riak_core_handoff_manager:status({direction, outbound}),
     [format_transfer(Transfer) || Transfer <- lists:flatten(Transfers)].
-
-%% @doc Get handoffs for every node.
--spec get_all_handoffs(#state{}) -> handoffs().
-get_all_handoffs(#state{nodes=Members}) ->
-    lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
-
-%% @doc Get information for a particular index.
--spec get_partition_details(#state{}, {integer(), term()}, handoffs())
-    -> #partition_info{}.
-get_partition_details(#state{services=Services, ring=Ring}, {Idx, Owner}, HS) ->
-    Statuses = [get_vnode_status(Service, Ring, Idx) || Service <- Services],
-    Handoffs = [{Mod, Node} || {Mod, I, Node} <- HS, I == Idx],
-    #partition_info{index = Idx,
-                    partition = partition_index(Ring,Idx),
-                    owner = Owner,
-                    vnodes = Statuses,
-                    handoffs = Handoffs}.
-
-%% @doc Given a partition index, return.
--spec partition_index(ring(), integer()) -> term().
-partition_index(Ring, Index) ->
-    NumPartitions = riak_core_ring:num_partitions(Ring),
-    Index div chash:ring_increment(NumPartitions).
-
-%% @doc Return current vnode status.
--spec get_vnode_status(term(), term(), integer()) -> {service(), home()}.
-get_vnode_status(Service, Ring, Index) ->
-    UpNodes = riak_core_node_watcher:nodes(Service),
-    case riak_core_apl:get_apl_ann(<<(Index-1):160>>, 1, Ring, UpNodes) of
-        [{{_, _}, Status}|_] ->
-            {Service, Status};
-        [] ->
-            {Service, undefined}
-    end.
 
 %% @doc Attempt to clear the cluster plan.
 -spec maybe_clear_plan() -> ok | error.
