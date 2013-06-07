@@ -194,7 +194,7 @@ delete_resource(ReqData, Context) ->
 -spec to_json(wrq:reqdata(), undefined) -> {binary(), wrq:reqdata(), undefined}.
 to_json(ReqData, Context) ->
     %% Get the current claimant.
-    {ok, Ring} = riak_core_ring_manager:get_my_ring(),
+    Ring = riak_control_ring:ring(),
     Claimant = riak_core_ring:claimant(Ring),
 
     %% Get the current node list.
