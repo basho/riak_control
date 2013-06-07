@@ -54,7 +54,7 @@ minispade.register('ring', function() {
      */
     partitionCount: function() {
       return this.get('content.length');
-    }.property('content.@each'),
+    }.property('content.length'),
 
     /**
      * Degenerate partitions.
