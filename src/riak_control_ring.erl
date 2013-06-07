@@ -80,24 +80,23 @@ sort_preflist_proplist(A, B) ->
 fold_preflist_proplist(Preflist, {Status0, NVal, Quorum, Unavailable}) ->
     [{Index, _}|_] = Preflist,
 
-    {Down, Up, All} = lists:foldl(fun({_, Node}, {Down0, Up0, Nodes0}) ->
-                case lists:member(Node, Unavailable) of
-                    true ->
-                        {Down0 ++ [Node], Up0, Nodes0 ++ [Node]};
-                    false ->
-                        {Down0, Up0 ++ [Node], Nodes0 ++ [Node]}
-                end
-            end, {[], [], []}, Preflist),
+    All = [Node || {_, Node} <- Preflist],
+    {Down, Up} = lists:partition(fun(Node) ->
+                    lists:member(Node, Unavailable) end, All),
+
+    UUp = lists:usort(Up),
+    UAll = lists:usort(All),
+    UDown = lists:usort(Down),
 
     Status = Status0 ++ [
             [{n_val, NVal},
              {quorum, Quorum},
-             {distinct, length(lists:usort(All)) =:= length(All)},
+             {distinct, length(UAll) =:= length(All)},
              {index, pretty_index(Index)},
              {available, length(Up)},
-             {unavailable_nodes, Down},
-             {available_nodes, Up},
-             {all_nodes, All}]
+             {unavailable_nodes, UDown},
+             {available_nodes, UUp},
+             {all_nodes, UAll}]
             ],
 
     {Status, NVal, Quorum, Unavailable}.
