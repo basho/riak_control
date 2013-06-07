@@ -221,10 +221,8 @@ to_json(ReqData, Context) ->
 -spec merge_transitions(list(#member_info{}), list(), list(), node()) ->
     [{struct, list()}].
 merge_transitions(Nodes, Changes, Claim, Claimant) ->
-    lists:foldr(fun(Node, TransitionedNodes) ->
-                ChangedNode = apply_changes(Node, Changes, Claim),
-                [jsonify_node(ChangedNode, Claimant)|TransitionedNodes]
-        end, [], Nodes).
+    [jsonify_node(apply_changes(Node, Changes, Claim), Claimant) ||
+        Node <- Nodes].
 
 %% @doc Merge change into member info record.
 -spec apply_changes(#member_info{}, list(), list()) -> #member_info{}.
