@@ -60,7 +60,7 @@ status(Ring, NVal, Unavailable) ->
 %% @doc Return list of nodes, available partition and quorum.
 status(Ring, NVal, Quorum, Unavailable) ->
     Preflists = riak_core_ring:all_preflists(Ring, NVal),
-    {Status, _, _, _} = lists:foldl(fun fold_preflist_proplist/2,
+    {Status, _, _, _} = lists:foldr(fun fold_preflist_proplist/2,
                                     {[], NVal, Quorum, Unavailable},
                                     Preflists),
     lists:usort(fun sort_preflist_proplist/2, Status).
@@ -88,15 +88,13 @@ fold_preflist_proplist(Preflist, {Status0, NVal, Quorum, Unavailable}) ->
     UAll = lists:usort(All),
     UDown = lists:usort(Down),
 
-    Status = Status0 ++ [
-            [{n_val, NVal},
-             {quorum, Quorum},
-             {distinct, length(UAll) =:= length(All)},
-             {index, pretty_index(Index)},
-             {available, length(Up)},
-             {unavailable_nodes, UDown},
-             {available_nodes, UUp},
-             {all_nodes, UAll}]
-            ],
+    Status = [[{n_val, NVal},
+               {quorum, Quorum},
+               {distinct, length(UAll) =:= length(All)},
+               {index, pretty_index(Index)},
+               {available, length(Up)},
+               {unavailable_nodes, UDown},
+               {available_nodes, UUp},
+               {all_nodes, UAll}] |Status0],
 
     {Status, NVal, Quorum, Unavailable}.

@@ -271,10 +271,10 @@ update_nodes(State=#state{ring=Ring}) ->
 %% @doc Update partitions.
 -spec update_partitions(#state{}) -> #state{}.
 update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
-    Unavailable = lists:foldl(fun(Node=#member_info{node=Name}, Acc) ->
+    Unavailable = lists:foldr(fun(Node=#member_info{node=Name}, Acc) ->
                     case Node#member_info.reachable of
                         false ->
-                            Acc ++ [Name];
+                            [Name|Acc];
                         true ->
                             Acc
                     end
