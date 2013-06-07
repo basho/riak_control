@@ -276,7 +276,7 @@ update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
                         false ->
                             Acc ++ [Name];
                         true ->
-                            []
+                            Acc
                     end
             end, [], Nodes),
     Partitions = riak_control_ring:status(Ring, Unavailable),
