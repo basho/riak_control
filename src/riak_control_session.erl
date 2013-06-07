@@ -258,22 +258,8 @@ update_services(State=#state{services=S}, Services) ->
 update_ring(State, Ring) ->
     erlang:send_after(?UPDATE_TICK_TIMEOUT, self(), clear_update_tick),
     NodeState = update_nodes(State#state{update_tick=true, ring=Ring}),
-    NewState = update_partitions(NodeState),
-    FinalState = update_transfers(NewState),
+    FinalState = update_partitions(NodeState),
     rev_state(FinalState).
-
-%% @doc Update transfers.
--spec update_transfers(#state{}) -> #state{}.
-update_transfers(State) ->
-    Transfers = case riak_core_gossip:legacy_gossip() of
-        true ->
-            [];
-        false ->
-            {_Claimant, _RingReady, _Down, _MarkedDown, Changes} =
-                riak_core_status:ring_status(),
-            Changes
-    end,
-    State#state{transfers=Transfers}.
 
 %% @doc Update ring.
 -spec update_nodes(#state{}) -> #state{}.
