@@ -54,7 +54,7 @@ status(Ring, Unavailable) ->
 -spec status(riak_core:ring(), number(), list(node())) ->
     list({number(), number(), number()}).
 status(Ring, NVal, Unavailable) ->
-    Quorum = mochinum:int_ceil((NVal / 2) + 1),
+    Quorum = mochinum:int_ceil(NVal / 2),
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
