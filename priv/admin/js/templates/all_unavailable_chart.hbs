@@ -1,0 +1,24 @@
+<div id="all-unavailable"></div>
+<span class="gui-text-flat italic">
+  <strong>{{view.normalizedUnavailable}}%</strong>
+  of partitions have all primary replicas on down or unreachable nodes.
+</span>
+<div>
+  <a class="gui-rect-button gui-text-bold details-button">
+    <span class="gui-button-msg">DETAILS</span>
+  </a>
+  <section class="details">
+    <div class="actions-pointer actions-pointer-right"></div>
+    <h4 class="gui-headline-bold">
+      Preference lists where all primary repliacs are unavailable.
+    </h4>
+    {{#if allUnavailableExist}}
+    {{allUnavailableCount}} partitions have all of their
+    primary replicas located on down or unreachable nodes.  It is
+    recommended that you work to restore service to the unreachable nodes.
+    {{else}}
+    No partitions have all of their primary replicas located on down or
+    unreachable nodes.  There is nothing to worry about.
+    {{/if}}
+  </section>
+</div>

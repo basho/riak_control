@@ -32,6 +32,8 @@
 -type handoffs()      :: [handoff()].
 -type vnodes()        :: [vnode()].
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
+-type transfer()      :: riak_core_ring:pending_change().
+-type transfers()     :: [transfer()].
 
 -type stage_error() :: nodedown
                      | already_leaving

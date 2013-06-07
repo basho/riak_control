@@ -3,147 +3,14 @@ minispade.register('ring', function() {
   /**
    * @class
    *
-   * PaginationItemView handles display of individual pagination links
-   * used as navigation through the partition list.
+   * Controls filtering, pagination and loading/reloading of the
+   * partition list for the cluster.
    */
-  RiakControl.PaginationItemView = Ember.View.extend(
-    /** @scope RiakControl.PaginationItemView.prototype */ {
-    templateName: 'pagination_item',
-
-    tagName: 'li',
-    spanClasses: 'paginator pageNumber',
-
-    /**
-     * Determine if this is the currently selected page.
-     *
-     * @returns {Boolean}
-     */
-    isActive: function() {
-      var currentPage = this.get('parentView.controller.currentPage');
-      var page_id = this.get('content.page_id');
-
-      if(currentPage) {
-        return currentPage.toString() === page_id.toString();
-      } else {
-        return false;
-      }
-    }.property('parentView.controller.currentPage')
-  });
-
-  /**
-   * @class
-   *
-   * PartitionFilter provides a model for filters that will be applied to the
-   * partition list.  Each filter contains a type it filters by and a value, such
-   * as vnodes/handoff, node/dev@127.0.0.1, etc.
-   */
-  RiakControl.PartitionFilter = Ember.Object.extend();
-
-  /**
-   * @class
-   *
-   * Responsible for filtering the partition list.
-   */
-  RiakControl.PartitionFilterController = Ember.ArrayController.extend(
-    /** @scope RiakControl.PartitionFilterController.prototype */ {
-
-    /**
-     * Reload the recordarray from the server.
-     *
-     * @returns {void}
-     */
-    reload: function() {
-      this.get('content').reload();
-    },
-
-    /**
-     * Called by the router to start the polling interval when the page is selected.
-     *
-     * @returns {void}
-     */
-    startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
-    },
-
-    /**
-     * Called by the router to stop the polling interval when the page is navigated
-     * away from.
-     *
-     * @returns {void}
-     */
-    cancelInterval: function() {
-      if(this._intervalId) {
-        clearInterval(this._intervalId);
-      }
-    },
-
-    /**
-     * Given a list of filters and a selected filter value, return the filtering object.
-     *
-     * This is a necessary evil because we async load the partition list when someone directly
-     * links to a filtered view.  This function will fire once the list of filters are loaded,
-     * and correctly return the filter object given an id deserialized by the router upon navigation.
-     *
-     * @returns {Object}
-     */
-    selectedPartitionFilter: function() {
-      var selectedPartitionFilterValue = this.get('selectedPartitionFilterValue');
-      var filters = this.get('filters');
-      var selectedPartitionFilter;
-
-      selectedPartitionFilter = filters.find(function(item) {
-        return item.get('value') === selectedPartitionFilterValue;
-      });
-
-      return selectedPartitionFilter;
-    }.property('filters', 'selectedPartitionFilterValue'),
-
-    /**
-     * Given a list of nodes retrieved from the server async, convert to a list of filters
-     * for the user interface, while injecting some default filters, such as by various vnode
-     * statuses.
-     *
-     * @returns {Array}
-     */
-    filters: function() {
-      var content = this.get('content');
-
-      var nodeFilters = content.map(function(item) {
-        return RiakControl.PartitionFilter.create({
-          type: 'node',
-          name: 'Node: ' + item.get('name'),
-          value: item.get('name')
-        });
-      });
-
-      var statusFilters = [
-        RiakControl.PartitionFilter.create({
-          type: 'vnodes',
-          value: 'fallback',
-          name: 'Fallback'
-        }),
-        RiakControl.PartitionFilter.create({
-          type: 'vnodes',
-          value: 'handoff',
-          name: 'Handoff'
-        })
-      ];
-
-      return nodeFilters.concat(statusFilters);
-    }.property('content.@each')
-  });
-
-  /**
-   * @class
-   *
-   * Controls filtering, pagination and loading/reloading of the partition list
-   * for the cluster.
-   */
-  RiakControl.RingController = Ember.ArrayController.extend(
+  RiakControl.RingController = Ember.ObjectController.extend(
     /** @scope RiakControl.RingController.prototype */ {
 
     /**
-     * Reload the recordarray from the server.
+     * Reloads the record array associated with this controller.
      *
      * @returns {void}
      */
@@ -152,16 +19,19 @@ minispade.register('ring', function() {
     },
 
     /**
-     * Called by the router to start polling and reloading of partition list when route is entered.
+     * Called by the router, to start polling when this controller/view
+     * is navigated to.
      *
      * @returns {void}
      */
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
+      this._intervalId = setInterval(
+        $.proxy(this.reload, this), RiakControl.refreshInterval);
     },
 
     /**
-     * Called by the router to stop polling when route is left.
+     * Called by the router, to stop polling when this controller/view
+     * is navigated away from.
      *
      * @returns {void}
      */
@@ -171,187 +41,379 @@ minispade.register('ring', function() {
       }
     },
 
-    /**
-     * Given a known number of available pages, generate an array of objects which
-     * can be used by the UI for filtering
-     *
-     * @returns {Array}
-     */
-    pages: function() {
-      var availablePages = this.get('availablePages'),
-          pages = [],
-          page;
+    selectedPartition: undefined,
 
-      for (i = 0; i < availablePages; i++) {
-        page = i + 1;
-        pages.push({ page_id: page.toString() });
-      }
-
-      return pages;
-    }.property('availablePages'),
+    partitionSelected: function() {
+      return this.get('selectedPartition') !== undefined;
+    }.property('selectedPartition'),
 
     /**
-     * Returns the currently selected page as Integer.
+     * Count of all partitions.
      *
-     * @returns {Integer}
+     * @returns {number}
      */
-    currentPage: function() {
-      return this.get('selectedPage') || 1;
-    }.property('selectedPage'),
+    partitionCount: function() {
+      return this.get('content.length');
+    }.property('content.length'),
 
     /**
-     * Handle the nextPage event.  Call to the router to advance to the appropriate
-     * page.
+     * Degenerate partitions.
      *
-     * @returns {void}
+     * @returns {array}
      */
-    nextPage: function() {
-      var availablePages = this.get('availablePages');
-      var currentPage = parseInt(this.get('currentPage'), 10);
-      var pages = this.get('pages');
-      var nextPage;
-
-      nextPage = currentPage + 1;
-
-      if(nextPage > availablePages) {
-        nextPage = nextPage - availablePages;
-      }
-
-      RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
-    },
+    degenerates: function() {
+      return this.get('content').filterProperty('distinct', false);
+    }.property('content.@each.distinct'),
 
     /**
-     * Handle the prevPage event.  Call to the router to advance to the appropriate
-     * page.
+     * Do any partitions have all degenerate preflists?
      *
-     * @returns {void}
+     * @returns {boolean}
      */
-    prevPage: function() {
-      var availablePages = this.get('availablePages');
-      var currentPage = parseInt(this.get('currentPage'), 10);
-      var pages = this.get('pages');
-      var nextPage;
-
-      nextPage = currentPage - 1;
-
-      if(nextPage <= 0) {
-        nextPage = nextPage + availablePages;
-      }
-
-      RiakControl.get('router').send('paginateRing', pages[nextPage - 1]);
-    },
+    degeneratesExist: function() {
+      return this.get('degenerateCount') > 0;
+    }.property('degenerateCount'),
 
     /**
-     * Determine the number of available pages for pagination.
+     * Count of degenerate partitions.
      *
-     * @returns {Number}
+     * @returns {number}
      */
-    availablePages: function() {
-      var length = this.get('filteredContent.length');
-      var itemsPerPage = 32;
-
-      return (length / itemsPerPage) || 1;
-    }.property('filteredContent.length'),
+    degenerateCount: function() {
+      return this.get('degenerates').length;
+    }.property('degenerates'),
 
     /**
-     * Returns filtered content, paginated based on the currently applied
-     * selectedPage property
+     * Partitions with primaries down.
      *
-     * @returns {Array}
+     * @returns {array}
      */
-    paginatedContent: function() {
-      var filteredContent = this.get('filteredContent');
-      var selectedPage = this.get('selectedPage') || 1;
-
-      var itemsPerPage = 32;
-      var upperBound = (selectedPage * itemsPerPage);
-      var lowerBound = (selectedPage * itemsPerPage) - itemsPerPage;
-
-      return this.get('filteredContent').slice(lowerBound, upperBound);
-    }.property('selectedPage', 'filteredContent.@each'),
+    allUnavailable: function() {
+      return this.get('content').filterProperty('allPrimariesDown', true);
+    }.property('content.@each.allPrimariesDown'),
 
     /**
-     * Returns content filtered based on the currently applied 
-     * selectedPartitionFilter property.
+     * Do any partitions have all primaries unreachable?
      *
-     * @returns {Array}
+     * @returns {boolean}
      */
-    filteredContent: function() {
-      var selectedPartitionFilter = this.get('selectedPartitionFilter');
+    allUnavailableExist: function() {
+      return this.get('allUnavailableCount') > 0;
+    }.property('allUnavailableCount'),
 
-      if(selectedPartitionFilter) {
-        var filterType = selectedPartitionFilter.get('type');
-        var filterValue = selectedPartitionFilter.get('value');
-        var self = this;
-        var filtered;
+    /**
+     * Count of partitions with primaries down.
+     *
+     * @returns {number}
+     */
+    allUnavailableCount: function() {
+      return this.get('allUnavailable').length;
+    }.property('allUnavailable'),
 
-        if(filterType) {
-          if(filterType == 'vnodes') {
-            filtered = ['riak_kv', 'riak_search', 'riak_pipe'].map(function(property) {
-              return self.get('content').filterProperty(property + '_vnode_status', filterValue);
-            });
+    /**
+     * Partitions with a quorum of primaries down.
+     *
+     * @returns {array}
+     */
+    quorumUnavailable: function() {
+      return this.get('content').filterProperty('quorumUnavailable', true);
+    }.property('content.@each.quorumUnavailable'),
 
-            return filtered.reduce(function(a, b) { return a.concat(b); }).uniq();
-          } else {
-            return this.get('content').filterProperty(filterType, filterValue);
-          }
-        } else {
-          return this.get('content');
-        }
-      } else {
-        return this.get('content');
-      }
-    }.property('selectedPartitionFilter', 'content.@each')
+    /**
+     * Count of partitions with a quorum of primaries down.
+     *
+     * @returns {number}
+     */
+    quorumUnavailableCount: function() {
+      return this.get('quorumUnavailable').length;
+    }.property('quorumUnavailable'),
+
+    /**
+     * Do any partitions have all majority unreachable?
+     *
+     * @returns {boolean}
+     */
+    quorumUnavailableExist: function() {
+      return this.get('quorumUnavailableCount') > 0;
+    }.property('quorumUnavailableCount')
   });
 
   /**
    * @class
    *
-   * View containing a select field and wrapper for filtering content.
+   * Pie chart mixin.
    */
-  RiakControl.PartitionFilterView = Ember.View.extend(
-    /** @scope RiakControl.PartitionFilterView.prototype */ {
-    templateName: 'partition_filter'
-  });
-
-  /**
-   * @class
-   *
-   * View rendering the select box for filtering, handling on change
-   * events and updating of the div wrapping it.
-   */
-  RiakControl.PartitionFilterSelectView = Ember.Select.extend(
-    /** @scope RiakControl.PartitionFilterSelectView.prototype */ {
+  RiakControl.PieChart = Ember.Mixin.create(
+    /** @scope RiakControl.PieChart.prototype */ {
 
     /**
-     * As the select is currently wrapped in a span for prettyfying the display,
-     * as the selected value updates, update the display.
+     * Pie chart dimensions.
+     */
+    width: 120,
+
+    height: 120,
+
+    /**
+     * Radius of the pie chart.
+     *
+     * @returns {number}
+     */
+    radius: function() {
+      var width = this.get('width');
+      var height = this.get('height');
+
+      return Math.min(width, height) / 2;
+    }.property('width', 'height'),
+
+    /**
+     * Arc rendering function, computed from outer and inner radius.
+     *
+     * @returns {function}
+     */
+    arc: function() {
+      var radius = this.get('radius');
+
+      return d3.svg.arc().innerRadius(radius - 20).
+                          outerRadius(radius - 9);
+    }.property('radius'),
+
+    /**
+     * Generate an svg, and insert into the DOM.
+     *
+     * @returns {function}
+     */
+    svg: function() {
+      var id = this.get('id');
+      var width = this.get('width');
+      var height = this.get('height');
+
+      return d3.select(id).
+        append("svg").
+          attr("width", width).
+          attr("height", height).
+        append("g").
+          attr("transform",
+               "translate(" + width / 2 + "," + height / 2 + ")");
+    }.property('width', 'height', 'id'),
+
+    /**
+     * Observer which redraws the path components into the svg element 
+     * as the data changes, while also triggering the motion tween.
+     *
+     * @returns {true}
+     */
+    path: function() {
+      var svg =      this.get('svg');
+      var arc =      this.get('arc');
+      var pie =      this.get('pie');
+      var data =     this.get('data');
+      var arcTween = this.get('arcTween');
+
+      var normalColor =   this.get('normalColor');
+      var abnormalColor = this.get('abnormalColor');
+
+      var path = svg.selectAll("path").data(pie(data));
+
+      path.enter().append("path");
+
+      path.attr("fill", function(d, i) {
+                  return i === 0 ? abnormalColor : normalColor; }).
+          attr("d", arc).
+          style("stroke", "rgba(0, 0, 0, .7)").
+          style("stroke-width", "2px").
+          each(function(d) { this._current = d; });
+
+      path.transition().duration(750).attrTween("d", arcTween);
+
+      return true;
+    }.observes('data'),
+
+    /**
+     * Tween interpolation function for arcs.
+     *
+     * @returns {function}
+     */
+    arcTween: function() {
+      var arc = this.get('arc');
+
+      return function(a) {
+        var i = d3.interpolate(this._current, a);
+        this._current = i(0);
+        return function(t) {
+          return arc(i(t));
+        };
+      };
+    }.property('arc'),
+
+    /**
+     * Generate a pie chart layout.
+     *
+     * @returns {function}
+     */
+    pie: function() {
+      return d3.layout.pie().sort(null);
+    }.property(),
+
+    /**
+     * Whenever the view is reinserted into the DOM, re-render
+     * the path components into the view.
      *
      * @returns {void}
      */
-    updateDisplay: function() {
-      var val  = this.get('controller.selectedPartitionFilter.name'),
-          item = this.$();
-      Ember.run.next(function() {
-        item.prev().prev().text(val);
-      });
-    }.observes('controller.selectedPartitionFilter'),
-
-    /**
-     * When the value changes, call to the router to navigate to the appropriate
-     * filtered view.
-     *
-     * @returns {void}
-     */
-    change: function(ev) {
-      var selection = this.get('selection');
-
-      if(selection) {
-        RiakControl.get('router').send('filterRing', this.get('selection'));
-      } else {
-        RiakControl.get('router').send('showRing');
-      }
+    didInsertElement: function() {
+      // Force rendering when the view is reinserted into the DOM.
+      this.path();
     }
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the all unavailable chart.
+   */
+  RiakControl.AllUnavailableChart = Ember.View.extend(
+    RiakControl.PieChart,
+    /** @scope RiakControl.AllUnavailableChart.prototype */ {
+    templateName: 'all_unavailable_chart',
+
+    classNames: ['chart'],
+
+    partitionCountBinding: 'controller.partitionCount',
+    allUnavailableCountBinding: 'controller.allUnavailableCount',
+
+    data: function() {
+      var partitionCount = this.get('partitionCount');
+      var allUnavailableCount = this.get('allUnavailableCount');
+
+      var normalizedUnavailable;
+      var normalizedPartitions;
+
+      if(partitionCount > 0) {
+        normalizedUnavailable =
+          Math.round((allUnavailableCount / partitionCount) * 100);
+        normalizedPartitions = 100 - normalizedUnavailable;
+      } else {
+        // Default to all partitions as good until otherwise known.
+        normalizedUnavailable = 0;
+        normalizedPartitions = 100;
+      }
+
+      return [normalizedUnavailable, normalizedPartitions];
+    }.property('partitionCount', 'quorumUnavailableCount'),
+
+    id: '#all-unavailable',
+
+    normalizedUnavailable: function() {
+      return this.get('data')[0];
+    }.property('data'),
+
+    abnormalColor: function() {
+      return "#f65d5d";
+    }.property(),
+
+    normalColor: function() {
+      return "#84ff7e";
+    }.property()
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the quorum unavailable chart.
+   */
+  RiakControl.QuorumUnavailableChart = Ember.View.extend(
+    RiakControl.PieChart,
+    /** @scope RiakControl.QuorumUnavailableChart.prototype */ {
+    templateName: 'quorum_unavailable_chart',
+
+    classNames: ['chart'],
+
+    partitionCountBinding: 'controller.partitionCount',
+    quorumUnavailableCountBinding: 'controller.quorumUnavailableCount',
+
+    data: function() {
+      var partitionCount = this.get('partitionCount');
+      var quorumUnavailableCount = this.get('quorumUnavailableCount');
+
+      var normalizedUnavailable;
+      var normalizedPartitions;
+
+      if(partitionCount > 0) {
+        normalizedUnavailable =
+          Math.round((quorumUnavailableCount / partitionCount) * 100);
+        normalizedPartitions = 100 - normalizedUnavailable;
+      } else {
+        // Default to all partitions as good until otherwise known.
+        normalizedUnavailable = 0;
+        normalizedPartitions = 100;
+      }
+
+      return [normalizedUnavailable, normalizedPartitions];
+    }.property('partitionCount', 'quorumUnavailableCount'),
+
+    id: '#quorum-unavailable',
+
+    normalizedUnavailable: function() {
+      return this.get('data')[0];
+    }.property('data'),
+
+    abnormalColor: function() {
+      return "#ffb765";
+    }.property(),
+
+    normalColor: function() {
+      return "#84ff7e";
+    }.property()
+  });
+
+  /**
+   * @class
+   *
+   * Container view for the degenerate preflist chart.
+   */
+  RiakControl.DegeneratePreflistChart = Ember.View.extend(
+    RiakControl.PieChart,
+    /** @scope RiakControl.DegeneratePreflistChart.prototype */ {
+    templateName: 'degenerate_preflist_chart',
+
+    classNames: ['chart'],
+
+    partitionCountBinding: 'controller.partitionCount',
+    degenerateCountBinding: 'controller.degenerateCount',
+
+    data: function() {
+      var partitionCount = this.get('partitionCount');
+      var degenerateCount = this.get('degenerateCount');
+
+      var normalizedDegenerate;
+      var normalizedPartitions;
+
+      if(partitionCount > 0) {
+        normalizedDegenerate =
+          Math.round((degenerateCount / partitionCount) * 100);
+        normalizedPartitions = 100 - normalizedDegenerate;
+      } else {
+        // Default to all partitions as good until otherwise known.
+        normalizedDegenerate = 0;
+        normalizedPartitions = 100;
+      }
+
+      return [normalizedDegenerate, normalizedPartitions];
+    }.property('partitionCount', 'degenerateCount'),
+
+    id: '#degenerate',
+
+    normalizedDegenerate: function() {
+      return this.get('data')[0];
+    }.property('data'),
+
+    abnormalColor: function() {
+      return "#3baaff";
+    }.property(),
+
+    normalColor: function() {
+      return "#84ff7e";
+    }.property()
   });
 
   /**
@@ -361,103 +423,165 @@ minispade.register('ring', function() {
    */
   RiakControl.RingView = Ember.View.extend(
     /** @scope RiakControl.RingView.prototype */ {
-    templateName: 'ring'
+    templateName: 'ring',
+
+    /**
+     * Turns the details buttons into toggles that
+     * hide and show the actual details section.
+     */
+    togglifyButtons: function () {
+
+      /*
+       * Get the element that was clicked and its
+       * corresponding details section.
+       */
+      var that = $(this),
+          info = that.parent().find('.details');
+
+      /*
+       * If the details section is currently invisible,
+       * add the 'pressed' class to the button and show the
+       * details section.
+       */
+      if (!info.is(':visible')) {
+        that.addClass('pressed');
+        info.slideDown(250);
+
+      /*
+       * Otherwise, remove the class and hide it.
+       */
+      } else {
+        that.removeClass('pressed');
+        info.slideUp(250);
+      }
+    },
+
+    /**
+     * After we've rendered the view, set up .togglifyButtons
+     * to run whenever we click a details button.
+     */
+    didInsertElement: function () {
+      $('.details-button').on('click', this.get('togglifyButtons'));
+    },
+
+    /**
+     * If the details buttons get destroyed, we don't need to retain
+     * their cached event handlers.
+     */
+    willDestroyElement: function () {
+      $('.details-button').off('click', this.get('togglifyButtons'));
+    }
   });
 
   /**
    * @class
    *
-   * PartitionView is a collection view for wrapping and rendering the
-   * partition list.
+   * View for a single partition.
    */
-  RiakControl.PartitionView = Ember.CollectionView.extend(
+  RiakControl.PartitionView = Ember.View.extend(
     /** @scope RiakControl.PartitionView.prototype */ {
-    tagName: 'tbody',
+    templateName: 'partition',
 
-    itemViewClass: Ember.View.extend({
-      tagName: 'tr',
+    indexBinding:       'content.index',
+    n_valBinding:       'content.n_val',
+    quorumBinding:      'content.quorum',
+    availableBinding:   'content.available',
+    distinctBinding:    'content.distinct',
 
-      classNames: 'partition',
+    allPrimariesDownBinding:   'content.allPrimariesDown',
+    quorumUnavailableBinding:  'content.quorumUnavailable',
 
-      lightClasses: "gui-light gray",
 
-      /**
-       * Given a textual status, return the appropriate color to be used for rendering
-       * the indicator lights.
-       *
-       * @param {String} status
-       *  Status in text.
-       *
-       * @returns {String}
+    /**
+     * When we click on a partition square, display its info
+     * in the context box and start it pulsing so we know it
+     * is selected.
+     */
+    click: function () {
+      var $this     = this.$(),
+          pulsing   = $this.closest('#partition-container').find('.pulse'),
+          partition = $this.find('.partition');
+
+      /*
+       * If we are clicking on a currently selected partition,
+       * we're "turning it off".  Remove its pulse class and
+       * set the selectedPartition to undefined.
        */
-      toIndicator: function(status) {
-        if(status === "unknown") {
-          return "red";
-        } else if(status === "unreachable") {
-          return "red";
-        } else if(status === "fallback") {
-          return "blue";
-        } else if(status === "handoff") {
-          return "orange";
-        } else if(status === "active") {
-          return "green";
-        }
-      },
+      if (partition.hasClass('pulse')) {
+        pulsing.removeClass('pulse');
+        this.get('controller').set('selectedPartition', undefined);
 
-      /**
-       * Binding for the kv vnode status field.
-       *
-       * @returns {String}
+      /*
+       * Otherwise, our attempt is to "turn it on". We'll stop any
+       * other currently pulsing squares and add the pulse class to this one.
+       * Then we set the selectedPartition to this object's content.
        */
-      kvStatus: function() {
-        return this.get('content.kvStatus');
-      }.property("content.kvStatus"),
+      } else {
+        pulsing.removeClass('pulse');
+        partition.addClass('pulse');
+        this.get('controller').set('selectedPartition', this.get('content'));
+      }
+    },
 
-      /**
-       * Binding for the kv vnode indicator light.
-       *
-       * @returns {String}
-       */
-      kvIndicator: function() {
-        return this.toIndicator(this.get("kvStatus"));
-      }.property("kvStatus"),
+    color: function() {
+      var colors = ['partition'];
 
-      /**
-       * Binding for the pipe vnode status field.
-       *
-       * @returns {String}
-       */
-      pipeStatus: function() {
-        return this.get('content.pipeStatus');
-      }.property("content.pipeStatus"),
+      var allPrimariesDown  = this.get('allPrimariesDown');
+      var quorumUnavailable = this.get('quorumUnavailable');
+      var primariesDistinct = this.get('distinct');
 
-      /**
-       * Binding for the pipe vnode indicator light.
-       *
-       * @returns {String}
-       */
-      pipeIndicator: function() {
-        return this.toIndicator(this.get("pipeStatus"));
-      }.property("pipeStatus"),
+      if(allPrimariesDown) {
+        colors.push('red');
+      } else if(!primariesDistinct) {
+        colors.push('blue');
+      } else if(quorumUnavailable) {
+        colors.push('orange');
+      } else {
+        colors.push('green');
+      }
 
-      /**
-       * Binding for the search vnode status field.
-       *
-       * @returns {String}
-       */
-      searchStatus: function() {
-        return this.get('content.searchStatus');
-      }.property("content.searchStatus"),
+      return colors.join(' ');
+    }.property('allPrimariesDown', 'quorumUnavailable', 'distinct')
 
-      /**
-       * Binding for the search vnode indicator light.
-       *
-       * @returns {String}
-       */
-      searchIndicator: function() {
-        return this.toIndicator(this.get("searchStatus"));
-      }.property("searchStatus")
-    })
+  });
+
+  /**
+   * @class
+   *
+   * Collection view for partitions.
+   */
+  RiakControl.PartitionsView = Ember.CollectionView.extend(
+    /** @scope RiakControl.PartitionsView.prototype */ {
+    itemViewClass: RiakControl.PartitionView
+  });
+
+  /**
+   * @class
+   *
+   * Degenerate preflists details view.
+   */
+  RiakControl.DegeneratePreflistsView = Ember.View.extend(
+    /** @scope RiakControl.DegeneratePreflistsView.prototype */ {
+    templateName: 'degenerate_preflists'
+  });
+
+  /**
+   * @class
+   *
+   * Quorum unavailable details view.
+   */
+  RiakControl.QuorumUnavailableView = Ember.View.extend({
+    templateName: 'quorum_unavailable'
+  });
+
+  /**
+   * @class
+   *
+   * All unavailable details view.
+   */
+  RiakControl.AllUnavailableView = Ember.View.extend(
+    /** @scope RiakControl.AllUnavailableView.prototype */ {
+    templateName: 'all_unavailable'
   });
 
 });
