@@ -488,7 +488,7 @@ minispade.register('ring', function() {
     availableBinding:   'content.available',
     distinctBinding:    'content.distinct',
 
-    allUnavailableBinding:     'content.allUnavailable',
+    allPrimariesDownBinding:   'content.allPrimariesDown',
     quorumUnavailableBinding:  'content.quorumUnavailable',
 
 
@@ -526,11 +526,11 @@ minispade.register('ring', function() {
     color: function() {
       var colors = ['partition'];
 
-      var allUnavailable  =   this.get('allUnavailable');
+      var allPrimariesDown  = this.get('allPrimariesDown');
       var quorumUnavailable = this.get('quorumUnavailable');
       var primariesDistinct = this.get('distinct');
 
-      if(allUnavailable) {
+      if(allPrimariesDown) {
         colors.push('red');
       } else if(!primariesDistinct) {
         colors.push('blue');
@@ -541,7 +541,7 @@ minispade.register('ring', function() {
       }
 
       return colors.join(' ');
-    }.property('allUnavailable', 'quorumUnavailable', 'distinct')
+    }.property('allPrimariesDown', 'quorumUnavailable', 'distinct')
 
   });
 

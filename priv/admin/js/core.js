@@ -102,7 +102,7 @@ minispade.register('core', function() {
 
     /* Whether or not all primaries are down or not. */
     allPrimariesDown: function() {
-      return 0 === this.get('available');
+      return this.get('available') === 0;
     }.property('available'),
 
     /* Whether or not a quorum of primaries are down. */
