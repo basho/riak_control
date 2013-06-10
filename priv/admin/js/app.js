@@ -19,21 +19,29 @@ minispade.register('app', function() {
     templateName: 'application'
   });
 
+  /**
+   * Provide reload functionality for objects and recordarrays.
+   */
   DS.Model.reopen({
     reload: function() {
         var store = this.get('store');
-        store.get('adapter').find(store, this.constructor, this.get('id'));
+        store.get('adapter').find(store,
+          this.constructor, this.get('id'));
       }
   });
 
   DS.RecordArray.reopen({
     reload: function() {
-        Ember.assert("Can only reload base RecordArrays", this.constructor === DS.RecordArray);
+        Ember.assert("Can only reload base RecordArrays",
+          this.constructor === DS.RecordArray);
         var store = this.get('store');
         store.get('adapter').findAll(store, this.get('type'));
       }
   });
 
+  /**
+   * Data store configuration.
+   */
   RiakControl.Store = DS.Store.extend({
     revision: 4,
     adapter: DS.RESTAdapter.create({ namespace: 'admin' })

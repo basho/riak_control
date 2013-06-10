@@ -41,8 +41,14 @@ minispade.register('ring', function() {
       }
     },
 
+    /** Currently selected partition. */
     selectedPartition: undefined,
 
+    /**
+     * Determine if a partition is currently selected.
+     *
+     * @returns {boolean}
+     */
     partitionSelected: function() {
       return this.get('selectedPartition') !== undefined;
     }.property('selectedPartition'),
@@ -136,6 +142,7 @@ minispade.register('ring', function() {
     quorumUnavailableExist: function() {
       return this.get('quorumUnavailableCount') > 0;
     }.property('quorumUnavailableCount')
+
   });
 
   /**
@@ -150,7 +157,6 @@ minispade.register('ring', function() {
      * Pie chart dimensions.
      */
     width: 120,
-
     height: 120,
 
     /**
@@ -263,7 +269,18 @@ minispade.register('ring', function() {
     didInsertElement: function() {
       // Force rendering when the view is reinserted into the DOM.
       this.path();
-    }
+    },
+
+    /**
+     * Return normalized abnormal amount.
+     *
+     * @returns {number}
+     *
+     */
+    normalizedAbnormal: function() {
+      return this.get('data')[0];
+    }.property('data'),
+
   });
 
   /**
@@ -274,6 +291,7 @@ minispade.register('ring', function() {
   RiakControl.AllUnavailableChart = Ember.View.extend(
     RiakControl.PieChart,
     /** @scope RiakControl.AllUnavailableChart.prototype */ {
+
     templateName: 'all_unavailable_chart',
 
     classNames: ['chart'],
@@ -285,35 +303,28 @@ minispade.register('ring', function() {
       var partitionCount = this.get('partitionCount');
       var allUnavailableCount = this.get('allUnavailableCount');
 
-      var normalizedUnavailable;
+      var normalizedAbnormal;
       var normalizedPartitions;
 
       if(partitionCount > 0) {
-        normalizedUnavailable =
+        normalizedAbnormal =
           Math.round((allUnavailableCount / partitionCount) * 100);
-        normalizedPartitions = 100 - normalizedUnavailable;
+        normalizedPartitions = 100 - normalizedAbnormal;
       } else {
         // Default to all partitions as good until otherwise known.
-        normalizedUnavailable = 0;
+        normalizedAbnormal = 0;
         normalizedPartitions = 100;
       }
 
-      return [normalizedUnavailable, normalizedPartitions];
+      return [normalizedAbnormal, normalizedPartitions];
     }.property('partitionCount', 'quorumUnavailableCount'),
 
     id: '#all-unavailable',
 
-    normalizedUnavailable: function() {
-      return this.get('data')[0];
-    }.property('data'),
+    abnormalColor: "#f65d5d",
 
-    abnormalColor: function() {
-      return "#f65d5d";
-    }.property(),
+    normalColor: "#84ff7e"
 
-    normalColor: function() {
-      return "#84ff7e";
-    }.property()
   });
 
   /**
@@ -335,35 +346,28 @@ minispade.register('ring', function() {
       var partitionCount = this.get('partitionCount');
       var quorumUnavailableCount = this.get('quorumUnavailableCount');
 
-      var normalizedUnavailable;
+      var normalizedAbnormal;
       var normalizedPartitions;
 
       if(partitionCount > 0) {
-        normalizedUnavailable =
+        normalizedAbnormal =
           Math.round((quorumUnavailableCount / partitionCount) * 100);
-        normalizedPartitions = 100 - normalizedUnavailable;
+        normalizedPartitions = 100 - normalizedAbnormal;
       } else {
         // Default to all partitions as good until otherwise known.
-        normalizedUnavailable = 0;
+        normalizedAbnormal = 0;
         normalizedPartitions = 100;
       }
 
-      return [normalizedUnavailable, normalizedPartitions];
+      return [normalizedAbnormal, normalizedPartitions];
     }.property('partitionCount', 'quorumUnavailableCount'),
 
     id: '#quorum-unavailable',
 
-    normalizedUnavailable: function() {
-      return this.get('data')[0];
-    }.property('data'),
+    abnormalColor: "#ffb765",
 
-    abnormalColor: function() {
-      return "#ffb765";
-    }.property(),
+    normalColor: "#84ff7e"
 
-    normalColor: function() {
-      return "#84ff7e";
-    }.property()
   });
 
   /**
@@ -385,35 +389,28 @@ minispade.register('ring', function() {
       var partitionCount = this.get('partitionCount');
       var degenerateCount = this.get('degenerateCount');
 
-      var normalizedDegenerate;
+      var normalizedAbnormal;
       var normalizedPartitions;
 
       if(partitionCount > 0) {
-        normalizedDegenerate =
+        normalizedAbnormal =
           Math.round((degenerateCount / partitionCount) * 100);
-        normalizedPartitions = 100 - normalizedDegenerate;
+        normalizedPartitions = 100 - normalizedAbnormal;
       } else {
         // Default to all partitions as good until otherwise known.
-        normalizedDegenerate = 0;
+        normalizedAbnormal = 0;
         normalizedPartitions = 100;
       }
 
-      return [normalizedDegenerate, normalizedPartitions];
+      return [normalizedAbnormal, normalizedPartitions];
     }.property('partitionCount', 'degenerateCount'),
 
     id: '#degenerate',
 
-    normalizedDegenerate: function() {
-      return this.get('data')[0];
-    }.property('data'),
+    abnormalColor: "#3baaff",
 
-    abnormalColor: function() {
-      return "#3baaff";
-    }.property(),
+    normalColor: "#84ff7e"
 
-    normalColor: function() {
-      return "#84ff7e";
-    }.property()
   });
 
   /**
@@ -523,6 +520,10 @@ minispade.register('ring', function() {
       }
     },
 
+    /* Return how to colorize the partition.
+     *
+     * @returns {string}
+     */
     color: function() {
       var colors = ['partition'];
 
