@@ -67,10 +67,10 @@
                            | stop
                            | down.
 
-%% @doc Periodically update the ring with itself
+%% Periodically update the ring with itself
 -define(INTERVAL, 3000).
 
-%% @doc Delay used after a ring update
+%% Delay used after a ring update
 -define(UPDATE_TICK_TIMEOUT, 1000).
 
 %% ===================================================================
