@@ -17,6 +17,8 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc Application supervisor.
 
 -module(riak_control_sup).
 
