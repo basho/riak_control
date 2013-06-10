@@ -17,6 +17,8 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc Provides a resource for serving up the GUI skeleton.
 
 -module(riak_control_wm_gui).
 

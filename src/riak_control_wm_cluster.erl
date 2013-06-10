@@ -18,16 +18,9 @@
 %%
 %% -------------------------------------------------------------------
 %%
-%% @doc
-%%
-%% Responsible for viewing, staging and committing changes to the
-%% cluster.
-%%
-%% GET  /cluster returns the current and staged clusters.
-%% PUT  /cluster updates the plan.
-%% POST /cluster updates and commits the plan.
-%%
-%% @end
+%% @doc Provides a resource for getting the current cluster status,
+%%      as well as a resource for updating the staged cluster plan, and
+%%      committing the staged cluster plan.
 
 -module(riak_control_wm_cluster).
 

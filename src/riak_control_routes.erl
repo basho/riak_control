@@ -17,6 +17,8 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc Route helpers.
 
 -module(riak_control_routes).
 

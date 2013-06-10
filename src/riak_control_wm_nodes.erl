@@ -18,13 +18,8 @@
 %%
 %% -------------------------------------------------------------------
 %%
-%% @doc
-%%
-%% Responsible for viewing and modifying nodes.
-%%
-%% GET /nodes returns the node list.
-%%
-%% @end
+%% @doc Returns a list of all nodes, and information about their
+%%      membership in the cluster.
 
 -module(riak_control_wm_nodes).
 
