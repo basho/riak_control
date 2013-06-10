@@ -1,5 +1,16 @@
 minispade.register('core', function() {
 
+  /** Handle an array type. */
+  DS.attr.transforms.array = {
+    from: function(serialized) {
+      return Em.none(serialized) ? [] : serialized;
+    },
+
+    to: function(deserialized) {
+      return Em.none(deserialized) ? [] : deserialized;
+    }
+  };
+
   /**
    * @class
    *
@@ -15,15 +26,21 @@ minispade.register('core', function() {
     primaryKey: 'name',
 
     name: DS.attr("string"),
+
     status: DS.attr("string"),
+
     reachable: DS.attr("boolean"),
 
     ring_pct: DS.attr("number"),
+
     pending_pct: DS.attr("number"),
 
     mem_total: DS.attr("number"),
+
     mem_used: DS.attr("number"),
+
     mem_erlang: DS.attr("number"),
+
     low_mem: DS.attr("boolean"),
 
     /**
@@ -31,7 +48,12 @@ minispade.register('core', function() {
      * responsible for the API requests is running
      * Riak Control.
      */
-    me: DS.attr("boolean")
+    me: DS.attr("boolean"),
+
+    /**
+     * Whether this node is currently the claimant or not.
+     */
+    claimant: DS.attr("boolean")
   });
 
   /**
@@ -49,64 +71,44 @@ minispade.register('core', function() {
      */
     primaryKey: 'index',
 
-    i: DS.attr("number"),
+    /* Partition index. */
     index: DS.attr("string"),
-    node: DS.attr("string"),
-    status: DS.attr("string"),
-    reachable: DS.attr("boolean"),
 
-    riak_kv_vnode_status: DS.attr("string"),
-    riak_pipe_vnode_status: DS.attr("string"),
-    riak_search_vnode_status: DS.attr("string"),
+    /* Cluster n_val. */
+    n_val: DS.attr("number"),
 
-    /**
-     * Coerce vnode status into representations that are useful
-     * for the user interface.
-     *
-     * @param {String} vnode
-     *  vnode name, such as riak_kv.
-     *
-     * @returns {String} status for use in the user interface.
-     */
-    vnodeStatus: function(vnode) {
-      var partitionStatus = this.get('status');
-      var vnodeReachable = this.get('reachable');
-      var vnodeStatus = this.get(vnode + '_vnode_status');
+    /* Number of reachable/available primaries. */
+    available: DS.attr("number"),
 
-      if(partitionStatus === "incompatible") { return "unknown"; }
-      if(vnodeStatus === "handoff") { return "handoff"; }
-      if(vnodeStatus === "primary" && vnodeReachable === true) { return "active"; }
-      if(vnodeStatus === "fallback") { return "fallback"; }
+    /* Cluster quorum value. */
+    quorum: DS.attr("number"),
 
-      return "disabled";
-    },
+    /* Whether all primaries are on distinct nodes. */
+    distinct: DS.attr("boolean"),
 
-    /**
-     * Return status of the riak_kv vnode.
-     *
-     * @returns {String}
-     */
-    kvStatus: function() {
-      return this.vnodeStatus('riak_kv');
-    }.property("riak_kv_vnode_status"),
+    /* The list of unavailable primaries. */
+    unavailable_nodes: DS.attr("array"),
 
-    /**
-     * Return status of the riak_pipe vnode.
-     *
-     * @returns {String}
-     */
-    pipeStatus: function() {
-      return this.vnodeStatus('riak_pipe');
-    }.property("riak_pipe_vnode_status"),
+    /* Whether unavailable nodes are present. */
+    unavailable: function() {
+      return this.get('unavailable_nodes').length > 0;
+    }.property('unavailable_nodes'),
 
-    /**
-     * Return status of the riak_search vnode.
-     *
-     * @returns {String}
-     */
-    searchStatus: function() {
-      return this.vnodeStatus('riak_search');
-    }.property("riak_search_vnode_status")
+    /* The list of available primaries. */
+    available_nodes: DS.attr("array"),
+
+    /* The list of primaries. */
+    all_nodes: DS.attr("array"),
+
+    /* Whether or not all primaries are down or not. */
+    allPrimariesDown: function() {
+      return this.get('available') === 0;
+    }.property('available'),
+
+    /* Whether or not a quorum of primaries are down. */
+    quorumUnavailable: function() {
+      return this.get('available') < this.get('quorum');
+    }.property('quorum', 'available')
   });
 
 });
