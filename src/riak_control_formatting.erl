@@ -17,6 +17,8 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc Helper functions for formatting.
 
 -module(riak_control_formatting).
 

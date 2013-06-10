@@ -17,8 +17,9 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
-
+%%
 %% @doc Utilities needed by many pieces of the riak_control app.
+%%
 -module(riak_control).
 
 -export([

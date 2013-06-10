@@ -17,6 +17,9 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc Server responsible for tracking state of the Riak cluster and
+%%      refreshing state on a particular interval.
 
 -module(riak_control_session).
 

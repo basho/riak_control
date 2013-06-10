@@ -17,8 +17,9 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
-
+%%
 %% @doc SSL and Authorization enforcement for administration URLs.
+
 -module(riak_control_security).
 
 -export([scheme_is_available/2,

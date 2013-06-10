@@ -17,6 +17,11 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc Returns a list of all partitions, how many primary replicas
+%%      are available, what the current n_val and quorum
+%%      configuration is, as well as the unavailable nodes for
+%%      each partition.
 
 -module(riak_control_wm_partitions).
 

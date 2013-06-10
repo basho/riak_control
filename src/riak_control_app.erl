@@ -17,6 +17,8 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
+%%
+%% @doc Application.
 
 -module(riak_control_app).
 
