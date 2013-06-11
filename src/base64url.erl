@@ -34,21 +34,27 @@
          mime_decode/1,
          mime_decode_to_string/1]).
 
+-spec decode(iolist()) -> binary().
 decode(Base64url) ->
     base64:decode(urldecode(Base64url)).
 
+-spec decode_to_string(iolist()) -> string().
 decode_to_string(Base64url) ->
     base64:decode_to_string(urldecode(Base64url)).
 
+-spec mime_decode(iolist()) -> binary().
 mime_decode(Base64url) ->
     base64:mime_decode(urldecode(Base64url)).
 
+-spec mime_decode_to_string(iolist()) -> string().
 mime_decode_to_string(Base64url) ->
     base64:mime_decode_to_string(urldecode(Base64url)).
 
+-spec encode(binary()) -> binary().
 encode(Data) ->
     urlencode(base64:encode(Data)).
 
+-spec encode_to_string(iolist()) -> string().
 encode_to_string(Data) ->
     urlencode(base64:encode_to_string(Data)).
 

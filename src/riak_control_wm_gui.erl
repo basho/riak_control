@@ -119,7 +119,7 @@ get_file(Req) ->
 
 %% respond to an index request
 -spec to_resource(wrq:reqdata(), context()) ->
-                         {iolist(), wrq:reqdata(), context()}.
+                         {binary(), wrq:reqdata(), context()}.
 to_resource(Req,Ctx=index) ->
     Token = riak_control_security:csrf_token(Req, Ctx),
     {ok, Content} = index_dtl:render([{csrf_token, Token}]),

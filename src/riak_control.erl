@@ -1,4 +1,4 @@
-%% -------------------------------------------------------------------
+%% ------------------------------------------------------------------
 %%
 %% Copyright (c) 2011 Basho Technologies, Inc.
 %%
@@ -16,16 +16,14 @@
 %% specific language governing permissions and limitations
 %% under the License.
 %%
-%% -------------------------------------------------------------------
+%% ------------------------------------------------------------------
 %%
 %% @doc Utilities needed by many pieces of the riak_control app.
 %%
 -module(riak_control).
 
--export([
-         is_app_up/1,
-         priv_dir/0
-        ]).
+-export([is_app_up/1,
+         priv_dir/0]).
 
 %% @doc Find out if any nodes are running a given Riak app.
 -spec is_app_up(atom()) -> boolean().

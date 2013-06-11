@@ -58,6 +58,8 @@ status(Ring, NVal, Unavailable) ->
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
+-spec status(riak_core:ring(), number(), number(), list(node())) ->
+    list({number(), number(), number()}).
 status(Ring, NVal, Quorum, Unavailable) ->
     Preflists = riak_core_ring:all_preflists(Ring, NVal),
     {Status, _, _, _} = lists:foldr(fun fold_preflist_proplist/2,
@@ -65,22 +67,29 @@ status(Ring, NVal, Quorum, Unavailable) ->
                                     Preflists),
     lists:usort(fun sort_preflist_proplist/2, Status).
 
-%% @doc Perform a binary conversion of the index to be returned to the
+%% @doc Perform a binary conversion of the index to be returned to th
 %%      user.
+-spec pretty_index(number()) -> binary().
 pretty_index(Index) ->
     list_to_binary(integer_to_list(Index)).
 
 %% @doc Sort the preference-as-proplist data structures by index.
+-spec sort_preflist_proplist(list(), list()) -> boolean().
 sort_preflist_proplist(A, B) ->
     proplists:get_value(index, A) < proplists:get_value(index, B).
 
 %% @doc Fold over the preference lists and generate a data structure
 %%      representing partitions in the cluster along with primary
 %%      replicas.
-fold_preflist_proplist(Preflist, {Status0, NVal, Quorum, Unavailable}) ->
+-spec fold_preflist_proplist(list(),
+    {list(), integer(), integer(), list(node())}) ->
+    {list(), integer(), integer(), list(node())}.
+fold_preflist_proplist(Preflist,
+                       {Status0, NVal, Quorum, Unavailable}) ->
     [{Index, _}|_] = Preflist,
 
     All = [Node || {_, Node} <- Preflist],
+
     {Down, Up} = lists:partition(fun(Node) ->
                     lists:member(Node, Unavailable) end, All),
 
