@@ -39,6 +39,8 @@
          get_services/0,
          get_partitions/0,
          get_plan/0,
+         get_n_vals/0,
+         get_default_n_val/0,
          clear_plan/0,
          stage_change/3,
          commit_plan/0,
@@ -55,13 +57,15 @@
 %% exported for RPC calls.
 -export([get_my_info/0]).
 
--record(state, {vsn         :: version(),
-                services    :: services(),
-                ring        :: ring(),
-                partitions  :: partitions(),
-                nodes       :: members(),
-                update_tick :: boolean(),
-                transfers   :: transfers()}).
+-record(state, {vsn           :: version(),
+                services      :: services(),
+                ring          :: ring(),
+                partitions    :: partitions(),
+                nodes         :: members(),
+                update_tick   :: boolean(),
+                transfers     :: transfers(),
+                n_vals        :: n_vals(),
+                default_n_val :: pos_integer()}).
 
 -type normalized_action() :: leave
                            | remove
@@ -109,6 +113,16 @@ get_services() ->
 -spec get_partitions() -> {ok, version(), partitions()}.
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
+
+%% @doc Return list of available n_vals.
+-spec get_n_vals() -> {ok, version(), n_vals()}.
+get_n_vals() ->
+    gen_server:call(?MODULE, get_n_vals, infinity).
+
+%% @doc Return list of available n_vals.
+-spec get_default_n_val() -> {ok, version(), pos_integer()}.
+get_default_n_val() ->
+    gen_server:call(?MODULE, get_default_n_val, infinity).
 
 %% @doc Get the staged cluster plan.
 -spec get_plan() -> {ok, list(), list()} | {error, atom()}.
@@ -191,7 +205,11 @@ handle_call(get_nodes, _From, State=#state{vsn=V,nodes=N}) ->
 handle_call(get_services, _From, State=#state{vsn=V,services=S}) ->
     {reply, {ok, V, S}, State};
 handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
-    {reply, {ok, V, P}, State}.
+    {reply, {ok, V, P}, State};
+handle_call(get_n_vals, _From, State=#state{vsn=V,n_vals=N}) ->
+    {reply, {ok, V, N}, State};
+handle_call(get_default_n_val, _From, State=#state{vsn=V,default_n_val=N}) ->
+    {reply, {ok, V, N}, State}.
 
 %% @doc
 %%
@@ -256,12 +274,21 @@ update_services(State=#state{services=S}, Services) ->
     NewState = update_partitions(NodeState),
     rev_state(NewState).
 
+%% @doc Update list of all available nvals.
+-spec update_n_vals(#state{}) -> #state{}.
+update_n_vals(State=#state{ring=Ring}) ->
+    DefaultNVal = riak_control_ring:n_val(),
+    Unique = lists:usort([DefaultNVal |
+        [NVal || {_, NVal} <- riak_core_bucket:bucket_nval_map(Ring)]]),
+    State#state{n_vals=Unique, default_n_val=DefaultNVal}.
+
 %% @doc Update ring state and partitions.
 -spec update_ring(#state{}, ring()) -> #state{}.
 update_ring(State, Ring) ->
     erlang:send_after(?UPDATE_TICK_TIMEOUT, self(), clear_update_tick),
     NodeState = update_nodes(State#state{update_tick=true, ring=Ring}),
-    FinalState = update_partitions(NodeState),
+    NValsAdded = update_n_vals(NodeState),
+    FinalState = update_partitions(NValsAdded),
     rev_state(FinalState).
 
 %% @doc Update ring.
@@ -273,10 +300,10 @@ update_nodes(State=#state{ring=Ring}) ->
 
 %% @doc Update partitions.
 -spec update_partitions(#state{}) -> #state{}.
-update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
+update_partitions(State=#state{ring=Ring, nodes=Nodes, n_vals=NVals}) ->
     Unavailable = [Name ||
         #member_info{node=Name, reachable=false} <- Nodes],
-    Partitions = riak_control_ring:status(Ring, Unavailable),
+    Partitions = [[{n_val, NVal}, {partitions, riak_control_ring:status(Ring, NVal, Unavailable)}] || NVal <- NVals],
     State#state{partitions=Partitions}.
 
 %% @doc Ping and retrieve vnode workers.

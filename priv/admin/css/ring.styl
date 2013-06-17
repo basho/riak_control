@@ -7,11 +7,31 @@ CSS to be applied ONLY on the ring page
 
 #ring-page
 
+  select
+    float     : right
+    min-width : 100px
+    outline   : none
+
   h4
     margin-bottom : 20px
 
   strong
     headline-bold()
+
+  .right
+    float : right
+
+  .gui-dropdown-bg
+    margin-right : 3px
+
+  .gui-dropdown
+    margin-top  : -8px
+    margin-left : -6px
+    position    : absolute
+    z-index     : 200
+
+  .gui-dropdown-cap
+    z-index : 100
 
   #current-ring
     max-width   : 850px
@@ -24,6 +44,22 @@ CSS to be applied ONLY on the ring page
 
   .clear
     clear : both
+
+  .chart-wrapper
+    position : relative
+    overflow : visible
+
+  .nval-dropdown-container
+    position : absolute
+    right    : 5px
+    top      : 0
+
+    .gui-dropdown-wrapper
+      width : 120px
+      float : right
+
+    h4
+      margin-bottom : 5px
 
   .chart-spacer
     float  : left
@@ -218,6 +254,15 @@ CSS to be applied ONLY on the ring page
         vendor('animation', pulseGreen 1s infinite)
 
   @media screen and (max-width: 950px)
+    .nval-dropdown-container
+      position : static
+
+      h4
+        margin-top : 15px
+
+      select
+        float : none
+
     .chart-wrapper
       float         : left
       border-right  : 1px solid lightWhite

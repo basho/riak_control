@@ -34,6 +34,8 @@
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
 -type transfer()      :: riak_core_ring:pending_change().
 -type transfers()     :: [transfer()].
+-type single_n_val()  :: pos_integer().
+-type n_vals()        :: [pos_integer()].
 
 -type stage_error() :: nodedown
                      | already_leaving
@@ -78,7 +80,7 @@
           replacement :: node()
         }).
 
--type partitions()    :: [#partition_info{}].
+-type partitions()    :: [{single_n_val(), #partition_info{}}].
 -type members()       :: [#member_info{}].
 
 %% These two should always match, in terms of webmachine dispatcher

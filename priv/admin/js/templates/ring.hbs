@@ -16,6 +16,16 @@
     <div class="chart-wrapper">
       <h2 class="gui-headline">Availability</h2>
 
+      <div class="nval-dropdown-container">
+        <h4 class="gui-headline-bold">See visualizations using a different n_val.</h4>
+        {{view RiakControl.NValSelectView
+               contentBinding="content.n_vals"
+               valueBinding="content.selected"
+               dataBinding="content"
+               selectionBinding="content.selected"
+        }}
+      </div>
+
       {{view RiakControl.DegeneratePreflistChart}}
       <div class="chart-spacer"></div>
 

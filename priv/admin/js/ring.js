@@ -1,21 +1,201 @@
 minispade.register('ring', function() {
 
+  RiakControl.PartitionNValList = Ember.ArrayProxy.extend({});
+
+  RiakControl.SelectedPartitionNValList = Ember.ArrayProxy.extend({
+    selectionWatcher: function() {
+      var partitions = this.get('partitions').
+        findProperty('n_val', parseInt(this.get('selected'))).
+          partitions;
+      this.setProperties({ content: partitions });
+    }.observes('selected'),
+
+    n_vals: function() {
+      console.log(this.get('partitions'));
+
+      return this.get('partitions').map(function(x) {
+        return x.n_val;
+      });
+    }.property('partitions.@each')
+  });
+
+  /**
+   * Creates the n_val dropdown menu.
+   */
+  RiakControl.NValSelectView = Ember.Select.extend({});
+
+  /**
+   * @class
+   *
+   * Partition represents one of the partitions in the
+   * consistent hashing ring owned by the cluster.
+   */
+  RiakControl.Partition = Ember.Object.extend(
+    /** @scope RiakControl.Partition.prototype */ {
+
+    /* Whether unavailable nodes are present. */
+    unavailable: function() {
+      return this.get('unavailable_nodes').length > 0;
+    }.property('unavailable_nodes'),
+
+    /* Whether or not all primaries are down or not. */
+    allPrimariesDown: function() {
+      return this.get('available') === 0;
+    }.property('available'),
+
+    /* Whether or not a quorum of primaries are down. */
+    quorumUnavailable: function() {
+      return this.get('available') < this.get('quorum');
+    }.property('quorum', 'available')
+  });
+
   /**
    * @class
    *
    * Controls filtering, pagination and loading/reloading of the
    * partition list for the cluster.
    */
-  RiakControl.RingController = Ember.ObjectController.extend(
-    /** @scope RiakControl.RingController.prototype */ {
+  RiakControl.RingController = Ember.ObjectController.extend({
 
     /**
-     * Reloads the record array associated with this controller.
+     * Refresh the list of partitions, using partitions returned as JSON,
+     * and partitions already modeled in Ember.
      *
      * @returns {void}
      */
-    reload: function() {
-      this.get('content').reload();
+    refresh: function(newPartitions,
+                      existingPartitions,
+                      partitionFactory) {
+
+      /*
+       * For every object in newPartitions...
+       */
+      newPartitions.forEach(function(partition) {
+
+        /*
+         * Use a unique property to locate the corresponding
+         * object in existingPartitions.
+         */
+        var exists = existingPartitions.findProperty('index',
+                                                     partition.index);
+
+        /*
+         * If it doesn't exist yet, add it.  If it does, update it.
+         */
+        if(exists !== undefined) {
+          exists.setProperties(partition);
+        } else {
+          existingPartitions.pushObject(
+            partitionFactory.create(partition));
+        }
+      });
+
+      /*
+       * We've already updated corresponding objects and added
+       * new ones. Now we need to remove ones that don't exist in
+       * the new cluster.
+       */
+
+      var changesOccurred = false;
+      var replacementPartitions = [];
+
+      /*
+       * For every object in the existingPartitions...
+       */
+      existingPartitions.forEach(function(partition, i) {
+
+        /*
+         * Use a unique property to locate the corresponding object
+         * in newPartitions.
+         */
+        var exists = newPartitions.findProperty('index',
+                                                partition.index);
+
+        /*
+         * If it doesn't exist in the newPartitions, destroy it.
+         *
+         * If this happens even one time, we'll mark changesOccurred as
+         * true.
+         *
+         * Otherwise, this partition is a good partition and we can add
+         * it to the replacementPartitions.
+         */
+        if(exists === undefined) {
+          partition.destroy();
+          changesOccurred = true;
+        } else {
+          replacementPartitions.pushObject(partition);
+        }
+      });
+
+      /*
+       * If we ended up having to remove any partitions,
+       * replace the cluster.
+       */
+      if(changesOccurred) {
+        existingPartitions.set('[]', replacementPartitions.get('[]'));
+      }
+    },
+
+    /**
+     * Load data from the server.
+     */
+    load: function () {
+      var that = this;
+      $.ajax({
+        type: 'GET',
+        url: '/admin/partitions',
+        dataType: 'json',
+
+        success: function (data) {
+          var curSelected = that.get('content.selected'),
+              curPartitions = that.get('content.partitions'),
+              toRemove = [],
+              i;
+
+          /*
+           * Remove any old partition lists that no longer exist
+           * within data.partitions.
+           */
+          curPartitions.forEach(function(hash) {
+            if (!data.partitions.findProperty('n_val', hash.n_val)) {
+              hash.partitions.forEach(function (partition) {
+                partition.destroy();
+              });
+              toRemove.push(i)
+            }
+          });
+
+          toRemove.forEach(function(pIndex) {
+            curPartitions.removeAt(pIndex);
+          });
+
+          /*
+           * Update each partition list.
+           */
+          data.partitions.forEach(function (hash) {
+            var corresponder = curPartitions.findProperty('n_val', hash.n_val);
+            if (!corresponder) {
+              corresponder = curPartitions.pushObject({n_val: hash.n_val, partitions: []});
+            }
+            that.refresh(hash.partitions, corresponder.partitions, RiakControl.Partition);
+          });
+
+          /*
+           * Manually select a dropdown item on the first ajax call.
+           */
+          if(that.get('content.selected') === undefined) {
+            that.set('content.selected', curSelected || data.default_n_val);
+          }
+        }
+      });
+    },
+
+    /**
+     * Call the load function.
+     */
+    reload: function () {
+      this.load();
     },
 
     /**
@@ -26,7 +206,7 @@ minispade.register('ring', function() {
      */
     startInterval: function() {
       this._intervalId = setInterval(
-        $.proxy(this.reload, this), RiakControl.refreshInterval);
+          $.proxy(this.reload, this), RiakControl.refreshInterval);
     },
 
     /**
@@ -95,7 +275,8 @@ minispade.register('ring', function() {
      * @returns {array}
      */
     allUnavailable: function() {
-      return this.get('content').filterProperty('allPrimariesDown', true);
+      return this.get('content').
+        filterProperty('allPrimariesDown', true);
     }.property('content.@each.allPrimariesDown'),
 
     /**
@@ -122,7 +303,8 @@ minispade.register('ring', function() {
      * @returns {array}
      */
     quorumUnavailable: function() {
-      return this.get('content').filterProperty('quorumUnavailable', true);
+      return this.get('content').
+        filterProperty('quorumUnavailable', true);
     }.property('content.@each.quorumUnavailable'),
 
     /**
@@ -142,8 +324,8 @@ minispade.register('ring', function() {
     quorumUnavailableExist: function() {
       return this.get('quorumUnavailableCount') > 0;
     }.property('quorumUnavailableCount')
-
   });
+
 
   /**
    * @class
@@ -480,7 +662,6 @@ minispade.register('ring', function() {
     templateName: 'partition',
 
     indexBinding:       'content.index',
-    n_valBinding:       'content.n_val',
     quorumBinding:      'content.quorum',
     availableBinding:   'content.available',
     distinctBinding:    'content.distinct',

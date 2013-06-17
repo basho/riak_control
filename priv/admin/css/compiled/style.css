@@ -229,7 +229,7 @@ th {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 500;
 }
 #navbar {
   width: auto;
@@ -1067,8 +1067,11 @@ input.gui-point-button-right:active {
   -moz-transition: height 0.4s ease;
   -o-transition: height 0.4s ease;
   transition: height 0.4s ease;
-  height: 375px;
+  height: 325px;
   margin-bottom: 25px;
+}
+#cluster-page .open .node.taller .actions-container {
+  height: 375px;
 }
 #cluster-page .gui-light {
   vertical-align: middle;
@@ -1945,12 +1948,32 @@ input.gui-point-button-right:active {
     width: 15%;
   }
 }
+#ring-page select {
+  float: right;
+  min-width: 100px;
+  outline: none;
+}
 #ring-page h4 {
   margin-bottom: 20px;
 }
 #ring-page strong {
   font-family: 'titillium', helvetica, arial, sans-serif;
   font-weight: bold;
+}
+#ring-page .right {
+  float: right;
+}
+#ring-page .gui-dropdown-bg {
+  margin-right: 3px;
+}
+#ring-page .gui-dropdown {
+  margin-top: -8px;
+  margin-left: -6px;
+  position: absolute;
+  z-index: 200;
+}
+#ring-page .gui-dropdown-cap {
+  z-index: 100;
 }
 #ring-page #current-ring {
   max-width: 850px;
@@ -1963,6 +1986,22 @@ input.gui-point-button-right:active {
 }
 #ring-page .clear {
   clear: both;
+}
+#ring-page .chart-wrapper {
+  position: relative;
+  overflow: visible;
+}
+#ring-page .nval-dropdown-container {
+  position: absolute;
+  right: 5px;
+  top: 0;
+}
+#ring-page .nval-dropdown-container .gui-dropdown-wrapper {
+  width: 120px;
+  float: right;
+}
+#ring-page .nval-dropdown-container h4 {
+  margin-bottom: 5px;
 }
 #ring-page .chart-spacer {
   float: left;
@@ -2268,6 +2307,15 @@ input.gui-point-button-right:active {
   animation: pulseGreen 1s infinite;
 }
 @media screen and (max-width: 950px) {
+  #ring-page .nval-dropdown-container {
+    position: static;
+  }
+  #ring-page .nval-dropdown-container h4 {
+    margin-top: 15px;
+  }
+  #ring-page .nval-dropdown-container select {
+    float: none;
+  }
   #ring-page .chart-wrapper {
     float: left;
     border-right: 1px solid rgba(255,255,255,0.18);
