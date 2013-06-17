@@ -7,11 +7,32 @@ CSS to be applied ONLY on the ring page
 
 #ring-page
 
+  select
+    float      : right
+    min-width  : 100px
+    outline    : none
+    margin-top : 3px
+
   h4
     margin-bottom : 20px
 
   strong
     headline-bold()
+
+  .right
+    float : right
+
+  .gui-dropdown-bg
+    margin-right : 3px
+
+  .gui-dropdown
+    margin-top  : -8px
+    margin-left : -6px
+    position    : absolute
+    z-index     : 200
+
+  .gui-dropdown-cap
+    z-index : 100
 
   #current-ring
     max-width   : 850px
@@ -24,6 +45,22 @@ CSS to be applied ONLY on the ring page
 
   .clear
     clear : both
+
+  .chart-wrapper
+    position : relative
+    overflow : visible
+
+  .nval-dropdown-container
+    position : absolute
+    right    : 5px
+    top      : 0
+
+    .gui-dropdown-wrapper
+      width : 120px
+      float : right
+
+    h4
+      margin-bottom : 5px
 
   .chart-spacer
     float  : left
@@ -71,6 +108,12 @@ CSS to be applied ONLY on the ring page
     overflow    : visible
     text-align  : left
     display     : none
+
+    a
+      color : riakorange
+
+      &:hover
+        text-decoration : underline
 
     h4
       font-style : normal
@@ -217,7 +260,39 @@ CSS to be applied ONLY on the ring page
       &.pulse
         vendor('animation', pulseGreen 1s infinite)
 
+  @media screen and (max-width: 1050px)
+    .nval-dropdown-container
+
+      div.tooltip
+    
+        & > span
+          absoluteLeft(-750%, 30px)
+    
+          &:before
+            absoluteLeft(83%, -6px)
+
   @media screen and (max-width: 950px)
+    .nval-dropdown-container
+      position : static
+
+      h4
+        margin-top : 15px
+
+      select
+        float      : none
+        margin-top : 0
+
+      div.tooltip
+        float   : none
+        display : inline-block
+        vertical-align : middle
+
+        & > span
+          absoluteLeft(-18%, 30px)
+
+          &:before
+            absoluteLeft(4%, -6px)
+
     .chart-wrapper
       float         : left
       border-right  : 1px solid lightWhite

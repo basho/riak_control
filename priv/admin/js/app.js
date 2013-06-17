@@ -24,19 +24,18 @@ minispade.register('app', function() {
    */
   DS.Model.reopen({
     reload: function() {
-        var store = this.get('store');
-        store.get('adapter').find(store,
-          this.constructor, this.get('id'));
-      }
+      var store = this.get('store');
+      store.get('adapter').find(store, this.constructor, this.get('id'));
+    }
   });
 
   DS.RecordArray.reopen({
     reload: function() {
-        Ember.assert("Can only reload base RecordArrays",
-          this.constructor === DS.RecordArray);
-        var store = this.get('store');
-        store.get('adapter').findAll(store, this.get('type'));
-      }
+      Ember.assert("Can only reload base RecordArrays",
+        this.constructor === DS.RecordArray);
+      var store = this.get('store');
+      store.get('adapter').findAll(store, this.get('type'));
+    }
   });
 
   /**
