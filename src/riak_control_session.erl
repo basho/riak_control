@@ -39,6 +39,7 @@
          get_services/0,
          get_partitions/0,
          get_plan/0,
+         get_nvals/0,
          clear_plan/0,
          stage_change/3,
          commit_plan/0,
@@ -61,7 +62,8 @@
                 partitions  :: partitions(),
                 nodes       :: members(),
                 update_tick :: boolean(),
-                transfers   :: transfers()}).
+                transfers   :: transfers(),
+                n_vals      :: n_vals()}).
 
 -type normalized_action() :: leave
                            | remove
@@ -109,6 +111,11 @@ get_services() ->
 -spec get_partitions() -> {ok, version(), partitions()}.
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
+
+%% @doc Return list of available n_vals.
+-spec get_n_vals() -> {ok, version(), n_vals()}.
+get_n_vals() ->
+    gen_server:call(?MODULE, get_n_vals, infinity).
 
 %% @doc Get the staged cluster plan.
 -spec get_plan() -> {ok, list(), list()} | {error, atom()}.
@@ -191,7 +198,9 @@ handle_call(get_nodes, _From, State=#state{vsn=V,nodes=N}) ->
 handle_call(get_services, _From, State=#state{vsn=V,services=S}) ->
     {reply, {ok, V, S}, State};
 handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
-    {reply, {ok, V, P}, State}.
+    {reply, {ok, V, P}, State};
+handle_call(get_n_vals, _From, State=#state{vsn=V,n_vals=N}) ->
+    {reply, {ok, V, N}, State}.
 
 %% @doc
 %%
@@ -255,6 +264,12 @@ update_services(State=#state{services=S}, Services) ->
     NodeState = update_nodes(State#state{services=NewServices}),
     NewState = update_partitions(NodeState),
     rev_state(NewState).
+
+%% @doc Update list of all available nvals.
+-spec update_n_vals(#state{}) -> #state{}.
+update_n_vals(State=#state{ring=Ring}) ->
+    Unique = lists:usort([riak_control_ring:n_val() | [NVal || {_, NVal} <- riak_core_ring:bucket_nval_map(Ring)]]),
+    State#state{n_vals=Unique}.
 
 %% @doc Update ring state and partitions.
 -spec update_ring(#state{}, ring()) -> #state{}.
