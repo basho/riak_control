@@ -8,3 +8,6 @@ EUnit-SASL.log
 priv/admin/js/templates.js
 priv/admin/js/vendor.js
 tags
+.DS_Store
+.idea
+.idea/*
