@@ -287,6 +287,9 @@ th {
   opacity: 0.6;
   filter: alpha(opacity=60);
 }
+#nav-stats  a {
+    background-position: 200px 200px;
+}
 #nav-snapshot  a {
   background-position: 15px -343px;
 }

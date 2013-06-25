@@ -14,6 +14,8 @@ minispade.register('router', function() {
     root: Ember.Route.extend({
       showSnapshot: Ember.Route.transitionTo('snapshot.index'),
 
+      showStats: Ember.Route.transitionTo('stats.index'),
+
       showCluster: Ember.Route.transitionTo('cluster.index'),
 
       showNodes: Ember.Route.transitionTo('nodes.index'),
@@ -47,6 +49,27 @@ minispade.register('router', function() {
         })
       }),
 
+      stats: Ember.Route.extend({
+        route: 'stats',
+
+        connectOutlets: function(router) {
+            router.get('applicationController').
+                connectOutlet('stats', RiakControl.Node.find());
+            $.riakControl.markNavActive('nav-stats');
+        },
+
+        enter: function(router) {
+            router.get('statsController').startInterval();
+        },
+
+        exit: function(router) {
+            router.get('statsController').cancelInterval();
+        },
+
+        index: Ember.Route.extend({
+            route: '/'
+        })
+    }),
       cluster: Ember.Route.extend({
         route: 'cluster',
 
