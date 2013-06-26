@@ -39,7 +39,7 @@
          get_services/0,
          get_partitions/0,
          get_plan/0,
-         get_nvals/0,
+         get_n_vals/0,
          clear_plan/0,
          stage_change/3,
          commit_plan/0,
@@ -268,7 +268,7 @@ update_services(State=#state{services=S}, Services) ->
 %% @doc Update list of all available nvals.
 -spec update_n_vals(#state{}) -> #state{}.
 update_n_vals(State=#state{ring=Ring}) ->
-    Unique = lists:usort([riak_control_ring:n_val() | [NVal || {_, NVal} <- riak_core_ring:bucket_nval_map(Ring)]]),
+    Unique = lists:usort([riak_control_ring:n_val() | [NVal || {_, NVal} <- riak_core_bucket:bucket_nval_map(Ring)]]),
     State#state{n_vals=Unique}.
 
 %% @doc Update ring state and partitions.
@@ -276,7 +276,8 @@ update_n_vals(State=#state{ring=Ring}) ->
 update_ring(State, Ring) ->
     erlang:send_after(?UPDATE_TICK_TIMEOUT, self(), clear_update_tick),
     NodeState = update_nodes(State#state{update_tick=true, ring=Ring}),
-    FinalState = update_partitions(NodeState),
+    NValsAdded = update_n_vals(NodeState),
+    FinalState = update_partitions(NValsAdded),
     rev_state(FinalState).
 
 %% @doc Update ring.
