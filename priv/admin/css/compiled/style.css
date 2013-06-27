@@ -1067,8 +1067,11 @@ input.gui-point-button-right:active {
   -moz-transition: height 0.4s ease;
   -o-transition: height 0.4s ease;
   transition: height 0.4s ease;
-  height: 375px;
+  height: 325px;
   margin-bottom: 25px;
+}
+#cluster-page .open .node.taller .actions-container {
+  height: 375px;
 }
 #cluster-page .gui-light {
   vertical-align: middle;

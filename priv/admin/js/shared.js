@@ -125,6 +125,16 @@ minispade.register('shared', function () {
   RiakControl.NodeProperties = Ember.Mixin.create({
 
     /**
+     * In the current cluster area, the host node has extra content in its
+     * actions box so it needs to be a little taller than the others.
+     *
+     * @returns {String}
+     */
+    hostNodeClasses: function () {
+      return this.get('me') ? 'node taller' : 'node';
+    }.property('me'),
+
+    /**
      * Color the lights appropriately based on the node status.
      *
      * @returns {string}
