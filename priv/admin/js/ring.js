@@ -1,37 +1,120 @@
 minispade.register('ring', function() {
 
+  RiakControl.PartitionList = Ember.ArrayProxy.extend({
+  
+  });
+
+  /**
+   * @class
+   *
+   * Partition represents one of the partitions in the
+   * consistent hashing ring owned by the cluster.
+   */
+  RiakControl.Partition = Ember.Object.extend(
+    /** @scope RiakControl.Partition.prototype */ {
+
+    /* Whether unavailable nodes are present. */
+    unavailable: function() {
+      return this.get('unavailable_nodes').length > 0;
+    }.property('unavailable_nodes'),
+
+    /* Whether or not all primaries are down or not. */
+    allPrimariesDown: function() {
+      return this.get('available') === 0;
+    }.property('available'),
+
+    /* Whether or not a quorum of primaries are down. */
+    quorumUnavailable: function() {
+      return this.get('available') < this.get('quorum');
+    }.property('quorum', 'available')
+  });
+
+
   /**
    * @class
    *
    * Controls filtering, pagination and loading/reloading of the
    * partition list for the cluster.
    */
-  RiakControl.RingController = Ember.ObjectController.extend(
-    /** @scope RiakControl.RingController.prototype */ {
+  RiakControl.RingController = Ember.ObjectController.extend({
 
     /**
-     * Reloads the record array associated with this controller.
+     * Refresh partition data, using a ring returned as JSON,
+     * and a ring modeled in Ember.
+     *
+     * Not computationally efficient at all, but explicit for debugging
+     * the Ember bindings and propagation.
      *
      * @returns {void}
      */
-    reload: function() {
-      this.get('content').reload();
+    refresh: function(newPartitions, existingPartitions, partitionFactory) {
+      newPartitions.forEach(function(partition) {
+        var exists = existingPartitions.findProperty('index', partition.index);
+
+        // If it doesn't exist yet, add it.  If it does, update it.
+        if(exists !== undefined) {
+          exists.setProperties(partition);
+        } else {
+          existingPartitions.pushObject(partitionFactory.create(partition));
+        }
+      });
+
+      // Iterate over the partitions removing ones that shouldn't
+      // be there.
+      var changesOccurred  = false;
+      var replacementItems = [];
+
+      existingPartitions.forEach(function(partition, i) {
+        var exists = newPartitions.findProperty('index', partition.index);
+
+        if(exists === undefined) {
+          partition.destroy();
+          changesOccurred = true;
+        } else {
+          replacementItems.pushObject(partition);
+        }
+      });
+
+      if(changesOccurred) {
+        existingPartitions.set('[]', replacementItems.get('[]'));
+      }
     },
 
     /**
-     * Called by the router, to start polling when this controller/view
-     * is navigated to.
+     * Load data from the server.
+     */
+    load: function () {
+      var that = this;
+      $.ajax({
+        type: 'GET',
+        url: 'admin/partitions',
+        dataType: 'json',
+        success: function (data) {
+          var updatedPartitions = data.partitions,
+              currentPartitions = that.get('content');
+          that.refresh(updatedPartitions, currentPartitions, RiakControl.Partition);
+        }
+      });
+    },
+
+    /**
+     * Call the load function.
+     */
+    reload: function () {
+      this.load();
+    },
+
+    /**
+     * Called by the router, to start polling when this controller/view is navigated to.
      *
      * @returns {void}
      */
     startInterval: function() {
-      this._intervalId = setInterval(
-        $.proxy(this.reload, this), RiakControl.refreshInterval);
+      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
     },
 
     /**
-     * Called by the router, to stop polling when this controller/view
-     * is navigated away from.
+     * Called by the router, to stop polling when this controller/view is navigated away from.
      *
      * @returns {void}
      */
@@ -142,8 +225,21 @@ minispade.register('ring', function() {
     quorumUnavailableExist: function() {
       return this.get('quorumUnavailableCount') > 0;
     }.property('quorumUnavailableCount')
-
   });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * @class

@@ -292,6 +292,9 @@ update_nodes(State=#state{ring=Ring}) ->
 update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
     Unavailable = [Name ||
         #member_info{node=Name, reachable=false} <- Nodes],
+    % For returning information for all nvals
+    % Also need to add the NVals parameter to this function
+    % Partitions = [riak_control_ring:status(Ring, NVal, Unavailable) || NVal <- NVals],
     Partitions = riak_control_ring:status(Ring, Unavailable),
     State#state{partitions=Partitions}.
 
