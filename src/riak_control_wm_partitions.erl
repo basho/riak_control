@@ -40,7 +40,7 @@
 
 -define(VNODE_TYPES, [riak_kv,riak_pipe,riak_search]).
 
--record(context, {partitions, n_vals, cur_n_val}).
+-record(context, {partitions, n_vals, default_n_val}).
 -type context() :: #context{}.
 
 %% @doc Route handling.
@@ -53,8 +53,8 @@ routes() ->
 init([]) ->
     {ok, _, Partitions} = riak_control_session:get_partitions(),
     {ok, _, NVals} = riak_control_session:get_n_vals(),
-    CurNVal = riak_control_ring:n_val(),
-    {ok, #context{partitions=Partitions, n_vals=NVals, cur_n_val=CurNVal}}.
+    DefNVal = riak_control_ring:n_val(),
+    {ok, #context{partitions=Partitions, n_vals=NVals, default_n_val=DefNVal}}.
 
 %% @doc Validate origin.
 -spec forbidden(wrq:reqdata(), context()) ->
@@ -83,8 +83,8 @@ content_types_provided(ReqData, Context) ->
 %% @doc Return a list of partitions.
 -spec to_json(wrq:reqdata(),context()) ->
     {iolist(), wrq:reqdata(), context()}.
-to_json(ReqData, Context=#context{partitions=Partitions, n_vals=NVals, cur_n_val=CurNVal}) ->
+to_json(ReqData, Context=#context{partitions=Partitions, n_vals=NVals, default_n_val=DefNVal}) ->
     Encoded = mochijson2:encode({struct,[{partitions, Partitions},
                                          {n_vals, NVals},
-                                         {cur_n_val, CurNVal}]}),
+                                         {default_n_val, DefNVal}]}),
     {Encoded, ReqData, Context}.

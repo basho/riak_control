@@ -113,13 +113,13 @@ minispade.register('ring', function() {
            * Update the n_vals dropdown.
            */
           RiakControl.PossibleNVals.set('content', data.n_vals);
-          RiakControl.PossibleNVals.set('selected', data.cur_n_val);
+          RiakControl.PossibleNVals.set('selected', data.default_n_val);
 
           /*
            * Refresh the partitions using data from the partitions associated
            * with our current n_val.
            */
-          updatedPartitions = data.partitions[data.cur_n_val];
+          updatedPartitions = data.partitions[data.default_n_val];
           currentPartitions = that.get('content');
           that.refresh(updatedPartitions, currentPartitions, RiakControl.Partition);
         }
