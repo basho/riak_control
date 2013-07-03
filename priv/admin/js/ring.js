@@ -114,14 +114,16 @@ minispade.register('ring', function() {
          *                               of n_vals and values are arrays of partition objects.
          */
         success: function (data) {
+          var curSelected = that.get('content').get('selected_n_val');
+
           /*
            * Update the n_vals dropdown if the list of nvals has changed.
            */
           that.get('content').setProperties({
               n_vals: data.n_vals,
               partitions: data.partitions,
-              selected_n_val: data.default_n_val,
-              content: data.partitions[data.default_n_val]
+              selected_n_val: curSelected || data.default_n_val,
+              content: data.partitions[curSelected || data.default_n_val]
           });
         }
       });
