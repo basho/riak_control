@@ -18,7 +18,11 @@
 
       <div class="nval-dropdown-container">
         <h4 class="gui-headline-bold">See visualizations using a different n_val.</h4>
-        {{view RiakControl.NValSelectView contentBinding="content.n_vals" valueBinding="content.selected_n_val"}}
+        {{view RiakControl.NValSelectView
+               contentBinding="content.n_vals"
+               valueBinding="content.selected_n_val"
+               propsBinding="content"
+        }}
       </div>
 
       {{view RiakControl.DegeneratePreflistChart}}
