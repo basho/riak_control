@@ -32,9 +32,25 @@ minispade.register('ring', function() {
     }.property('quorum', 'available')
   });
 
+  /**
+   * Object for storing n_vals.
+   */
   RiakControl.PossibleNVals = Ember.Object.create({
-    selected: undefined,
-    content: []
+    selectedVal: undefined,
+
+    content: [],
+
+    /**
+     * Get the selected option, parse it's value to an integer,
+     * set selectedVal to that integer.
+     */
+    change: function () {
+      var selected = this.$().find('option[selected=selected]');
+      if (selected.length) {
+        this.set('selectedVal', parseInt(selected.val().replace(/[^\d]/g, '')));
+        console.log(this.get('selectedVal'))
+      }
+    }
   });
 
   /**
@@ -88,6 +104,33 @@ minispade.register('ring', function() {
     },
 
     /**
+     * Determines whether a new list of nvals is different from a previous
+     * list of nvals.
+     *
+     * @returns {Boolean}
+     */
+    nvalsChanged: function (newVals) {
+      var oldVals = RiakControl.PossibleNVals.get('content'), result = false;
+
+      /*
+       * The list has changed if lengths are not the same.
+       */
+      if (newVals.length !== oldVals.length) {
+        return true;
+      }
+
+      /*
+       * The list has changed if any of the values don't match up.
+       */
+      newVals.map(function (each, index) {
+        if (each !== oldVals[index]) {
+          result = true;
+        }
+      });
+      return result;
+    },
+
+    /**
      * Load data from the server.
      */
     load: function () {
@@ -107,21 +150,41 @@ minispade.register('ring', function() {
          *                            of n_vals and values are arrays of partition objects. 
          */
         success: function (data) {
-          var updatedPartitions, currentPartitions;
+          var marker = 0, nvalsChanged, updatedPartitions;
 
           /*
-           * Update the n_vals dropdown.
+           * Mark the default_n_val in our list of n_vals.
            */
-          RiakControl.PossibleNVals.set('content', data.n_vals);
-          RiakControl.PossibleNVals.set('selected', data.default_n_val);
+          data.n_vals.map(function (val, index) {
+            if (val === data.default_n_val) {
+              marker = val;
+              return val;
+            }
+            return val;
+          });
+
+          /*
+           * Update the n_vals dropdown if the list of nvals has changed.
+           */
+          nvalsChanged = that.nvalsChanged(data.n_vals);
+          if (nvalsChanged) {
+            RiakControl.PossibleNVals.set('content', data.n_vals);
+          }
+
+          /*
+           * If no item is currently selected in the dropdown menu,
+           * select the default nval.
+           */
+          if (RiakControl.PossibleNVals.get('selectedVal') === undefined) {
+            RiakControl.PossibleNVals.set('selectedVal', marker);
+          }
 
           /*
            * Refresh the partitions using data from the partitions associated
            * with our current n_val.
            */
-          updatedPartitions = data.partitions[data.default_n_val];
-          currentPartitions = that.get('content');
-          that.refresh(updatedPartitions, currentPartitions, RiakControl.Partition);
+          updatedPartitions = data.partitions[RiakControl.PossibleNVals.get('selectedVal')];
+          that.refresh(updatedPartitions, that.get('content'), RiakControl.Partition);
         }
       });
     },

@@ -277,9 +277,9 @@ update_services(State=#state{services=S}, Services) ->
 %% @doc Update list of all available nvals.
 -spec update_n_vals(#state{}) -> #state{}.
 update_n_vals(State=#state{ring=Ring}) ->
-    Unique = lists:usort([riak_control_ring:n_val() |
-        [NVal || {_, NVal} <- riak_core_bucket:bucket_nval_map(Ring)]]),
     DefaultNVal = riak_control_ring:n_val(),
+    Unique = lists:usort([DefaultNVal |
+        [NVal || {_, NVal} <- riak_core_bucket:bucket_nval_map(Ring)]]),
     State#state{n_vals=Unique, default_n_val=DefaultNVal}.
 
 %% @doc Update ring state and partitions.
