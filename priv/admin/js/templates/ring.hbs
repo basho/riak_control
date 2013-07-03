@@ -18,6 +18,12 @@
 
       <div class="nval-dropdown-container">
         <h4 class="gui-headline-bold">See visualizations using a different n_val.</h4>
+        {{view Ember.Select
+               contentBinding="RiakControl.PossibleNVals.content"
+               valueBinding="RiakControl.PossibleNVals.selected"
+               classBinding="RiakControl.PossibleNVals.classes"
+        }}
+        <!--
         <div class="gui-dropdown-wrapper">
           <div class="gui-dropdown-bg">
             <select class="nval-dropdown gui-dropdown">
@@ -27,6 +33,7 @@
             <div class="gui-dropdown-cap"></div>
           </div>
         </div>
+        -->
       </div>
 
       {{view RiakControl.DegeneratePreflistChart}}

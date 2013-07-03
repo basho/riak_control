@@ -1,5 +1,7 @@
 minispade.register('ring', function() {
 
+  
+
   /**
    * Creates an array to hold our list of partitions.
    */
@@ -30,6 +32,10 @@ minispade.register('ring', function() {
     }.property('quorum', 'available')
   });
 
+  RiakControl.PossibleNVals = Ember.Object.create({
+    selected: undefined,
+    content: []
+  });
 
   /**
    * @class
@@ -90,9 +96,31 @@ minispade.register('ring', function() {
         type: 'GET',
         url: '/admin/partitions',
         dataType: 'json',
+
+        /**
+         * Runs when we get a successful response with partition data.
+         *
+         * @param {Object} data
+         * @key {Number} cur_n_val  - The current n_val for the ring.
+         * @key {Array}  n_vals     - A list of all possible n_vals.
+         * @key {Object} partitions - Where keys are numbers that correspond to our list
+         *                            of n_vals and values are arrays of partition objects. 
+         */
         success: function (data) {
-          var updatedPartitions = data.partitions,
-              currentPartitions = that.get('content');
+          var updatedPartitions, currentPartitions;
+
+          /*
+           * Update the n_vals dropdown.
+           */
+          RiakControl.PossibleNVals.set('content', data.n_vals);
+          RiakControl.PossibleNVals.set('selected', data.cur_n_val);
+
+          /*
+           * Refresh the partitions using data from the partitions associated
+           * with our current n_val.
+           */
+          updatedPartitions = data.partitions[data.cur_n_val];
+          currentPartitions = that.get('content');
           that.refresh(updatedPartitions, currentPartitions, RiakControl.Partition);
         }
       });
@@ -227,19 +255,6 @@ minispade.register('ring', function() {
       return this.get('quorumUnavailableCount') > 0;
     }.property('quorumUnavailableCount')
   });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   /**

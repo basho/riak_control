@@ -1948,6 +1948,11 @@ input.gui-point-button-right:active {
     width: 15%;
   }
 }
+#ring-page select {
+  float: right;
+  min-width: 100px;
+  outline: none;
+}
 #ring-page h4 {
   margin-bottom: 20px;
 }
