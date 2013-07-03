@@ -92,6 +92,8 @@ minispade.register('ring', function() {
       }
     },
 
+    curSelectedVal: undefined,
+
     /**
      * Load data from the server.
      */
@@ -106,10 +108,10 @@ minispade.register('ring', function() {
          * Runs when we get a successful response with partition data.
          *
          * @param {Object} data
-         * @key {Number} default_n_val  - The current n_val for the ring.
-         * @key {Array}  n_vals         - A list of all possible n_vals.
-         * @key {Object} partitions     - Where keys are numbers that correspond to our list
-         *                            of n_vals and values are arrays of partition objects.
+         * @key {Number} default_n_val - The default n_val for the ring.
+         * @key {Array}  n_vals        - A list of all possible n_vals.
+         * @key {Object} partitions    - Where keys are numbers that correspond to our list
+         *                               of n_vals and values are arrays of partition objects.
          */
         success: function (data) {
           /*
