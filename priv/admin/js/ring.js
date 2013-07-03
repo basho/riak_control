@@ -120,12 +120,7 @@ minispade.register('ring', function() {
            * Update the n_vals dropdown if the list of nvals has changed.
            */
           that.get('content').setProperties({
-            n_vals: data.n_vals.map(function (item, index) {
-              return Ember.Object.create({
-                name: item === data.default_n_val ? (item + ' (default)') : item,
-                value: item
-              });
-            }),
+            n_vals: data.n_vals,
             partitions: data.partitions,
             selected_n_val: curSelected || data.default_n_val,
             content: data.partitions[curSelected || data.default_n_val]
