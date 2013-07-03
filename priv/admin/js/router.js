@@ -99,7 +99,12 @@ minispade.register('router', function() {
 
         connectOutlets: function(router) {
           router.get('applicationController').
-            connectOutlet('ring', RiakControl.PartitionList.create({content: []}));
+            connectOutlet('ring', RiakControl.PartitionList.create({
+                                    n_vals:         [],
+                                    partitions:     [],
+                                    selected_n_val: [],
+                                    content:        []
+                                  }));
           $.riakControl.markNavActive('nav-ring');
         },
 
