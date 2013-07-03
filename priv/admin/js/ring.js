@@ -7,8 +7,10 @@ minispade.register('ring', function() {
 
   RiakControl.NValSelectView = Ember.Select.extend({
     change: function() {
-      var selected_n_val = this.get('something');
+      var selected_n_val = this.$().find('option[selected="selected"]').val();
       var partitionList = this.get('content');
+
+console.log(this.get('content').get('partitions'))
 
       partitionList.setProperties({
         selected_n_val: selected_n_val,

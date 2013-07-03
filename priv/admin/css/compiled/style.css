@@ -2307,6 +2307,15 @@ input.gui-point-button-right:active {
   animation: pulseGreen 1s infinite;
 }
 @media screen and (max-width: 950px) {
+  #ring-page .nval-dropdown-container {
+    position: static;
+  }
+  #ring-page .nval-dropdown-container h4 {
+    margin-top: 15px;
+  }
+  #ring-page .nval-dropdown-container select {
+    float: none;
+  }
   #ring-page .chart-wrapper {
     float: left;
     border-right: 1px solid rgba(255,255,255,0.18);
