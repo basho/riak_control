@@ -229,7 +229,7 @@ th {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 500;
 }
 #navbar {
   width: auto;
@@ -1955,6 +1955,21 @@ input.gui-point-button-right:active {
   font-family: 'titillium', helvetica, arial, sans-serif;
   font-weight: bold;
 }
+#ring-page .right {
+  float: right;
+}
+#ring-page .gui-dropdown-bg {
+  margin-right: 3px;
+}
+#ring-page .gui-dropdown {
+  margin-top: -8px;
+  margin-left: -6px;
+  position: absolute;
+  z-index: 200;
+}
+#ring-page .gui-dropdown-cap {
+  z-index: 100;
+}
 #ring-page #current-ring {
   max-width: 850px;
   margin: 0 auto 45px auto;
@@ -1966,6 +1981,22 @@ input.gui-point-button-right:active {
 }
 #ring-page .clear {
   clear: both;
+}
+#ring-page .chart-wrapper {
+  position: relative;
+  overflow: visible;
+}
+#ring-page .nval-dropdown-container {
+  position: absolute;
+  right: 5px;
+  top: 0;
+}
+#ring-page .nval-dropdown-container .gui-dropdown-wrapper {
+  width: 120px;
+  float: right;
+}
+#ring-page .nval-dropdown-container h4 {
+  margin-bottom: 5px;
 }
 #ring-page .chart-spacer {
   float: left;

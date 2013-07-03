@@ -1,8 +1,9 @@
 minispade.register('ring', function() {
 
-  RiakControl.PartitionList = Ember.ArrayProxy.extend({
-  
-  });
+  /**
+   * Creates an array to hold our list of partitions.
+   */
+  RiakControl.PartitionList = Ember.ArrayProxy.extend({});
 
   /**
    * @class
@@ -87,7 +88,7 @@ minispade.register('ring', function() {
       var that = this;
       $.ajax({
         type: 'GET',
-        url: 'admin/partitions',
+        url: '/admin/partitions',
         dataType: 'json',
         success: function (data) {
           var updatedPartitions = data.partitions,
@@ -576,7 +577,6 @@ minispade.register('ring', function() {
     templateName: 'partition',
 
     indexBinding:       'content.index',
-    n_valBinding:       'content.n_val',
     quorumBinding:      'content.quorum',
     availableBinding:   'content.available',
     distinctBinding:    'content.distinct',
