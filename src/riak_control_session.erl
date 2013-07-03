@@ -40,6 +40,7 @@
          get_partitions/0,
          get_plan/0,
          get_n_vals/0,
+         get_default_n_val/0,
          clear_plan/0,
          stage_change/3,
          commit_plan/0,
@@ -56,14 +57,15 @@
 %% exported for RPC calls.
 -export([get_my_info/0]).
 
--record(state, {vsn         :: version(),
-                services    :: services(),
-                ring        :: ring(),
-                partitions  :: partitions(),
-                nodes       :: members(),
-                update_tick :: boolean(),
-                transfers   :: transfers(),
-                n_vals      :: n_vals()}).
+-record(state, {vsn           :: version(),
+                services      :: services(),
+                ring          :: ring(),
+                partitions    :: partitions(),
+                nodes         :: members(),
+                update_tick   :: boolean(),
+                transfers     :: transfers(),
+                n_vals        :: n_vals(),
+                default_n_val :: pos_integer()}).
 
 -type normalized_action() :: leave
                            | remove
@@ -116,6 +118,11 @@ get_partitions() ->
 -spec get_n_vals() -> {ok, version(), n_vals()}.
 get_n_vals() ->
     gen_server:call(?MODULE, get_n_vals, infinity).
+
+%% @doc Return list of available n_vals.
+-spec get_default_n_val() -> {ok, version(), pos_integer()}.
+get_default_n_val() ->
+    gen_server:call(?MODULE, get_default_n_val, infinity).
 
 %% @doc Get the staged cluster plan.
 -spec get_plan() -> {ok, list(), list()} | {error, atom()}.
@@ -200,6 +207,8 @@ handle_call(get_services, _From, State=#state{vsn=V,services=S}) ->
 handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
     {reply, {ok, V, P}, State};
 handle_call(get_n_vals, _From, State=#state{vsn=V,n_vals=N}) ->
+    {reply, {ok, V, N}, State};
+handle_call(get_default_n_val, _From, State=#state{vsn=V,default_n_val=N}) ->
     {reply, {ok, V, N}, State}.
 
 %% @doc
@@ -268,8 +277,10 @@ update_services(State=#state{services=S}, Services) ->
 %% @doc Update list of all available nvals.
 -spec update_n_vals(#state{}) -> #state{}.
 update_n_vals(State=#state{ring=Ring}) ->
-    Unique = lists:usort([riak_control_ring:n_val() | [NVal || {_, NVal} <- riak_core_bucket:bucket_nval_map(Ring)]]),
-    State#state{n_vals=Unique}.
+    Unique = lists:usort([riak_control_ring:n_val() |
+        [NVal || {_, NVal} <- riak_core_bucket:bucket_nval_map(Ring)]]),
+    DefaultNVal = riak_control_ring:n_val(),
+    State#state{n_vals=Unique, default_n_val=DefaultNVal}.
 
 %% @doc Update ring state and partitions.
 -spec update_ring(#state{}, ring()) -> #state{}.

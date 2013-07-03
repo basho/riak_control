@@ -53,7 +53,7 @@ routes() ->
 init([]) ->
     {ok, _, Partitions} = riak_control_session:get_partitions(),
     {ok, _, NVals} = riak_control_session:get_n_vals(),
-    DefNVal = riak_control_ring:n_val(),
+    {ok, _, DefNVal} = riak_control_session:get_default_n_val(),
     {ok, #context{partitions=Partitions, n_vals=NVals, default_n_val=DefNVal}}.
 
 %% @doc Validate origin.
