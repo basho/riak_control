@@ -100,8 +100,7 @@ minispade.register('router', function() {
         connectOutlets: function(router) {
           router.get('applicationController').
             connectOutlet('ring', RiakControl.PartitionList.create({
-                                    n_vals:         [],
-                                    partitions:     [],
+                                    partitions:     Ember.ArrayProxy.create(),
                                     selected_n_val: [],
                                     content:        []
                                   }));

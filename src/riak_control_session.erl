@@ -303,7 +303,7 @@ update_nodes(State=#state{ring=Ring}) ->
 update_partitions(State=#state{ring=Ring, nodes=Nodes, n_vals=NVals}) ->
     Unavailable = [Name ||
         #member_info{node=Name, reachable=false} <- Nodes],
-    Partitions = [{NVal, riak_control_ring:status(Ring, NVal, Unavailable)} || NVal <- NVals],
+    Partitions = [[{n_val, NVal}, {partitions, riak_control_ring:status(Ring, NVal, Unavailable)}] || NVal <- NVals],
     State#state{partitions=Partitions}.
 
 %% @doc Ping and retrieve vnode workers.

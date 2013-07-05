@@ -3,7 +3,16 @@ minispade.register('ring', function() {
   /**
    * Creates an array to hold our list of partitions.
    */
-  RiakControl.PartitionList = Ember.ArrayProxy.extend({});
+  RiakControl.PartitionList = Ember.ArrayProxy.extend({
+
+    n_vals: function () {
+      var partitions = this.get('partitions');
+      return partitions.map(function (p) {
+        return p.n_val;
+      });
+    }.property('partitions')
+
+  });
 
   /**
    * Creates the n_val dropdown menu.
@@ -15,7 +24,7 @@ minispade.register('ring', function() {
 
       props.setProperties({
         selected_n_val: selected_n_val,
-        content:        props.get('partitions')[selected_n_val]
+        content:        props.get('partitions').findProperty('n_val', selected_n_val).partitions
       });
     }
   });
@@ -54,6 +63,79 @@ minispade.register('ring', function() {
   RiakControl.RingController = Ember.ObjectController.extend({
 
     /**
+     * Refresh the list of partitions, using partitions returned as JSON,
+     * and partitions already modeled in Ember.
+     *
+     * @returns {void}
+     */
+    refresh: function(newPartitions, existingPartitions, partitionFactory) {
+
+      /*
+       * For every object in newPartitions...
+       */
+      newPartitions.forEach(function(partition) {
+
+        /*
+         * Use a unique property to locate the corresponding
+         * object in existingPartitions.
+         */
+        var exists = existingPartitions.findProperty('index', partition.index);
+
+        /*
+         * If it doesn't exist yet, add it.  If it does, update it.
+         */
+        if(exists !== undefined) {
+          exists.setProperties(partition);
+        } else {
+          existingPartitions.pushObject(partitionFactory.create(partition));
+        }
+      });
+
+      /*
+       * We've already updated corresponding objects and added
+       * new ones. Now we need to remove ones that don't exist in
+       * the new cluster.
+       */
+
+      var changesOccurred = false;
+      var replacementPartitions = [];
+
+      /*
+       * For every object in the existingPartitions...
+       */
+      existingPartitions.forEach(function(partition, i) {
+
+        /*
+         * Use a unique property to locate the corresponding object
+         * in newPartitions.
+         */
+        var exists = newPartitions.findProperty('index', partition.index);
+
+        /*
+         * If it doesn't exist in the newPartitions, destroy it.
+         * If this happens even one time, we'll mark changesOccurred as true.
+         *
+         * Otherwise, this partition is a good partition and we can add it to
+         * the replacementPartitions.
+         */
+        if(exists === undefined) {
+          partition.destroy();
+          changesOccurred = true;
+        } else {
+          replacementPartitions.pushObject(partition);
+        }
+      });
+
+      /*
+       * If we ended up having to remove any partitions,
+       * replace the cluster.
+       */
+      if(changesOccurred) {
+        existingPartitions.set('[]', replacementPartitions.get('[]'));
+      }
+    },
+
+    /**
      * Load data from the server.
      */
     load: function () {
@@ -73,17 +155,54 @@ minispade.register('ring', function() {
          *                               of n_vals and values are arrays of partition objects.
          */
         success: function (data) {
-          var curSelected = that.get('content').get('selected_n_val');
+          var curSelected = that.get('content').get('selected_n_val'),
+              curPartitions = that.get('content').get('partitions'),
+              toRemove = [],
+              i;
 
           /*
-           * Update the n_vals dropdown if the list of nvals has changed.
+           * Remove any old partition lists that no longer exist
+           * within data.partitions.
            */
-          that.get('content').setProperties({
-            n_vals: data.n_vals,
-            partitions: data.partitions,
-            selected_n_val: curSelected || data.default_n_val,
-            content: data.partitions[curSelected || data.default_n_val]
+          curPartitions.forEach(function (hash) {
+            if (!data.partitions.findProperty('n_val', hash.n_val)) {
+              hash.partitions.forEach(function (partition) {
+                partition.destroy();
+              });
+              toRemove.push(i)
+            }
           });
+          toRemove.forEach(function (pIndex) {
+            curPartitions.removeAt(pIndex);
+          });
+
+          /*
+           * Update each partition list.
+           */
+          data.partitions.forEach(function (hash) {
+            var corresponder = curPartitions.findProperty('n_val', hash.n_val);
+            if (!corresponder) {
+              corresponder = curPartitions.pushObject({n_val: hash.n_val, partitions: []});
+            }
+            that.refresh(hash.partitions, corresponder.partitions, RiakControl.Partition);
+          });
+
+          /*
+           * Manually select a dropdown item on the first ajax call.
+           */
+          if (that.get('content.selected_n_val') === undefined) {
+            that.set('content.selected_n_val', curSelected || data.default_n_val);
+          }
+
+          /*
+           * Only manually set the content property if the user
+           * has not selected one with the dropdown menu.
+           */
+          if (!curSelected) {
+            that.set('content.content',
+                     data.partitions.findProperty('n_val', curSelected || data.default_n_val)).partitions;
+          }
+
         }
       });
     },
