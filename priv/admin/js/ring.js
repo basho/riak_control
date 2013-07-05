@@ -5,6 +5,9 @@ minispade.register('ring', function() {
    */
   RiakControl.PartitionList = Ember.ArrayProxy.extend({});
 
+  /**
+   * Creates the n_val dropdown menu.
+   */
   RiakControl.NValSelectView = Ember.Select.extend({
     change: function() {
       var selected_n_val = this.$().find('option[selected="selected"]').val();
@@ -49,50 +52,6 @@ minispade.register('ring', function() {
    * partition list for the cluster.
    */
   RiakControl.RingController = Ember.ObjectController.extend({
-
-    /**
-     * Refresh partition data, using a ring returned as JSON,
-     * and a ring modeled in Ember.
-     *
-     * Not computationally efficient at all, but explicit for debugging
-     * the Ember bindings and propagation.
-     *
-     * @returns {void}
-     */
-    refresh: function(newPartitions, existingPartitions, partitionFactory) {
-      newPartitions.forEach(function(partition) {
-        var exists = existingPartitions.findProperty('index', partition.index);
-
-        // If it doesn't exist yet, add it.  If it does, update it.
-        if(exists !== undefined) {
-          exists.setProperties(partition);
-        } else {
-          existingPartitions.pushObject(partitionFactory.create(partition));
-        }
-      });
-
-      // Iterate over the partitions removing ones that shouldn't
-      // be there.
-      var changesOccurred  = false;
-      var replacementItems = [];
-
-      existingPartitions.forEach(function(partition, i) {
-        var exists = newPartitions.findProperty('index', partition.index);
-
-        if(exists === undefined) {
-          partition.destroy();
-          changesOccurred = true;
-        } else {
-          replacementItems.pushObject(partition);
-        }
-      });
-
-      if(changesOccurred) {
-        existingPartitions.set('[]', replacementItems.get('[]'));
-      }
-    },
-
-    curSelectedVal: undefined,
 
     /**
      * Load data from the server.
