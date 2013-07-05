@@ -1,33 +1,28 @@
 minispade.register('ring', function() {
 
-  /**
-   * Creates an array to hold our list of partitions.
-   */
-  RiakControl.PartitionList = Ember.ArrayProxy.extend({
+  RiakControl.PartitionNValList = Ember.ArrayProxy.extend({});
 
-    n_vals: function () {
-      var partitions = this.get('partitions');
-      return partitions.map(function (p) {
-        return p.n_val;
+  RiakControl.SelectedPartitionNValList = Ember.ArrayProxy.extend({
+    selectionWatcher: function() {
+      var partitions = this.get('partitions').
+        findProperty('n_val', parseInt(this.get('selected'))).
+          partitions;
+      this.setProperties({ content: partitions });
+    }.observes('selected'),
+
+    n_vals: function() {
+      console.log(this.get('partitions'));
+
+      return this.get('partitions').map(function(x) {
+        return x.n_val;
       });
-    }.property('partitions')
-
+    }.property('partitions.@each')
   });
 
   /**
    * Creates the n_val dropdown menu.
    */
-  RiakControl.NValSelectView = Ember.Select.extend({
-    change: function() {
-      var selected_n_val = this.$().find('option[selected="selected"]').val();
-      var props = this.get('props');
-
-      props.setProperties({
-        selected_n_val: selected_n_val,
-        content:        props.get('partitions').findProperty('n_val', selected_n_val).partitions
-      });
-    }
-  });
+  RiakControl.NValSelectView = Ember.Select.extend({});
 
   /**
    * @class
@@ -68,7 +63,9 @@ minispade.register('ring', function() {
      *
      * @returns {void}
      */
-    refresh: function(newPartitions, existingPartitions, partitionFactory) {
+    refresh: function(newPartitions,
+                      existingPartitions,
+                      partitionFactory) {
 
       /*
        * For every object in newPartitions...
@@ -79,7 +76,8 @@ minispade.register('ring', function() {
          * Use a unique property to locate the corresponding
          * object in existingPartitions.
          */
-        var exists = existingPartitions.findProperty('index', partition.index);
+        var exists = existingPartitions.findProperty('index',
+                                                     partition.index);
 
         /*
          * If it doesn't exist yet, add it.  If it does, update it.
@@ -87,7 +85,8 @@ minispade.register('ring', function() {
         if(exists !== undefined) {
           exists.setProperties(partition);
         } else {
-          existingPartitions.pushObject(partitionFactory.create(partition));
+          existingPartitions.pushObject(
+            partitionFactory.create(partition));
         }
       });
 
@@ -109,14 +108,17 @@ minispade.register('ring', function() {
          * Use a unique property to locate the corresponding object
          * in newPartitions.
          */
-        var exists = newPartitions.findProperty('index', partition.index);
+        var exists = newPartitions.findProperty('index',
+                                                partition.index);
 
         /*
          * If it doesn't exist in the newPartitions, destroy it.
-         * If this happens even one time, we'll mark changesOccurred as true.
          *
-         * Otherwise, this partition is a good partition and we can add it to
-         * the replacementPartitions.
+         * If this happens even one time, we'll mark changesOccurred as
+         * true.
+         *
+         * Otherwise, this partition is a good partition and we can add
+         * it to the replacementPartitions.
          */
         if(exists === undefined) {
           partition.destroy();
@@ -145,18 +147,9 @@ minispade.register('ring', function() {
         url: '/admin/partitions',
         dataType: 'json',
 
-        /**
-         * Runs when we get a successful response with partition data.
-         *
-         * @param {Object} data
-         * @key {Number} default_n_val - The default n_val for the ring.
-         * @key {Array}  n_vals        - A list of all possible n_vals.
-         * @key {Object} partitions    - Where keys are numbers that correspond to our list
-         *                               of n_vals and values are arrays of partition objects.
-         */
         success: function (data) {
-          var curSelected = that.get('content').get('selected_n_val'),
-              curPartitions = that.get('content').get('partitions'),
+          var curSelected = that.get('content.selected'),
+              curPartitions = that.get('content.partitions'),
               toRemove = [],
               i;
 
@@ -164,7 +157,7 @@ minispade.register('ring', function() {
            * Remove any old partition lists that no longer exist
            * within data.partitions.
            */
-          curPartitions.forEach(function (hash) {
+          curPartitions.forEach(function(hash) {
             if (!data.partitions.findProperty('n_val', hash.n_val)) {
               hash.partitions.forEach(function (partition) {
                 partition.destroy();
@@ -172,7 +165,8 @@ minispade.register('ring', function() {
               toRemove.push(i)
             }
           });
-          toRemove.forEach(function (pIndex) {
+
+          toRemove.forEach(function(pIndex) {
             curPartitions.removeAt(pIndex);
           });
 
@@ -190,19 +184,9 @@ minispade.register('ring', function() {
           /*
            * Manually select a dropdown item on the first ajax call.
            */
-          if (that.get('content.selected_n_val') === undefined) {
-            that.set('content.selected_n_val', curSelected || data.default_n_val);
+          if(that.get('content.selected') === undefined) {
+            that.set('content.selected', curSelected || data.default_n_val);
           }
-
-          /*
-           * Only manually set the content property if the user
-           * has not selected one with the dropdown menu.
-           */
-          if (!curSelected) {
-            that.set('content.content',
-                     data.partitions.findProperty('n_val', curSelected || data.default_n_val)).partitions;
-          }
-
         }
       });
     },
@@ -215,16 +199,19 @@ minispade.register('ring', function() {
     },
 
     /**
-     * Called by the router, to start polling when this controller/view is navigated to.
+     * Called by the router, to start polling when this controller/view
+     * is navigated to.
      *
      * @returns {void}
      */
     startInterval: function() {
-      this._intervalId = setInterval($.proxy(this.reload, this), RiakControl.refreshInterval);
+      this._intervalId = setInterval(
+          $.proxy(this.reload, this), RiakControl.refreshInterval);
     },
 
     /**
-     * Called by the router, to stop polling when this controller/view is navigated away from.
+     * Called by the router, to stop polling when this controller/view
+     * is navigated away from.
      *
      * @returns {void}
      */
@@ -288,7 +275,8 @@ minispade.register('ring', function() {
      * @returns {array}
      */
     allUnavailable: function() {
-      return this.get('content').filterProperty('allPrimariesDown', true);
+      return this.get('content').
+        filterProperty('allPrimariesDown', true);
     }.property('content.@each.allPrimariesDown'),
 
     /**
@@ -315,7 +303,8 @@ minispade.register('ring', function() {
      * @returns {array}
      */
     quorumUnavailable: function() {
-      return this.get('content').filterProperty('quorumUnavailable', true);
+      return this.get('content').
+        filterProperty('quorumUnavailable', true);
     }.property('content.@each.quorumUnavailable'),
 
     /**

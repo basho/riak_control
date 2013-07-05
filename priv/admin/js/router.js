@@ -99,11 +99,14 @@ minispade.register('router', function() {
 
         connectOutlets: function(router) {
           router.get('applicationController').
-            connectOutlet('ring', RiakControl.PartitionList.create({
-                                    partitions:     Ember.ArrayProxy.create(),
-                                    selected_n_val: [],
-                                    content:        []
-                                  }));
+            connectOutlet('ring',
+              RiakControl.SelectedPartitionNValList.create({
+                content:    [],
+                selected:   undefined,
+                partitions: RiakControl.PartitionNValList.create({
+                  content: []
+                })
+              }));
           $.riakControl.markNavActive('nav-ring');
         },
 
