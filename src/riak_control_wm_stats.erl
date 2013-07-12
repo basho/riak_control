@@ -1,6 +1,6 @@
 %% -------------------------------------------------------------------
 %%
-%% Copyright (c) 2011 Basho Technologies, Inc.  All Rights Reserved.
+%% Copyright (c) 2013 Basho Technologies, Inc.  All Rights Reserved.
 %%
 %% This file is provided to you under the Apache License,
 %% Version 2.0 (the "License"); you may not use this file
@@ -18,37 +18,34 @@
 %%
 %% -------------------------------------------------------------------
 %%
-%% @doc Returns a list of all partitions, how many primary replicas
-%%      are available, what the current n_val and quorum
-%%      configuration is, as well as the unavailable nodes for
-%%      each partition.
+%% @doc Return cluster statistics.
 
--module(riak_control_wm_partitions).
+-module(riak_control_wm_stats).
 
 -export([routes/0,
          init/1,
-         content_types_provided/2,
          to_json/2,
+         forbidden/2,
          is_authorized/2,
          service_available/2,
-         forbidden/2]).
+         content_types_provided/2]).
 
--include_lib("riak_control/include/riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
+-include_lib("riak_control/include/riak_control.hrl").
 
--record(context, {partitions}).
+-record(context, {stats}).
 -type context() :: #context{}.
 
 %% @doc Route handling.
 -spec routes() -> [webmachine_dispatcher:matchterm()].
 routes() ->
-    [{riak_control_routes:partitions_route(), ?MODULE, []}].
+    [{riak_control_routes:stats_route(), ?MODULE, []}].
 
-%% @doc Get partition list at the start of the request.
+%% @doc Get stats at the start of the request.
 -spec init(list()) -> {ok, context()}.
 init([]) ->
-    {ok, _, Partitions} = riak_control_session:get_partitions(),
-    {ok, #context{partitions=Partitions}}.
+    {ok, _, Stats} = riak_control_session:get_stats(),
+    {ok, #context{stats=Stats}}.
 
 %% @doc Validate origin.
 -spec forbidden(wrq:reqdata(), context()) ->
@@ -74,9 +71,8 @@ is_authorized(ReqData, Context) ->
 content_types_provided(ReqData, Context) ->
     {[{"application/json", to_json}], ReqData, Context}.
 
-%% @doc Return a list of partitions.
--spec to_json(wrq:reqdata(),context()) ->
-    {iolist(), wrq:reqdata(), context()}.
-to_json(ReqData, Context=#context{partitions=Partitions}) ->
-    Encoded = mochijson2:encode({struct,[{partitions, Partitions}]}),
+%% @doc Return stats as JSON.
+-spec to_json(wrq:reqdata(), context()) -> {iolist(), wrq:reqdata(), context()}.
+to_json(ReqData, #context{stats=Stats} = Context) ->
+    Encoded = mochijson2:encode({struct, [{stats, Stats}]}),
     {Encoded, ReqData, Context}.

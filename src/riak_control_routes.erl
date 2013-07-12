@@ -23,6 +23,7 @@
 -module(riak_control_routes).
 
 -export([admin_route/1,
+         stats_route/0,
          nodes_route/0,
          cluster_route/0,
          handoffs_route/0,
@@ -32,6 +33,11 @@
 -spec admin_route(list()) -> list().
 admin_route(Rest) ->
     ["admin"|Rest].
+
+%% @doc Return route for node resource.
+-spec stats_route() -> list().
+stats_route() ->
+    admin_route(["stats"]).
 
 %% @doc Return route for node resource.
 -spec nodes_route() -> list().

@@ -38,6 +38,7 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
+         get_stats/0,
          get_plan/0,
          clear_plan/0,
          stage_change/3,
@@ -61,6 +62,7 @@
                 partitions  :: partitions(),
                 nodes       :: members(),
                 update_tick :: boolean(),
+                stats       :: stats(),
                 transfers   :: transfers()}).
 
 -type normalized_action() :: leave
@@ -109,6 +111,11 @@ get_services() ->
 -spec get_partitions() -> {ok, version(), partitions()}.
 get_partitions() ->
     gen_server:call(?MODULE, get_partitions, infinity).
+
+%% @doc Return partition list.
+-spec get_stats() -> {ok, version(), stats()}.
+get_stats() ->
+    gen_server:call(?MODULE, get_stats, infinity).
 
 %% @doc Get the staged cluster plan.
 -spec get_plan() -> {ok, list(), list()} | {error, atom()}.
@@ -191,7 +198,9 @@ handle_call(get_nodes, _From, State=#state{vsn=V,nodes=N}) ->
 handle_call(get_services, _From, State=#state{vsn=V,services=S}) ->
     {reply, {ok, V, S}, State};
 handle_call(get_partitions, _From, State=#state{vsn=V,partitions=P}) ->
-    {reply, {ok, V, P}, State}.
+    {reply, {ok, V, P}, State};
+handle_call(get_stats, _From, State=#state{vsn=V,stats=S}) ->
+    {reply, {ok, V, S}, State}.
 
 %% @doc
 %%
@@ -261,8 +270,9 @@ update_services(State=#state{services=S}, Services) ->
 update_ring(State, Ring) ->
     erlang:send_after(?UPDATE_TICK_TIMEOUT, self(), clear_update_tick),
     NodeState = update_nodes(State#state{update_tick=true, ring=Ring}),
-    FinalState = update_partitions(NodeState),
-    rev_state(FinalState).
+    PartitionState = update_partitions(NodeState),
+    StatsState = update_stats(PartitionState),
+    rev_state(StatsState).
 
 %% @doc Update ring.
 -spec update_nodes(#state{}) -> #state{}.
@@ -278,6 +288,13 @@ update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
         #member_info{node=Name, reachable=false} <- Nodes],
     Partitions = riak_control_ring:status(Ring, Unavailable),
     State#state{partitions=Partitions}.
+
+%% @doc Update stats.
+-spec update_stats(#state{}) -> #state{}.
+update_stats(State) ->
+    Stats = proplists:delete(disk, riak_kv_stat:get_stats()) ++
+                             riak_core_stat:get_stats(),
+    State#state{stats=Stats}.
 
 %% @doc Ping and retrieve vnode workers.
 -spec get_member_info({node(), status()}, ring()) -> #member_info{}.

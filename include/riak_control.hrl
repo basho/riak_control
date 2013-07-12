@@ -34,6 +34,8 @@
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
 -type transfer()      :: riak_core_ring:pending_change().
 -type transfers()     :: [transfer()].
+-type stats()         :: [stat()].
+-type stat()          :: [{atom(), term()}].
 
 -type stage_error() :: nodedown
                      | already_leaving
