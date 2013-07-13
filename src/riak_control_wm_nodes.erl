@@ -74,31 +74,31 @@ to_json(ReqData, Context) ->
     %% Get the current node list.
     {ok, _V, RawNodes} = riak_control_session:get_nodes(),
 
-    Nodes = [jsonify_node(Node) || Node=#member_info{} <- RawNodes],
+    Nodes = [jsonify_node(Node) || Node=?MEMBER_INFO{} <- RawNodes],
     Encoded = mochijson2:encode({struct, [{nodes, Nodes}]}),
 
     {Encoded, ReqData, Context}.
 
 %% @doc Turn a node into a proper struct for serialization.
--spec jsonify_node(#member_info{}) -> {struct, list()}.
+-spec jsonify_node(?MEMBER_INFO{}) -> {struct, list()}.
 jsonify_node(Node) ->
     LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
-    MemUsed = Node#member_info.mem_used,
-    MemTotal = Node#member_info.mem_total,
-    Reachable = Node#member_info.reachable,
+    MemUsed = Node?MEMBER_INFO.mem_used,
+    MemTotal = Node?MEMBER_INFO.mem_total,
+    Reachable = Node?MEMBER_INFO.reachable,
     LowMem = case Reachable of
         false ->
             false;
         true ->
             1.0 - (MemUsed/MemTotal) < LWM
     end,
-    {struct,[{"name",Node#member_info.node},
-             {"status",Node#member_info.status},
+    {struct,[{"name",Node?MEMBER_INFO.node},
+             {"status",Node?MEMBER_INFO.status},
              {"reachable",Reachable},
-             {"ring_pct",Node#member_info.ring_pct},
-             {"pending_pct",Node#member_info.pending_pct},
+             {"ring_pct",Node?MEMBER_INFO.ring_pct},
+             {"pending_pct",Node?MEMBER_INFO.pending_pct},
              {"mem_total",MemTotal},
              {"mem_used",MemUsed},
-             {"mem_erlang",Node#member_info.mem_erlang},
+             {"mem_erlang",Node?MEMBER_INFO.mem_erlang},
              {"low_mem",LowMem},
-             {"me",Node#member_info.node == node()}]}.
+             {"me",Node?MEMBER_INFO.node == node()}]}.
