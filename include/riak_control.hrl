@@ -55,8 +55,7 @@
 
 -type change() :: {node(), action()}.
 
-%% Members.
-
+%% Node membership records.
 -record(member_info,
         { node        :: atom(),
           status      :: status(),
@@ -71,13 +70,27 @@
           action      :: action(),
           replacement :: node() }).
 
--define(MEMBER_INFO, #member_info).
+-record(member_info_v2,
+        { node        :: atom(),
+          status      :: status(),
+          reachable   :: boolean(),
+          vnodes      :: vnodes(),
+          handoffs    :: handoffs(),
+          ring_pct    :: float(),
+          pending_pct :: float(),
+          mem_total   :: integer(),
+          mem_used    :: integer(),
+          mem_erlang  :: integer(),
+          action      :: action(),
+          stats       :: [{atom(), [{atom(), term()}]}],
+          replacement :: node() }).
 
--type member()  :: #member_info{}.
+-type member()  :: #member_info{} | #member_info_v2{}.
 -type members() :: [member()].
 
-%% Partitions.
+-define(MEMBER_INFO, #member_info_v2).
 
+%% Partition records.
 -record(partition_info,
         { index       :: index(),
           partition   :: integer(),
@@ -85,10 +98,10 @@
           vnodes      :: services(),
           handoffs    :: handoffs() }).
 
--define(PARTITION_INFO, #partition_info).
-
 -type partition()  :: #partition_info{}.
 -type partitions() :: [partition()].
+
+-define(PARTITION_INFO, #partition_info).
 
 %% These two should always match, in terms of webmachine dispatcher
 %% logic, and ADMIN_BASE_PATH should always end with a /

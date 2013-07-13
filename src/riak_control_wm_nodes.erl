@@ -101,4 +101,5 @@ jsonify_node(Node) ->
              {"mem_used",MemUsed},
              {"mem_erlang",Node?MEMBER_INFO.mem_erlang},
              {"low_mem",LowMem},
-             {"me",Node?MEMBER_INFO.node == node()}]}.
+             {"me",Node?MEMBER_INFO.node == node()},
+             {"stats",Node?MEMBER_INFO.stats}]}.
