@@ -34,6 +34,8 @@
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
 -type transfer()      :: riak_core_ring:pending_change().
 -type transfers()     :: [transfer()].
+-type partition()     :: list({integer(), integer(), integer()}).
+-type partitions()    :: [partition()].
 
 -type stage_error() :: nodedown
                      | already_leaving
@@ -89,19 +91,6 @@
 -type members() :: [member()].
 
 -define(MEMBER_INFO, #member_info_v2).
-
-%% Partition records.
--record(partition_info,
-        { index       :: index(),
-          partition   :: integer(),
-          owner       :: owner(),
-          vnodes      :: services(),
-          handoffs    :: handoffs() }).
-
--type partition()  :: #partition_info{}.
--type partitions() :: [partition()].
-
--define(PARTITION_INFO, #partition_info).
 
 %% These two should always match, in terms of webmachine dispatcher
 %% logic, and ADMIN_BASE_PATH should always end with a /
