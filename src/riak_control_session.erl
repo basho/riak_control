@@ -308,7 +308,17 @@ get_member_info(_Member={Node, Status}, Ring) ->
             %% vnode workers running...
             MemberInfo?MEMBER_INFO{status = Status,
                                    ring_pct = PctRing,
-                                   pending_pct = PctPending}
+                                   pending_pct = PctPending};
+        _ ->
+            %% default case where a record incompatibility causes a
+            %% failure matching the record format.
+            ?MEMBER_INFO{node = Node,
+                         status = incompatible,
+                         reachable = true,
+                         vnodes = [],
+                         handoffs = [],
+                         ring_pct = PctRing,
+                         pending_pct = PctPending}
     end.
 
 %% @doc Return current nodes information.
