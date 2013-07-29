@@ -196,7 +196,7 @@ to_json(ReqData, Context) ->
 
     %% Get the current node list.
     {ok, _V, Nodes} = riak_control_session:get_nodes(),
-    Current = [jsonify_node(Node) || Node=#member_info{} <- Nodes],
+    Current = [jsonify_node(Node) || Node=?MEMBER_INFO{} <- Nodes],
 
     %% Get the current list of planned changes and updated claim.
     Planned = case riak_control_session:get_plan() of
@@ -215,7 +215,7 @@ to_json(ReqData, Context) ->
     {mochijson2:encode({struct,[{cluster,Clusters}]}), ReqData, Context}.
 
 %% @doc Generate a new "planned" cluster which outlines transitions.
--spec merge_transitions(list(#member_info{}), list(), list()) ->
+-spec merge_transitions(list(member()), list(), list()) ->
     [{struct, list()}].
 merge_transitions(Nodes, Changes, Claim) ->
     lists:foldl(fun(Node, TransitionedNodes) ->
@@ -224,32 +224,32 @@ merge_transitions(Nodes, Changes, Claim) ->
         end, [], Nodes).
 
 %% @doc Merge change into member info record.
--spec apply_changes(#member_info{}, list(), list()) -> #member_info{}.
+-spec apply_changes(member(), list(), list()) -> member().
 apply_changes(Node, Changes, Claim) ->
     apply_status_change(apply_claim_change(Node, Claim), Changes).
 
 %% @doc Merge change into member info record.
--spec apply_status_change(#member_info{}, list()) -> #member_info{}.
+-spec apply_status_change(member(), list()) -> member().
 apply_status_change(Node, Changes) ->
-    Name = Node#member_info.node,
+    Name = Node?MEMBER_INFO.node,
 
     case lists:keyfind(Name, 1, Changes) of
         false ->
             Node;
         {_, {Action, Replacement}} ->
-            Node#member_info{action=Action, replacement=Replacement};
+            Node?MEMBER_INFO{action=Action, replacement=Replacement};
         {_, Action} ->
-            Node#member_info{action=Action}
+            Node?MEMBER_INFO{action=Action}
     end.
 
 %% @doc Merge change into member info record.
--spec apply_claim_change(#member_info{}, list()) -> #member_info{}.
+-spec apply_claim_change(member(), list()) -> member().
 apply_claim_change(Node, Claim) ->
-    Name = Node#member_info.node,
+    Name = Node?MEMBER_INFO.node,
 
     case lists:keyfind(Name, 1, Claim) of
         false ->
-            Node#member_info{ring_pct=0.0, pending_pct=0.0};
+            Node?MEMBER_INFO{ring_pct=0.0, pending_pct=0.0};
         {_, {_, Future}} ->
             %% @doc Hack until core returns normalized values.
             Normalized = if
@@ -258,29 +258,29 @@ apply_claim_change(Node, Claim) ->
                 true ->
                     Future
             end,
-            Node#member_info{ring_pct=Normalized, pending_pct=Normalized}
+            Node?MEMBER_INFO{ring_pct=Normalized, pending_pct=Normalized}
     end.
 
 %% @doc Turn a node into a proper struct for serialization.
--spec jsonify_node(#member_info{}) -> {struct, list()}.
+-spec jsonify_node(member()) -> {struct, list()}.
 jsonify_node(Node) ->
     LWM=app_helper:get_env(riak_control,low_mem_watermark,0.1),
-    MemUsed = Node#member_info.mem_used,
-    MemTotal = Node#member_info.mem_total,
-    Reachable = Node#member_info.reachable,
+    MemUsed = Node?MEMBER_INFO.mem_used,
+    MemTotal = Node?MEMBER_INFO.mem_total,
+    Reachable = Node?MEMBER_INFO.reachable,
     LowMem = low_mem(Reachable, MemUsed, MemTotal, LWM),
-    {struct,[{"name",Node#member_info.node},
-             {"status",Node#member_info.status},
+    {struct,[{"name",Node?MEMBER_INFO.node},
+             {"status",Node?MEMBER_INFO.status},
              {"reachable",Reachable},
-             {"ring_pct",Node#member_info.ring_pct},
-             {"pending_pct",Node#member_info.pending_pct},
+             {"ring_pct",Node?MEMBER_INFO.ring_pct},
+             {"pending_pct",Node?MEMBER_INFO.pending_pct},
              {"mem_total",MemTotal},
              {"mem_used",MemUsed},
-             {"mem_erlang",Node#member_info.mem_erlang},
+             {"mem_erlang",Node?MEMBER_INFO.mem_erlang},
              {"low_mem",LowMem},
-             {"me",Node#member_info.node == node()},
-             {"action",Node#member_info.action},
-             {"replacement",Node#member_info.replacement}]}.
+             {"me",Node?MEMBER_INFO.node == node()},
+             {"action",Node?MEMBER_INFO.action},
+             {"replacement",Node?MEMBER_INFO.replacement}]}.
 
 %% @doc Given a struct/proplist that we've received via JSON,
 %% recursively turn the keys into atoms from binaries.
