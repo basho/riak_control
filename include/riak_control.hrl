@@ -64,7 +64,21 @@
 -type partition()     :: ?PARTITION_INFO{}.
 -type partitions()    :: [partition()].
 
+%% Riak 1.3
 -record(member_info,
+        { node        :: atom(),
+          status      :: status(),
+          reachable   :: boolean(),
+          vnodes      :: vnodes(),
+          handoffs    :: handoffs(),
+          ring_pct    :: float(),
+          pending_pct :: float(),
+          mem_total   :: integer(),
+          mem_used    :: integer(),
+          mem_erlang  :: integer() }).
+
+%% Riak 1.4.1+
+-record(member_info_v2,
         { node        :: atom(),
           status      :: status(),
           reachable   :: boolean(),
@@ -78,7 +92,7 @@
           action      :: action(),
           replacement :: node() }).
 
--define(MEMBER_INFO,     #member_info).
+-define(MEMBER_INFO,     #member_info_v2).
 -type member()        :: ?MEMBER_INFO{}.
 -type members()       :: [member()].
 
