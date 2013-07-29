@@ -58,8 +58,11 @@
           partition   :: integer(),
           owner       :: owner(),
           vnodes      :: services(),
-          handoffs    :: handoffs()
-        }).
+          handoffs    :: handoffs() }).
+
+-define(PARTITION_INFO,  #partition_info).
+-type partition()     :: ?PARTITION_INFO{}.
+-type partitions()    :: [partition()].
 
 -record(member_info,
         { node        :: atom(),
@@ -73,11 +76,11 @@
           mem_used    :: integer(),
           mem_erlang  :: integer(),
           action      :: action(),
-          replacement :: node()
-        }).
+          replacement :: node() }).
 
--type partitions()    :: [#partition_info{}].
--type members()       :: [#member_info{}].
+-define(MEMBER_INFO,     #member_info).
+-type member()        :: ?MEMBER_INFO{}.
+-type members()       :: [member()].
 
 %% These two should always match, in terms of webmachine dispatcher
 %% logic, and ADMIN_BASE_PATH should always end with a /

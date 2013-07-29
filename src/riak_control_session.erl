@@ -272,7 +272,7 @@ update_partitions(State=#state{ring=Ring}) ->
     State#state{partitions=Partitions}.
 
 %% @doc Ping and retrieve vnode workers.
--spec get_member_info({node(), status()}, ring()) -> #member_info{}.
+-spec get_member_info({node(), status()}, ring()) -> member().
 get_member_info(_Member={Node, Status}, Ring) ->
     RingSize = riak_core_ring:num_partitions(Ring),
 
@@ -285,7 +285,7 @@ get_member_info(_Member={Node, Status}, Ring) ->
     %% try and get a list of all the vnodes running on the node
     case rpc:call(Node, riak_control_session, get_my_info, []) of
         {badrpc,nodedown} ->
-            #member_info{node = Node,
+            ?MEMBER_INFO{node = Node,
                          status = Status,
                          reachable = false,
                          vnodes = [],
@@ -293,29 +293,29 @@ get_member_info(_Member={Node, Status}, Ring) ->
                          ring_pct = PctRing,
                          pending_pct = PctPending};
         {badrpc,_Reason} ->
-            #member_info{node = Node,
+            ?MEMBER_INFO{node = Node,
                          status = incompatible,
                          reachable = true,
                          vnodes = [],
                          handoffs = [],
                          ring_pct = PctRing,
                          pending_pct = PctPending};
-        MemberInfo = #member_info{} ->
+        MemberInfo = ?MEMBER_INFO{} ->
             %% there is a race condition here, when a node is stopped
             %% gracefully (e.g. `riak stop`) the event will reach us
             %% before the node is actually down and the rpc call will
             %% succeed, but since it's shutting down it won't have any
             %% vnode workers running...
-            MemberInfo#member_info{status = Status,
+            MemberInfo?MEMBER_INFO{status = Status,
                                    ring_pct = PctRing,
                                    pending_pct = PctPending}
     end.
 
 %% @doc Return current nodes information.
--spec get_my_info() -> #member_info{}.
+-spec get_my_info() -> member().
 get_my_info() ->
     {Total, Used} = get_my_memory(),
-    #member_info{node = node(),
+    ?MEMBER_INFO{node = node(),
                  reachable = true,
                  mem_total = Total,
                  mem_used = Used,
@@ -364,7 +364,7 @@ get_handoff_status() ->
 %% @doc Get handoffs for every node.
 -spec get_all_handoffs(#state{}) -> handoffs().
 get_all_handoffs(#state{nodes=Members}) ->
-    lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
+    lists:flatten([HS || ?MEMBER_INFO{handoffs=HS} <- Members]).
 
 %% @doc Get information for a particular index.
 -spec get_partition_details(#state{}, {integer(), term()}, handoffs())
