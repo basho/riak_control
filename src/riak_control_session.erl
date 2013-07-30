@@ -341,8 +341,7 @@ get_my_info() ->
                              vnodes = VNodes,
                              handoffs = Handoffs};
             v0 ->
-                %% pre-1.4.1.
-                handle_bad_record(Total, Used, ErlangMemory, VNodes, Handoffs)
+                erlang:throw({badrpc, unknown_capability})
         end
     catch
         _:{unknown_capability, _} ->
@@ -514,24 +513,3 @@ upgrade_member_info(MemberInfo = #member_info{}) ->
         mem_total = MemberInfo#member_info.mem_total,
         mem_used = MemberInfo#member_info.mem_used,
         mem_erlang = MemberInfo#member_info.mem_erlang}.
-
-%% @doc Handle incompatible record for the 1.4.0 release.
-handle_bad_record(Total, Used, ErlangMemory, VNodes, Handoffs) ->
-    Counters = riak_core_capability:get({riak_kv, crdt}),
-    case lists:member(pncounter, Counters) of
-        true ->
-            %% 1.4.0, where we have a bad record.
-            {member_info,
-             node(), incompatible, true, VNodes, Handoffs, undefined,
-             undefined, Total, Used, ErlangMemory, undefined,
-             undefined};
-        false ->
-            %% < 1.4.0, where we have the old style record.
-            #member_info{node = node(),
-                         reachable = true,
-                         mem_total = Total,
-                         mem_used = Used,
-                         mem_erlang = ErlangMemory,
-                         vnodes = VNodes,
-                         handoffs = Handoffs}
-    end.
