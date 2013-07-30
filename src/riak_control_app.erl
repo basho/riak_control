@@ -30,7 +30,14 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    riak_control_sup:start_link().
+    case riak_control_sup:start_link() of
+        {error, Reason} ->
+            {error, Reason};
+        {ok, _Pid} ->
+            riak_core_capability:register({riak_control, member_info_version},
+                                          [v0, v1],
+                                          v0)
+    end.
 
 stop(_State) ->
     ok.
