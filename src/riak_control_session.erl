@@ -301,11 +301,12 @@ get_member_info(_Member={Node, Status}, Ring) ->
                          ring_pct = PctRing,
                          pending_pct = PctPending};
         MemberInfo = ?MEMBER_INFO{} ->
-            %% there is a race condition here, when a node is stopped
-            %% gracefully (e.g. `riak stop`) the event will reach us
-            %% before the node is actually down and the rpc call will
-            %% succeed, but since it's shutting down it won't have any
-            %% vnode workers running...
+            MemberInfo?MEMBER_INFO{status = Status,
+                                   ring_pct = PctRing,
+                                   pending_pct = PctPending};
+        MemberInfo0 = #member_info{} ->
+            %% Upgrade older member information record.
+            MemberInfo = upgrade_member_info(MemberInfo0),
             MemberInfo?MEMBER_INFO{status = Status,
                                    ring_pct = PctRing,
                                    pending_pct = PctPending};
@@ -325,13 +326,24 @@ get_member_info(_Member={Node, Status}, Ring) ->
 -spec get_my_info() -> member().
 get_my_info() ->
     {Total, Used} = get_my_memory(),
-    ?MEMBER_INFO{node = node(),
-                 reachable = true,
-                 mem_total = Total,
-                 mem_used = Used,
-                 mem_erlang = proplists:get_value(total,erlang:memory()),
-                 vnodes = riak_core_vnode_manager:all_vnodes(),
-                 handoffs = get_handoff_status()}.
+    case riak_core_capability:get({riak_control, member_info_version}) of
+        v1 ->
+            ?MEMBER_INFO{node = node(),
+                         reachable = true,
+                         mem_total = Total,
+                         mem_used = Used,
+                         mem_erlang = proplists:get_value(total,erlang:memory()),
+                         vnodes = riak_core_vnode_manager:all_vnodes(),
+                         handoffs = get_handoff_status()};
+        v0 ->
+            #member_info{node = node(),
+                         reachable = true,
+                         mem_total = Total,
+                         mem_used = Used,
+                         mem_erlang = proplists:get_value(total,erlang:memory()),
+                         vnodes = riak_core_vnode_manager:all_vnodes(),
+                         handoffs = get_handoff_status()}
+    end.
 
 %% @doc Return current nodes memory.
 -spec get_my_memory() -> {term(), term()}.
@@ -479,3 +491,23 @@ maybe_stage_change(Node, Action, Replacement) ->
         stop ->
             rpc:call(Node, riak_core, stop, [])
     end.
+
+%% @doc Conditionally upgrade member info records once they cross node
+%%      boundaries.
+-spec upgrade_member_info(member()) -> member().
+upgrade_member_info(MemberInfo = ?MEMBER_INFO{}) ->
+    MemberInfo;
+upgrade_member_info(MemberInfo = #member_info{}) ->
+    ?MEMBER_INFO{
+        node = MemberInfo?MEMBER_INFO.node,
+        status = MemberInfo?MEMBER_INFO.status,
+        reachable = MemberInfo?MEMBER_INFO.reachable,
+        vnodes = MemberInfo?MEMBER_INFO.vnodes,
+        handoffs = MemberInfo?MEMBER_INFO.handoffs,
+        ring_pct = MemberInfo?MEMBER_INFO.ring_pct,
+        pending_pct = MemberInfo?MEMBER_INFO.pending_pct,
+        mem_total = MemberInfo?MEMBER_INFO.mem_total,
+        mem_used = MemberInfo?MEMBER_INFO.mem_used,
+        mem_erlang = MemberInfo?MEMBER_INFO.mem_erlang,
+        action = MemberInfo?MEMBER_INFO.action,
+        replacement = MemberInfo?MEMBER_INFO.replacement}.
