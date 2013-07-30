@@ -326,23 +326,26 @@ get_member_info(_Member={Node, Status}, Ring) ->
 -spec get_my_info() -> member().
 get_my_info() ->
     {Total, Used} = get_my_memory(),
+    Handoffs = get_handoff_status(),
+    VNodes = riak_core_vnode_manager:all_vnodes(),
+    ErlangMemory = proplists:get_value(total,erlang:memory()),
     case riak_core_capability:get({riak_control, member_info_version}) of
         v1 ->
             ?MEMBER_INFO{node = node(),
                          reachable = true,
                          mem_total = Total,
                          mem_used = Used,
-                         mem_erlang = proplists:get_value(total,erlang:memory()),
-                         vnodes = riak_core_vnode_manager:all_vnodes(),
-                         handoffs = get_handoff_status()};
+                         mem_erlang = ErlangMemory,
+                         vnodes = VNodes,
+                         handoffs = Handoffs};
         v0 ->
             #member_info{node = node(),
                          reachable = true,
                          mem_total = Total,
                          mem_used = Used,
-                         mem_erlang = proplists:get_value(total,erlang:memory()),
-                         vnodes = riak_core_vnode_manager:all_vnodes(),
-                         handoffs = get_handoff_status()}
+                         mem_erlang = ErlangMemory,
+                         vnodes = VNodes,
+                         handoffs = Handoffs}
     end.
 
 %% @doc Return current nodes memory.
