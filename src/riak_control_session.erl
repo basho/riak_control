@@ -329,16 +329,29 @@ get_my_info() ->
     Handoffs = get_handoff_status(),
     VNodes = riak_core_vnode_manager:all_vnodes(),
     ErlangMemory = proplists:get_value(total,erlang:memory()),
-    case riak_core_capability:get({riak_control, member_info_version}) of
-        v1 ->
-            ?MEMBER_INFO{node = node(),
-                         reachable = true,
-                         mem_total = Total,
-                         mem_used = Used,
-                         mem_erlang = ErlangMemory,
-                         vnodes = VNodes,
-                         handoffs = Handoffs};
-        v0 ->
+    try
+        case riak_core_capability:get({riak_control, member_info_version}) of
+            v1 ->
+                ?MEMBER_INFO{node = node(),
+                             reachable = true,
+                             mem_total = Total,
+                             mem_used = Used,
+                             mem_erlang = ErlangMemory,
+                             vnodes = VNodes,
+                             handoffs = Handoffs};
+            v0 ->
+                #member_info{node = node(),
+                             reachable = true,
+                             mem_total = Total,
+                             mem_used = Used,
+                             mem_erlang = ErlangMemory,
+                             vnodes = VNodes,
+                             handoffs = Handoffs}
+        end
+    catch
+        _:{unknown_capability, {riak_control, member_info_version}} ->
+            %% Assume v0, when the capability hasn't been registered
+            %% when the RPC request arrives.
             #member_info{node = node(),
                          reachable = true,
                          mem_total = Total,
