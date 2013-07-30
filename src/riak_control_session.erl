@@ -50,7 +50,8 @@
          code_change/3]).
 
 %% exported for RPC calls.
--export([get_my_info/0]).
+-export([get_my_info/0,
+         get_my_info_v2/0]).
 
 -record(state, {vsn         :: version(),
                 services    :: services(),
@@ -272,7 +273,7 @@ update_partitions(State=#state{ring=Ring}) ->
     State#state{partitions=Partitions}.
 
 %% @doc Ping and retrieve vnode workers.
--spec get_member_info({node(), status()}, ring()) -> #member_info{}.
+-spec get_member_info({node(), status()}, ring()) -> member().
 get_member_info(_Member={Node, Status}, Ring) ->
     RingSize = riak_core_ring:num_partitions(Ring),
 
@@ -283,9 +284,9 @@ get_member_info(_Member={Node, Status}, Ring) ->
     PctPending = length(FutureIndices) / RingSize,
 
     %% try and get a list of all the vnodes running on the node
-    case rpc:call(Node, riak_control_session, get_my_info, []) of
+    case rpc:call(Node, riak_control_session, get_my_info_v2, []) of
         {badrpc,nodedown} ->
-            #member_info{node = Node,
+            ?MEMBER_INFO{node = Node,
                          status = Status,
                          reachable = false,
                          vnodes = [],
@@ -293,35 +294,54 @@ get_member_info(_Member={Node, Status}, Ring) ->
                          ring_pct = PctRing,
                          pending_pct = PctPending};
         {badrpc,_Reason} ->
-            #member_info{node = Node,
+            ?MEMBER_INFO{node = Node,
                          status = incompatible,
                          reachable = true,
                          vnodes = [],
                          handoffs = [],
                          ring_pct = PctRing,
                          pending_pct = PctPending};
-        MemberInfo = #member_info{} ->
-            %% there is a race condition here, when a node is stopped
-            %% gracefully (e.g. `riak stop`) the event will reach us
-            %% before the node is actually down and the rpc call will
-            %% succeed, but since it's shutting down it won't have any
-            %% vnode workers running...
-            MemberInfo#member_info{status = Status,
+        MemberInfo = ?MEMBER_INFO{} ->
+            MemberInfo?MEMBER_INFO{status = Status,
                                    ring_pct = PctRing,
-                                   pending_pct = PctPending}
+                                   pending_pct = PctPending};
+        MemberInfo0 = #member_info{} ->
+            %% Upgrade older member information record.
+            MemberInfo = upgrade_member_info(MemberInfo0),
+            MemberInfo?MEMBER_INFO{status = Status,
+                                   ring_pct = PctRing,
+                                   pending_pct = PctPending};
+        _ ->
+            %% default case where a record incompatibility causes a
+            %% failure matching the record format.
+            ?MEMBER_INFO{node = Node,
+                         status = incompatible,
+                         reachable = true,
+                         vnodes = [],
+                         handoffs = [],
+                         ring_pct = PctRing,
+                         pending_pct = PctPending}
     end.
 
 %% @doc Return current nodes information.
--spec get_my_info() -> #member_info{}.
+-spec get_my_info() -> member().
 get_my_info() ->
+    erlang:throw({badrpc, incompatible}).
+
+%% @doc Return current nodes information.
+-spec get_my_info_v2() -> member().
+get_my_info_v2() ->
     {Total, Used} = get_my_memory(),
-    #member_info{node = node(),
+    Handoffs = get_handoff_status(),
+    VNodes = riak_core_vnode_manager:all_vnodes(),
+    ErlangMemory = proplists:get_value(total,erlang:memory()),
+    ?MEMBER_INFO{node = node(),
                  reachable = true,
                  mem_total = Total,
                  mem_used = Used,
-                 mem_erlang = proplists:get_value(total,erlang:memory()),
-                 vnodes = riak_core_vnode_manager:all_vnodes(),
-                 handoffs = get_handoff_status()}.
+                 mem_erlang = ErlangMemory,
+                 vnodes = VNodes,
+                 handoffs = Handoffs}.
 
 %% @doc Return current nodes memory.
 -spec get_my_memory() -> {term(), term()}.
@@ -364,7 +384,7 @@ get_handoff_status() ->
 %% @doc Get handoffs for every node.
 -spec get_all_handoffs(#state{}) -> handoffs().
 get_all_handoffs(#state{nodes=Members}) ->
-    lists:flatten([HS || #member_info{handoffs=HS} <- Members]).
+    lists:flatten([HS || ?MEMBER_INFO{handoffs=HS} <- Members]).
 
 %% @doc Get information for a particular index.
 -spec get_partition_details(#state{}, {integer(), term()}, handoffs())
@@ -469,3 +489,21 @@ maybe_stage_change(Node, Action, Replacement) ->
         stop ->
             rpc:call(Node, riak_core, stop, [])
     end.
+
+%% @doc Conditionally upgrade member info records once they cross node
+%%      boundaries.
+-spec upgrade_member_info(member() | #member_info{}) -> member().
+upgrade_member_info(MemberInfo = ?MEMBER_INFO{}) ->
+    MemberInfo;
+upgrade_member_info(MemberInfo = #member_info{}) ->
+    ?MEMBER_INFO{
+        node = MemberInfo#member_info.node,
+        status = MemberInfo#member_info.status,
+        reachable = MemberInfo#member_info.reachable,
+        vnodes = MemberInfo#member_info.vnodes,
+        handoffs = MemberInfo#member_info.handoffs,
+        ring_pct = MemberInfo#member_info.ring_pct,
+        pending_pct = MemberInfo#member_info.pending_pct,
+        mem_total = MemberInfo#member_info.mem_total,
+        mem_used = MemberInfo#member_info.mem_used,
+        mem_erlang = MemberInfo#member_info.mem_erlang}.
