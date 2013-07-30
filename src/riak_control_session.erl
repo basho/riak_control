@@ -332,6 +332,7 @@ get_my_info() ->
     try
         case riak_core_capability:get({riak_control, member_info_version}) of
             v1 ->
+                %% >= 1.4.1, where we have the upgraded cluster record.
                 ?MEMBER_INFO{node = node(),
                              reachable = true,
                              mem_total = Total,
@@ -340,25 +341,13 @@ get_my_info() ->
                              vnodes = VNodes,
                              handoffs = Handoffs};
             v0 ->
-                #member_info{node = node(),
-                             reachable = true,
-                             mem_total = Total,
-                             mem_used = Used,
-                             mem_erlang = ErlangMemory,
-                             vnodes = VNodes,
-                             handoffs = Handoffs}
+                %% pre-1.4.1.
+                handle_bad_record(Total, Used, ErlangMemory, VNodes, Handoffs)
         end
     catch
-        _:{unknown_capability, {riak_control, member_info_version}} ->
-            %% Assume v0, when the capability hasn't been registered
-            %% when the RPC request arrives.
-            #member_info{node = node(),
-                         reachable = true,
-                         mem_total = Total,
-                         mem_used = Used,
-                         mem_erlang = ErlangMemory,
-                         vnodes = VNodes,
-                         handoffs = Handoffs}
+        _:{unknown_capability, _} ->
+            %% capabilities are not registered yet.
+            erlang:throw({badrpc, unknown_capability})
     end.
 
 %% @doc Return current nodes memory.
@@ -510,7 +499,7 @@ maybe_stage_change(Node, Action, Replacement) ->
 
 %% @doc Conditionally upgrade member info records once they cross node
 %%      boundaries.
--spec upgrade_member_info(member()) -> member().
+-spec upgrade_member_info(member() | #member_info{}) -> member().
 upgrade_member_info(MemberInfo = ?MEMBER_INFO{}) ->
     MemberInfo;
 upgrade_member_info(MemberInfo = #member_info{}) ->
@@ -525,3 +514,24 @@ upgrade_member_info(MemberInfo = #member_info{}) ->
         mem_total = MemberInfo#member_info.mem_total,
         mem_used = MemberInfo#member_info.mem_used,
         mem_erlang = MemberInfo#member_info.mem_erlang}.
+
+%% @doc Handle incompatible record for the 1.4.0 release.
+handle_bad_record(Total, Used, ErlangMemory, VNodes, Handoffs) ->
+    Counters = riak_core_capability:get({riak_kv, crdt}),
+    case lists:member(pncounter, Counters) of
+        true ->
+            %% 1.4.0, where we have a bad record.
+            {member_info,
+             node(), incompatible, true, VNodes, Handoffs, undefined,
+             undefined, Total, Used, ErlangMemory, undefined,
+             undefined};
+        false ->
+            %% < 1.4.0, where we have the old style record.
+            #member_info{node = node(),
+                         reachable = true,
+                         mem_total = Total,
+                         mem_used = Used,
+                         mem_erlang = ErlangMemory,
+                         vnodes = VNodes,
+                         handoffs = Handoffs}
+    end.
