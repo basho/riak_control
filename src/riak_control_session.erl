@@ -502,15 +502,13 @@ upgrade_member_info(MemberInfo = ?MEMBER_INFO{}) ->
     MemberInfo;
 upgrade_member_info(MemberInfo = #member_info{}) ->
     ?MEMBER_INFO{
-        node = MemberInfo?MEMBER_INFO.node,
-        status = MemberInfo?MEMBER_INFO.status,
-        reachable = MemberInfo?MEMBER_INFO.reachable,
-        vnodes = MemberInfo?MEMBER_INFO.vnodes,
-        handoffs = MemberInfo?MEMBER_INFO.handoffs,
-        ring_pct = MemberInfo?MEMBER_INFO.ring_pct,
-        pending_pct = MemberInfo?MEMBER_INFO.pending_pct,
-        mem_total = MemberInfo?MEMBER_INFO.mem_total,
-        mem_used = MemberInfo?MEMBER_INFO.mem_used,
-        mem_erlang = MemberInfo?MEMBER_INFO.mem_erlang,
-        action = MemberInfo?MEMBER_INFO.action,
-        replacement = MemberInfo?MEMBER_INFO.replacement}.
+        node = MemberInfo#member_info.node,
+        status = MemberInfo#member_info.status,
+        reachable = MemberInfo#member_info.reachable,
+        vnodes = MemberInfo#member_info.vnodes,
+        handoffs = MemberInfo#member_info.handoffs,
+        ring_pct = MemberInfo#member_info.ring_pct,
+        pending_pct = MemberInfo#member_info.pending_pct,
+        mem_total = MemberInfo#member_info.mem_total,
+        mem_used = MemberInfo#member_info.mem_used,
+        mem_erlang = MemberInfo#member_info.mem_erlang}.
