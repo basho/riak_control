@@ -50,7 +50,8 @@
          code_change/3]).
 
 %% exported for RPC calls.
--export([get_my_info/0]).
+-export([get_my_info/0,
+         get_my_info_v2/0]).
 
 -record(state, {vsn         :: version(),
                 services    :: services(),
@@ -283,7 +284,7 @@ get_member_info(_Member={Node, Status}, Ring) ->
     PctPending = length(FutureIndices) / RingSize,
 
     %% try and get a list of all the vnodes running on the node
-    case rpc:call(Node, riak_control_session, get_my_info, []) of
+    case rpc:call(Node, riak_control_session, get_my_info_v2, []) of
         {badrpc,nodedown} ->
             ?MEMBER_INFO{node = Node,
                          status = Status,
@@ -325,29 +326,22 @@ get_member_info(_Member={Node, Status}, Ring) ->
 %% @doc Return current nodes information.
 -spec get_my_info() -> member().
 get_my_info() ->
+    erlang:throw({badrpc, incompatible}).
+
+%% @doc Return current nodes information.
+-spec get_my_info_v2() -> member().
+get_my_info_v2() ->
     {Total, Used} = get_my_memory(),
     Handoffs = get_handoff_status(),
     VNodes = riak_core_vnode_manager:all_vnodes(),
     ErlangMemory = proplists:get_value(total,erlang:memory()),
-    try
-        case riak_core_capability:get({riak_control, member_info_version}) of
-            v1 ->
-                %% >= 1.4.1, where we have the upgraded cluster record.
-                ?MEMBER_INFO{node = node(),
-                             reachable = true,
-                             mem_total = Total,
-                             mem_used = Used,
-                             mem_erlang = ErlangMemory,
-                             vnodes = VNodes,
-                             handoffs = Handoffs};
-            v0 ->
-                erlang:throw({badrpc, unknown_capability})
-        end
-    catch
-        _:{unknown_capability, _} ->
-            %% capabilities are not registered yet.
-            erlang:throw({badrpc, unknown_capability})
-    end.
+    ?MEMBER_INFO{node = node(),
+                 reachable = true,
+                 mem_total = Total,
+                 mem_used = Used,
+                 mem_erlang = ErlangMemory,
+                 vnodes = VNodes,
+                 handoffs = Handoffs}.
 
 %% @doc Return current nodes memory.
 -spec get_my_memory() -> {term(), term()}.
