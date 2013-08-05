@@ -11,7 +11,6 @@ minispade.register('ring', function() {
     }.observes('selected'),
 
     n_vals: function() {
-      console.log(this.get('partitions'));
 
       return this.get('partitions').map(function(x) {
         return x.n_val;
