@@ -70,12 +70,7 @@ jsonify_node(Node) ->
     MemUsed = Node#member_info.mem_used,
     MemTotal = Node#member_info.mem_total,
     Reachable = Node#member_info.reachable,
-    LowMem = case Reachable of
-        false ->
-            false;
-        true ->
-            1.0 - (MemUsed/MemTotal) < LWM
-    end,
+    LowMem = low_mem(Reachable, MemUsed, MemTotal, LWM),
     {struct,[{"name",Node#member_info.node},
              {"status",Node#member_info.status},
              {"reachable",Reachable},
@@ -86,3 +81,21 @@ jsonify_node(Node) ->
              {"mem_erlang",Node#member_info.mem_erlang},
              {"low_mem",LowMem},
              {"me",Node#member_info.node == node()}]}.
+
+%% @doc Determine if a node has low memory.
+-spec low_mem(boolean(), number() | atom(), number() | atom(), number())
+    -> boolean().
+low_mem(Reachable, MemUsed, MemTotal, LWM) ->
+    case Reachable of
+        false ->
+            false;
+        true ->
+            %% There is a race where the node is online, but memsup is
+            %% still starting so memory is unavailable.
+            case MemTotal of
+                undefined ->
+                    false;
+                _ ->
+                    1.0 - (MemUsed/MemTotal) < LWM
+            end
+    end.
