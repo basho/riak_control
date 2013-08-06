@@ -275,7 +275,7 @@ update_nodes(State=#state{ring=Ring}) ->
 -spec update_partitions(#state{}) -> #state{}.
 update_partitions(State=#state{ring=Ring, nodes=Nodes}) ->
     Unavailable = [Name ||
-        #member_info{node=Name, reachable=false} <- Nodes],
+        ?MEMBER_INFO{node=Name, reachable=false} <- Nodes],
     Partitions = riak_control_ring:status(Ring, Unavailable),
     State#state{partitions=Partitions}.
 
