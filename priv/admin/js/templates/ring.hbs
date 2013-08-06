@@ -18,6 +18,22 @@
 
       <div class="nval-dropdown-container">
         <h4 class="gui-headline-bold">See visualizations using a different n_val.</h4>
+        <div class="tooltip right">
+          <span>
+            <span class="tooltip-heading">
+              n_val specifies the number of copies of each object to be stored
+              in the cluster.
+              <a class="docs" href="http://docs.basho.com/riak/latest/theory/concepts/Buckets/"></a>
+            </span>
+            <span class="tooltip-body">
+              Right now, you\'re seeing what your ring looks like
+              for all objects stored with an n_val of 3. If you have
+              objects stored with other n_vals, select an n_val
+              from the dropdown to see what your ring looks like
+              for data stored with the selected n_val.
+            </span>
+          </span>
+        </div>
         {{view RiakControl.NValSelectView
                contentBinding="content.n_vals"
                valueBinding="content.selected"
