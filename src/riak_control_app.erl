@@ -35,7 +35,7 @@ start(_StartType, _StartArgs) ->
             {error, Reason};
         {ok, Pid} ->
             riak_core_capability:register({riak_control, member_info_version},
-                                          [v0, v1],
+                                          [v1, v0],
                                           v0),
             {ok, Pid}
     end.
