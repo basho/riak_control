@@ -39,7 +39,7 @@ action_result(_,Req,C) ->
 %% return a proplist of details for a given index
 node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
     case lists:keyfind(P#partition_info.owner,2,Nodes) of
-        #member_info{node=Node,status=Status,reachable=Reachable} ->
+        ?MEMBER_INFO{node=Node, status=Status, reachable=Reachable} ->
             Handoffs = P#partition_info.handoffs,
             VnodeStatuses = [{atom_to_list(VnodeName) ++
                               "_vnode_status", vnode_status(VnodeName, VnodeStatus, Handoffs)}
