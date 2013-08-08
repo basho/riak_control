@@ -38,6 +38,7 @@
          get_nodes/0,
          get_services/0,
          get_partitions/0,
+         get_status/0,
          get_plan/0,
          clear_plan/0,
          stage_change/3,
@@ -89,6 +90,11 @@ start_link() ->
 -spec get_version() -> version().
 get_version() ->
     gen_server:call(?MODULE, get_version, infinity).
+
+%% @doc Get overall cluster status.
+-spec get_status() -> {ok, version(), status()}.
+get_status() ->
+    gen_server:call(?MODULE, get_status, infinity).
 
 %% @doc Return ring.
 -spec get_ring() -> {ok, version(), ring()}.
@@ -184,6 +190,9 @@ handle_call({stage_change, Node, Action, Replacement}, _From, State) ->
 
 handle_call(get_version, _From, State=#state{vsn=V}) ->
     {reply, {ok, V}, State};
+handle_call(get_status, _From, State=#state{vsn=V,nodes=N}) ->
+    Status = determine_overall_status(N),
+    {reply, {ok, V, Status}, State};
 handle_call(get_ring, _From, State=#state{vsn=V,ring=R}) ->
     {reply, {ok, V, R}, State};
 handle_call(get_nodes, _From, State=#state{vsn=V,nodes=N}) ->
@@ -508,4 +517,25 @@ handle_bad_record(Total, Used, ErlangMemory, VNodes, Handoffs) ->
                          mem_erlang = ErlangMemory,
                          vnodes = VNodes,
                          handoffs = Handoffs}
+    end.
+
+%% @doc Determine overall cluster status.
+%%      If the cluster is of one status, return it; default to valid.
+%%      If one or more nodes is incompatible, return incompatible, else 
+%%      introduce a new state called transitioning.
+-spec determine_overall_status(members()) -> status().
+determine_overall_status(Nodes) ->
+    Statuses = lists:usort([Node?MEMBER_INFO.status || Node <- Nodes]),
+    case length(Statuses) of
+        0 ->
+            valid;
+        1 ->
+            lists:nth(1, Statuses);
+        _ ->
+            case lists:member(incompatible, Statuses) of
+                true ->
+                    incompatible;
+                false ->
+                    transitioning
+            end
     end.
