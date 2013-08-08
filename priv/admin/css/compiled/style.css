@@ -918,6 +918,15 @@ input.gui-point-button-right:active {
 #snapshot-page #healthy-cluster h3,
 #snapshot-page #unhealthy-cluster h3 {
   margin-top: 30px;
+  line-height: 1.5;
+}
+#snapshot-page #healthy-cluster h4,
+#snapshot-page #unhealthy-cluster h4 {
+  font-family: 'noticia', georgia, serif;
+  margin-top: 20px;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.5;
 }
 #snapshot-page #healthy-cluster ul,
 #snapshot-page #unhealthy-cluster ul {

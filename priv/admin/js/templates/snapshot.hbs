@@ -45,12 +45,16 @@
 
             {{#if areIncompatibleNodes}}
               <!-- Incompatible Nodes List -->
-              <h3 id="incompatible-nodes-title" class="">The following nodes are currently incompatible with Riak Control:</h3>
+              <h3 id="incompatible-nodes-title" class="">Some
+                information about the following nodes may be temporarily
+                unavailable:</h3>
               <ul id="incompatible-nodes-list" class="gui-text bulleted monospace">
                 {{#each incompatibleNodes}}
                   <li><a class="go-to-cluster" {{action showCluster href=true}}>{{name}}</a></li>
                 {{/each}}
               </ul>
+              <h4>This may be triggered by using control in the middle
+                of a rolling upgrade or during startup of the node.</h4>
             {{/if}}
 
             {{#if areDownNodes}}
