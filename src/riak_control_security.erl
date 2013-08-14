@@ -24,7 +24,6 @@
 
 -export([scheme_is_available/2,
          enforce_auth/2,
-         https_redirect_loc/1,
          csrf_token/2,
          is_valid_csrf_token/2,
          is_null_origin/1,
@@ -51,34 +50,20 @@ scheme_is_available(RD, Ctx) ->
             end
     end.
 
-%% @doc Generate redirect location for https.
--spec https_redirect_loc(list()) -> undefined | {ok, list()}.
-https_redirect_loc(Path) ->
-    case app_helper:get_env(riak_control, enabled, false) of
-        true ->
-            case app_helper:get_env(riak_core, https) of
-                [{Host,Port}|_] ->
-                    {ok,["https://",Host,":",integer_to_list(Port),Path]};
-                _ ->
-                    undefined
-            end;
-        _ ->
-            undefined
-    end.
-
 %% @doc Perform http redirect to ssl.
 -spec https_redirect(wrq:reqdata(), context()) ->
     {{halt, 303}, wrq:reqdata(), context()}.
 https_redirect(RD,Ctx) ->
-    Path=wrq:raw_path(RD),
-    Loc=case https_redirect_loc(Path) of
-            {ok,Dest} ->
-                Dest;
-            _ ->
-                Host=string:join(wrq:host_tokens(RD),"."),
-                ["https://",Host,Path]
-        end,
-    {{halt,303},wrq:set_resp_header("Location",Loc,RD),Ctx}.
+    Path = wrq:raw_path(RD),
+    Host = wrq:sock(RD),
+    Bindings = app_helper:get_env(riak_core, https, []),
+    Location = case lists:keyfind(Host, 1, Bindings) of
+        {_, Port} ->
+            ["https://", Host, ":", integer_to_list(Port), Path];
+        _ ->
+            ["https://", Host, Path]
+    end,
+    {{halt,303}, wrq:set_resp_header("Location", Location, RD), Ctx}.
 
 %% @doc Intended to be called from a webmachine resource's
 %%      is_authorized function.  The return value is a valid resource
