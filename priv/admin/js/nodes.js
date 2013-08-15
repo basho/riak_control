@@ -103,11 +103,11 @@ minispade.register('nodes', function() {
     meBinding:          'content.me',
 
     /**
-     * In order for labels to be clickable, they need to be bound to checks/radios
-     * by ID.  However, since these nodes are cloned by Ember, we need a way to make
-     * sure all of those elements get id's that don't override each other. This
-     * function gives us an ID string we can use as a prefix for id's on these other
-     * elements.
+     * In order for labels to be clickable, they need to be bound to
+     * checks/radios by ID.  However, since these nodes are cloned by
+     * Ember, we need a way to make sure all of those elements get id's
+     * that don't override each other. This function gives us an ID
+     * string we can use as a prefix for id's on these other elements.
      *
      * @returns {String}
      */
@@ -116,14 +116,20 @@ minispade.register('nodes', function() {
     }.property(),
 
     /**
-     * An ID value for the leave normally radio button and corresponding label.
+     * An ID value for the leave normally radio button and
+     * corresponding label.
+     *
+     * @returns {String}
      */
     stopRadio: function() {
       return this.get('nodeID') + '_stop_node';
     }.property('nodeID'),
 
     /**
-     * An ID value for the force leave radio button and corresponding label.
+     * An ID value for the force leave radio button and corresponding
+     * label.
+     *
+     * @returns {String}
      */
     downRadio: function() {
       return this.get('nodeID') + '_down_node';
@@ -133,6 +139,8 @@ minispade.register('nodes', function() {
      * A node can not be stopped when:
      * - It is unreachable.
      * - It is down.
+     *
+     * @returns {String}
      */
     stopRadioClasses: function() {
       var status    = this.get('status'),
@@ -148,6 +156,8 @@ minispade.register('nodes', function() {
      * A node can not be marked as down when:
      * - It is alive and well
      * - It is already down.
+     *
+     * @returns {String}
      */
     downRadioClasses: function() {
       var status    = this.get('status'),
@@ -162,17 +172,25 @@ minispade.register('nodes', function() {
     /**
      * When a node can't be stopped, disable the user
      * from clicking the stop radio button.
+     *
+     * @returns {String}
      */
     stopDisablerClasses: function() {
-      return 'disabler' + (/\ssemi\-transparent$/.test(this.get('stopRadioClasses')) ? ' show' : '');
+      return 'disabler' +
+        (/\ssemi\-transparent$/.test(this.get('stopRadioClasses')) ?
+         ' show' : '');
     }.property('stopRadioClasses'),
 
     /**
      * When a node can't be downed, disable the user from
      * clicking the down radio button.
+     *
+     * @returns {String}
      */
     downDisablerClasses: function() {
-      return 'disabler' + (/\ssemi\-transparent$/.test(this.get('downRadioClasses')) ? ' show' : '');
+      return 'disabler' +
+        (/\ssemi\-transparent$/.test(this.get('downRadioClasses')) ?
+         ' show' : '');
     }.property('downRadioClasses')
   });
 

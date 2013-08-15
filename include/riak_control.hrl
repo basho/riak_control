@@ -34,6 +34,8 @@
 -type plan()          :: [] | legacy | ring_not_ready | unavailable.
 -type transfer()      :: riak_core_ring:pending_change().
 -type transfers()     :: [transfer()].
+-type partition()     :: list({integer(), integer(), integer()}).
+-type partitions()    :: [partition()].
 
 -type stage_error() :: nodedown
                      | already_leaving
@@ -55,14 +57,7 @@
 
 -type change() :: {node(), action()}.
 
--record(partition_info,
-        { index       :: index(),
-          partition   :: integer(),
-          owner       :: owner(),
-          vnodes      :: services(),
-          handoffs    :: handoffs()
-        }).
-
+%% Node membership records.
 -record(member_info,
         { node        :: atom(),
           status      :: status(),
@@ -75,11 +70,27 @@
           mem_used    :: integer(),
           mem_erlang  :: integer(),
           action      :: action(),
-          replacement :: node()
-        }).
+          replacement :: node() }).
 
--type partitions()    :: [#partition_info{}].
--type members()       :: [#member_info{}].
+-record(member_info_v2,
+        { node        :: atom(),
+          status      :: status(),
+          reachable   :: boolean(),
+          vnodes      :: vnodes(),
+          handoffs    :: handoffs(),
+          ring_pct    :: float(),
+          pending_pct :: float(),
+          mem_total   :: integer(),
+          mem_used    :: integer(),
+          mem_erlang  :: integer(),
+          action      :: action(),
+          stats       :: [{atom(), [{atom(), term()}]}],
+          replacement :: node() }).
+
+-type member()  :: #member_info{} | #member_info_v2{}.
+-type members() :: [member()].
+
+-define(MEMBER_INFO, #member_info_v2).
 
 %% These two should always match, in terms of webmachine dispatcher
 %% logic, and ADMIN_BASE_PATH should always end with a /

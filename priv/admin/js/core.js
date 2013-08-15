@@ -11,6 +11,17 @@ minispade.register('core', function() {
     }
   };
 
+  /** Handle an object type. */
+  DS.attr.transforms.object = {
+    from: function(serialized) {
+      return Em.none(serialized) ? {} : serialized;
+    },
+
+    to: function(deserialized) {
+      return Em.none(deserialized) ? {} : deserialized;
+    }
+  };
+
   /**
    * @class
    *
@@ -42,6 +53,8 @@ minispade.register('core', function() {
     mem_erlang: DS.attr("number"),
 
     low_mem: DS.attr("boolean"),
+
+    stats: DS.attr("object"),
 
     /**
      * This boolean attribute determines if the node
