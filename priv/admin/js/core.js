@@ -80,6 +80,25 @@ minispade.register('core', function() {
     /* Number of reachable/available primaries. */
     available: DS.attr("number"),
 
+    /**
+     * Return status of whether the node is incompatible or not.
+     *
+     * @returns {Boolean}
+     */
+    incompatible: function() {
+      return this.get('status') === 'incompatible';
+    }.property('status'),
+
+    /**
+     * Consider an available node one which is compatible, and
+     * reachable.
+     *
+     * @returns {Boolean}
+     */
+    available: function() {
+      return !this.get('incompatible') && this.get('reachable');
+    }.property('status', 'reachable'),
+
     /* Cluster quorum value. */
     quorum: DS.attr("number"),
 
