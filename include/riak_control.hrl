@@ -20,7 +20,7 @@
 
 -type version()       :: integer().
 -type index()         :: integer().
--type status()        :: valid | invalid | down | leaving | incompatible.
+-type status()        :: valid | invalid | down | leaving | incompatible | transitioning.
 -type home()          :: primary | fallback | undefined.
 -type service()       :: {atom(), home()}.
 -type services()      :: [service()].
@@ -60,10 +60,27 @@
           partition   :: integer(),
           owner       :: owner(),
           vnodes      :: services(),
-          handoffs    :: handoffs()
-        }).
+          handoffs    :: handoffs() }).
 
+-define(PARTITION_INFO,  #partition_info).
+-type partition()     :: ?PARTITION_INFO{}.
+-type partitions()    :: [partition()].
+
+%% Riak 1.3
 -record(member_info,
+        { node        :: atom(),
+          status      :: status(),
+          reachable   :: boolean(),
+          vnodes      :: vnodes(),
+          handoffs    :: handoffs(),
+          ring_pct    :: float(),
+          pending_pct :: float(),
+          mem_total   :: integer(),
+          mem_used    :: integer(),
+          mem_erlang  :: integer() }).
+
+%% Riak 1.4.1+
+-record(member_info_v2,
         { node        :: atom(),
           status      :: status(),
           reachable   :: boolean(),
@@ -75,11 +92,11 @@
           mem_used    :: integer(),
           mem_erlang  :: integer(),
           action      :: action(),
-          replacement :: node()
-        }).
+          replacement :: node() }).
 
--type partitions()    :: [#partition_info{}].
--type members()       :: [#member_info{}].
+-define(MEMBER_INFO,     #member_info_v2).
+-type member()        :: ?MEMBER_INFO{}.
+-type members()       :: [member()].
 
 %% These two should always match, in terms of webmachine dispatcher
 %% logic, and ADMIN_BASE_PATH should always end with a /
