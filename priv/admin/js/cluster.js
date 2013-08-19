@@ -68,10 +68,21 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     refresh: function(newCluster, existingCluster, nodeFactory) {
+
+      /*
+       * For every object in newCluster...
+       */
       newCluster.forEach(function(node) {
+
+        /*
+         * Use a unique property to locate the corresponding
+         * object in existingCluster.
+         */
         var exists = existingCluster.findProperty('name', node.name);
 
-        // If it doesn't exist yet, add it.  If it does, update it.
+        /*
+         * If it doesn't exist yet, add it.  If it does, update it.
+         */
         if(exists !== undefined) {
           exists.setProperties(node);
         } else {
@@ -79,14 +90,33 @@ minispade.register('cluster', function() {
         }
       });
 
-      // Iterate the cluster removing nodes that shouldn't
-      // be there.
+      /*
+       * We've already updated corresponding objects and added
+       * new ones. Now we need to remove ones that don't exist in
+       * the new cluster.
+       */
+
       var changesOccurred    = false;
       var replacementCluster = [];
 
+      /*
+       * For every object in the existingCluster...
+       */
       existingCluster.forEach(function(node, i) {
+
+        /*
+         * Use a unique property to locate the corresponding object
+         * in newCluster.
+         */
         var exists = newCluster.findProperty('name', node.name);
 
+        /*
+         * If it doesn't exist in the newCluster, destroy it.
+         * If this happens even one time, we'll mark changesOccurred as true.
+         *
+         * Otherwise, this node is a good node and we can add it to
+         * the replacementCluster.
+         */
         if(exists === undefined) {
           node.destroy();
           changesOccurred = true;
@@ -95,6 +125,10 @@ minispade.register('cluster', function() {
         }
       });
 
+      /*
+       * If we ended up having to remove any nodes,
+       * replace the cluster.
+       */
       if(changesOccurred) {
         existingCluster.set('[]', replacementCluster.get('[]'));
       }
