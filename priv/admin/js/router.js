@@ -8,121 +8,113 @@ minispade.register('router', function() {
    * ember-only components, or using the legacy pub/sub implementation
    * to render older pages which are scheduled for deprecation.
    */
-  RiakControl.Router = Ember.Router.extend(
-    /** @scope RiakControl.Router.prototype */ {
+  RiakControl.Router.map(function() {
+    /** @scope Ember.RouterDSL callback */
 
-    root: Ember.Route.extend({
-      showSnapshot: Ember.Route.transitionTo('snapshot.index'),
-
-      showCluster: Ember.Route.transitionTo('cluster.index'),
-
-      showNodes: Ember.Route.transitionTo('nodes.index'),
-
-      showRing: Ember.Route.transitionTo('ring.index'),
-
-      index: Ember.Route.extend({
-        route: '/',
-        redirectsTo: 'snapshot.index'
-      }),
-
-      snapshot: Ember.Route.extend({
-        route: 'snapshot',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').
-            connectOutlet('snapshot', RiakControl.Node.find());
-          $.riakControl.markNavActive('nav-snapshot');
-        },
-
-        enter: function(router) {
-          router.get('snapshotController').startInterval();
-        },
-
-        exit: function(router) {
-          router.get('snapshotController').cancelInterval();
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
-        })
-      }),
-
-      cluster: Ember.Route.extend({
-        route: 'cluster',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').connectOutlet('cluster',
-            RiakControl.CurrentAndPlannedCluster.create({
-              stagedCluster: [], currentCluster: []
-            }));
-
-          $.riakControl.markNavActive('nav-cluster');
-        },
-
-        enter: function(router) {
-          router.get('clusterController').startInterval();
-        },
-
-        exit: function(router) {
-          router.get('clusterController').cancelInterval();
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
-        })
-      }),
-
-      nodes: Ember.Route.extend({
-        route: 'nodes',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').
-            connectOutlet('nodes', RiakControl.Node.find());
-          $.riakControl.markNavActive('nav-nodes');
-        },
-
-        enter: function(router) {
-          router.get('nodesController').startInterval();
-        },
-
-        exit: function(router) {
-          router.get('nodesController').cancelInterval();
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
-        })
-      }),
-
-      ring: Ember.Route.extend({
-        route: 'ring',
-
-        connectOutlets: function(router) {
-          router.get('applicationController').
-            connectOutlet('ring',
-              RiakControl.SelectedPartitionNValList.create({
-                content:    [],
-                selected:   undefined,
-                partitions: RiakControl.PartitionNValList.create({
-                  content: []
-                })
-              }));
-          $.riakControl.markNavActive('nav-ring');
-        },
-
-        enter: function(router) {
-          router.get('ringController').startInterval();
-        },
-
-        exit: function(router) {
-          router.get('ringController').cancelInterval();
-        },
-
-        index: Ember.Route.extend({
-          route: '/'
-        })
-      })
-    })
+    this.route('snapshot');
+    this.route('cluster');
+    this.route('nodes');
+    this.route('ring');
   });
 
+  RiakControl.IndexRoute = Ember.Route.extend(
+    /** @scope Ember.Route.prototype */ {
+
+    redirect: function() {
+      this.transitionTo('snapshot');
+    }
+  });
+
+  RiakControl.SnapshotRoute = Ember.Route.extend(
+    /** @scope Ember.Route.prototype */ {
+
+    model: function() {
+      return this.store.find('node');
+    },
+
+    renderTemplate: function() {
+      this.render('snapshot');
+      $.riakControl.markNavActive('nav-snapshot');
+    },
+
+    activate: function() {
+      this.controllerFor('snapshot').startInterval();
+    },
+
+    deactivate: function() {
+      this.controllerFor('snapshot').cancelInterval();
+    }
+  });
+
+  RiakControl.ClusterRoute = Ember.Route.extend(
+    /** @scope Ember.Route.prototype */ {
+
+    model: function() {
+      return RiakControl.CurrentAndPlannedCluster.create({
+        stagedCluster: [],
+        currentCluster: []
+      });
+    },
+
+    renderTemplate: function() {
+      this.render('cluster');
+      $.riakControl.markNavActive('nav-cluster');
+    },
+
+    activate: function() {
+      this.controllerFor('cluster').startInterval();
+    },
+
+    deactivate: function() {
+      this.controllerFor('cluster').cancelInterval();
+    }
+  });
+
+  RiakControl.NodesRoute = Ember.Route.extend(
+    /** @scope Ember.Route.prototype */ {
+
+    model: function() {
+      return this.store.find('node');
+    },
+
+    renderTemplate: function() {
+      this.render('nodes');
+      $.riakControl.markNavActive('nav-nodes');
+    },
+
+    activate: function() {
+      this.controllerFor('nodes').startInterval();
+    },
+
+    deactivate: function() {
+      this.controllerFor('nodes').cancelInterval();
+    }
+  });
+
+  RiakControl.RingRoute = Ember.Route.extend(
+    /** @scope Ember.Route.prototype */ {
+
+    model: function() {
+      return RiakControl.SelectedPartitionNValList.create({
+        content: [],
+        selected: undefined,
+        partitions: RiakControl.PartitionNValList.create({
+          content: []
+        })
+      });
+    },
+
+    renderTemplate: function() {
+      this.render('ring')
+      $.riakControl.markNavActive('nav-ring');
+    },
+
+    activate: function() {
+      this.controllerFor('ring').startInterval();
+    },
+
+    deactivate: function() {
+      this.controllerFor('ring').cancelInterval();
+    }
+  });
 });

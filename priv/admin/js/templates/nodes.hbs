@@ -13,7 +13,7 @@
 
     {{#if errorMessage}}
       <div class="error-message">
-          <a class="close-error gui-text" {{action hideError target="controller"}}></a>
+          <a class="close-error gui-text" {{action hideError}}></a>
           <a class="error-text offline gui-text-flat">{{errorMessage}}</a>
       </div>
     {{/if}}
@@ -45,10 +45,10 @@
             {{/if}}
         </section>
         <section class="buttons">
-          <a class="gui-point-button-right gui-text-bold right" {{action applyChanges target="controller"}}>
+          <a class="gui-point-button-right gui-text-bold right" {{action applyChanges}}>
             <span class="gui-button-msg">APPLY</span>
           </a>
-          <a class="gui-rect-button gui-text-bold right" {{action clearChecked target="controller"}}>
+          <a class="gui-rect-button gui-text-bold right" {{action clearChecked}}>
             <span class="gui-button-msg">CLEAR</span>
           </a>
           <div class="clear"></div>

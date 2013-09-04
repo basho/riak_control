@@ -1,15 +1,19 @@
 minispade.register('core', function() {
 
   /** Handle an array type. */
-  DS.attr.transforms.array = {
-    from: function(serialized) {
-      return Em.none(serialized) ? [] : serialized;
+  var none = Ember.isNone;
+
+  DS.ArrayTransform = DS.Transform.extend({
+    deserialize: function(serialized) {
+      return none(serialized) ? [] : serialized;
     },
 
-    to: function(deserialized) {
-      return Em.none(deserialized) ? [] : deserialized;
-    }
-  };
+    serialize: function(deserialized) {
+      return none(deserialized) ? [] : deserialized;
+    },
+  });
+
+  RiakControl.register('transform:array', DS.ArrayTransform);
 
   /**
    * @class
@@ -25,7 +29,8 @@ minispade.register('core', function() {
      */
     primaryKey: 'name',
 
-    name: DS.attr("string"),
+    /** The id attribute contains the name after deserializing */
+    name: Ember.computed.alias('id'),
 
     status: DS.attr("string"),
 
@@ -56,4 +61,8 @@ minispade.register('core', function() {
     claimant: DS.attr("boolean")
   });
 
+  /** Register serializer that respects custom primary key */
+  RiakControl.register('serializer:node', DS.RESTSerializer.extend({
+    primaryKey: 'name'
+  }));
 });
