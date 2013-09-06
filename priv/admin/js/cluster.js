@@ -272,7 +272,7 @@ minispade.register('cluster', function() {
           }
         });
       } else {
-        self.get('displayError')(undefined, undefined, "Please confirm the plan.");
+        self.get('displayError').call(self, undefined, undefined, "Please confirm the plan.");
       }
     },
 
