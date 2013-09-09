@@ -19,6 +19,8 @@
     {{/if}}
 
     <div id="current-area">
+      {{#if content.length}}
+          
         <h2 class="gui-headline">
             Current Cluster<br/>
         </h2>
@@ -53,6 +55,14 @@
           </a>
           <div class="clear"></div>
         </section>
+        
+      {{else}}
+        <div class="page-loading">
+          <div class="loading-info">
+            <img class="spinner" src="/admin/ui/images/spinner.gif">
+            <h4 class="gui-headline-bold">Loading node data...</h4>
+          </div>
+        </div>
+      {{/if}}
     </div>
-
 </div>
