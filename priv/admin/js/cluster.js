@@ -255,15 +255,36 @@ minispade.register('cluster', function() {
       return this.get('content.stagedCluster').filterProperty('isDestroyed', false);
     }.property('content.stagedCluster', 'content.stagedCluster.@each'),
 
-    commitPlan: function(ev) {
-      ev.preventDefault();
+    actions: {
+      commitPlan: function() {
+        var self = this;
+        var confirmed = $(document).find("[name='confirmed']:checked").val();
 
-      var self = this;
-      var confirmed = $(document).find("[name='confirmed']:checked").val();
+        if(confirmed) {
+          $.ajax({
+            type:     'POST',
+            url:      '/admin/cluster',
+            dataType: 'json',
+            success:  function(d) { self.reload(); },
+            error:    function (jqXHR, textStatus, errorThrown) {
+              self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+            }
+          });
+        } else {
+          self.get('displayError').call(self, undefined, undefined, "Please confirm the plan.");
+        }
+      },
 
-      if(confirmed) {
+      /**
+       * Clear the currently staged cluster plan.
+       *
+       * @returns {void}
+       */
+      clearPlan: function() {
+        var self = this;
+
         $.ajax({
-          type:     'POST',
+          type:     'DELETE',
           url:      '/admin/cluster',
           dataType: 'json',
           success:  function(d) { self.reload(); },
@@ -271,47 +292,22 @@ minispade.register('cluster', function() {
             self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
           }
         });
-      } else {
-        self.get('displayError').call(self, undefined, undefined, "Please confirm the plan.");
+      },
+
+      /**
+       * Join a node.
+       *
+       * @returns {void}
+       */
+      joinNode: function() {
+        var self    = this;
+        var node    = this.get('joinNodeField');
+        var success = function() {
+          self.set('joinNodeField', undefined);
+        };
+
+        this.send('stageChange', node, "join", "", success, undefined);
       }
-    },
-
-    /**
-     * Clear the currently staged cluster plan.
-     *
-     * @returns {void}
-     */
-    clearPlan: function(ev) {
-      ev.preventDefault();
-
-      var self = this;
-
-      $.ajax({
-        type:     'DELETE',
-        url:      '/admin/cluster',
-        dataType: 'json',
-        success:  function(d) { self.reload(); },
-        error:    function (jqXHR, textStatus, errorThrown) {
-          self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
-        }
-      });
-    },
-
-    /**
-     * Join a node.
-     *
-     * @returns {void}
-     */
-    joinNode: function(ev) {
-      ev.preventDefault();
-
-      var self    = this;
-      var node    = this.get('joinNodeField');
-      var success = function() {
-        self.set('joinNodeField', undefined);
-      };
-
-      this.stageChange(node, "join", "", success, undefined);
     },
 
     /**
@@ -336,8 +332,8 @@ minispade.register('cluster', function() {
    */
   RiakControl.JoinNodeView = Ember.TextField.extend(
     /** @scope RiakControl.JoinNodeView.prototype */ {
-    valueBinding: 'controller.joinNodeField',
     classNames: ['gui-input', 'gui-text'],
+    joinNode: 'joinNode',
 
     /**
      * When the user presses the enter/return key in the
@@ -349,9 +345,8 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     keyUp: function (ev) {
-      var controller = this.get('controller');
       if(ev.keyCode === 13){
-        controller.get('joinNode').call(controller, ev);
+        this.sendAction('joinNode');
       }
     }
   });
@@ -419,38 +414,38 @@ minispade.register('cluster', function() {
 
     classNameBindings:  ['expanded:open'],
 
-    /**
-     * Stage a change for a given node.
-     *
-     * @returns {void}
-     */
-    stageChange: function(ev) {
-      ev.preventDefault();
+    actions: {
+      /**
+       * Stage a change for a given node.
+       *
+       * @returns {void}
+       */
+      stageChange: function() {
+        var self = this;
+        var controller = this.get('controller');
 
-      var self = this;
-      var controller = this.get('controller');
+        var name = this.get('name');
 
-      var name = this.get('name');
+        var action = this.$().
+          find("input[type='radio']:checked").val();
+        var forced = this.$().
+          find("input[type='checkbox']:checked").val();
+        var replacement = this.$().
+          find("input[type='select']:selected").val();
 
-      var action = this.$().
-        find("input[type='radio']:checked").val();
-      var forced = this.$().
-        find("input[type='checkbox']:checked").val();
-      var replacement = this.$().
-        find("input[type='select']:selected").val();
+        // Make sure we handle the force replace correctly.
+        //
+        if(action === 'replace' && forced === 'true') {
+          action = 'force_replace';
+        }
 
-      // Make sure we handle the force replace correctly.
-      //
-      if(action === 'replace' && forced === 'true') {
-        action = 'force_replace';
+        // Empty string instead of undefined for null.
+        if(replacement === undefined) {
+          replacement = '';
+        }
+
+        controller.send('stageChange', name, action, replacement);
       }
-
-      // Empty string instead of undefined for null.
-      if(replacement === undefined) {
-        replacement = '';
-      }
-
-      controller.stageChange(name, action, replacement);
     },
 
     /**

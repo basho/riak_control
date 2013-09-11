@@ -736,33 +736,4 @@ minispade.register('ring', function() {
     itemViewClass: RiakControl.PartitionView
   });
 
-  /**
-   * @class
-   *
-   * Degenerate preflists details view.
-   */
-  RiakControl.DegeneratePreflistsView = Ember.View.extend(
-    /** @scope RiakControl.DegeneratePreflistsView.prototype */ {
-    templateName: 'degenerate_preflists'
-  });
-
-  /**
-   * @class
-   *
-   * Quorum unavailable details view.
-   */
-  RiakControl.QuorumUnavailableView = Ember.View.extend({
-    templateName: 'quorum_unavailable'
-  });
-
-  /**
-   * @class
-   *
-   * All unavailable details view.
-   */
-  RiakControl.AllUnavailableView = Ember.View.extend(
-    /** @scope RiakControl.AllUnavailableView.prototype */ {
-    templateName: 'all_unavailable'
-  });
-
 });

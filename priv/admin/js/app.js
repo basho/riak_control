@@ -3,9 +3,7 @@ minispade.register('app', function() {
   /**
    * RiakControl Ember application.
    */
-  RiakControl = Ember.Application.create({
-    ready: Ember.alias('initialize')
-  });
+  RiakControl = Ember.Application.create();
 
   /**
    * How often to refresh/poll the server for changes in cluster
@@ -13,28 +11,15 @@ minispade.register('app', function() {
    */
   RiakControl.refreshInterval = 1000;
 
-  RiakControl.ApplicationController = Ember.Controller.extend();
-
-  RiakControl.ApplicationView = Ember.View.extend({
-    templateName: 'application'
-  });
-
   /**
-   * Provide reload functionality for objects and recordarrays.
+   * Provide reload functionality for recordarrays.
    */
-  DS.Model.reopen({
-    reload: function() {
-      var store = this.get('store');
-      store.get('adapter').find(store, this.constructor, this.get('id'));
-    }
-  });
-
   DS.RecordArray.reopen({
     reload: function() {
       Ember.assert("Can only reload base RecordArrays",
         this.constructor === DS.RecordArray);
       var store = this.get('store');
-      store.get('adapter').findAll(store, this.get('type'));
+      store.findAll(this.get('type'));
     }
   });
 
@@ -42,8 +27,7 @@ minispade.register('app', function() {
    * Data store configuration.
    */
   RiakControl.Store = DS.Store.extend({
-    revision: 4,
-    adapter: DS.RESTAdapter.create({ namespace: 'admin' })
+    adapter: DS.RESTAdapter.reopen({ namespace: 'admin' })
   });
 
   RiakControl.store = RiakControl.Store.create();
