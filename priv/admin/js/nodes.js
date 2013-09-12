@@ -3,17 +3,6 @@ minispade.register('nodes', function() {
   /**
    * @class
    *
-   * Node_managementView is responsible for allowing you to stop
-   * or down a node.
-   */
-  RiakControl.NodesView = Ember.View.extend(
-    /** @scope RiakControl.NodesView.prototype */ {
-    templateName: 'nodes'
-  });
-
-  /**
-   * @class
-   *
    * NodesController is responsible for displaying the list of nodes
    * in the cluster.
    */
@@ -33,46 +22,40 @@ minispade.register('nodes', function() {
       this.get('content').reload();
     },
 
-    /**
-     * Removes all checks from radio buttons.
-     *
-     * @returns {void}
-     */
-    clearChecked: function(ev) {
-      if(ev) {
-        ev.preventDefault();
+    actions: {
+      /**
+       * Removes all checks from radio buttons.
+       *
+       * @returns {void}
+       */
+      clearChecked: function() {
+        $('#node-list input[type=radio]').each(function(index, item) {
+          item.checked = false;
+          $(item).parent().css('background-position', 'left top');
+        });
+      },
+
+      /**
+       * Submits requests to stop and/or down nodes to the app.
+       */
+      applyChanges: function() {
+        var self = this;
+
+        $("#node-list input[type='radio']:checked").each(function(index, item) {
+          var name = item.name,
+              action = item.value,
+              replacement;
+
+          // Empty string instead of undefined for null.
+          if(replacement === undefined) {
+            replacement = '';
+          }
+
+          self.send('stageChange', name, action, replacement);
+        });
+
+        self.send('clearChecked');
       }
-
-      $('#node-list input[type=radio]').each(function(index, item) {
-        item.checked = false;
-        $(item).parent().css('background-position', 'left top');
-      });
-    },
-
-    /**
-     * Submits requests to stop and/or down nodes to the app.
-     */
-    applyChanges: function(ev) {
-      if(ev) {
-        ev.preventDefault();
-      }
-
-      var self = this;
-
-      $("#node-list input[type='radio']:checked").each(function(index, item) {
-        var name = item.name,
-            action = item.value,
-            replacement;
-
-        // Empty string instead of undefined for null.
-        if(replacement === undefined) {
-          replacement = '';
-        }
-
-        self.stageChange(name, action, replacement);
-      });
-
-      self.clearChecked();
     }
 
   });
