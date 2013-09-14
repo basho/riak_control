@@ -17,8 +17,14 @@ clean:
 distclean: clean
 	@./rebar delete-deps
 
-test: all
+test: all test_erlang test_javascript
+
+test_erlang: all
 	@./rebar skip_deps=true eunit
+
+test_javascript: all
+	@echo "==> riak_control (qunit)"
+	@phantomjs test/javascripts/runner.js test/javascripts/index.html
 
 ##
 ## Doc targets
