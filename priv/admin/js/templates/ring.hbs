@@ -11,115 +11,121 @@
     <div class="clear"></div>
   </section>
 
-  <div id="current-ring">
+  {{#if content.length}}
 
-    <div class="chart-wrapper">
-      <h2 class="gui-headline">Availability</h2>
+    <div id="current-ring">
 
-      <div class="nval-dropdown-container">
-        <h4 class="gui-headline-bold">See visualizations using a different n_val.</h4>
-        <div class="tooltip right">
-          <span>
-            <span class="tooltip-heading">
-              n_val specifies the number of copies of each object to be stored
-              in the cluster.
-              <a class="docs" href="http://docs.basho.com/riak/latest/theory/concepts/Buckets/"></a>
+      <div class="chart-wrapper">
+        <h2 class="gui-headline">Availability</h2>
+
+        <div class="nval-dropdown-container">
+          <h4 class="gui-headline-bold">See visualizations using a different n_val.</h4>
+          <div class="tooltip right">
+            <span>
+              <span class="tooltip-heading">
+                n_val specifies the number of copies of each object to be stored
+                in the cluster.
+                <a class="docs" href="http://docs.basho.com/riak/latest/theory/concepts/Buckets/"></a>
+              </span>
+              <span class="tooltip-body">
+                Right now, you\'re seeing what your ring looks like
+                for all objects stored with an n_val of 3. If you have
+                objects stored with other n_vals, select an n_val
+                from the dropdown to see what your ring looks like
+                for data stored with the selected n_val.
+              </span>
             </span>
-            <span class="tooltip-body">
-              Right now, you\'re seeing what your ring looks like
-              for all objects stored with an n_val of 3. If you have
-              objects stored with other n_vals, select an n_val
-              from the dropdown to see what your ring looks like
-              for data stored with the selected n_val.
-            </span>
-          </span>
+          </div>
+          {{view RiakControl.NValSelectView
+                 contentBinding="content.n_vals"
+                 valueBinding="content.selected"
+                 dataBinding="content"
+                 selectionBinding="content.selected"
+          }}
         </div>
-        {{view RiakControl.NValSelectView
-               contentBinding="content.n_vals"
-               valueBinding="content.selected"
-               dataBinding="content"
-               selectionBinding="content.selected"
-        }}
+
+        {{view RiakControl.DegeneratePreflistChart}}
+        <div class="chart-spacer"></div>
+
+        {{view RiakControl.QuorumUnavailableChart}}
+        <div class="chart-spacer"></div>
+
+        {{view RiakControl.AllUnavailableChart}}
+
+        <div class="clear"></div>
       </div>
 
-      {{view RiakControl.DegeneratePreflistChart}}
-      <div class="chart-spacer"></div>
+      <div class="partition-wrapper">
+        <h2 class="gui-headline partition-section">Partitions</h2>
 
-      {{view RiakControl.QuorumUnavailableChart}}
-      <div class="chart-spacer"></div>
+        <section id="partition-container">
+          <h4 class="gui-headline-bold partition-header">Partitions</h4>
+          {{collection RiakControl.PartitionsView contentBinding="content"}}
+          <div class="clear"></div>
+        </section>
 
-      {{view RiakControl.AllUnavailableChart}}
+        <section id="legend">
+          <div id="contextual-info">
+            <h4 class="gui-headline-bold">Partition Information</h4>
+            <div class="contextual-container">
+              {{#if partitionSelected}}
 
-      <div class="clear"></div>
-    </div>
-
-    <div class="partition-wrapper">
-      <h2 class="gui-headline partition-section">Partitions</h2>
-
-      <section id="partition-container">
-        <h4 class="gui-headline-bold partition-header">Partitions</h4>
-        {{collection RiakControl.PartitionsView contentBinding="content"}}
-        <div class="clear"></div>
-      </section>
-
-      <section id="legend">
-        <div id="contextual-info">
-          <h4 class="gui-headline-bold">Partition Information</h4>
-          <div class="contextual-container">
-            {{#if partitionSelected}}
-
-              <div class="info-section">
-                <h4 class="gui-headline-bold">Index</h4>
-                <span class="monospace">
-                  {{selectedPartition.index}}
-                </span>
-              </div>
-
-              {{#if selectedPartition.unavailable}}
                 <div class="info-section">
-                  <h4 class="gui-headline-bold">Unavailable Primaries</h4>
-                  <ul>
-                    {{#each selectedPartition.unavailable_nodes}}
-                    <li>{{this}}</li>
-                    {{/each}}
-                  </ul>
+                  <h4 class="gui-headline-bold">Index</h4>
+                  <span class="monospace">
+                    {{selectedPartition.index}}
+                  </span>
                 </div>
-              {{/if}}
 
-              <div class="info-section">
-                {{#if selectedPartition.all_nodes.length}}
-                  <h4 class="gui-headline-bold">All Primaries</h4>
-                  <ul>
-                    {{#each selectedPartition.all_nodes}}
-                    <li>{{this}}</li>
-                    {{/each}}
-                  </ul>
-                {{else}}
-                  <h4 class="gui-headline-bold">No Primaries To Display</h4>
+                {{#if selectedPartition.unavailable}}
+                  <div class="info-section">
+                    <h4 class="gui-headline-bold">Unavailable Primaries</h4>
+                    <ul>
+                      {{#each selectedPartition.unavailable_nodes}}
+                      <li>{{this}}</li>
+                      {{/each}}
+                    </ul>
+                  </div>
                 {{/if}}
-              </div>
 
-            {{else}}
-            <span class="gui-text italic hover-message">
-              Click on a partition square to view its more information.
-            </span>
-            {{/if}}
+                <div class="info-section">
+                  {{#if selectedPartition.all_nodes.length}}
+                    <h4 class="gui-headline-bold">All Primaries</h4>
+                    <ul>
+                      {{#each selectedPartition.all_nodes}}
+                      <li>{{this}}</li>
+                      {{/each}}
+                    </ul>
+                  {{else}}
+                    <h4 class="gui-headline-bold">No Primaries To Display</h4>
+                  {{/if}}
+                </div>
+
+              {{else}}
+              <span class="gui-text italic hover-message">
+                Click on a partition square to view its more information.
+              </span>
+              {{/if}}
+            </div>
           </div>
-        </div>
 
-        <h4 class="gui-headline-bold">Legend</h4>
-        <div class="partition red"></div>
-        <span class="legend-label gui-text">Only fallbacks available.</span><br/>
-        <div class="partition orange"></div>
-        <span class="legend-label gui-text">Majority of primary replicas down.</span><br/>
-        <div class="partition blue"></div>
-        <span class="legend-label gui-text">Replicas do not live on unique nodes.</span><br/>
-        <div class="partition green"></div>
-        <span class="legend-label gui-text">Available.</span><br/>
-      </section>
+          <h4 class="gui-headline-bold">Legend</h4>
+          <div class="partition red"></div>
+          <span class="legend-label gui-text">Only fallbacks available.</span><br/>
+          <div class="partition orange"></div>
+          <span class="legend-label gui-text">Majority of primary replicas down.</span><br/>
+          <div class="partition blue"></div>
+          <span class="legend-label gui-text">Replicas do not live on unique nodes.</span><br/>
+          <div class="partition green"></div>
+          <span class="legend-label gui-text">Available.</span><br/>
+        </section>
 
-      <div class="clear"></div>
+        <div class="clear"></div>
+      </div>
     </div>
-  </div>
-  <div class="clear"></div>
+    <div class="clear"></div>
+
+  {{else}}
+    {{render loading}}
+  {{/if}}
 </div>

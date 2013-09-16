@@ -105,7 +105,7 @@ minispade.register('router', function() {
     },
 
     renderTemplate: function() {
-      this.render('ring')
+      this.render('ring');
       $.riakControl.markNavActive('nav-ring');
     },
 
@@ -117,4 +117,6 @@ minispade.register('router', function() {
       this.controllerFor('ring').cancelInterval();
     }
   });
+
+  RiakControl.LoadingRoute = Ember.Route.extend({});
 });
