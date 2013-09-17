@@ -50,10 +50,32 @@ minispade.register('router', function() {
     /** @scope Ember.Route.prototype */ {
 
     model: function() {
-      return RiakControl.CurrentAndPlannedCluster.create({
-        stagedCluster: [],
-        currentCluster: []
-      });
+      var cluster = this.controllerFor('cluster');
+
+      /*
+       * Don't return a promise if we have previously
+       * failed to load data.
+       */
+      if (cluster.get('cannotLoad') === true) {
+        return cluster.get('content');
+
+      } else {
+        return cluster.load().then(function (d) {
+          return d;
+        });
+      }
+    },
+
+    /*
+     * In the event of an error, the cannotLoad property
+     * will be set to true. This way we can still
+     * transition into the state without getting caught
+     * in an infinit .load() loop.
+     */
+    events: {
+      error: function () {
+        this.transitionTo('cluster');
+      }
     },
 
     renderTemplate: function() {
@@ -95,13 +117,32 @@ minispade.register('router', function() {
     /** @scope Ember.Route.prototype */ {
 
     model: function() {
-      return RiakControl.SelectedPartitionNValList.create({
-        content: [],
-        selected: undefined,
-        partitions: RiakControl.PartitionNValList.create({
-          content: []
-        })
-      });
+      var ring = this.controllerFor('ring');
+
+      /*
+       * Don't return a promise if we have previously
+       * failed to load data.
+       */
+      if (ring.get('cannotLoad') === true) {
+        return ring.get('content');
+
+      } else {
+        return ring.load().then(function (d) {
+          return d;
+        });
+      }
+    },
+
+    /*
+     * In the event of an error, the cannotLoad property
+     * will be set to true. This way we can still
+     * transition into the state without getting caught
+     * in an infinit .load() loop.
+     */
+    events: {
+      error: function () {
+        this.transitionTo('ring');
+      }
     },
 
     renderTemplate: function() {

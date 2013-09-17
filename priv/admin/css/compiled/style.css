@@ -2121,6 +2121,49 @@ div.tooltip:hover > span {
     width: 15%;
   }
 }
+#ring-page .error-message {
+  font-family: 'noticia', georgia, serif;
+  -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+  -moz-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+  -ms-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+  -o-box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-style: italic;
+  color: #ccc;
+  padding: 8px 10px 9px 12px;
+  background: rgba(232,78,78,0.5);
+  border: 1px solid rgba(235,105,105,0.5);
+  margin-top: 25px;
+}
+#ring-page .error-message .error-link {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  font-weight: bold;
+  padding-left: 5px;
+}
+#ring-page .error-message .error-link:hover {
+  text-decoration: underline;
+}
+#ring-page .error-message .close-error {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+  cursor: pointer;
+  display: inline-block;
+  float: right;
+  vertical-align: middle;
+  background: url("/admin/ui/images/close-error.png") left top no-repeat transparent;
+}
+#ring-page .error-message .close-error:hover {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
 #ring-page select {
   float: right;
   min-width: 100px;
