@@ -141,16 +141,32 @@ minispade.register('ring', function() {
      */
     load: function () {
       var that = this;
-      $.ajax({
-        type: 'GET',
-        url: '/admin/partitions',
-        dataType: 'json',
+      var ajax = $.ajax({
+        type:     'GET',
+        url:      '/admin/partitions',
+        dataType: 'json'
+      });
 
-        success: function (data) {
-          var curSelected = that.get('content.selected'),
-              curPartitions = that.get('content.partitions'),
-              toRemove = [],
-              i;
+      return ajax.then(
+        // success...
+        function (data) {
+          var curSelected, curPartitions, toRemove, i, content;
+          
+          content = that.get('content');
+          if (!content) {
+            that.set('content', RiakControl.SelectedPartitionNValList.create({
+              content: [],
+              selected: undefined,
+              partitions: RiakControl.PartitionNValList.create({
+                content: []
+              })
+            }));
+          }
+
+          curSelected = that.get('content.selected');
+          curPartitions = that.get('content.partitions');
+          toRemove = [];
+          i;
 
           /*
            * Remove any old partition lists that no longer exist
@@ -175,9 +191,14 @@ minispade.register('ring', function() {
           data.partitions.forEach(function (hash) {
             var corresponder = curPartitions.findProperty('n_val', hash.n_val);
             if (!corresponder) {
-              corresponder = curPartitions.pushObject({n_val: hash.n_val, partitions: []});
+              corresponder = curPartitions.pushObject({
+                n_val: hash.n_val,
+                partitions: []
+              });
             }
-            that.refresh(hash.partitions, corresponder.partitions, RiakControl.Partition);
+            that.refresh(hash.partitions,
+                         corresponder.partitions,
+                         RiakControl.Partition);
           });
 
           /*
@@ -187,7 +208,7 @@ minispade.register('ring', function() {
             that.set('content.selected', curSelected || data.default_n_val);
           }
         }
-      });
+      );
     },
 
     /**

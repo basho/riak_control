@@ -14,22 +14,24 @@ minispade.register('shared', function () {
        * @returns {void}
        */
       stageChange: function(node, action, replacement, success, failure) {
-        var self = this;
+        var self = this,
+            ajax = $.ajax({
+              type:     'PUT',
+              url:      '/admin/cluster',
+              dataType: 'json',
+              data:     { changes:
+                          [{
+                            node:        node,
+                            action:      action,
+                            replacement: replacement
+                          }]
+                        }
+            });
 
-        $.ajax({
-          type:     'PUT',
-          url:      '/admin/cluster',
-          dataType: 'json',
+        ajax.then(
 
-          data:     { changes:
-                      [{
-                        node:        node,
-                        action:      action,
-                        replacement: replacement
-                      }]
-                    },
-
-          success: function(d) {
+          // success...
+          function(d) {
             if(success) {
               success();
             }
@@ -37,14 +39,16 @@ minispade.register('shared', function () {
             self.reload();
           },
 
-          error: function (jqXHR, textStatus, errorThrown) {
+          // error...
+          function (jqXHR, textStatus, errorThrown) {
             if(failure) {
               failure();
             }
 
             self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
           }
-        });
+        );
+
       },
 
       /**

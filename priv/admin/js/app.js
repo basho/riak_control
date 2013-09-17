@@ -33,8 +33,8 @@ minispade.register('app', function() {
   RiakControl.store = RiakControl.Store.create();
 
   // Automatically add CSRF tokens to AJAX requests.
-  $("body").bind("ajaxSend", function(elm, xhr, s){
-    var csrf_token = $('meta[name=csrf_token]').attr('content');
+  $(document).ajaxSend(function(elm, xhr, s){
+    var csrf_token = $('meta[name=csrf_token]').prop('content');
 
     if(s.type === 'POST' || s.type === 'PUT') {
       xhr.setRequestHeader('X-CSRF-Token', csrf_token);

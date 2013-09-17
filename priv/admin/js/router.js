@@ -50,9 +50,8 @@ minispade.register('router', function() {
     /** @scope Ember.Route.prototype */ {
 
     model: function() {
-      return RiakControl.CurrentAndPlannedCluster.create({
-        stagedCluster: [],
-        currentCluster: []
+      return this.controllerFor('cluster').load().then(function (d) {
+         return d;
       });
     },
 
@@ -95,12 +94,8 @@ minispade.register('router', function() {
     /** @scope Ember.Route.prototype */ {
 
     model: function() {
-      return RiakControl.SelectedPartitionNValList.create({
-        content: [],
-        selected: undefined,
-        partitions: RiakControl.PartitionNValList.create({
-          content: []
-        })
+      return this.controllerFor('ring').load().then(function (d) {
+        return d;
       });
     },
 
