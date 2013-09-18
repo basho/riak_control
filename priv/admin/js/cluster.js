@@ -47,9 +47,8 @@ minispade.register('cluster', function() {
   /**
    * @class
    *
-   * ClusterController is responsible for display the list of nodes
-   * in the cluster.  This controller is basically a placeholder and
-   * wrapper around the legacy cluster page until we rewrite it.
+   * ClusterController is responsible for displaying the list of nodes
+   * in the cluster.
    */
   RiakControl.ClusterController = Ember.ObjectController.extend(
     /**
@@ -68,6 +67,7 @@ minispade.register('cluster', function() {
      * @returns {void}
      */
     refresh: function(newCluster, existingCluster, nodeFactory) {
+      var existingCluster = existingCluster || [];
 
       /*
        * For every object in newCluster...
@@ -142,12 +142,21 @@ minispade.register('cluster', function() {
     load: function() {
       var self = this;
 
-      $.ajax({
+      return $.ajax({
         type:     'GET',
         url:      '/admin/cluster',
-        dataType: 'json',
+        dataType: 'json'
+      }).then(
 
-        success: function(d) {
+        // success...
+        function(d) {
+          var content = self.get('content');
+          if (!content) {
+            self.set('content', RiakControl.CurrentAndPlannedCluster.create({
+              stagedCluster: [],
+              currentCluster: []
+            }));
+          }
           var updatedCurrentCluster = d.cluster.current;
           var currentCurrentCluster = self.get('content.currentCluster');
 
@@ -176,14 +185,21 @@ minispade.register('cluster', function() {
           }
         },
 
-        error: function (jqXHR, textStatus, errorThrown) {
+        // error...
+        function (jqXHR, textStatus, errorThrown) {
           if(jqXHR.status === 404 || jqXHR.status === 0) {
-            self.get('displayError').call(self, undefined, undefined, "The node hosting Riak Control is unavailable.");
+            self.get('displayError')
+                .call(self,
+                      undefined,
+                      undefined,
+                      "The node hosting Riak Control is unavailable.");
           } else {
-            self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
+            self.get('displayError')
+                .call(self, jqXHR, textStatus, errorThrown);
           }
         }
-      });
+      );
+
     },
 
     /**
@@ -259,17 +275,24 @@ minispade.register('cluster', function() {
       commitPlan: function() {
         var self = this;
         var confirmed = $(document).find("[name='confirmed']:checked").val();
+        var ajax;
 
         if(confirmed) {
-          $.ajax({
+          ajax = $.ajax({
             type:     'POST',
             url:      '/admin/cluster',
-            dataType: 'json',
-            success:  function(d) { self.reload(); },
-            error:    function (jqXHR, textStatus, errorThrown) {
-              self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
-            }
+            dataType: 'json'
           });
+
+          ajax.then(
+            // success...
+            function(d) { self.reload(); },
+            // error...
+            function (jqXHR, textStatus, errorThrown) {
+              self.get('displayError')
+                  .call(self, jqXHR, textStatus, errorThrown);
+            }
+          );
         } else {
           self.get('displayError').call(self, undefined, undefined, "Please confirm the plan.");
         }
@@ -281,17 +304,22 @@ minispade.register('cluster', function() {
        * @returns {void}
        */
       clearPlan: function() {
-        var self = this;
+        var self = this,
+            ajax = $.ajax({
+              type:     'DELETE',
+              url:      '/admin/cluster',
+              dataType: 'json'
+            });
 
-        $.ajax({
-          type:     'DELETE',
-          url:      '/admin/cluster',
-          dataType: 'json',
-          success:  function(d) { self.reload(); },
-          error:    function (jqXHR, textStatus, errorThrown) {
+        ajax.then(
+          // success...
+          function(d) { self.reload(); },
+          // error...
+          function (jqXHR, textStatus, errorThrown) {
             self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
           }
-        });
+        );
+
       },
 
       /**

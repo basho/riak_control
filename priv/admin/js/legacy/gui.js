@@ -26,7 +26,7 @@ $(document).ready(function() {
   $(document).on('change', '.gui-checkbox', function(e) {
     var me      = $(this),
         parent  = me.parent(),
-        checked = me.attr('checked');
+        checked = me.prop('checked');
 
     if (checked) {
       parent.css('background-position', 'left bottom');
@@ -39,9 +39,9 @@ $(document).ready(function() {
   $(document).on('change', '.gui-radio', function(e) {
     var me      = $(this),
         parent  = me.parent(),
-        checked = me.attr('checked'),
-        group   = $('input[type="radio"][name="' + me.attr('name') + '"]');
-    
+        checked = me.prop('checked'),
+        group   = $('input[type="radio"][name="' + me.prop('name') + '"]');
+
     /*
      * If the radio button is checked...
      */
@@ -63,7 +63,7 @@ $(document).ready(function() {
       /*
        * If the checked radio button is the 'replace' radio button...
        */
-      if (me.attr('value') === 'replace') {
+      if (me.prop('value') === 'replace') {
         /*
          * Enable the extra replacement actions.
          */
