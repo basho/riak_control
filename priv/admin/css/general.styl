@@ -62,6 +62,34 @@ th
 
 /* IDs & Classes */
 
+.spinner-box
+  corners()
+  text-align : center
+  background : rgba(255, 255, 255, .05)
+  padding    : 25px
+
+  img, h4
+    vertical-align : middle
+
+  h4
+    opaque(.8)
+    display      : inline-block
+    padding-top  : 6px
+    padding-left : 10px
+    line-height  : 1.2
+
+  &.loading-route
+    margin-top  : 50px
+    height      : 250px
+    line-height : 250px
+
+    img, h4
+      display     : inline
+      line-height : 250px
+      margin-top  : 0
+      padding-top : 0
+
+
 #header
   dimensions(100%, 53px)
   border-bottom : 1px solid lightWhite

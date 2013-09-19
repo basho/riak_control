@@ -11,6 +11,13 @@
     <div class="clear"></div>
   </section>
 
+  {{#if errorMessage}}
+      <div class="error-message">
+          <a class="close-error gui-text" {{action hideError}}></a>
+          <a class="error-text offline gui-text-flat">{{errorMessage}}</a>
+      </div>
+  {{/if}}
+
   <div id="current-ring">
 
     <div class="chart-wrapper">
@@ -122,4 +129,5 @@
     </div>
   </div>
   <div class="clear"></div>
+
 </div>
