@@ -54,7 +54,11 @@ minispade.register('ring', function() {
    * Controls filtering, pagination and loading/reloading of the
    * partition list for the cluster.
    */
-  RiakControl.RingController = Ember.ObjectController.extend({
+  RiakControl.RingController = Ember.ObjectController.extend(
+    /**
+     * Shares properties with RiakControl.NodesController
+     */
+    RiakControl.ClusterAndNodeControls, {
 
     /**
      * Refresh the list of partitions, using partitions returned as JSON,
@@ -137,20 +141,51 @@ minispade.register('ring', function() {
     },
 
     /**
+     * If we have tried and been unable to load data, this will
+     * be set to true.
+     */
+    cannotLoad: function () {
+      var content = this.get('content');
+      if (!content) {
+        return false;
+      }
+      return !content.content.length;
+    }.property('content'),
+
+    /**
      * Load data from the server.
      */
     load: function () {
       var that = this;
-      $.ajax({
-        type: 'GET',
-        url: '/admin/partitions',
-        dataType: 'json',
+      var ajax = $.ajax({
+        type:     'GET',
+        url:      '/admin/partitions',
+        dataType: 'json'
+      });
 
-        success: function (data) {
-          var curSelected = that.get('content.selected'),
-              curPartitions = that.get('content.partitions'),
-              toRemove = [],
-              i;
+      return ajax.then(
+        // success...
+        function (data) {
+          var curSelected, curPartitions, toRemove, i, content;
+          
+          /*
+           * Instantiate content if it hasn't been created yet.
+           */
+          content = that.get('content');
+          if (!content) {
+            that.set('content', RiakControl.SelectedPartitionNValList.create({
+              content: [],
+              selected: undefined,
+              partitions: RiakControl.PartitionNValList.create({
+                content: []
+              })
+            }));
+          }
+
+          curSelected = that.get('content.selected');
+          curPartitions = that.get('content.partitions');
+          toRemove = [];
+          i;
 
           /*
            * Remove any old partition lists that no longer exist
@@ -175,9 +210,14 @@ minispade.register('ring', function() {
           data.partitions.forEach(function (hash) {
             var corresponder = curPartitions.findProperty('n_val', hash.n_val);
             if (!corresponder) {
-              corresponder = curPartitions.pushObject({n_val: hash.n_val, partitions: []});
+              corresponder = curPartitions.pushObject({
+                n_val: hash.n_val,
+                partitions: []
+              });
             }
-            that.refresh(hash.partitions, corresponder.partitions, RiakControl.Partition);
+            that.refresh(hash.partitions,
+                         corresponder.partitions,
+                         RiakControl.Partition);
           });
 
           /*
@@ -186,8 +226,37 @@ minispade.register('ring', function() {
           if(that.get('content.selected') === undefined) {
             that.set('content.selected', curSelected || data.default_n_val);
           }
+        }, 
+
+        // error...
+        function (jqXHR, textStatus, errorThrown) {
+
+          /*
+           * Instantiate content if it hasn't been created yet.
+           */
+          var content = that.get('content');
+          if (!content) {
+            that.set('content', RiakControl.SelectedPartitionNValList.create({
+              content: [],
+              selected: undefined,
+              partitions: RiakControl.PartitionNValList.create({
+                content: []
+              })
+            }));
+          }
+
+          if(jqXHR.status === 404 || jqXHR.status === 0) {
+            that.get('displayError')
+                .call(that,
+                      undefined,
+                      undefined,
+                      "Partition data is currently unavailable.");
+          } else {
+            that.get('displayError')
+                .call(that, jqXHR, textStatus, errorThrown);
+          }
         }
-      });
+      );
     },
 
     /**
