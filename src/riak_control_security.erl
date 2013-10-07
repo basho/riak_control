@@ -38,16 +38,31 @@
 -spec scheme_is_available(wrq:reqdata(), context()) ->
     {boolean(), wrq:reqdata(), context()}.
 scheme_is_available(RD, Ctx) ->
-    case app_helper:get_env(riak_control, auth, none) of
-        none ->
-            {true, RD, Ctx};
-        _ ->
-            case wrq:scheme(RD) of
-                https ->
+    case app_helper:get_env(riak_control, force_ssl, undefined) of
+        undefined ->
+            %% Handle upgrade, where we want to preserve existing
+            %% behavior.
+            case app_helper:get_env(riak_control, auth, none) of
+                none ->
                     {true, RD, Ctx};
                 _ ->
-                    https_redirect(RD,Ctx)
-            end
+                    redirect_if_not_ssl(RD, Ctx)
+            end;
+        true ->
+            redirect_if_not_ssl(RD, Ctx);
+        _ ->
+            {true, RD, Ctx}
+    end.
+
+%% @doc Redirect if request is not SSL.
+-spec redirect_if_not_ssl(wrq:reqdata(), context()) ->
+    {boolean(), wrq:reqdata(), context()}.
+redirect_if_not_ssl(ReqData, Context) ->
+    case wrq:scheme(ReqData) of
+        https ->
+            {true, ReqData, Context};
+        _ ->
+            https_redirect(ReqData, Context)
     end.
 
 %% @doc Perform http redirect to ssl.
