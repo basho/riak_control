@@ -1,0 +1,54 @@
+%% riak_control config
+%% @doc Set to 'off' to disable the admin panel.
+{mapping, "riak_control", "riak_control.enabled", [
+  {default, off},
+  {datatype, {enum, [on, off]}}
+]}.
+
+{translation,
+ "riak_control.enabled",
+ fun(Conf) ->
+    Setting = cuttlefish_util:conf_get_value("riak_control", Conf), 
+    case Setting of
+      on -> true;
+      off -> false;
+      _Default -> false
+    end
+ end}.
+
+%% @doc Authentication style used for access to the admin
+%% panel. Valid styles are: off, userlist
+{mapping, "riak_control.auth", "riak_control.auth", [
+  {default, userlist},
+  {datatype, {enum, [off, userlist]}}
+]}.
+
+{translation,
+"riak_control.auth",
+fun(Conf) ->
+  case cuttlefish_util:conf_get_value("riak_control.auth", Conf) of
+    userlist -> userlist;
+    off -> none;
+    _ -> none
+  end
+end}.
+
+%% @doc If auth is set to 'userlist' then this is the
+%% list of usernames and passwords for access to the
+%% admin panel.
+{mapping, "riak_control.user.$username.password", "riak_control.userlist", [
+  {default, "pass"},
+  {include_default, "user"}
+]}.
+
+{translation,
+"riak_control.userlist",
+fun(Conf) ->
+  UserList = lists:filter(
+    fun({K, _V}) -> 
+      cuttlefish_util:fuzzy_variable_match(K, string:tokens("riak_control.user.$username.password", "."))
+    end,
+    Conf),
+  [ {Username, Password} || {[_, _, Username, _], Password} <- UserList ]
+
+end}.
