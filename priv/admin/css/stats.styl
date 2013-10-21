@@ -1,0 +1,64 @@
+
+/*
+CSS to be applied ONLY on the cluster page
+*/
+
+@import reusable
+
+line()
+  fill         : none
+  stroke       : riakred
+  stroke-width : 1.5px
+
+#stats-page
+
+  h2
+    headline-font()
+    font-size : 24px
+
+  svg
+    font  : 12px 'titillium'
+  
+  .line
+    line()
+
+  text
+    fill : mediumGray
+   
+  .axis path, .axis line
+    fill            : none
+    stroke          : lightWhite
+    shape-rendering : crispEdges
+
+    &.line
+      line()
+
+  
+  #stats-area
+    margin : 0 auto
+    width  : 960px
+
+  #add-new-graph
+    width      : 650px
+    margin     : 25px auto
+    text-align : center
+
+  .changey
+    float        : right
+    margin-top   : 25px
+    margin-right : 15px
+
+    a
+      cursor : pointer
+
+  .remove-graph
+    float      : right
+    cursor     : pointer
+    margin-top : 25px
+
+  #graphs
+    
+    h2
+      margin-top     : 25px
+      float          : left
+      text-transform : capitalize

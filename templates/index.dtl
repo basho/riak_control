@@ -22,6 +22,7 @@
     <script src="/admin/ui/js/router.js"></script>
     <script src="/admin/ui/js/snapshot.js"></script>
     <script src="/admin/ui/js/ring.js"></script>
+    <script src="/admin/ui/js/stats.js"></script>
 
     <script>minispade.require('app');</script>
 </body>

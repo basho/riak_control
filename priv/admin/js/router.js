@@ -15,6 +15,7 @@ minispade.register('router', function() {
     this.route('cluster');
     this.route('nodes');
     this.route('ring');
+    this.route('stats');
   });
 
   RiakControl.IndexRoute = Ember.Route.extend(
@@ -110,6 +111,27 @@ minispade.register('router', function() {
 
     deactivate: function() {
       this.controllerFor('nodes').cancelInterval();
+    }
+  });
+
+  RiakControl.StatsRoute = Ember.Route.extend(
+    /** @scope Ember.Route.prototype */ {
+
+    model: function () {
+      return this.store.find('node');
+    },
+
+    renderTemplate: function () {
+      this.render('stats');
+      $.riakControl.markNavActive('nav-stats');
+    },
+
+    activate: function () {
+      this.controllerFor('stats').startInterval();
+    },
+
+    deactivate: function () {
+      this.controllerFor('stats').cancelInterval();
     }
   });
 

@@ -3735,3 +3735,57 @@ div.tooltip:hover > span {
     background-color: #555;
   }
 }
+#stats-page h2 {
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  font-size: 24px;
+}
+#stats-page svg {
+  font: 12px 'titillium';
+}
+#stats-page .line {
+  fill: none;
+  stroke: #f05f5f;
+  stroke-width: 1.5px;
+}
+#stats-page text {
+  fill: #ccc;
+}
+#stats-page .axis path,
+#stats-page .axis line {
+  fill: none;
+  stroke: rgba(255,255,255,0.18);
+  shape-rendering: crispEdges;
+}
+#stats-page .axis path.line,
+#stats-page .axis line.line {
+  fill: none;
+  stroke: #f05f5f;
+  stroke-width: 1.5px;
+}
+#stats-page #stats-area {
+  margin: 0 auto;
+  width: 960px;
+}
+#stats-page #add-new-graph {
+  width: 650px;
+  margin: 25px auto;
+  text-align: center;
+}
+#stats-page .changey {
+  float: right;
+  margin-top: 25px;
+  margin-right: 15px;
+}
+#stats-page .changey a {
+  cursor: pointer;
+}
+#stats-page .remove-graph {
+  float: right;
+  cursor: pointer;
+  margin-top: 25px;
+}
+#stats-page #graphs h2 {
+  margin-top: 25px;
+  float: left;
+  text-transform: capitalize;
+}

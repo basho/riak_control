@@ -1,0 +1,29 @@
+<div id="stats-page">
+
+  <section id="title-container">
+      <div class="side-line"></div>
+      <div class="title-box">
+        <span class="vert-border-left"></span>
+        <h1 id="stats-headline" class="gui-headline-bold page-title">Cluster Stats</h1>
+        <span class="vert-border-right"></span>
+      </div>
+      <div class="side-line"></div>
+      <div class="clear"></div>
+    </section>
+
+    {{#if errorMessage}}
+      <div class="error-message">
+          <a class="close-error gui-text" {{action hideError target="controller"}}></a>
+          <a class="error-text offline gui-text-flat">{{errorMessage}}</a>
+      </div>
+    {{/if}}
+
+    <div id="stats-area">
+      <div id="graphs"></div>
+      <div id="add-new-graph">
+        {{view RiakControl.AddGraphSelectView
+               valueBinding="selectedStat"}}
+      </div>
+    </div>
+
+</div>
