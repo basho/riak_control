@@ -371,6 +371,8 @@ get_my_info() ->
     {Total, Used} = get_my_memory(),
     Handoffs = get_handoff_status(),
     VNodes = riak_core_vnode_manager:all_vnodes(),
+    VNodeTypes = lists:usort([Type || {Type, _, _} <- VNodes]),
+    Stats = [stats(Type) || Type <- VNodeTypes],
     ErlangMemory = proplists:get_value(total,erlang:memory()),
     try
         case riak_core_capability:get({riak_control, member_info_version}) of
@@ -382,7 +384,8 @@ get_my_info() ->
                              mem_used = Used,
                              mem_erlang = ErlangMemory,
                              vnodes = VNodes,
-                             handoffs = Handoffs};
+                             handoffs = Handoffs,
+                             stats = Stats};
             v0 ->
                 %% pre-1.4.1.
                 handle_bad_record(Total, Used, ErlangMemory, VNodes, Handoffs)
@@ -391,6 +394,21 @@ get_my_info() ->
         _:{unknown_capability, _} ->
             %% capabilities are not registered yet.
             erlang:throw({badrpc, unknown_capability})
+    end.
+
+%% @doc Retrieve stats for a given vnode type.
+-spec stats(atom()) -> {atom(), list({atom(), term()})}.
+stats(VNodeType) ->
+    case VNodeType of
+        riak_kv_vnode ->
+            Stats = proplists:delete(disk, riak_kv_stat:get_stats()),
+            {riak_kv, Stats};
+        riak_search_vnode ->
+            {riak_search, []};
+        riak_pipe_vnode ->
+            {riak_pipe, []};
+        riak_core_vnode ->
+            {riak_core, riak_core_state:get_stats()}
     end.
 
 %% @doc Return current nodes memory.

@@ -98,7 +98,8 @@ jsonify_node(Node) ->
              {"low_mem",LowMem},
              {"me",Node?MEMBER_INFO.node == node()},
              {"action",Node?MEMBER_INFO.action},
-             {"replacement",Node?MEMBER_INFO.replacement}]}.
+             {"replacement",Node?MEMBER_INFO.replacement},
+             {"stats",Node?MEMBER_INFO.stats}]}.
 
 %% @doc Determine if a node has low memory.
 -spec low_mem(boolean(), number() | atom(), number() | atom(), number())

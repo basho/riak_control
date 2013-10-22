@@ -447,7 +447,6 @@ minispade.register('stats', function() {
       this.get('content').map(function (item) {
         stats.push({name: item.get('name'), stats: item.get('stats')});
       });
-
       RiakControl.statGraphs.set('stats', stats);
     },
 

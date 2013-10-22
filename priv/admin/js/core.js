@@ -48,6 +48,8 @@ minispade.register('core', function() {
 
     low_mem: DS.attr("boolean"),
 
+    stats: DS.attr("array"),
+
     /**
      * This boolean attribute determines if the node
      * responsible for the API requests is running

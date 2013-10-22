@@ -94,6 +94,7 @@
           mem_used    :: integer(),
           mem_erlang  :: integer(),
           action      :: action(),
+          stats       :: [{atom(), [{atom(), term()}]}],
           replacement :: node() }).
 
 -define(MEMBER_INFO,     #member_info_v2).
