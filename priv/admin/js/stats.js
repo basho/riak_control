@@ -505,6 +505,7 @@ minispade.register('stats', function() {
       var toolName = 'riak_' + selected.slice(0, selected.indexOf(' '))
                                        .toLowerCase(),
           statName = selected.replace(/^[^\s]+\s+\-\s+/, ''),
+          initVal  = this.get('stats')[0].stats[toolName][statName] * 2 || 10,
           graphObject,
           selectMenu;
 
@@ -523,7 +524,7 @@ minispade.register('stats', function() {
           markerID: id += 1,
           toolName: toolName,
           statName: statName,
-          yMax: 200,
+          yMax: initVal,
           statGraphCreator: this
         });
 
