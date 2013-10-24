@@ -19,7 +19,9 @@
     {{/if}}
 
     <div id="stats-area">
-      <div id="graphs"></div>
+      <div id="graphs">
+        {{view RiakControl.statGraphs}}
+      </div>
       <div id="add-new-graph">
         {{view RiakControl.AddGraphSelectView
                valueBinding="selectedStat"}}

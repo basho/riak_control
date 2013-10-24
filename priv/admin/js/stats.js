@@ -11,12 +11,16 @@ minispade.register('stats', function() {
     /** @scope RiakControl.TimeSeries.prototype */ {
 
     markerID: 0,
-    areaSelector: '#graphs',
     duration: 925,
     toolName: '',
     statName: '',
     statGraphCreator: null,
     yMax: 500,
+    areaSelector: null,
+
+    didInsertElement: function () {
+      this.set('areaSelector', '#' + this.$().attr('id'));
+    },
 
     /**
      * Where the line should begin on the
@@ -303,7 +307,9 @@ minispade.register('stats', function() {
         $('.marker' + id).slideUp(function () {
           $(this).remove();
         });
-        creator.get('destroyObj').call(creator, thisObj);
+        setTimeout(function () {
+          creator.get('destroyObj').call(creator, thisObj);
+        }, 300);
       });
     },
 
@@ -347,7 +353,7 @@ minispade.register('stats', function() {
       this.get('tick').call(this, this.get('begin'));
       this.get('createChangeYEvent').call(this);
       this.get('setupRemove').call(this);
-    }
+    }.observes('areaSelector')
   });
 
   /**
@@ -464,8 +470,7 @@ minispade.register('stats', function() {
   /**
    * A place for storing graphs and their associated objects.
    */
-  RiakControl.StatGraphController = Ember.ArrayController.extend({
-    content: [],
+  RiakControl.StatGraphCollectionView = Ember.CollectionView.extend({
 
     /**
      * Tracks available stats for every node.
@@ -477,7 +482,7 @@ minispade.register('stats', function() {
      * update the numbers for each graph.
      */
     updateGraphs: function () {
-      var graphs = this.get('content'),
+      var graphs = this.get('childViews'),
           stats  = this.get('stats');
 
       graphs.map(function (item) {
@@ -527,8 +532,6 @@ minispade.register('stats', function() {
          * light it up.
          */
         this.pushObject(graphObject);
-        graphObject.start();
-
       }
     },
 
@@ -547,6 +550,6 @@ minispade.register('stats', function() {
   /**
    * Instantiates the StatGraphController
    */
-  RiakControl.statGraphs = RiakControl.StatGraphController.create();
+  RiakControl.statGraphs = RiakControl.StatGraphCollectionView.create();
 
 });
