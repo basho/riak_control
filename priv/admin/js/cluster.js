@@ -488,7 +488,7 @@ minispade.register('cluster', function() {
         var forced = this.$().
           find("input[type='checkbox']:checked").val();
         var replacement = this.$().
-          find("input[type='select']:selected").val();
+          find(".replacement-node-dropdown select").val();
 
         // Make sure we handle the force replace correctly.
         //
