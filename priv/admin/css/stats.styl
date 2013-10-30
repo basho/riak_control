@@ -43,7 +43,7 @@ line()
     margin     : 25px auto
     text-align : center
 
-  .changey
+  .changey, .add-node
     float        : right
     margin-top   : 25px
     margin-right : 15px
@@ -62,3 +62,35 @@ line()
       margin-top     : 25px
       float          : left
       text-transform : capitalize
+
+  .node-tag
+    corners()
+    headline-font()
+    font-weight : bold
+    font-size   : 85%
+    padding     : 5px 10px
+    background  : riakred
+    float       : left
+    color       : #ffffff;
+    text-shadow : none;
+    margin      : 15px 5px 0 0
+
+    .rm-node
+      corners(50%)
+      dimensions(15px, 15px)
+      background  : rgba(0, 0, 0, .2);
+      display     : inline-block
+      margin-left : 10px
+      cursor      : pointer
+      text-align  : center
+      &:hover
+        background : rgba(0, 0, 0, .15);
+
+
+
+
+
+
+
+
+

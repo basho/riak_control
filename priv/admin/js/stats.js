@@ -2,6 +2,11 @@ minispade.register('stats', function() {
   var id = 0;
 
   /**
+   * A place where we can store colors for our scheme.
+   */
+  var colors = [];
+
+  /**
    * @class
    *
    * Time Series mixin.
@@ -27,6 +32,11 @@ minispade.register('stats', function() {
      * y axis before it is populated with real data.
      */
     begin: 0,
+
+    /**
+     * Contains the nodes that have lines on the graph
+     */
+    nodes: [],
 
     /**
      * The title for the graph.
@@ -120,6 +130,11 @@ minispade.register('stats', function() {
           '<div class="changey marker' + id + '">' +
             '<input class="input-changey marker' + id + '" type="text"/>' + 
             '<a class="submit-changey marker' + id + '">Change Y Max</a>' +
+          '</div>')
+        .append(
+          '<div class="add-node marker' + id + '">' +
+            '<input class="input-add-node marker' + id + '" type="text"/>' + 
+            '<a class="submit-add-node marker' + id + '">Add Node</a>' +
           '</div>');
     }.property('areaSelector', 'markerID', 'title'),
 
@@ -182,6 +197,53 @@ minispade.register('stats', function() {
           .attr("class", "line line" + id)
           .attr("d", this.get('line'));
     }.property('svg', 'markerID', 'data', 'line'),
+
+    /**
+     * Shows the nodes currently on the graph.
+     */
+    drawNodeTags: function (toRemove) {
+      var areaSelector = this.get('areaSelector'),
+          $area = $(areaSelector),
+          id = this.get('markerID');
+
+      /*
+       * If we need to remove a node, update the nodes property.
+       */
+      if (toRemove) {
+        this.set('nodes', this.get('nodes').filter(function (name) {
+          return name !== toRemove;
+        }));
+      }
+
+      /*
+       * Remove all tags.
+       */
+      $('.node-tag', $area).remove();
+
+      /*
+       * Redraw a tag for every node in nodes.
+       */
+      this.get('nodes').forEach(function (nodeName) {
+        $area.append('<div class="node-tag marker' + id + '">' +
+                     '<span>' + nodeName + '</span>' + 
+                     '<a class="rm-node">x</a>' +
+                     '</div>');
+      });
+    },
+
+    /**
+     * Whenever we click on the remove button of a node tag,
+     * remove that node from the list and redraw the tags.
+     */
+    setupRemoveNode: function () {
+      var id   = this.get('markerID'),
+          that = this;
+
+      $(document).on('click', '.node-tag.marker' + id + ' .rm-node', function () {
+        var thisNode = $(this).closest('div').find('span').text();
+        that.drawNodeTags(thisNode);
+      });
+    },
 
     /**
      * Function for animating the graph
@@ -283,6 +345,40 @@ minispade.register('stats', function() {
     },
 
     /**
+     * Creates a jQuery event that adds a node to the graph.
+     */
+    createAddNodeEvent: function () {
+      var that = this;
+
+      /*
+       * A handler function to be used when we click the submit
+       * button or hit return in the input box.
+       */
+      function handler() {
+        var input = $(this).parent().find('input'),
+            val = input.val();
+
+        /*
+         * Add the node, redraw the tags, and empty the input field.
+         */
+        that.get('nodes').push(val);
+        that.drawNodeTags();
+        input.val('');
+      }
+
+      /*
+       * Run handler() when we press submit or hit enter in
+       * the input field.
+       */
+      $('.submit-add-node.marker' + id).on('click', handler);
+      $('.input-add-node.marker' + id).on('keyup', function (ev) {
+        if (ev.keyCode === 13) {
+          return handler.call(this);
+        }
+      });
+    },
+
+    /**
      * Describes how to remove this graph from the DOM, also
      * how to destroy this ember object and clean up the parent array
      * that contains it.
@@ -304,6 +400,8 @@ minispade.register('stats', function() {
         $('.remove-graph.marker' + id).off('click');
         $('.submit-changey.marker' + id).off('click');
         $('.input-changey.marker' + id).off('keyup');
+        $('.submit-add-node.marker' + id).off('click');
+        $('.input-add-node.marker' + id).off('keyup');
         $('.marker' + id).slideUp(function () {
           $(this).remove();
         });
@@ -352,7 +450,10 @@ minispade.register('stats', function() {
       this.get('heading');
       this.get('tick').call(this, this.get('begin'));
       this.get('createChangeYEvent').call(this);
+      this.get('createAddNodeEvent').call(this);
       this.get('setupRemove').call(this);
+      this.get('drawNodeTags').call(this);
+      this.get('setupRemoveNode').call(this);
     }.observes('areaSelector')
   });
 
@@ -525,7 +626,8 @@ minispade.register('stats', function() {
           toolName: toolName,
           statName: statName,
           yMax: initVal,
-          statGraphCreator: this
+          statGraphCreator: this,
+          nodes: [this.get('stats')[0].name]
         });
 
         /*

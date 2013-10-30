@@ -3771,12 +3771,14 @@ div.tooltip:hover > span {
   margin: 25px auto;
   text-align: center;
 }
-#stats-page .changey {
+#stats-page .changey,
+#stats-page .add-node {
   float: right;
   margin-top: 25px;
   margin-right: 15px;
 }
-#stats-page .changey a {
+#stats-page .changey a,
+#stats-page .add-node a {
   cursor: pointer;
 }
 #stats-page .remove-graph {
@@ -3788,4 +3790,37 @@ div.tooltip:hover > span {
   margin-top: 25px;
   float: left;
   text-transform: capitalize;
+}
+#stats-page .node-tag {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  font-family: 'titillium', helvetica, arial, sans-serif;
+  font-weight: bold;
+  font-size: 85%;
+  padding: 5px 10px;
+  background: #f05f5f;
+  float: left;
+  color: #fff;
+  text-shadow: none;
+  margin: 15px 5px 0 0;
+}
+#stats-page .node-tag .rm-node {
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  background: rgba(0,0,0,0.2);
+  display: inline-block;
+  margin-left: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+#stats-page .node-tag .rm-node:hover {
+  background: rgba(0,0,0,0.15);
 }
