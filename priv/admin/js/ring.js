@@ -157,106 +157,113 @@ minispade.register('ring', function() {
      */
     load: function () {
       var that = this;
-      var ajax = $.ajax({
-        type:     'GET',
-        url:      '/admin/partitions',
-        dataType: 'json'
+
+      return new Ember.RSVP.Promise(function(resolve, reject) {
+        $.ajax({
+          type:     'GET',
+          url:      '/admin/partitions',
+          dataType: 'json'
+        }).then(
+          // success...
+          function (data) {
+            Ember.run(function() {
+              var curSelected, curPartitions, toRemove, i, content;
+
+              /*
+               * Instantiate content if it hasn't been created yet.
+               */
+              content = that.get('content');
+              if (!content) {
+                that.set('content', RiakControl.SelectedPartitionNValList.create({
+                  content: [],
+                  selected: undefined,
+                  partitions: RiakControl.PartitionNValList.create({
+                    content: []
+                  })
+                }));
+              }
+
+              curSelected = that.get('content.selected');
+              curPartitions = that.get('content.partitions');
+              toRemove = [];
+              i;
+
+              /*
+               * Remove any old partition lists that no longer exist
+               * within data.partitions.
+               */
+              curPartitions.forEach(function(hash) {
+                if (!data.partitions.findProperty('n_val', hash.n_val)) {
+                  hash.partitions.forEach(function (partition) {
+                    partition.destroy();
+                  });
+                  toRemove.push(i)
+                }
+              });
+
+              toRemove.forEach(function(pIndex) {
+                curPartitions.removeAt(pIndex);
+              });
+
+              /*
+               * Update each partition list.
+               */
+              data.partitions.forEach(function (hash) {
+                var corresponder = curPartitions.findProperty('n_val', hash.n_val);
+                if (!corresponder) {
+                  corresponder = curPartitions.pushObject({
+                    n_val: hash.n_val,
+                    partitions: []
+                  });
+                }
+                that.refresh(hash.partitions,
+                             corresponder.partitions,
+                             RiakControl.Partition);
+              });
+
+              /*
+               * Manually select a dropdown item on the first ajax call.
+               */
+              if(that.get('content.selected') === undefined) {
+                that.set('content.selected', curSelected || data.default_n_val);
+              }
+              resolve();
+            });
+          },
+
+          // error...
+          function (jqXHR, textStatus, errorThrown) {
+            Ember.run(function() {
+
+              /*
+               * Instantiate content if it hasn't been created yet.
+               */
+              var content = that.get('content');
+              if (!content) {
+                that.set('content', RiakControl.SelectedPartitionNValList.create({
+                  content: [],
+                  selected: undefined,
+                  partitions: RiakControl.PartitionNValList.create({
+                    content: []
+                  })
+                }));
+              }
+
+              if(jqXHR.status === 404 || jqXHR.status === 0) {
+                that.get('displayError')
+                    .call(that,
+                          undefined,
+                          undefined,
+                          "Partition data is currently unavailable.");
+              } else {
+                that.get('displayError')
+                    .call(that, jqXHR, textStatus, errorThrown);
+              }
+              reject();
+            });
+          }
+        );
       });
-
-      return ajax.then(
-        // success...
-        function (data) {
-          var curSelected, curPartitions, toRemove, i, content;
-          
-          /*
-           * Instantiate content if it hasn't been created yet.
-           */
-          content = that.get('content');
-          if (!content) {
-            that.set('content', RiakControl.SelectedPartitionNValList.create({
-              content: [],
-              selected: undefined,
-              partitions: RiakControl.PartitionNValList.create({
-                content: []
-              })
-            }));
-          }
-
-          curSelected = that.get('content.selected');
-          curPartitions = that.get('content.partitions');
-          toRemove = [];
-          i;
-
-          /*
-           * Remove any old partition lists that no longer exist
-           * within data.partitions.
-           */
-          curPartitions.forEach(function(hash) {
-            if (!data.partitions.findProperty('n_val', hash.n_val)) {
-              hash.partitions.forEach(function (partition) {
-                partition.destroy();
-              });
-              toRemove.push(i)
-            }
-          });
-
-          toRemove.forEach(function(pIndex) {
-            curPartitions.removeAt(pIndex);
-          });
-
-          /*
-           * Update each partition list.
-           */
-          data.partitions.forEach(function (hash) {
-            var corresponder = curPartitions.findProperty('n_val', hash.n_val);
-            if (!corresponder) {
-              corresponder = curPartitions.pushObject({
-                n_val: hash.n_val,
-                partitions: []
-              });
-            }
-            that.refresh(hash.partitions,
-                         corresponder.partitions,
-                         RiakControl.Partition);
-          });
-
-          /*
-           * Manually select a dropdown item on the first ajax call.
-           */
-          if(that.get('content.selected') === undefined) {
-            that.set('content.selected', curSelected || data.default_n_val);
-          }
-        }, 
-
-        // error...
-        function (jqXHR, textStatus, errorThrown) {
-
-          /*
-           * Instantiate content if it hasn't been created yet.
-           */
-          var content = that.get('content');
-          if (!content) {
-            that.set('content', RiakControl.SelectedPartitionNValList.create({
-              content: [],
-              selected: undefined,
-              partitions: RiakControl.PartitionNValList.create({
-                content: []
-              })
-            }));
-          }
-
-          if(jqXHR.status === 404 || jqXHR.status === 0) {
-            that.get('displayError')
-                .call(that,
-                      undefined,
-                      undefined,
-                      "Partition data is currently unavailable.");
-          } else {
-            that.get('displayError')
-                .call(that, jqXHR, textStatus, errorThrown);
-          }
-        }
-      );
     },
 
     /**
@@ -453,7 +460,7 @@ minispade.register('ring', function() {
     }.property('width', 'height', 'id'),
 
     /**
-     * Observer which redraws the path components into the svg element 
+     * Observer which redraws the path components into the svg element
      * as the data changes, while also triggering the motion tween.
      *
      * @returns {true}

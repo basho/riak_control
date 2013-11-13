@@ -4,11 +4,26 @@
     <meta charset="UTF-8" />
     <title>Riak Control Test Suite</title>
 	<link rel="stylesheet" href="./support/qunit-1.12.0.css">
+  <style>
+    #ember-testing-container {
+      position: absolute;
+      background: white;
+      bottom: 0; right: 0;
+      width: 640px;
+      height: 384px;
+      overflow: auto;
+      z-index: 9999;
+      border: 1px solid #ccc;
+      }
+      #ember-testing { zoom: 50%; }
+    </style>
 </head>
 <body>
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
-
+    <div id="ember-testing-container">
+      <div id="ember-testing"></div>
+    </div>
     <script src="./admin/js/generated/vendor.js"></script>
     <script src="./admin/js/generated/templates.js"></script>
 
@@ -28,7 +43,10 @@
       minispade.require('app');
     </script>
 
+    <script src="./support/jquery.mockjax.js"></script>
     <script src="./test_helper.js"></script>
     <script src="./support/qunit-1.12.0.js"></script>
+    <script src="./data/mock_responses.js"></script>
+    <script src="./pages_test.js"></script>
 </body>
 </html>

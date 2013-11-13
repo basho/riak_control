@@ -154,81 +154,85 @@ minispade.register('cluster', function() {
     load: function() {
       var self = this;
 
-      return $.ajax({
-        type:     'GET',
-        url:      '/admin/cluster',
-        dataType: 'json'
-      }).then(
+      return new Ember.RSVP.Promise(function(resolve, reject) {
+        $.ajax({
+          type:     'GET',
+          url:      '/admin/cluster',
+          dataType: 'json'
+        }).then(
 
-        // success...
-        function(d) {
+          // success...
+          function(d) {
+            Ember.run(function() {
+              /*
+               * Instantiate content if it hasn't been created yet.
+               */
+              var content = self.get('content');
+              if (!content) {
+                self.set('content', RiakControl.CurrentAndPlannedCluster.create({
+                  stagedCluster: [],
+                  currentCluster: []
+                }));
+              }
+              var updatedCurrentCluster = d.cluster.current;
+              var currentCurrentCluster = self.get('content.currentCluster');
 
-          /*
-           * Instantiate content if it hasn't been created yet.
-           */
-          var content = self.get('content');
-          if (!content) {
-            self.set('content', RiakControl.CurrentAndPlannedCluster.create({
-              stagedCluster: [],
-              currentCluster: []
-            }));
+              self.refresh(updatedCurrentCluster,
+                currentCurrentCluster, RiakControl.CurrentClusterNode);
+
+              var updatedStagedCluster = d.cluster.staged;
+
+              if(updatedStagedCluster === 'ring_not_ready') {
+                self.set('ringNotReady', true);
+              } else {
+                self.set('ringNotReady', false);
+              }
+
+              if(updatedStagedCluster === 'legacy') {
+                self.set('legacyRing', true);
+              } else {
+                self.set('legacyRing', false);
+              }
+
+              if($.isArray(updatedStagedCluster)) {
+                var currentStagedCluster = self.get('content.stagedCluster');
+
+                self.refresh(updatedStagedCluster,
+                  currentStagedCluster, RiakControl.StagedClusterNode);
+              }
+              resolve();
+            });
+          },
+
+          // error...
+          function (jqXHR, textStatus, errorThrown) {
+            Ember.run(function() {
+              /*
+               * Instantiate content if it hasn't been created yet.
+               */
+              var content = self.get('content');
+              if (!content) {
+                self.set('content', RiakControl.CurrentAndPlannedCluster.create({
+                  stagedCluster: [],
+                  currentCluster: []
+                }));
+              }
+
+              if(jqXHR.status === 404 || jqXHR.status === 0) {
+                self.get('displayError')
+                    .call(self,
+                          undefined,
+                          undefined,
+                          "The node hosting Riak Control is unavailable.");
+              } else {
+                self.get('displayError')
+                    .call(self, jqXHR, textStatus, errorThrown);
+              }
+              reject();
+            });
           }
-          var updatedCurrentCluster = d.cluster.current;
-          var currentCurrentCluster = self.get('content.currentCluster');
-
-          self.refresh(updatedCurrentCluster,
-            currentCurrentCluster, RiakControl.CurrentClusterNode);
-
-          var updatedStagedCluster = d.cluster.staged;
-
-          if(updatedStagedCluster === 'ring_not_ready') {
-            self.set('ringNotReady', true);
-          } else {
-            self.set('ringNotReady', false);
-          }
-
-          if(updatedStagedCluster === 'legacy') {
-            self.set('legacyRing', true);
-          } else {
-            self.set('legacyRing', false);
-          }
-
-          if($.isArray(updatedStagedCluster)) {
-            var currentStagedCluster = self.get('content.stagedCluster');
-
-            self.refresh(updatedStagedCluster,
-              currentStagedCluster, RiakControl.StagedClusterNode);
-          }
-        },
-
-        // error...
-        function (jqXHR, textStatus, errorThrown) {
-
-          /*
-           * Instantiate content if it hasn't been created yet.
-           */
-          var content = self.get('content');
-          if (!content) {
-            self.set('content', RiakControl.CurrentAndPlannedCluster.create({
-              stagedCluster: [],
-              currentCluster: []
-            }));
-          }
-
-          if(jqXHR.status === 404 || jqXHR.status === 0) {
-            self.get('displayError')
-                .call(self,
-                      undefined,
-                      undefined,
-                      "The node hosting Riak Control is unavailable.");
-          } else {
-            self.get('displayError')
-                .call(self, jqXHR, textStatus, errorThrown);
-          }
-
-        }
-      );
-
+        );
+      });
     },
 
     /**
