@@ -3742,11 +3742,6 @@ div.tooltip:hover > span {
 #stats-page svg {
   font: 12px 'titillium';
 }
-#stats-page .line {
-  fill: none;
-  stroke: #f05f5f;
-  stroke-width: 1.5px;
-}
 #stats-page text {
   fill: #ccc;
 }
@@ -3756,11 +3751,19 @@ div.tooltip:hover > span {
   stroke: rgba(255,255,255,0.18);
   shape-rendering: crispEdges;
 }
-#stats-page .axis path.line,
-#stats-page .axis line.line {
-  fill: none;
-  stroke: #f05f5f;
-  stroke-width: 1.5px;
+#stats-page .chart-container {
+  width: 50%;
+  float: left;
+}
+#stats-page .chart-container .chart-wrapper {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.35);
+  padding: 10px;
+  margin: 10px;
 }
 #stats-page #stats-area {
   margin: 0 auto;
@@ -3788,7 +3791,6 @@ div.tooltip:hover > span {
 }
 #stats-page #graphs h2 {
   margin-top: 25px;
-  float: left;
   text-transform: capitalize;
 }
 #stats-page .node-tag {

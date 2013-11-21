@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <title>Riak Control</title>
     <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/compiled/style.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="/admin/ui/css/vendor/ember-charts.css" />
     <meta name="csrf_token" content="{{csrf_token}}">
 </head>
 

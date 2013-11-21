@@ -5,10 +5,10 @@ CSS to be applied ONLY on the cluster page
 
 @import reusable
 
-line()
-  fill         : none
-  stroke       : riakred
-  stroke-width : 1.5px
+// line()
+//   fill         : none
+//   stroke       : riakred
+//   stroke-width : 1.5px
 
 #stats-page
 
@@ -33,6 +33,15 @@ line()
     &.line
       line()
 
+  .chart-container
+    width : 50%
+    float: left
+
+    .chart-wrapper
+      corners()
+      background : darkened
+      padding    : 10px
+      margin     : 10px
   
   #stats-area
     margin : 0 auto
@@ -60,7 +69,9 @@ line()
     
     h2
       margin-top     : 25px
-      float          : left
+      // Floating this h2 causes the graph to perpetually
+      // expand when the window is resized.
+      //float          : left
       text-transform : capitalize
 
   .node-tag

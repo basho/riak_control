@@ -20,20 +20,7 @@
 
     <div id="stats-area">
       <div id="graphs">
-        {{#each RiakControl.statGraphs}}
-          <div class="chart-container" {{bind-attr data-graph-id=markerID}}>
-            <h2>{{toolName}} - {{statName}}</h2>
-            <button {{bind-attr data-graph-id=markerID}}
-                    {{action destroyObj}}>Remove</button>
-            <div class="chart-wrapper">
-              {{time-series-chart
-                  lineData=json
-                  yAxisFromZero=true
-                  selectedInterval="seconds"
-                  selectedSeedColor=colorBase}}
-            </div>
-          </div>
-        {{/each}}
+        {{view RiakControl.statGraphs}}
       </div>
       <div id="add-new-graph">
         {{view RiakControl.AddGraphSelectView
