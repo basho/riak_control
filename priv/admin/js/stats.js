@@ -136,8 +136,9 @@ minispade.register('stats', function() {
             id   = this.get('markerID'),
             that = this;
         $('div[data-graph-id="' + id + '"]').slideUp(300, function () {
-          pc.removeObject(pc.findProperty('markerID'), id);
-          //that.destroy();
+          var myself = pc.findProperty('markerID', id);
+          pc.removeObject(myself);
+          that.destroy();
         });
       }
     }

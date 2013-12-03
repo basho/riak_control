@@ -22,9 +22,10 @@
       <div id="graphs">
         {{#each RiakControl.statGraphs}}
           <div class="chart-container" {{bind-attr data-graph-id=markerID}}>
-            <h2>{{toolName}} - {{statName}}</h2>
-            <button {{bind-attr data-graph-id=markerID}}
-                    {{action destroyObj}}>Remove</button>
+            <h2><span>{{toolName}} - {{statName}}</span></h2>
+            <a class="remove-graph"
+               {{bind-attr data-graph-id=markerID}}
+               {{action destroyObj}}></a>
             <div class="chart-wrapper">
               {{time-series-chart
                   lineData=json
