@@ -125,6 +125,12 @@ minispade.register('stats', function() {
     statName: null,
     parentController: null,
     json: [],
+    toolNameReadable: function () {
+      return this.get('toolName').replace(/\_/g, ' ');
+    }.property('toolName'),
+    statNameReadable: function () {
+      return this.get('statName').replace(/\_/g, ' ');
+    }.property('statName'),
     actions: {
       /**
        * Whenever the user clicks the remove graph button, the TimeSeries

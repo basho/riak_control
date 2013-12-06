@@ -22,7 +22,7 @@
       <div id="graphs">
         {{#each RiakControl.statGraphs}}
           <div class="chart-container" {{bind-attr data-graph-id=markerID}}>
-            <h2><span>{{toolName}} - {{statName}}</span></h2>
+            <h2><span><strong>{{toolNameReadable}}</strong> - {{statNameReadable}}</span></h2>
             <a class="remove-graph"
                {{bind-attr data-graph-id=markerID}}
                {{action destroyObj}}></a>
