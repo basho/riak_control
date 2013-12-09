@@ -3768,6 +3768,32 @@ div.tooltip:hover > span {
   float: left;
   position: relative;
 }
+#stats-page .chart-container.add-new {
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -ms-transition: opacity 0.3s ease;
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -o-transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
+  margin-top: 74px;
+  opacity: 0.5;
+}
+#stats-page .chart-container.add-new[data-no-graphs="true"] {
+  float: none;
+  margin: 74px auto 35px;
+  opacity: 1;
+}
+#stats-page .chart-container.add-new:hover {
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -ms-transition: opacity 0.3s ease;
+  -webkit-transition: opacity 0.3s ease;
+  -moz-transition: opacity 0.3s ease;
+  -o-transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
 #stats-page .chart-container .chart-wrapper {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -3778,14 +3804,50 @@ div.tooltip:hover > span {
   padding: 10px 0;
   margin: 10px 15px;
 }
+@media screen and (max-width: 850px) {
+  #stats-page .chart-container .chart-wrapper {
+    margin: 10px 0;
+  }
+}
+@media screen and (max-width: 850px) {
+  #stats-page .chart-container {
+    width: 75%;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+@media screen and (max-width : 600px) {
+  #stats-page .chart-container {
+    width: 100%;
+  }
+}
 #stats-page #stats-area {
   margin: 0 auto;
   width: 960px;
 }
+@media screen and (max-width: 1075px) {
+  #stats-page #stats-area {
+    width: 100%;
+  }
+}
 #stats-page #add-new-graph {
-  width: 650px;
-  margin: 25px auto;
+  height: 449px;
+  margin: 25px 35px;
   text-align: center;
+  border: 1px dashed rgba(255,255,255,0.18);
+}
+#stats-page #add-new-graph .plus {
+  display: block;
+  font-size: 82px;
+  margin-top: 50px;
+}
+#stats-page #add-new-graph h3 {
+  margin-top: 16px;
+}
+#stats-page #add-new-graph p {
+  margin: 25px;
+  line-height: 1.4;
 }
 #stats-page .changey,
 #stats-page .add-node {
@@ -3826,6 +3888,11 @@ div.tooltip:hover > span {
   transition: opacity 0.2s ease;
   opacity: 0.8;
 }
+@media screen and (max-width: 1075px) {
+  #stats-page .remove-graph {
+    margin-top: 14px;
+  }
+}
 #stats-page #graphs h2 {
   margin-top: 25px;
   margin-bottom: 12px;
@@ -3842,6 +3909,17 @@ div.tooltip:hover > span {
   position: absolute;
   bottom: 0;
   padding: 0 0 8px 0;
+}
+@media screen and (max-width: 1075px) {
+  #stats-page #graphs h2 {
+    margin-right: 50px;
+  }
+}
+@media screen and (max-width: 600px) {
+  #stats-page #graphs h2 {
+    font-size: 20px;
+    line-height: 1.2;
+  }
 }
 #stats-page .node-tag {
   -webkit-border-radius: 4px;
@@ -3875,7 +3953,4 @@ div.tooltip:hover > span {
 }
 #stats-page .node-tag .rm-node:hover {
   background: rgba(0,0,0,0.15);
-}
-#stats-page #add-new-graph select {
-  margin-top: 42px;
 }

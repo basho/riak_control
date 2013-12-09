@@ -41,20 +41,62 @@ CSS to be applied ONLY on the cluster page
     float: left
     position: relative
 
+    &.add-new
+      css-transition(opacity .3s ease)
+      margin-top : 74px
+      opacity    : .5
+
+      &[data-no-graphs="true"]
+        float   : none
+        margin  : 74px auto 35px
+        opacity : 1
+
+      &:hover
+        css-transition(opacity .3s ease)
+        opacity : 1
+
     .chart-wrapper
       corners()
       background : darkened
       padding    : 10px 0
-      margin     : 10px 15px  
-  
+      margin     : 10px 15px
+
+      @media screen and (max-width: 850px)
+        margin : 10px 0
+
+    @media screen and (max-width: 850px)
+      width : 75%
+      float : none
+      margin-left  : auto
+      margin-right : auto
+
+    @media screen and (max-width : 600px)
+      width : 100%
+
   #stats-area
     margin : 0 auto
     width  : 960px
 
+    @media screen and (max-width: 1075px)
+      width : 100%
+
   #add-new-graph
-    width      : 650px
-    margin     : 25px auto
+    height     : 449px
+    margin     : 25px 35px
     text-align : center
+    border     : 1px dashed lightWhite
+
+    .plus
+      display    : block;
+      font-size  : 82px;
+      margin-top : 50px
+
+    h3
+      margin-top : 16px
+
+    p
+      margin      : 25px
+      line-height : 1.4
 
   .changey, .add-node
     float        : right
@@ -80,6 +122,9 @@ CSS to be applied ONLY on the cluster page
       css-transition(opacity .2s ease)
       opacity : .8
 
+    @media screen and (max-width: 1075px)
+      margin-top : 14px
+
   #graphs
     
     h2
@@ -101,6 +146,13 @@ CSS to be applied ONLY on the cluster page
         position : absolute
         bottom   : 0
         padding  : 0 0 8px 0
+
+      @media screen and (max-width: 1075px)
+        margin-right : 50px
+
+      @media screen and (max-width: 600px)
+        font-size   : 20px
+        line-height : 1.2
 
   .node-tag
     corners()
@@ -124,10 +176,6 @@ CSS to be applied ONLY on the cluster page
       text-align  : center
       &:hover
         background : rgba(0, 0, 0, .15);
-
-  #add-new-graph
-    select
-      margin-top: 42px
 
 
 

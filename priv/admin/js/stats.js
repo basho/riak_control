@@ -84,8 +84,8 @@ minispade.register('stats', function() {
   /**
    * @class
    *
-   * StatsController is responsible for displaying graphs related
-   * to cluster statistics.
+   * StatsController is responsible for updating the list of
+   * cluster stats.
    */
   RiakControl.StatsController = Ember.ArrayController.extend(
     /**
@@ -119,19 +119,62 @@ minispade.register('stats', function() {
     }
   });
 
+  /**
+   * @class
+   *
+   * GraphController is responsible for displaying graphs related
+   * to cluster statistics.
+   */
   RiakControl.GraphController = Ember.ObjectController.extend({
+
+    /**
+     * A unique ID for this graph.
+     */
     markerID: null,
+
+    /**
+     * The tool this stat is associated, such as KV.
+     */
     toolName: null,
+
+    /**
+     * This stat's name, such as 'cpu_avg5'.
+     */
     statName: null,
+
+    /**
+     * A reference to our RiakControl.StatGraphs instance.
+     * This is useful so that we can make this object
+     * destroy itself.
+     */
     parentController: null,
+
+    /**
+     * The JSON data used to populate the graph.
+     */
     json: [],
+
+    /**
+     * A more readable version of the toolname used for
+     * display in the html.
+     */
     toolNameReadable: function () {
       return this.get('toolName').replace(/\_/g, ' ');
     }.property('toolName'),
+
+    /**
+     * A more readable version of the statname used for
+     * display in the html.
+     */
     statNameReadable: function () {
       return this.get('statName').replace(/\_/g, ' ');
     }.property('statName'),
+
+    /**
+     * Contains actions for this class.
+     */
     actions: {
+
       /**
        * Whenever the user clicks the remove graph button, the TimeSeries
        * object will run this method and pass itself in effectively destroying
@@ -182,6 +225,15 @@ minispade.register('stats', function() {
      * two graphs in a row with the same color.
      */
     currentColor: null,
+
+    /**
+     * Populates a data-attribute on our add graph box so that
+     * we can style it differently when we have graphs vs when
+     * we don't.
+     */
+    graphsExist: function () {
+      return this.get('content.length') > 0 ? 'false' : 'true';
+    }.property('content.@each'),
 
     /**
      * Chooses a graph color

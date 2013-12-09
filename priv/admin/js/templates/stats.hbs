@@ -35,10 +35,23 @@
             </div>
           </div>
         {{/each}}
-      </div>
-      <div id="add-new-graph">
-        {{view RiakControl.AddGraphSelectView
-               valueBinding="selectedStat"}}
+        <div class="chart-container add-new"
+             {{bind-attr data-no-graphs="RiakControl.statGraphs.graphsExist"}}>
+          <div class="chart-wrapper">
+            <div id="add-new-graph">
+              <span class="plus">+</span>
+              <h3>Select a stat to graph...</h3>
+              {{view RiakControl.AddGraphSelectView
+                     valueBinding="selectedStat"}}
+              <p class="gui-headline">
+                The stats page allows you to create time-series graphs
+                based on cluster stastics so that you can compare the
+                behavior of your nodes and make sure everything is
+                working well.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
