@@ -1497,7 +1497,7 @@ Ember.Charts.PieComponent = Ember.Charts.ChartComponent.extend(Ember.Charts.PieL
     labelRadius = this.get('labelRadius');
     lastXPos = 0;
     lastYPos = 0;
-    if (this.get('numSlices') > 1) {
+    if (this.get('numSlices') > 0 /* edit: was > 1*/) {
       return {
         dy: '.35em',
         style: null,
@@ -1644,7 +1644,7 @@ Ember.Charts.VerticalBarComponent = Ember.Charts.ChartComponent.extend(Ember.Cha
     return _results;
   }).property('groupedData'),
   isGrouped: Ember.computed(function() {
-    return this.get('groupNames.length') > 1;
+    return this.get('groupNames.length') > 0 /* edit: was > 1*/;
   }).property('groupNames.length'),
   finishedData: Ember.computed(function() {
     var d, groupName, stackedValues, values, y0, _i, _len, _ref, _ref1, _results, _results1;
@@ -1810,7 +1810,7 @@ Ember.Charts.VerticalBarComponent = Ember.Charts.ChartComponent.extend(Ember.Cha
   }).property('isGrouped', 'stackBars', 'graphicWidth', 'labelWidth', 'xBetweenGroupDomain', 'betweenGroupPadding'),
   numColorSeries: Ember.computed.alias('individualBarLabels.length'),
   hasLegend: Ember.computed(function() {
-    return this.get('stackBars') || this.get('isGrouped') && this.get('legendItems.length') > 1;
+    return this.get('stackBars') || this.get('isGrouped') && this.get('legendItems.length') > 0 /* edit: was > 1*/;
   }).property('stackBars', 'isGrouped', 'legendItems.length'),
   legendItems: Ember.computed(function() {
     var getSeriesColor;
@@ -2160,7 +2160,7 @@ Ember.Charts.ScatterComponent = Ember.Charts.ChartComponent.extend(Ember.Charts.
   }).property('groupedData'),
   numGroups: Ember.computed.alias('groupedData.length'),
   isGrouped: Ember.computed(function() {
-    return this.get('numGroups') > 1;
+    return this.get('numGroups') > 0 /* edit: was > 1*/;
   }).property('numGroups'),
   finishedData: Ember.computed.alias('groupedData'),
   axisTitleHeightOffset: Ember.computed(function() {
@@ -3015,7 +3015,7 @@ Ember.Charts.TimeSeriesComponent = Ember.Charts.ChartComponent.extend(Ember.Char
     }
   }).property('numLines'),
   hasLegend: Ember.computed(function() {
-    return this.get('legendItems.length') > 1;
+    return this.get('legendItems.length') > 0 /* edit: was > 1*/;
   }).property('legendItems.length'),
   legendItems: Ember.computed(function() {
     var getSeriesColor, lineAttrs,

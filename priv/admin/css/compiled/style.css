@@ -2130,6 +2130,9 @@ div.tooltip:hover > span {
     width: 15%;
   }
 }
+#ring-page svg {
+  display: inline;
+}
 #ring-page .error-message {
   font-family: 'noticia', georgia, serif;
   -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.35);

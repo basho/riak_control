@@ -155,6 +155,21 @@ minispade.register('stats', function() {
     json: [],
 
     /**
+     * An object of node name and true values to indicate that
+     * each node's stats should be plotted on this graph. Using an
+     * object instead of an array so we can more easily remove nodes
+     * and find stats without having to do some crazy loops.
+     */
+    nodeGroup: {},
+
+    /**
+     * This is bound to an input field where
+     * users can enter names of nodes to be added
+     * to the graph.
+     */
+    addField: '',
+
+    /**
      * A more readable version of the toolname used for
      * display in the html.
      */
@@ -174,6 +189,23 @@ minispade.register('stats', function() {
      * Contains actions for this class.
      */
     actions: {
+
+      dostuff: function () {
+        console.log('I RAN')
+      },
+
+      /**
+       * Adds a new node by name to this graph.
+       *
+       * @returns {void}
+       */
+      addNode: function () {
+        var name = this.get('addField');
+        if (name) {
+          this.get('nodeGroup')[name] = true;
+          this.set('addField', '');
+        }
+      },
 
       /**
        * Whenever the user clicks the remove graph button, the TimeSeries
@@ -254,10 +286,12 @@ minispade.register('stats', function() {
      * update the numbers for each graph.
      */
     updateGraphs: function () {
-      var content = this.get('content'),
-          that    = this;
-      content.map(function (each) {
-        var data = that.createJSON(each.get('toolName'), each.get('statName')),
+      var graphObjs = this.get('content'),
+          that      = this;
+      graphObjs.map(function (each) {
+        var data = that.updateJSON(each.get('nodeGroup'),
+                                   each.get('toolName'),
+                                   each.get('statName')),
             newJSON = each.get('json').concat(data);
         if (newJSON.length/data.length > 8) {
           newJSON = newJSON.slice(data.length);
@@ -268,22 +302,50 @@ minispade.register('stats', function() {
 
     /**
      * Generates json data that can be understood by Addepar graphs.
+     * Called when initially creating a new graph so that the graph
+     * will be auto populated with a single node.
      *
+     * @param {Object} statObj  - An object representing a node's stats.
      * @param {String} toolName - Example: "kv"
      * @param {String} statName - Example: "cpu_nprocs"
      *
-     * @returns {Object} - Containing the node name, a timestamp,
+     * @returns {Array} - Objects containing the node name, a timestamp,
      *                     and the stat value.
      */
-    createJSON: function (toolName, statName) {
-      var date = new Date();
-      return this.get('stats').map(function (each) {
-        return {
-          label: each.name,
-          time:  date,
-          value: each.stats[toolName][statName]
-        };
+    createInitialJSON: function (statObj, toolName, statName) {
+      return [{
+        label: statObj.name,
+        time: new Date(),
+        value: statObj.stats[toolName][statName]
+      }];
+    },
+
+    /**
+     * Generates json data that can be understood by Addepar graphs.
+     *
+     * @param {Object} nodeGroup - An object where keys are node names.
+     * @param {String} toolName  - Example: "kv"
+     * @param {String} statName  - Example: "cpu_nprocs"
+     *
+     * @returns {Array} - Objects containing the node name, a timestamp,
+     *                     and the stat value.
+     */
+    updateJSON: function (nodeGroup, toolName, statName) {
+      var date = new Date(), output = [];
+      this.get('stats').map(function (each) {
+
+        /*
+         * Only create JSON for the nodes that belong to the graph.
+         */
+        if (Object.hasOwnProperty.call(nodeGroup, each.name)) {
+          output.push({
+            label: each.name,
+            time:  date,
+            value: each.stats[toolName][statName]
+          });
+        }
       });
+      return output;
     },
 
     /**
@@ -296,11 +358,12 @@ minispade.register('stats', function() {
       /*
        * Get the stat name and clean stuff like "KV - " off the front of it.
        */
-      var toolName = 'riak_' + selected.slice(0, selected.indexOf(' '))
+      var toolName    = 'riak_' + selected.slice(0, selected.indexOf(' '))
                                        .toLowerCase(),
-          statName = selected.replace(/^[^\s]+\s+\-\s+/, ''),
-          json     = this.createJSON(toolName, statName),
-          that     = this,
+          statName    = selected.replace(/^[^\s]+\s+\-\s+/, ''),
+          initialNode = this.get('stats')[0], 
+          json        = this.createInitialJSON(initialNode, toolName, statName),
+          that        = this,
           graphObject,
           selectMenu;
 
@@ -308,6 +371,12 @@ minispade.register('stats', function() {
        * If the selected item is not the default option...
        */
       if (selected !== '-- Choose a Statistic --') {
+
+        /*
+         * Add our initialNode's name to the nodeGroup.
+         */
+        nodeGroup = {};
+        nodeGroup[initialNode.name] = true;
 
         /*
          * Create a new graph.
@@ -318,7 +387,8 @@ minispade.register('stats', function() {
           statName: statName,
           parentController: that,
           colorBase: that.selectColor(),
-          json: json
+          json: json,
+          nodeGroup: nodeGroup
         });
 
         /*
