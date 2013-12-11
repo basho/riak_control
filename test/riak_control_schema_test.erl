@@ -4,11 +4,12 @@
 -compile(export_all).
 
 basic_schema_test() ->
+    lager:start(),
     Config = cuttlefish_unit:generate_config("../priv/riak_control.schema", []),
-
+    io:format("~p~n", [Config]),
     cuttlefish_unit:assert_config(Config, "riak_control.enabled", false),
     cuttlefish_unit:assert_config(Config, "riak_control.auth", userlist),
-    cuttlefish_unit:assert_config(Config, "riak_control.userlist", [{"user","pass"}]),
+    cuttlefish_unit:assert_not_configured(Config, "riak_control.userlist"),
     ok.
 
 userlist_schema_test() ->
@@ -18,7 +19,7 @@ userlist_schema_test() ->
     ],
 
     Config = cuttlefish_unit:generate_config("../priv/riak_control.schema", CuttlefishConf),
-
+    io:format("~p~n", [Config]),
     cuttlefish_unit:assert_config(Config, "riak_control.userlist.dev", "1234"),
     cuttlefish_unit:assert_config(Config, "riak_control.userlist.admin", "5678"),
 
