@@ -4,11 +4,12 @@
 -compile(export_all).
 
 basic_schema_test() ->
+    lager:start(),
     Config = cuttlefish_unit:generate_config("../priv/riak_control.schema", []),
 
     cuttlefish_unit:assert_config(Config, "riak_control.enabled", false),
     cuttlefish_unit:assert_config(Config, "riak_control.auth", userlist),
-    cuttlefish_unit:assert_config(Config, "riak_control.userlist", [{"user","pass"}]),
+    cuttlefish_unit:assert_not_configured(Config, "riak_control.userlist"),
     ok.
 
 userlist_schema_test() ->

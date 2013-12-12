@@ -1,3 +1,4 @@
+%%-*- mode: erlang -*-
 %% riak_control config
 %% @doc Set to 'off' to disable the admin panel.
 {mapping, "riak_control", "riak_control.enabled", [
@@ -8,7 +9,7 @@
 {translation,
  "riak_control.enabled",
  fun(Conf) ->
-    Setting = cuttlefish_util:conf_get_value("riak_control", Conf), 
+    Setting = cuttlefish:conf_get("riak_control", Conf),
     case Setting of
       on -> true;
       off -> false;
@@ -26,7 +27,7 @@
 {translation,
 "riak_control.auth",
 fun(Conf) ->
-  case cuttlefish_util:conf_get_value("riak_control.auth", Conf) of
+  case cuttlefish:conf_get("riak_control.auth", Conf) of
     userlist -> userlist;
     off -> none;
     _ -> none
@@ -45,10 +46,15 @@ end}.
 "riak_control.userlist",
 fun(Conf) ->
   UserList = lists:filter(
-    fun({K, _V}) -> 
-      cuttlefish_util:fuzzy_variable_match(K, string:tokens("riak_control.user.$username.password", "."))
+    fun({K, _V}) ->
+       cuttlefish_variable:is_fuzzy_match(K, string:tokens("riak_control.user.$username.password", "."))
     end,
     Conf),
-  [ {Username, Password} || {[_, _, Username, _], Password} <- UserList ]
+  Users = [ {Username, Password} || {[_, _, Username, _], Password} <- UserList ],
+  case Users of
+      [] ->
+          throw(unset);
+      _ -> Users
+  end
 
 end}.
