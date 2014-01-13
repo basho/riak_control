@@ -12,10 +12,21 @@ basic_schema_test() ->
     cuttlefish_unit:assert_not_configured(Config, "riak_control.userlist"),
     ok.
 
+override_test() ->
+    Conf = [
+        {["riak_control"], on},
+        {["riak_control", "auth", "mode"], off}
+    ],
+    Config = cuttlefish_unit:generate_config("../priv/riak_control.schema", Conf),
+    cuttlefish_unit:assert_config(Config, "riak_control.enabled", true),
+    cuttlefish_unit:assert_config(Config, "riak_control.auth", none),
+    cuttlefish_unit:assert_not_configured(Config, "riak_control.userlist"),
+    ok.
+
 userlist_schema_test() ->
     CuttlefishConf = [
-        {["riak_control", "user", "dev", "password"], "1234"},
-        {["riak_control", "user", "admin", "password"], "5678"}
+        {["riak_control", "auth", "user", "dev", "password"], "1234"},
+        {["riak_control", "auth", "user", "admin", "password"], "5678"}
     ],
 
     Config = cuttlefish_unit:generate_config("../priv/riak_control.schema", CuttlefishConf),
