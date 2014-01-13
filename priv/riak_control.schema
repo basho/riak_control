@@ -3,23 +3,11 @@
 %% @doc Set to 'off' to disable the admin panel.
 {mapping, "riak_control", "riak_control.enabled", [
   {default, off},
-  {datatype, {enum, [on, off]}}
+  {datatype, flag}
 ]}.
 
-{translation,
- "riak_control.enabled",
- fun(Conf) ->
-    Setting = cuttlefish:conf_get("riak_control", Conf),
-    case Setting of
-      on -> true;
-      off -> false;
-      _Default -> false
-    end
- end}.
-
-%% @doc Authentication style used for access to the admin
-%% panel. Valid styles are: off, userlist
-{mapping, "riak_control.auth", "riak_control.auth", [
+%% @doc Authentication mode used for access to the admin panel.
+{mapping, "riak_control.auth.mode", "riak_control.auth", [
   {default, userlist},
   {datatype, {enum, [off, userlist]}}
 ]}.
@@ -27,17 +15,18 @@
 {translation,
 "riak_control.auth",
 fun(Conf) ->
-  case cuttlefish:conf_get("riak_control.auth", Conf) of
+  case cuttlefish:conf_get("riak_control.auth.mode", Conf) of
     userlist -> userlist;
     off -> none;
     _ -> none
   end
 end}.
 
-%% @doc If auth is set to 'userlist' then this is the
-%% list of usernames and passwords for access to the
-%% admin panel.
-{mapping, "riak_control.user.$username.password", "riak_control.userlist", [
+%% @doc If riak control's authentication mode (riak_control.auth.mode)
+%% is set to 'userlist' then this is the list of usernames and
+%% passwords for access to the admin panel.
+%% @see riak_control.auth.mode
+{mapping, "riak_control.auth.user.$username.password", "riak_control.userlist", [
   {default, "pass"},
   {include_default, "user"}
 ]}.
@@ -45,16 +34,11 @@ end}.
 {translation,
 "riak_control.userlist",
 fun(Conf) ->
-  UserList = lists:filter(
-    fun({K, _V}) ->
-       cuttlefish_variable:is_fuzzy_match(K, string:tokens("riak_control.user.$username.password", "."))
-    end,
-    Conf),
-  Users = [ {Username, Password} || {[_, _, Username, _], Password} <- UserList ],
+  UserList = cuttlefish_variable:filter_by_prefix("riak_control.auth.user", Conf),
+  Users = [ {Username, Password} || {[_, _, _, Username, _], Password} <- UserList ],
   case Users of
       [] ->
-          throw(unset);
+          cuttlefish:unset();
       _ -> Users
   end
-
 end}.
