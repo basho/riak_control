@@ -8,7 +8,7 @@
 
 %% @doc Authentication mode used for access to the admin panel.
 {mapping, "riak_control.auth.mode", "riak_control.auth", [
-  {default, userlist},
+  {default, off},
   {datatype, {enum, [off, userlist]}}
 ]}.
 
@@ -27,7 +27,7 @@ end}.
 %% passwords for access to the admin panel.
 %% @see riak_control.auth.mode
 {mapping, "riak_control.auth.user.$username.password", "riak_control.userlist", [
-  {default, "pass"},
+  {commented, "pass"},
   {include_default, "user"}
 ]}.
 
