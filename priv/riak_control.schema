@@ -25,10 +25,12 @@ end}.
 %% @doc If riak control's authentication mode (riak_control.auth.mode)
 %% is set to 'userlist' then this is the list of usernames and
 %% passwords for access to the admin panel.
+%% To create a user with a specific name, add one or more entries of the format:
+%%     riak_control.auth.user.«user name».password = «password»
 %% @see riak_control.auth.mode
 {mapping, "riak_control.auth.user.$username.password", "riak_control.userlist", [
   {commented, "pass"},
-  {include_default, "user"}
+  {include_default, "admin"}
 ]}.
 
 {translation,
