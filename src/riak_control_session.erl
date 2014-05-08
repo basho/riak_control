@@ -326,7 +326,7 @@ get_member_info(_Member={Node, Status}, Ring) ->
     PctPending = length(FutureIndices) / RingSize,
 
     %% try and get a list of all the vnodes running on the node
-    case rpc:call(Node, riak_control_session, get_my_info, []) of
+    try rpc:call(Node, riak_control_session, get_my_info, []) of
         {badrpc,nodedown} ->
             ?MEMBER_INFO{node = Node,
                          status = Status,
@@ -359,6 +359,16 @@ get_member_info(_Member={Node, Status}, Ring) ->
             ?MEMBER_INFO{node = Node,
                          status = incompatible,
                          reachable = true,
+                         vnodes = [],
+                         handoffs = [],
+                         ring_pct = PctRing,
+                         pending_pct = PctPending}
+    catch
+        exit:R ->
+            lager:warning("rpc:call(~p, riak_control_session, get_my_info, []) failed with reason: ~p", [Node, R]),
+            ?MEMBER_INFO{node = Node,
+                         status = Status,
+                         reachable = false,
                          vnodes = [],
                          handoffs = [],
                          ring_pct = PctRing,
@@ -490,7 +500,13 @@ maybe_stage_change(Node, Action, Replacement) ->
                 [_Me] ->
                     riak_core:staged_join(Node);
                 _ ->
-                    rpc:call(Node, riak_core, staged_join, [node()])
+                    try rpc:call(Node, riak_core, staged_join, [node()]) of
+                        X -> X
+                    catch
+                        exit:R ->
+                            lager:warning("rpc:call(~p, riak_core, staged_join, [~p]) failed with reason: ~p", [Node, node(), R]),
+                            {badrpc,nodedown}
+                    end
             end;
         leave ->
             riak_core_claimant:leave_member(Node);
@@ -503,7 +519,13 @@ maybe_stage_change(Node, Action, Replacement) ->
         down ->
             riak_core:down(Node);
         stop ->
-            rpc:call(Node, riak_core, stop, [])
+            try rpc:call(Node, riak_core, stop, []) of
+                X -> X
+            catch
+                exit:R ->
+                    lager:warning("rpc:call(~p, riak_core, stop, []) failed with reason: ~p", [Node, R]),
+                    {badrpc, nodedown}
+            end
     end.
 
 %% @doc Conditionally upgrade member info records once they cross node
@@ -547,7 +569,7 @@ handle_bad_record(Total, Used, ErlangMemory, VNodes, Handoffs) ->
 
 %% @doc Determine overall cluster status.
 %%      If the cluster is of one status, return it; default to valid.
-%%      If one or more nodes is incompatible, return incompatible, else 
+%%      If one or more nodes is incompatible, return incompatible, else
 %%      introduce a new state called transitioning.
 -spec determine_overall_status(members()) -> status().
 determine_overall_status(Nodes) ->
