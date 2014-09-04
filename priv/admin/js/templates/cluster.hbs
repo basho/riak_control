@@ -22,10 +22,10 @@
         <table class="add-node-table">
             <tr class="no-highlight">
                 <td id="add-node-box">
-                    {{view RiakControl.JoinNodeView}}
+                    {{view RiakControl.JoinNodeView valueBinding="controller.joinNodeField"}}
                 </td>
                 <td class="button-column">
-                    <a class="gui-point-button gui-text-bold right" {{action joinNode target="controller"}}>
+                    <a class="gui-point-button gui-text-bold right" {{action joinNode}}>
                       {{#if standalone}}
                         <span class="gui-button-msg">JOIN NODE</span>
                       {{else}}
@@ -37,7 +37,7 @@
         </table>
         {{#if errorMessage}}
             <div class="error-message">
-                <a class="close-error gui-text" {{action hideError target="controller"}}></a>
+                <a class="close-error gui-text" {{action hideError}}></a>
                 <a class="error-text offline gui-text-flat">{{errorMessage}}</a>
             </div>
         {{/if}}
@@ -96,7 +96,7 @@
                     <label for="confirmed-check">This plan is correct.</label>
                     <input class="gui-checkbox" type="checkbox" name="confirmed" id="confirmed-check" value="accept"/>
                   </div>
-                <a id="commit-button" class="gui-point-button-right gui-text-bold right" {{action commitPlan target="controller"}}>
+                <a id="commit-button" class="gui-point-button-right gui-text-bold right" {{action commitPlan}}>
                     <span class="gui-button-msg">COMMIT</span>
                 </a>
             </div>
@@ -104,7 +104,7 @@
                 <span class="gui-text-flat serif">
                     Changed your mind? Click this button to remove all staged changes.
                 </span>
-                <a class="gui-rect-button gui-text-bold" {{action clearPlan target="controller"}}>
+                <a class="gui-rect-button gui-text-bold" {{action clearPlan}}>
                     <span class="gui-button-msg">CLEAR PLAN</span>
                 </a>
             </div>
@@ -133,7 +133,7 @@
             </section>
         {{/if}}
     </div>
-
+    
     <div class="clear"></div>
     
 </div>

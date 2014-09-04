@@ -1,0 +1,48 @@
+%%-*- mode: erlang -*-
+%% riak_control config
+%% @doc Set to 'off' to disable the admin panel.
+{mapping, "riak_control", "riak_control.enabled", [
+  {default, off},
+  {datatype, flag}
+]}.
+
+%% @doc Authentication mode used for access to the admin panel.
+{mapping, "riak_control.auth.mode", "riak_control.auth", [
+  {default, off},
+  {datatype, {enum, [off, userlist]}}
+]}.
+
+{translation,
+"riak_control.auth",
+fun(Conf) ->
+  case cuttlefish:conf_get("riak_control.auth.mode", Conf) of
+    userlist -> userlist;
+    off -> none;
+    _ -> none
+  end
+end}.
+
+%% @doc If riak control's authentication mode (riak_control.auth.mode)
+%% is set to 'userlist' then this is the list of usernames and
+%% passwords for access to the admin panel.
+%% To create users with given names, add entries of the format:
+%%     riak_control.auth.user.USERNAME.password = PASSWORD
+%% replacing USERNAME with the desired username and PASSWORD with the
+%% desired password for that user.
+%% @see riak_control.auth.mode
+{mapping, "riak_control.auth.user.$username.password", "riak_control.userlist", [
+  {commented, "pass"},
+  {include_default, "admin"}
+]}.
+
+{translation,
+"riak_control.userlist",
+fun(Conf) ->
+  UserList = cuttlefish_variable:filter_by_prefix("riak_control.auth.user", Conf),
+  Users = [ {Username, Password} || {[_, _, _, Username, _], Password} <- UserList ],
+  case Users of
+      [] ->
+          cuttlefish:unset();
+      _ -> Users
+  end
+end}.

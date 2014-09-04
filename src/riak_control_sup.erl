@@ -53,30 +53,17 @@ init([]) ->
                          [riak_control_session]},
 
     %% determine if riak_control is enabled or not
-    case app_helper:get_env(riak_control,enabled,false) of
+    case app_helper:get_env(riak_control, enabled, false) of
         true ->
-            Resources = [{admin, riak_control_wm_gui},
-                         {admin, riak_control_wm_cluster},
-                         {admin, riak_control_wm_nodes},
-                         {admin, riak_control_wm_partitions}
-                        ],
-            Routes = lists:append([routes(E, M) || {E, M} <- Resources]),
+            Resources = [riak_control_wm_gui,
+                         riak_control_wm_cluster,
+                         riak_control_wm_nodes,
+                         riak_control_wm_partitions],
+            Routes = lists:append([Resource:routes() || Resource <- Resources]),
             _ = [webmachine_router:add_route(R) || R <- Routes],
 
             %% start riak control
             {ok, { {one_for_one, 5, 10}, [RiakControlSession] } };
         _ ->
             {ok, { {one_for_one, 5, 10}, [] } }
-    end.
-
-routes(Env, Module) ->
-    case app_helper:get_env(riak_control, Env, false) of
-        true ->
-            Module:routes();
-        false ->
-            [];
-        _Other ->
-            error_logger:warning_msg(
-              "Defaulting riak_control appenv '~p' to 'false'."
-              " Found unknown \"~p\"", [Env, _Other])
     end.

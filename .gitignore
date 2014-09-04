@@ -5,6 +5,7 @@ doc/*
 deps/*
 erl_crash.dump
 EUnit-SASL.log
-priv/admin/js/templates.js
-priv/admin/js/vendor.js
+priv/admin/js/generated/templates.js
+priv/admin/js/generated/vendor.js
 tags
+erln8.config

@@ -3,10 +3,10 @@
         <a id="riak-control-logo"></a>
         <nav>
             <ul id="nav-ul">
-                <li id="nav-ring" class="nav-li"><a {{action showRing href=true}} class="gui-text-bold nav-item"></a><span class="indicator"></span></li>
-                <li id="nav-nodes" class="nav-li"><a {{action showNodes href=true}} class="gui-text-bold nav-item"></a><span class="indicator"></span></li>
-                <li id="nav-cluster" class="nav-li"><a {{action showCluster href=true}} class="gui-text-bold nav-item"></a><span class="indicator"></span></li>
-                <li id="nav-snapshot" class="nav-li"><a {{action showSnapshot href=true}} class="gui-text-bold nav-item"></a><span class="indicator"></span></li>
+                <li id="nav-ring" class="nav-li">{{#linkTo "ring" classNames="gui-text-bold nav-item"}}{{/linkTo}}<span class="indicator"></span></li>
+                <li id="nav-nodes" class="nav-li">{{#linkTo "nodes" classNames="gui-text-bold nav-item"}}{{/linkTo}}<span class="indicator"></span></li>
+                <li id="nav-cluster" class="nav-li">{{#linkTo "cluster" classNames="gui-text-bold nav-item"}}{{/linkTo}}<span class="indicator"></span></li>
+                <li id="nav-snapshot" class="nav-li">{{#linkTo "snapshot" classNames="gui-text-bold nav-item"}}{{/linkTo}}<span class="indicator"></span></li>
             </ul>
         </nav>
     </div>

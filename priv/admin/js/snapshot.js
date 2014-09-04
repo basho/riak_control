@@ -125,14 +125,4 @@ minispade.register('snapshot', function() {
     }.property('areUnreachableNodes', 'areIncompatibleNodes', 'areDownNodes', 'areLowMemNodes')
   });
 
-  /**
-   * @class
-   *
-   * View showing the overall cluster status.
-   */
-  RiakControl.SnapshotView = Ember.View.extend(
-    /** @scope RiakControl.SnapshotView.prototype */ {
-    templateName: 'snapshot'
-  });
-
 });

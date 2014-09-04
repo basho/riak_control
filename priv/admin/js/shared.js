@@ -4,46 +4,63 @@ minispade.register('shared', function () {
    * ClusterAndNodeControls contains properties shared by:
    * - RiakControl.ClusterController
    * - RiakControl.NodesController
+   * - RiakControl.RingController
    */
   RiakControl.ClusterAndNodeControls = Ember.Mixin.create({
 
-    /**
-     * Stage a change.
-     *
-     * @returns {void}
-     */
-    stageChange: function(node, action, replacement, success, failure) {
-      var self = this;
+    actions: {
+      /**
+       * Stage a change.
+       *
+       * @returns {void}
+       */
+      stageChange: function(node, action, replacement, success, failure) {
+        var self = this,
+            ajax = $.ajax({
+              type:     'PUT',
+              url:      '/admin/cluster',
+              dataType: 'json',
+              data:     { changes:
+                          [{
+                            node:        node,
+                            action:      action,
+                            replacement: replacement
+                          }]
+                        }
+            });
 
-      $.ajax({
-        type:     'PUT',
-        url:      '/admin/cluster',
-        dataType: 'json',
+        ajax.then(
 
-        data:     { changes:
-                    [{
-                      node:        node,
-                      action:      action,
-                      replacement: replacement
-                    }]
-                  },
+          // success...
+          function(d) {
+            if(success) {
+              success();
+            }
 
-        success: function(d) {
-          if(success) {
-            success();
+            self.reload();
+          },
+
+          // error...
+          function (jqXHR, textStatus, errorThrown) {
+            if(failure) {
+              failure();
+            }
+
+            self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
           }
+        );
 
-          self.reload();
-        },
+      },
 
-        error: function (jqXHR, textStatus, errorThrown) {
-          if(failure) {
-            failure();
-          }
-
-          self.get('displayError').call(self, jqXHR, textStatus, errorThrown);
-        }
-      });
+      /**
+       * The action specified on the <a> tag creating the 'x' button in the error message div.
+       * By setting the 'errorMessage' property back to an empty string, the message will disappear.
+       *
+       * @returns {void}
+       */
+      hideError: function () {
+        this.set('errorMessage', '');
+      }
     },
 
     /**
@@ -83,16 +100,6 @@ minispade.register('shared', function () {
       }
 
       this.set('errorMessage', 'Request failed: ' + errors);
-    },
-
-    /**
-     * The action specified on the <a> tag creating the 'x' button in the error message div.
-     * By setting the 'errorMessage' property back to an empty string, the message will disappear.
-     *
-     * @returns {void}
-     */
-    hideError: function () {
-      this.set('errorMessage', '');
     },
 
     /**
