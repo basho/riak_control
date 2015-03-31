@@ -29,7 +29,7 @@
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
--include_lib("riak_control/include/riak_control.hrl").
+-include("riak_control.hrl").
 
 %% API
 -export([start_link/0,

@@ -29,7 +29,7 @@
          is_null_origin/1,
          is_protected/2]).
 
--include_lib("riak_control/include/riak_control.hrl").
+-include("riak_control.hrl").
 
 -type context() :: term() | undefined.
 -type csrf_token() :: list() | undefined.
