@@ -33,7 +33,7 @@
          service_available/2,
          forbidden/2]).
 
--include_lib("riak_control/include/riak_control.hrl").
+-include("riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 -define(CONTENT_TYPES, [{"application/json",to_json}]).

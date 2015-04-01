@@ -27,7 +27,7 @@
          status/2,
          status/3]).
 
--include_lib("riak_control/include/riak_control.hrl").
+-include("riak_control.hrl").
 
 %% @doc Return the ring.
 -spec ring() -> riak_core:ring().

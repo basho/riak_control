@@ -37,7 +37,7 @@
          content_types_provided/2,
          content_types_accepted/2]).
 
--include_lib("riak_control/include/riak_control.hrl").
+-include("riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 %% @doc Return routes this resource should respond to.

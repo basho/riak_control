@@ -34,7 +34,7 @@
         ]).
 
 %% riak_control and webmachine dependencies
--include_lib("riak_control/include/riak_control.hrl").
+-include("riak_control.hrl").
 -include_lib("webmachine/include/webmachine.hrl").
 
 -record(ctx, {
