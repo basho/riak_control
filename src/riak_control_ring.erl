@@ -47,7 +47,7 @@ n_val() ->
     list({number(), number(), number()}).
 status(Ring, Unavailable) ->
     NVal = n_val(),
-    Quorum = mochinum:int_ceil(NVal / 2),
+    Quorum = (NVal div 2) + 1,
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
