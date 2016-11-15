@@ -152,7 +152,7 @@ valid_userpass(_User, _Pass, _Auth) ->
 csrf_token(ReqData, Context) ->
     case get_csrf_token(ReqData, Context) of
         undefined ->
-            binary_to_list(base64url:encode(crypto:rand_bytes(256)));
+            binary_to_list(riak_core_base64url:encode(crypto:rand_bytes(256)));
         Token ->
             Token
     end.
