@@ -64,7 +64,6 @@
                 partitions    :: partitions(),
                 nodes         :: members(),
                 update_tick   :: boolean(),
-                transfers     :: transfers(),
                 n_vals        :: n_vals(),
                 default_n_val :: pos_integer()}).
 
@@ -186,7 +185,6 @@ init([]) ->
     State=#state{vsn=1,
                  nodes=[],
                  services=[],
-                 transfers=[],
                  partitions=[],
                  update_tick=false},
 
