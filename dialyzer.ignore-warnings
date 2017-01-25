@@ -1,4 +1,3 @@
-riak_control_session.erl:534: The pattern MemberInfo = {'member_info_v2', _, _, _, _, _, _, _, _, _, _, _, _} can never match the type #member_info{node::atom(),status::'down' | 'incompatible' | 'invalid' | 'leaving' | 'transitioning' | 'undefined' | 'valid',reachable::'false' | 'true' | 'undefined',vnodes::'undefined' | [{_,_}],handoffs::'undefined' | [{_,_,_}],ring_pct::'undefined' | float(),pending_pct::'undefined' | float(),mem_total::'undefined' | integer(),mem_used::'undefined' | integer(),mem_erlang::'undefined' | integer()}
 Unknown types:
   webmachine_dispatcher:matchterm/0
   wrq:reqdata/0
