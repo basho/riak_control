@@ -30,7 +30,7 @@
 -include("riak_control.hrl").
 
 %% @doc Return the ring.
--spec ring() -> riak_core:ring().
+-spec ring() -> riak_core_ring:riak_core_ring().
 ring() ->
     {ok, Ring} = riak_core_ring_manager:get_my_ring(),
     Ring.
@@ -43,7 +43,7 @@ n_val() ->
     NVal.
 
 %% @doc Return list of nodes, available partition and quorum.
--spec status(riak_core:ring(), list(node())) ->
+-spec status(riak_core_ring:riak_core_ring(), list(node())) ->
     list({number(), number(), number()}).
 status(Ring, Unavailable) ->
     NVal = n_val(),
@@ -51,14 +51,14 @@ status(Ring, Unavailable) ->
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
--spec status(riak_core:ring(), number(), list(node())) ->
+-spec status(riak_core_ring:riak_core_ring(), number(), list(node())) ->
     list({number(), number(), number()}).
 status(Ring, NVal, Unavailable) ->
     Quorum = mochinum:int_ceil(NVal / 2),
     status(Ring, NVal, Quorum, Unavailable).
 
 %% @doc Return list of nodes, available partition and quorum.
--spec status(riak_core:ring(), number(), number(), list(node())) ->
+-spec status(riak_core_ring:riak_core_ring(), number(), number(), list(node())) ->
     list({number(), number(), number()}).
 status(Ring, NVal, Quorum, Unavailable) ->
     Preflists = riak_core_ring:all_preflists(Ring, NVal),

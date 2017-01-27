@@ -64,7 +64,6 @@
                 partitions    :: partitions(),
                 nodes         :: members(),
                 update_tick   :: boolean(),
-                transfers     :: transfers(),
                 n_vals        :: n_vals(),
                 default_n_val :: pos_integer()}).
 
@@ -186,7 +185,6 @@ init([]) ->
     State=#state{vsn=1,
                  nodes=[],
                  services=[],
-                 transfers=[],
                  partitions=[],
                  update_tick=false},
 
@@ -530,10 +528,8 @@ maybe_stage_change(Node, Action, Replacement) ->
 
 %% @doc Conditionally upgrade member info records once they cross node
 %%      boundaries.
--spec upgrade_member_info(member() | #member_info{}) -> member().
-upgrade_member_info(MemberInfo = ?MEMBER_INFO{}) ->
-    MemberInfo;
-upgrade_member_info(MemberInfo = #member_info{}) ->
+-spec upgrade_member_info(#member_info{}) -> member().
+upgrade_member_info(MemberInfo) ->
     ?MEMBER_INFO{
         node = MemberInfo#member_info.node,
         status = MemberInfo#member_info.status,
