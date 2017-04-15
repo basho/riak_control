@@ -26,6 +26,8 @@
 -include("riak_control.hrl").
 
 %% all actions return the same format
+-spec action_result({badrpc|error|undefined, undefined}, wrq:reqdata(), undefined) ->
+                           {boolean(), wrq:reqdata(), undefined}.
 action_result(Error={badrpc,_},Req,C) ->
     Body = mochijson2:encode({struct,[Error]}),
     {false, wrq:set_resp_body(Body, Req), C};
@@ -37,6 +39,8 @@ action_result(_,Req,C) ->
     {true, wrq:set_resp_body(Body, Req), C}.
 
 %% return a proplist of details for a given index
+-spec node_ring_details(#partition_info{}, maybe_improper_list()) ->
+                               [{string(), atom()|binary()|integer()}].
 node_ring_details (P=#partition_info{index=Index,vnodes=Vnodes},Nodes) ->
     case lists:keyfind(P#partition_info.owner,2,Nodes) of
         ?MEMBER_INFO{node=Node, status=Status, reachable=Reachable} ->
