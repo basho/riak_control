@@ -3,24 +3,24 @@
 all: deps compile
 
 compile: deps
-	@./rebar compile
+	@./rebar3 compile
 
 app:
-	@./rebar compile skip_deps=true
+	@./rebar3 compile skip_deps=true
 
 deps:
-	@./rebar get-deps
+	@./rebar3 get-deps
 
 clean:
-	@./rebar clean
+	@./rebar3 clean
 
 distclean: clean
-	@./rebar delete-deps
+	@./rebar3 delete-deps
 
 test: all test_erlang test_javascript
 
 test_erlang: all
-	@./rebar skip_deps=true eunit
+	@./rebar3 skip_deps=true eunit
 
 define MISSING_PHANTOM_MESSAGE
 PhantomJS is missing to run the javascript tests, to install on your OS do the following
@@ -40,5 +40,3 @@ ifeq ($(strip $(shell command -v phantomjs > /dev/null 2>&1 || echo 1)),)
 else
 	@echo "$$MISSING_PHANTOM_MESSAGE"
 endif
-
-include tools.mk
