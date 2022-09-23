@@ -1,26 +1,25 @@
-.PHONY: rel deps test
+.PHONY: compile cover test dialyzer
+REBAR ?= ./rebar3
 
-all: deps compile
-
-compile: deps
-	@./rebar3 compile
-
-app:
-	@./rebar3 compile skip_deps=true
-
-deps:
-	@./rebar3 get-deps
+compile:
+	$(REBAR) compile
 
 clean:
-	@./rebar3 clean
+	$(REBAR) clean
 
-distclean: clean
-	@./rebar3 delete-deps
+cover: test
+	$(REBAR) cover
 
-test: all test_erlang test_javascript
+test: compile
+	$(REBAR) as test do eunit
 
-test_erlang: all
-	@./rebar3 skip_deps=true eunit
+dialyzer:
+	$(REBAR) dialyzer
+
+xref:
+	$(REBAR) xref
+
+check: test dialyzer xref
 
 define MISSING_PHANTOM_MESSAGE
 PhantomJS is missing to run the javascript tests, to install on your OS do the following
