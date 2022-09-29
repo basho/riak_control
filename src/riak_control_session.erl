@@ -60,12 +60,12 @@
 
 -record(state, {vsn           :: version(),
                 services      :: services(),
-                ring          :: ring(),
+                ring          :: undefined | ring(),
                 partitions    :: partitions(),
                 nodes         :: members(),
                 update_tick   :: boolean(),
-                n_vals        :: n_vals(),
-                default_n_val :: pos_integer()}).
+                n_vals        :: undefined | n_vals(),
+                default_n_val :: undefined | pos_integer()}).
 
 -type normalized_action() :: leave
                            | remove
