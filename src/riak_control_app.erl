@@ -33,6 +33,9 @@
 %% ==================================================================
 
 start(_StartType, _StartArgs) ->
+    {ok, index_dtl} = erlydtl:compile_file(
+                        filename:join([code:lib_dir(riak_control, priv),
+                                       "templates/index.dtl"]), index_dtl),
     case riak_control_sup:start_link() of
         {error, Reason} ->
             {error, Reason};

@@ -3,10 +3,10 @@
   {description, "Riak Admin Interface"},
   {vsn, git},
   {registered, []},
-  {applications, [
-                  kernel,
+  {applications, [kernel,
                   stdlib,
                   webmachine,
+                  erlydtl,
                   riak_core
                  ]},
   {mod, { riak_control_app, []}},

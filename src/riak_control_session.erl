@@ -60,12 +60,12 @@
 
 -record(state, {vsn           :: version(),
                 services      :: services(),
-                ring          :: ring(),
+                ring          :: undefined | ring(),
                 partitions    :: partitions(),
                 nodes         :: members(),
                 update_tick   :: boolean(),
-                n_vals        :: n_vals(),
-                default_n_val :: pos_integer()}).
+                n_vals        :: undefined | n_vals(),
+                default_n_val :: undefined | pos_integer()}).
 
 -type normalized_action() :: leave
                            | remove
@@ -363,7 +363,7 @@ get_member_info(_Member={Node, Status}, Ring) ->
                          pending_pct = PctPending}
     catch
         exit:R ->
-            lager:warning("rpc:call(~p, riak_control_session, get_my_info, []) failed with reason: ~p", [Node, R]),
+            logger:warning("rpc:call(~p, riak_control_session, get_my_info, []) failed with reason: ~p", [Node, R]),
             ?MEMBER_INFO{node = Node,
                          status = Status,
                          reachable = false,
@@ -502,7 +502,7 @@ maybe_stage_change(Node, Action, Replacement) ->
                         X -> X
                     catch
                         exit:R ->
-                            lager:warning("rpc:call(~p, riak_core, staged_join, [~p]) failed with reason: ~p", [Node, node(), R]),
+                            logger:warning("rpc:call(~p, riak_core, staged_join, [~p]) failed with reason: ~p", [Node, node(), R]),
                             {badrpc,nodedown}
                     end
             end;
@@ -521,7 +521,7 @@ maybe_stage_change(Node, Action, Replacement) ->
                 X -> X
             catch
                 exit:R ->
-                    lager:warning("rpc:call(~p, riak_core, stop, []) failed with reason: ~p", [Node, R]),
+                    logger:warning("rpc:call(~p, riak_core, stop, []) failed with reason: ~p", [Node, R]),
                     {badrpc, nodedown}
             end
     end.

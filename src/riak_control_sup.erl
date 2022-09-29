@@ -24,35 +24,21 @@
 
 -behaviour(supervisor).
 
-%% API
 -export([start_link/0]).
-
-%% Supervisor callbacks
 -export([init/1]).
-
-%% Helper macro for declaring children of supervisor
--define(CHILD(I, Type), {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
-
-%% ===================================================================
-%% API functions
-%% ===================================================================
 
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
-%% ===================================================================
-%% Supervisor callbacks
-%% ===================================================================
-
 init([]) ->
-    RiakControlSession={riak_control_session,
-                         {riak_control_session, start_link, []},
-                         permanent,
-                         5000,
-                         worker,
-                         [riak_control_session]},
+    RiakControlSession =
+        #{id => riak_control_session,
+          start => {riak_control_session, start_link, []}
+         },
 
-    %% determine if riak_control is enabled or not
+    SupFlags = #{strategy => one_for_one,
+                 intensity => 5,
+                 period => 10},
     case app_helper:get_env(riak_control, enabled, false) of
         true ->
             Resources = [riak_control_wm_gui,
@@ -62,8 +48,7 @@ init([]) ->
             Routes = lists:append([Resource:routes() || Resource <- Resources]),
             _ = [webmachine_router:add_route(R) || R <- Routes],
 
-            %% start riak control
-            {ok, { {one_for_one, 5, 10}, [RiakControlSession] } };
+            {ok, {SupFlags, [RiakControlSession]}};
         _ ->
-            {ok, { {one_for_one, 5, 10}, [] } }
+            {ok, {SupFlags, [] }}
     end.

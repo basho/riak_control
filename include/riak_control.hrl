@@ -69,12 +69,12 @@
 %% Riak 1.3
 -record(member_info,
         { node        :: atom(),
-          status      :: status(),
+          status      :: undefined | status(),
           reachable   :: boolean(),
           vnodes      :: vnodes(),
           handoffs    :: handoffs(),
-          ring_pct    :: float(),
-          pending_pct :: float(),
+          ring_pct    :: undefined | float(),
+          pending_pct :: undefined | float(),
           mem_total   :: integer(),
           mem_used    :: integer(),
           mem_erlang  :: integer() }).
@@ -82,16 +82,16 @@
 %% Riak 1.4.1+
 -record(member_info_v2,
         { node        :: atom(),
-          status      :: status(),
+          status      :: undefined | status(),
           reachable   :: boolean(),
           vnodes      :: vnodes(),
           handoffs    :: handoffs(),
-          ring_pct    :: float(),
-          pending_pct :: float(),
-          mem_total   :: integer(),
-          mem_used    :: integer(),
-          mem_erlang  :: integer(),
-          action      :: action(),
+          ring_pct    :: undefined | float(),
+          pending_pct :: undefined | float(),
+          mem_total   :: undefined | integer(),
+          mem_used    :: undefined | integer(),
+          mem_erlang  :: undefined | integer(),
+          action      :: undefined | action(),
           replacement :: node() }).
 
 -define(MEMBER_INFO,     #member_info_v2).

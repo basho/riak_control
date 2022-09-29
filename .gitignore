@@ -1,14 +1,6 @@
-*~
-ebin/*
-.eunit/*
-doc/*
-deps/*
+ebin/
+_build/
+rebar.lock
 erl_crash.dump
-EUnit-SASL.log
 priv/admin/js/generated/templates.js
 priv/admin/js/generated/vendor.js
-tags
-erln8.config
-.local_dialyzer_plt
-dialyzer_unhandled_warnings
-dialyzer_warnings
